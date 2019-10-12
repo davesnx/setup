@@ -1,0 +1,117 @@
+{
+    "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
+    "window.zoomLevel": 2,
+    "window.nativeTabs": true,
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.activityBar.visible": true,
+    "workbench.colorTheme": "Ayu Mirage",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.fontAliasing": "auto",
+    "workbench.startupEditor": "newUntitledFile",
+    "editor.fontFamily": "SF Mono, Fira Code, Droid Sans Mono, Monaco",
+    "editor.fontSize": 13,
+    "editor.rulers": [
+      80,
+      120
+    ],
+    "editor.colorDecorators": false,
+    "editor.tabSize": 2,
+    "editor.lineHeight": 21,
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
+    "editor.cursorBlinking": "phase",
+    "editor.wrappingIndent": "indent",
+    "editor.renderWhitespace": "none",
+    "editor.suggestFontSize": 12,
+    "editor.tabCompletion": "on",
+    "editor.snippetSuggestions": "top",
+    "editor.detectIndentation": true,
+    "editor.minimap.showSlider": "always",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.insertSpaces": true,
+    "editor.autoIndent": true,
+    "editor.formatOnPaste": false,
+    "editor.useTabStops": true,
+    "editor.formatOnSave": false,
+    "editor.renderControlCharacters": true,
+    "editor.minimap.renderCharacters": false,
+    "search.exclude": {
+      "**/.git": true,
+      "**/.next": true,
+      "**/build": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "extensions.autoUpdate": true,
+    "extensions.ignoreRecommendations": true,
+    "files.trimTrailingWhitespace": true,
+    "typescript.check.npmIsInstalled": false,
+    "atomKeymap.promptV3Features": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "emmet.includeLanguages": {
+      "javascript": "javascriptreact"
+    },
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [{
+        "language": "javascript",
+        "autoFix": true
+      },
+      {
+        "language": "javascriptreact",
+        "autoFix": true
+      }
+    ],
+    "files.associations": {
+      "*.jsx": "javascriptreact",
+      "*.js": "javascriptreact"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "numso.prettier-standard-vscode"
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "numso.prettier-standard-vscode"
+    },
+    "eslint.alwaysShowStatus": true,
+    "eslint.packageManager": "yarn",
+    "eslint.lintTask.enable": true,
+    "files.insertFinalNewline": true,
+    "[reason]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "jaredly.reason-vscode"
+    },
+    "reason_language_server.refmt": "/Users/davidsancho/.config/yarn/global/node_modules/.bin/refmt",
+    "reason_language_server.reloadOnChange": true,
+    "reason_language_server.dependencies_codelens": true,
+    "reason_language_server.useOldDuneProcess": false,
+    "html.format.enable": true,
+    "html.format.preserveNewLines": true,
+
+    "gitlens.advanced.telemetry.enabled": false,
+    "gitlens.blame.separateLines": false,
+    "gitlens.hovers.annotations.changes": false,
+    "gitlens.hovers.annotations.enabled": false,
+    "gitlens.hovers.avatars": false,
+    "gitlens.hovers.currentLine.over": "line",
+    "breadcrumbs.enabled": true,
+    "gitlens.advanced.useSymmetricDifferenceNotation": false,
+    "gitlens.views.repositories.includeWorkingTree": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.advanced.messages": {
+      "suppressCommitHasNoPreviousCommitWarning": false,
+      "suppressCommitNotFoundWarning": false,
+      "suppressFileNotUnderSourceControlWarning": false,
+      "suppressGitVersionWarning": false,
+      "suppressLineUncommittedWarning": false,
+      "suppressNoRepositoryWarning": false,
+      "suppressResultsExplorerNotice": false,
+      "suppressShowKeyBindingsNotice": true,
+      "suppressUpdateNotice": true,
+      "suppressWelcomeNotice": false
+    },
+    "gitlens.currentLine.enabled": true,
+    "gitlens.keymap": "alternate",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "gitlens.showWhatsNewAfterUpgrades": false,
+  }

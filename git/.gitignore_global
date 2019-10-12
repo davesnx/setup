@@ -1,0 +1,36 @@
+# Compiled Python files
+*.pyc
+
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+# IntelliJ IDEA
+.idea
+*.iml
+*.iws
+.idea-compl
+*.sc
+
+# Mac
+.DS_Store
+
+# Clojure
+.lein-repl-history
+.lein-failures
+completer.hist
+.nrepl-port
+
+# Scala
+libsigar-universal64-macosx.dylib
+
+# Custom
+.no-commit
