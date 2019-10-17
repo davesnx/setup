@@ -1,4 +1,4 @@
-zmodules=(environment git-info history input syntax-highlighting completion autosuggestions)
+zmodules=(environment git-info history input completion autosuggestions)
 
 ztermtitle='%n@%m:%~'
 

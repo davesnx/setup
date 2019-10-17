@@ -1,4 +1,4 @@
-export DOTFILES_PATH=$HOME/.dotfiles
+export DOTFILES_PATH=$HOME/dev/setup
 
 source $DOTFILES_PATH/terminal/init.sh
 source $DOTFILES_PATH/terminal/bash/themes/theme.sh
