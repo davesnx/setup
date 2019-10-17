@@ -15,7 +15,7 @@ alias n="npm"
 alias y="yarn"
 
 alias d='docker'
-alias cfg="${EDITOR} ${HOME}/dev/setup"
+alias cfg="code ${HOME}/dev/setup"
 alias cl="clear"
 alias hosts="${EDITOR} /etc/hosts"
 

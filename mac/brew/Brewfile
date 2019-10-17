@@ -30,6 +30,8 @@ brew "vim"
 brew "watch"
 brew "wget"
 cask "alfred"
+cask 'enpass'
+cask 'discord'
 cask "docker"
 cask "firefox"
 cask "google-backup-and-sync"

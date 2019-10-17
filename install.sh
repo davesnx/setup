@@ -3,12 +3,8 @@
 CURRENT_FILE_PATH="$(pwd)/$(dirname $0)"
 export DOTFILES_PATH=${CURRENT_FILE_PATH%"/."}
 
-mkdir -p "$HOME/.config"
-
 echo "👉 dotfiles path: '$DOTFILES_PATH'"
 
-# SO Specific stuff
-# -----------------------------------------------
 OPERATIVE_SYSTEM="MacOS "
 CUSTOM_INSTALLER="$DOTFILES_PATH/mac/install.sh"
 
@@ -25,14 +21,14 @@ echo "👇 Installing $OPERATIVE_SYSTEM common packages 👇"
 
 ### Console stuff ###
 # Bash
-# ln -s -i "$DOTFILES_PATH/terminal/bash/.bashrc" "$HOME/.bashrc"
-# ln -s -i "$DOTFILES_PATH/terminal/bash/.bash_profile" "$HOME/.bash_profile"
-# ln -s -i "$DOTFILES_PATH/terminal/bash/.profile" "$HOME/.profile"
+ln -s -i "$DOTFILES_PATH/terminal/bash/.bashrc" "$HOME/.bashrc"
+ln -s -i "$DOTFILES_PATH/terminal/bash/.bash_profile" "$HOME/.bash_profile"
+ln -s -i "$DOTFILES_PATH/terminal/bash/.profile" "$HOME/.profile"
 
 # Zsh
-# ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
-# ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
-# ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
+ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
+ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
+ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
 ### Git stuff ###
 # Git
@@ -50,3 +46,13 @@ git clone --recursive https://github.com/zimfw/zimfw.git "${ZDOTDIR:-${HOME}}/.z
 
 # Create the autojump historic file
 touch "$HOME/.z"
+
+# TODO:
+#   Alfred settings
+#   Alfred PRO
+#   Install iTerm from here
+#   brew
+#   brew list
+#   Install VSCode & settings
+#   Install gist settings sync for VSCode
+#   Install tig
