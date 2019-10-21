@@ -31,9 +31,10 @@ brew "unrar"
 brew "vim"
 brew "watch"
 brew "wget"
+brew "tig"
 cask "alfred"
-cask 'enpass'
-cask 'discord'
+cask "enpass"
+cask "discord"
 cask "docker"
 cask "firefox"
 cask "google-backup-and-sync"
