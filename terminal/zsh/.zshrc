@@ -41,3 +41,6 @@ eval "`fnm env --multi`"
 # Load autojump
 source /usr/local/share/autojump/autojump.zsh
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

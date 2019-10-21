@@ -48,9 +48,6 @@ touch "$HOME/.z"
 # TODO:
 #   Alfred settings
 #   Alfred PRO
-#   Install iTerm from here
-#   brew
-#   brew list
 #   Install VSCode & settings
 #   Install gist settings sync for VSCode
 #   Install tig
