@@ -8,6 +8,7 @@ alias .....="cd ../../../.."
 
 alias .="open ."
 alias quit="exit"
+alias export=" export"
 
 alias e="nvim"
 alias c="code"
@@ -148,3 +149,4 @@ alias gcz='git cz'
 alias gcl='git clone'
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias master='git checkout master'
+alias gf="git fetch"
