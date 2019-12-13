@@ -14,6 +14,10 @@ alias e="nvim"
 alias c="code"
 alias n="npm"
 alias y="yarn"
+alias _cat="cat"
+alias cat="bat"
+alias _top="top"
+alias top="vtop"
 
 alias d='docker'
 alias cfg="code ${HOME}/dev/setup"
