@@ -19,7 +19,6 @@ echo ""
 # -----------------------------------------------
 echo "👇 Installing $OPERATIVE_SYSTEM common packages 👇"
 
-### Console stuff ###
 # Bash
 ln -s -i "$DOTFILES_PATH/terminal/bash/.bashrc" "$HOME/.bashrc"
 ln -s -i "$DOTFILES_PATH/terminal/bash/.bash_profile" "$HOME/.bash_profile"
@@ -44,10 +43,3 @@ git clone --recursive https://github.com/zimfw/zimfw.git "${ZDOTDIR:-${HOME}}/.z
 
 # Create the autojump historic file
 touch "$HOME/.z"
-
-# TODO:
-#   Alfred settings
-#   Alfred PRO
-#   Install VSCode & settings
-#   Install gist settings sync for VSCode
-#   Install tig

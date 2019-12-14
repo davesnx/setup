@@ -7,13 +7,13 @@
   "window.zoomLevel": 2,
 
   "workbench.activityBar.visible": true,
-  "workbench.colorTheme": "Ayu Mirage",
+  "workbench.colorTheme": "Ayu One Dark",
   "workbench.editor.tabSizing": "shrink",
   "workbench.fontAliasing": "auto",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.startupEditor": "newUntitledFile",
 
-  "editor.autoIndent": true,
+  "editor.autoIndent": "brackets",
   "editor.colorDecorators": false,
   "editor.cursorBlinking": "phase",
   "editor.detectIndentation": true,
