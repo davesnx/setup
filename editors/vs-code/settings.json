@@ -7,7 +7,7 @@
   "window.zoomLevel": 2,
 
   "workbench.activityBar.visible": true,
-  "workbench.colorTheme": "Ayu One Dark",
+  "workbench.colorTheme": "Ayu Mirage",
   "workbench.editor.tabSizing": "shrink",
   "workbench.fontAliasing": "auto",
   "workbench.iconTheme": "material-icon-theme",
@@ -116,10 +116,10 @@
 
   // Language specific
   "[javascriptreact]": {
-    "editor.defaultFormatter": "numso.prettier-standard-vscode"
+    "editor.defaultFormatter": "remimarsal.prettier-now"
   },
   "[json]": {
-    "editor.defaultFormatter": "numso.prettier-standard-vscode"
+    "editor.defaultFormatter": "remimarsal.prettier-now"
   },
   "[reason]": {
     "editor.formatOnSave": true,
