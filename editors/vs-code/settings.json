@@ -124,5 +124,6 @@
   "[reason]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jaredly.reason-vscode"
-  }
+  },
+  "html.format.indentInnerHtml": true
 }
