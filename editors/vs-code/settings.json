@@ -1,6 +1,6 @@
 {
   "atomKeymap.promptV3Features": true,
-  "breadcrumbs.enabled": true,
+  "breadcrumbs.enabled": false,
 
   "window.nativeTabs": true,
   "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
