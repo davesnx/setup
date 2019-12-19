@@ -1,6 +1,6 @@
 {
   "atomKeymap.promptV3Features": true,
-  "breadcrumbs.enabled": false,
+  "breadcrumbs.enabled": true,
 
   "window.nativeTabs": true,
   "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
@@ -125,5 +125,8 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jaredly.reason-vscode"
   },
-  "html.format.indentInnerHtml": true
+  "html.format.indentInnerHtml": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }
