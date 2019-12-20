@@ -102,7 +102,7 @@
   "html.format.preserveNewLines": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
   "reason_language_server.dependencies_codelens": true,
-  "reason_language_server.refmt": "/Users/davidsancho/.config/yarn/global/node_modules/.bin/refmt",
+  "reason_language_server.refmt": "/usr/local/bin/refmt",
   "reason_language_server.reloadOnChange": true,
   "reason_language_server.useOldDuneProcess": false,
   "search.exclude": {
