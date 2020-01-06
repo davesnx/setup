@@ -20,6 +20,7 @@ alias _top="top"
 alias top="vtop"
 
 alias d='docker'
+alias pg='pgcli'
 alias cfg="code ${HOME}/Projects/setup"
 alias cl="clear"
 alias hosts="${EDITOR} /etc/hosts"
