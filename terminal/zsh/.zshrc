@@ -33,7 +33,7 @@ precmd() {
 
 source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
 source $DOTFILES_PATH/terminal/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $DOTFILES_PATH/terminal/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Load fnm a relacement of nvm
 eval "`fnm env --multi`"
