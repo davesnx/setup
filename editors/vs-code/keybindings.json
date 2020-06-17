@@ -44,7 +44,7 @@
     "command": "workbench.action.openEditorAtIndex9"
   },
   {
-    "key": "cmd+<",
+    "key": "cmd+l",
     "command": "cursorMove",
     "args": {
       "to": "up",
@@ -54,7 +54,7 @@
     "when": "editorTextFocus"
   },
   {
-    "key": "cmd+>",
+    "key": "cmd+k",
     "command": "cursorMove",
     "args": {
       "to": "down",
@@ -68,13 +68,8 @@
     "command": "workbench.action.toggleSidebarVisibility"
   },
   {
-    "key": "shift+cmd+a",
+    "key": "cmd+-",
     "command": "editor.action.blockComment",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
-    "key": "shift+alt+a",
-    "command": "-editor.action.blockComment",
     "when": "editorTextFocus && !editorReadonly"
   }
 ]
