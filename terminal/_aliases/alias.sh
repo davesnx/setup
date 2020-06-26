@@ -14,6 +14,8 @@ alias e="nvim"
 alias c="code"
 alias n="npm"
 alias y="yarn"
+alias run="$DOTFILES_PATH/bin/run"
+
 alias _cat="cat"
 alias cat="bat"
 alias _top="top"
@@ -153,6 +155,7 @@ alias gcl='git clone'
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias master='git checkout master'
 alias gf="git fetch"
+
 alias stashl="$DOTFILES_PATH/bin/git/stash-list"
 
 alias startdb="docker run --name draftbit -e POSTGRES_PASSWORD=draftbit123 -e POSTGRES_USER=draftbit -p 5432:5432 -d postgres"

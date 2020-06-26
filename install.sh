@@ -13,7 +13,7 @@ echo ""
 echo "👇 Installing $OPERATIVE_SYSTEM custom packages 👇"
 echo ""
 
-   sh "$CUSTOM_INSTALLER"
+sh "$CUSTOM_INSTALLER"
 
 # Common stuff
 # -----------------------------------------------
