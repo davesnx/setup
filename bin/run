@@ -11,7 +11,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##?    run
 
 if cat package.json > /dev/null 2>&1; then
-    scripts=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --height 40%)
+    scripts=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --cycle --print-query --height 80% --header="Press ENTER to run the script. ESC to quit.")
 
     if [[ -n $scripts ]]; then
         script_name=$(echo $scripts | awk -F ': ' '{gsub(/"/, "", $1); print $1}')
