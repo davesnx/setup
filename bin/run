@@ -11,13 +11,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##?    run
 
 if cat package.json > /dev/null 2>&1; then
-    scripts=$(cat package.json | jq .scripts)
-
-    if [[ ! -z "$scripts" ]]; then
-        echo "Error: There's no scripts in the package.json"
-        exit
-    fi
-
     selected_script=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --cycle --height 80% --header="Press ENTER to run the script. ESC to quit.")
 
     if [[ -n "$selected_script" ]]; then
