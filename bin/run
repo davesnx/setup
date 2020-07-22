@@ -5,18 +5,25 @@ set -euo pipefail
 source "$DOTFILES_PATH/scripts/core/_main.sh"
 
 ##? Run scripts from package.json
-#?? 1.0.0
+#?? 1.1.0
 ##?
 ##? Usage:
 ##?    run
 
 if cat package.json > /dev/null 2>&1; then
-    scripts=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --cycle --print-query --height 80% --header="Press ENTER to run the script. ESC to quit.")
+    scripts=$(cat package.json | jq .scripts)
 
-    if [[ -n $scripts ]]; then
-        script_name=$(echo $scripts | awk -F ': ' '{gsub(/"/, "", $1); print $1}')
+    if [[ ! -z "$scripts" ]]; then
+        echo "Error: There's no scripts in the package.json"
+        exit
+    fi
 
-        yarn run $script_name || npm run $script_name
+    selected_script=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --cycle --height 80% --header="Press ENTER to run the script. ESC to quit.")
+
+    if [[ -n "$selected_script" ]]; then
+        script_name=$(echo "$selected_script" | awk -F ': ' '{gsub(/"/, "", $1); print $1}')
+
+        yarn run "$script_name" || npm run "$script_name"
     else
         echo "Exit: You haven't selected any script"
     fi
