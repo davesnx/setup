@@ -147,16 +147,20 @@ alias gs="git status -sb"
 alias gc="git checkout"
 alias gp="git push"
 alias gpl="git pull"
-alias ga="git add"
 alias gm='git commit -m'
 alias gma='git commit --amend'
 alias gcz='git cz'
 alias gcl='git clone'
-alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias master='git checkout master'
 alias gf="git fetch"
+
+# forgit
+alias gl='forgit::log'
+alias ga='forgit::add'
+alias gdiff='forgit::diff'
+alias gitignore='forgit::ignore'
 
 alias stashl="$DOTFILES_PATH/bin/git/stash-list"
 
 alias startdb="docker run --name draftbit -e POSTGRES_PASSWORD=draftbit123 -e POSTGRES_USER=draftbit -p 5432:5432 -d postgres"
-# alias restartdb="docker restart (docker ps -a | grep 'draftbit ' | awk '{print $1}')"
+alias restartdb="docker restart 'draftbit'"

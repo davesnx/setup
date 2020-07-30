@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -o history
 set -euo pipefail
 
 source "$DOTFILES_PATH/scripts/core/_main.sh"
@@ -15,8 +16,8 @@ if cat package.json > /dev/null 2>&1; then
 
     if [[ -n "$selected_script" ]]; then
         script_name=$(echo "$selected_script" | awk -F ': ' '{gsub(/"/, "", $1); print $1}')
-
-        yarn run "$script_name" || npm run "$script_name"
+        history -s -p yarn run $script_name;
+        yarn run $script_name;
     else
         echo "Exit: You haven't selected any script"
     fi

@@ -5,6 +5,8 @@ for exportToSource in "$DOTFILES_PATH/terminal/_exports/"*; do source $exportToS
 # Register all functions
 for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*; do source $functionToSource; done
 
+source "$DOTFILES_PATH/git/forgit.zsh";
+
 # Add tab completion for many Bash commands
 if which brew &> /dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
 	# Ensure existing Homebrew v1 completions continue to work
