@@ -6,7 +6,7 @@
 	editor = vim
 
 	# Use custom `.gitignore` and `.gitattributes`
-	excludesfile = ~/.gitignore
+	excludesfile = /Users/davesnx/.gitignore_global
 	attributesfile = ~/.gitattributes
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error
@@ -71,3 +71,6 @@
 
 [url "git://gist.github.com/"]
 	insteadOf = "gist:"
+
+[core.excludesfile]
+

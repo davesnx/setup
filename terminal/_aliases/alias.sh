@@ -10,11 +10,12 @@ alias .="open ."
 alias quit="exit"
 alias export=" export"
 
+alias h="history 1"
 alias e="nvim"
 alias c="code"
 alias n="npm"
 alias y="yarn"
-alias run="$DOTFILES_PATH/bin/run"
+alias r="source $DOTFILES_PATH/bin/scripts"
 
 alias _cat="cat"
 alias cat="bat"

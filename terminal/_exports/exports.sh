@@ -28,11 +28,11 @@ paths=(
   "$GEM_HOME/bin"
   "$PYTHON_PATH/libexec/bin"
   "/usr/local/bin"
-  "/bin"
-  "/usr/bin"
   "/usr/local/sbin"
-  "/usr/sbin"
+  "/bin"
   "/sbin"
+  "/usr/bin"
+  "/usr/sbin"
 )
 
 PATH=$(IFS=":"; echo "${paths[*]}";)
@@ -59,4 +59,3 @@ export LESS_TERMCAP_md="${yellow}";
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
-

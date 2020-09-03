@@ -57,6 +57,7 @@ cask "spotify"
 cask "sublime-text-dev"
 cask "telegram"
 cask "typora"
+
 cask "visual-studio-code"
 cask "vlc"
 cask "whatsapp"

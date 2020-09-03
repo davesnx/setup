@@ -76,7 +76,7 @@ forgit::add() {
         fi"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -0 -m --nth 2..,..
+        --multi -0 -m --nth 2..,..
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |

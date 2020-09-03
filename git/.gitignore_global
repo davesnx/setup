@@ -34,3 +34,8 @@ libsigar-universal64-macosx.dylib
 
 # Custom
 .no-commit
+
+node_modules/*
+_esy
+
+.cache
