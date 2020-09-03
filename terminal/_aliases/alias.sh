@@ -41,14 +41,13 @@ fi
 # List all files colorized in long format
 alias l="ls -lF ${colorflag}"
 
-# List all files colorized in long format, excluding . and ..
-alias ll="ls -lAF ${colorflag}"
-
 # List only directories
 alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
 
-# Always use color output for `ls`
-alias ls="command ls ${colorflag}"
+# List all files colorized in long format, excluding . and ..
+alias ll="ls -lhAF ${colorflag}"
+# Override ls with lsha
+alias ls="ls -lhAF ${colorflag}"
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
