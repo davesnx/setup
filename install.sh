@@ -19,11 +19,6 @@ sh "$CUSTOM_INSTALLER"
 # -----------------------------------------------
 echo "👇 Installing $OPERATIVE_SYSTEM common packages 👇"
 
-# Bash
-ln -s -i "$DOTFILES_PATH/terminal/bash/.bashrc" "$HOME/.bashrc"
-ln -s -i "$DOTFILES_PATH/terminal/bash/.bash_profile" "$HOME/.bash_profile"
-ln -s -i "$DOTFILES_PATH/terminal/bash/.profile" "$HOME/.profile"
-
 # Zsh
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
