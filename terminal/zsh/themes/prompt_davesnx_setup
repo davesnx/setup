@@ -6,23 +6,23 @@ DIVERGED="⥄"
 DIRTY="✗"
 NONE="✓"
 
-prompt_rafa_pwd() {
+prompt_pwd() {
   prompt_short_dir=$(short_pwd)
   print -n "%F{yellow}${prompt_short_dir}"
 }
 
-prompt_rafa_git() {
+prompt_git() {
   [[ -n ${git_info} ]] && print -n "%F{white} on${(e)git_info[prompt]}"
 }
 
-prompt_rafa_precmd() {
+prompt_precmd() {
   (( ${+functions[git-info]} )) && git-info
 }
 
-prompt_rafa_setup() {
-  local prompt_rafa_status='%(?:%F{green}$FIRST_CHARACTER_OK:%F{red}$FIRST_CHARACTER_KO) '
+prompt_setup() {
+  local prompt_setup_status='%(?:%F{green}$FIRST_CHARACTER_OK:%F{red}$FIRST_CHARACTER_KO) '
 
-  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_rafa_precmd
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_precmd
 
   prompt_opts=(cr percent sp subst)
 
@@ -33,8 +33,8 @@ prompt_rafa_setup() {
   zstyle ':zim:git-info:keys' format \
     'prompt' ' %F{cyan}%b%c %C%D'
 
-  PS1="${prompt_rafa_status}\$(prompt_rafa_pwd)\$(prompt_rafa_git)%f "
+  PS1="${prompt_setup_status}\$(prompt_pwd)\$(prompt_git)%f "
   RPS1=''
 }
 
-prompt_rafa_setup "${@}"
+prompt_setup "${@}"

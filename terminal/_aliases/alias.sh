@@ -15,15 +15,13 @@ alias e="nvim"
 alias c="code"
 alias n="npm"
 alias y="yarn"
-alias r="source $DOTFILES_PATH/bin/scripts"
+alias r=" source $DOTFILES_PATH/bin/scripts"
 
 alias _cat="cat"
 alias cat="bat"
 alias _top="top"
 alias top="vtop"
 
-alias d='docker'
-alias dc="$DOTFILES_PATH/bin/docker/connect"
 alias pg='pgcli'
 alias cfg="code ${HOME}/dev/setup"
 alias cl="clear"
@@ -42,7 +40,7 @@ fi
 alias l="ls -lF ${colorflag}"
 
 # List only directories
-alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
+alias ld="ls -lF ${colorflag} | grep --color=never '^d'"
 
 # List all files colorized in long format, excluding . and ..
 alias ll="ls -lhAF ${colorflag}"
@@ -132,7 +130,6 @@ alias dsstore="find . -name '*.DS_Store' -type f -ls -delete"
 # Aliasing eachdir like this allows you to use aliases/functions as commands.
 alias eachdir=". eachdir"
 
-alias fs="stat -f '%z bytes'"
 alias df="df -h"
 
 # Flush Directory Service cache
@@ -141,27 +138,3 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
-
-# git
-alias gs="git status -sb"
-alias gc="git checkout"
-alias gp="git push"
-alias gpl="git pull"
-alias gm='git commit -m'
-alias gma='git commit --amend'
-alias gcz='git cz'
-alias gcl='git clone'
-alias master='git checkout master'
-alias gf="git fetch"
-
-# forgit
-alias gl='forgit::log'
-alias ga='forgit::add'
-alias gd='forgit::diff'
-alias gitignore='forgit::ignore'
-
-alias stashl="$DOTFILES_PATH/bin/git/stash-list"
-
-alias startdb="docker run --name draftbit -e POSTGRES_PASSWORD=draftbit123 -e POSTGRES_USER=draftbit -p 5432:5432 -d postgres"
-alias restartdb="docker restart 'draftbit'"
-alias dps='docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock quay.io/vektorlab/ctop:latest'
