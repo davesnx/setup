@@ -214,6 +214,9 @@ defaults write com.apple.Terminal ShowLineMarks -int 0
 # Don’t display the annoying prompt when quitting iTerm
 defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 
+# Disable Window resizing is off slightly for iTerm2
+defaults write com.googlecode.iterm2 DisableWindowSizeSnap -integer 1
+
 ###############################################################################
 # Time Machine                                                                #
 ###############################################################################

@@ -17,6 +17,8 @@ alias n="npm"
 alias y="yarn"
 alias r=" source $DOTFILES_PATH/bin/scripts"
 
+alias uuid=" source $DOTFILES_PATH/bin/utils/uuid_code"
+
 alias _cat="cat"
 alias cat="bat"
 alias _top="top"
