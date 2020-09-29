@@ -8,7 +8,7 @@ setopt autopushd
 
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
 setopt HIST_IGNORE_ALL_DUPS # Delete old recorded entry if new entry is a duplicate.
-setopt SHARE_HISTORY # Share history between all sessions.
+setopt no_share_history # No share history between all sessions.
 setopt HIST_REDUCE_BLANKS # Remove superfluous blanks before recording entry.
 setopt hist_ignore_space # ignore commands that start with space
 HISTFILE=~/.zhistory

@@ -15,6 +15,7 @@ alias e="nvim"
 alias c="code"
 alias n="npm"
 alias y="yarn"
+alias q="query-json"
 alias r=" source $DOTFILES_PATH/bin/scripts"
 
 alias uuid=" source $DOTFILES_PATH/bin/utils/uuid_code"
