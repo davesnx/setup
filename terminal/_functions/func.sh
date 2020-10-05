@@ -39,3 +39,7 @@ function j {
 
   _z "$1"
 }
+
+function port {
+	lsof -i:$1
+}
