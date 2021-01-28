@@ -11,7 +11,7 @@ alias quit="exit"
 alias export=" export"
 
 alias h="history 1"
-alias e="nvim"
+alias e="oni2"
 alias c="code"
 alias n="npm"
 alias y="yarn"
@@ -23,7 +23,7 @@ alias uuid=" source $DOTFILES_PATH/bin/utils/uuid_code"
 alias _cat="cat"
 alias cat="bat"
 alias _top="top"
-alias top="vtop"
+alias top="htop"
 
 alias pg='pgcli'
 alias cfg="code ${HOME}/dev/setup"

@@ -41,5 +41,5 @@ function j {
 }
 
 function port {
-	lsof -i:$1
+	sudo lsof -i:$1
 }

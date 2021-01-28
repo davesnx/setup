@@ -54,11 +54,11 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 # Load fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Load direnv
-eval "$(direnv hook bash)"
-
 # Load fnm a relacement of nvm
 eval "`fnm env --multi`"
 
 # load opam
 eval $(opam env)
+
+# Load direnv
+eval "$(direnv hook zsh)"
