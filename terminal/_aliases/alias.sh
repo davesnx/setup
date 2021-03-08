@@ -12,6 +12,7 @@ alias export=" export"
 
 alias h="history 1"
 alias e="oni2"
+alias o="oni2"
 alias c="code"
 alias n="npm"
 alias y="yarn"

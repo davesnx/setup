@@ -40,7 +40,13 @@ node_modules/*
 
 # Reason/OCaml
 _esy
+_opam
 
+# Cache folders
 .cache
 
+# Ignore all logs
 *.log
+
+# VSCode
+.vscode
