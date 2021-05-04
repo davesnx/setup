@@ -136,3 +136,9 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
+
+alias copy=pbcopy
+alias paste=pbpaste
+
+alias _find=find
+alias find=fd
