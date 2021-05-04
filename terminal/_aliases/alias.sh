@@ -11,11 +11,11 @@ alias quit="exit"
 alias export=" export"
 
 alias h="history 1"
-alias e="oni2"
 alias o="oni2"
 alias c="code"
 alias n="npm"
 alias y="yarn"
+alias e="esy"
 alias q="query-json"
 alias r=" source $DOTFILES_PATH/bin/scripts"
 
@@ -46,10 +46,8 @@ alias l="ls -lF ${colorflag}"
 # List only directories
 alias ld="ls -lF ${colorflag} | grep --color=never '^d'"
 
-# List all files colorized in long format, excluding . and ..
-alias ll="ls -lhAF ${colorflag}"
 # Override ls with lsha
-alias ls="ls -lhAF ${colorflag}"
+alias ls="ls -lhAFrt ${colorflag}"
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
@@ -65,7 +63,6 @@ alias week='date +%V'
 
 # Google Chrome
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
-alias canary='/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
@@ -127,9 +124,6 @@ alias path='echo -e ${PATH//:/\\n}'
 alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
-
-# Recursively delete `.DS_Store` files
-alias dsstore="find . -name '*.DS_Store' -type f -ls -delete"
 
 # Aliasing eachdir like this allows you to use aliases/functions as commands.
 alias eachdir=". eachdir"
