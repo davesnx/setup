@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-export DOTFILES_PATH=$HOME/dev/setup
+export DOTFILES_PATH=$HOME/Code/github/setup
 export ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 
 # ZSH Ops
