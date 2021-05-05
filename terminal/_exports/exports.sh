@@ -1,11 +1,8 @@
-export PHP_PATH='/usr/local/opt/php@7.2'
+#!/usr/bin/env bash
+
 export PYTHON_PATH='/usr/local/opt/python'
 export RUBY_PATH='/usr/local/opt/ruby'
-export GOPATH="$HOME/.go"
 export GEM_HOME="$HOME/.gem"
-
-export SBT_OPTS='-Xms512M -Xmx1024M -Xss2M -XX:MaxMetaspaceSize=512m -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF8'
-export SBT_CREDENTIALS="$HOME/.sbt/.credentials"
 
 export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
 export FZF_COMPLETION_OPTS='+c -x'
@@ -13,7 +10,7 @@ export FZF_COMPLETION_OPTS='+c -x'
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 export HOMEBREW_NO_ANALYTICS=true
 export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
-export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/mac/brew/Brewfile
+export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/brew/Brewfile
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
@@ -56,7 +53,7 @@ export HISTFILESIZE="${HISTSIZE}";
 export HISTCONTROL='ignoreboth';
 
 # Highlight section titles in manual pages.
-export LESS_TERMCAP_md="${yellow}";
+export LESS_TERMCAP_md="\${yellow}";
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';

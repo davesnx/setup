@@ -24,13 +24,10 @@ ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
-### Git stuff ###
+# Git
 ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$DOTFILES_PATH/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
-
-### Editors stuff ###
-ln -s -i "$DOTFILES_PATH/editors/vim/.vimrc" "$HOME/.vimrc"
 
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"

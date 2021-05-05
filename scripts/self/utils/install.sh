@@ -2,8 +2,8 @@
 
 install_macos_custom() {
   # All apps (This line is 2 times because there are dependencies between brew cask and brew)
-  brew bundle --file="$DOTFILES_PATH/mac/brew/Brewfile"
-  brew bundle --file="$DOTFILES_PATH/mac/brew/Brewfile"
+  brew bundle --file="$DOTFILES_PATH/brew/Brewfile"
+  brew bundle --file="$DOTFILES_PATH/brew/Brewfile"
 
   # ulimit
   sudo chown root:wheel "/Library/LaunchDaemons/limit.maxfiles.plist"

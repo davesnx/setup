@@ -17,13 +17,12 @@ alias n="npm"
 alias y="yarn"
 alias e="esy"
 alias q="query-json"
-alias r=" source $DOTFILES_PATH/bin/scripts"
-alias uuid=" source $DOTFILES_PATH/bin/utils/uuid_code"
+alias r=" source \${DOTFILES_PATH}/bin/scripts"
+alias uuid=" source \${DOTFILES_PATH}/bin/utils/uuid_code"
 
-alias pg='pgcli'
-alias cfg="code ${HOME}/dev/setup"
+alias cfg="code \${HOME}/dev/setup"
 alias cl="clear"
-alias hosts="${EDITOR} /etc/hosts"
+alias hosts="\${EDITOR} /etc/hosts"
 
 # Detect which `ls` flavor is in use colorflag="-G"
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -35,13 +34,13 @@ else # macOS `ls`
 fi
 
 # List all files colorized in long format
-alias l="ls -lF ${colorflag}"
+alias l="ls -lF \${colorflag}"
 
 # List only directories
-alias ld="ls -lF ${colorflag} | grep --color=never '^d'"
+alias ld="ls -lF \${colorflag} | grep --color=never '^d'"
 
 # Override ls with lsha
-alias ls="ls -lhAFrt ${colorflag}"
+alias ls="ls -lhAFrt \${colorflag}"
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
@@ -109,12 +108,11 @@ alias pumpitup="osascript -e 'set volume output volume 100'"
 alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
 
 # Reload the shell (i.e. invoke as a login shell)
-alias reload="exec ${SHELL} -l"
+alias reload="exec \${SHELL} -l"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
 
-# misc
 alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
@@ -130,6 +128,9 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
+
+alias pg='pgcli'
+alias my='mycli'
 
 # Improved clis
 alias copy="pbcopy"

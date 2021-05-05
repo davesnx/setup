@@ -44,7 +44,7 @@
     "command": "workbench.action.openEditorAtIndex9"
   },
   {
-    "key": "cmd+l",
+    "key": "cmd+j",
     "command": "cursorMove",
     "args": {
       "to": "up",
@@ -96,5 +96,13 @@
     "key": "shift+alt+up",
     "command": "-editor.action.copyLinesUpAction",
     "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+n",
+    "command": "extension.advancedNewFile"
+  },
+  {
+    "key": "alt+cmd+n",
+    "command": "-extension.advancedNewFile"
   }
 ]
