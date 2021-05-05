@@ -152,7 +152,7 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Load fnm a relacement of nvm
-eval "`fnm env --multi`"
+eval "`fnm env`"
 
 # load opam
 eval $(opam env)
