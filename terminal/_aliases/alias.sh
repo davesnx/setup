@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Easier navigation: .., ..., ...., ....., ~ and -
+# Easier navigation
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
@@ -18,13 +18,7 @@ alias y="yarn"
 alias e="esy"
 alias q="query-json"
 alias r=" source $DOTFILES_PATH/bin/scripts"
-
 alias uuid=" source $DOTFILES_PATH/bin/utils/uuid_code"
-
-alias _cat="cat"
-alias cat="bat"
-alias _top="top"
-alias top="htop"
 
 alias pg='pgcli'
 alias cfg="code ${HOME}/dev/setup"
@@ -137,8 +131,18 @@ alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET
 
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
 
-alias copy=pbcopy
-alias paste=pbpaste
+# Improved clis
+alias copy="pbcopy"
+alias paste="pbpaste"
 
-alias _find=find
-alias find=fd
+alias _find="find"
+alias find="fd"
+
+alias _kill="kill"
+alias kill="fkill"
+
+alias _cat="cat"
+alias cat="bat"
+
+alias _top="top"
+alias top="htop"

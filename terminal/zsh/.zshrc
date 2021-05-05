@@ -14,7 +14,7 @@ setopt hist_ignore_space # ignore commands that start with space
 HISTFILE=~/.zhistory
 
 # Start zim
-source ${ZIM_HOME}/init.zsh
+# source ${ZIM_HOME}/init.zsh
 
 # Removing the waiting dots from completion (...). Original: ~/.zim/modules/input/init.zsh
 expand-or-complete-with-redisplay() {
@@ -37,7 +37,6 @@ source $DOTFILES_PATH/terminal/init.zsh
 fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
 autoload -Uz promptinit && promptinit
 prompt davesnx
-
 
 source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
 source $DOTFILES_PATH/terminal/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
