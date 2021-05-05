@@ -137,8 +137,6 @@ autoload -Uz promptinit && promptinit
 prompt davesnx
 
 source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
-source $DOTFILES_PATH/terminal/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Load autojump
 source /usr/local/share/autojump/autojump.zsh
