@@ -19,6 +19,3 @@ ln -s -i "$DOTFILES_PATH/editors/sublime-text-3" "$HOME/Library/Application Supp
 # VS Code
 ln -s "$DOTFILES_PATH/editors/vs-code/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
 ln -s "$DOTFILES_PATH/editors/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
-
-# global node packages
-# list=(bs-platform, nodemon, eslint, reason-cli, vtop, concurrently, )

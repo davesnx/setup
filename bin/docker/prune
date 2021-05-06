@@ -12,5 +12,5 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 
 docs::eval "$@"
 
-docker stop $(docker ps -a -q)
+docker stop "$(docker ps -a -q)"
 yes | docker system prune -a

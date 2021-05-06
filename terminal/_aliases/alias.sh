@@ -19,6 +19,7 @@ alias e="esy"
 alias q="query-json"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias uuid=" source \${DOTFILES_PATH}/bin/utils/uuid_code"
+alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
 
 alias cfg="code \${HOME}/dev/setup"
 alias cl="clear"
