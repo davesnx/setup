@@ -47,7 +47,7 @@ WORDCHARS=${WORDCHARS//[\/]}
 # Set a custom terminal title format using prompt expansion escape sequences.
 # See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
 # If none is provided, the default '%n@%m: %~' is used.
-#zstyle ':zim:termtitle' format '%1~'
+zstyle ':zim:termtitle' format '%1~'
 
 # zsh-autosuggestions
 
@@ -142,9 +142,7 @@ source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
 source /usr/local/share/autojump/autojump.zsh
 
 # Load forgit
-source "$DOTFILES_PATH/git/forgit.zsh";
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+source "$DOTFILES_PATH/git/forgit.zsh"
 
 # Load fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
