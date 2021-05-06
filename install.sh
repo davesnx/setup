@@ -22,7 +22,6 @@ echo "👇 Installing $OPERATIVE_SYSTEM common packages 👇"
 # Zsh
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
-ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
 # Git
 ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
@@ -31,7 +30,9 @@ ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
 
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"
-git clone --recursive https://github.com/zimfw/zimfw.git "${ZDOTDIR:-${HOME}}/.zim"
+
+# Install zimfw
+curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 
 # Create the autojump historic file
 touch "$HOME/.z"
