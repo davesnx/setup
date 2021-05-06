@@ -14,3 +14,24 @@ done
 for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*;
   do source $functionToSource;
 done
+
+# Load key-bindings
+source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
+
+# Load autojump
+source /usr/local/share/autojump/autojump.zsh
+
+# Load forgit
+source "$DOTFILES_PATH/git/forgit.zsh"
+
+# Load fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Load fnm a relacement of nvm
+eval "`fnm env`"
+
+# load opam
+eval $(opam env)
+
+# Load direnv
+eval "$(direnv hook zsh)"

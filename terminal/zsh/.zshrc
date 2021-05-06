@@ -1,9 +1,58 @@
 #!/bin/zsh
 
-export DOTFILES_PATH=$HOME/Code/github/setup
+# Start configuration added by Zim install {{{
+# User configuration sourced by interactive shells
 
+# History
 
+# Remove older command from the history if a duplicate is to be added.
+setopt HIST_IGNORE_ALL_DUPS
+
+# Input/output
+
+# Set editor default keymap to emacs (`-e`) or vi (`-v`)
+bindkey -e
+
+# Prompt for spelling correction of commands.
+setopt CORRECT
+
+# Remove path separator from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
+
+# completion
+
+zstyle ':zim:termtitle' format '%1~'
+
+# zsh-syntax-highlighting
+
+# Set what highlighters will be used.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+
+# Customize the main highlighter styles.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
+# typeset -A ZSH_HIGHLIGHT_STYLES
+# ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
+
+# ------------------
+# Initialize modules
+# ------------------
+
+if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+  # Update static initialization script if it does not exist or it's outdated, before sourcing it
+  source ${ZIM_HOME}/zimfw.zsh init -q
+fi
+
+source ${ZIM_HOME}/init.zsh
+
+# ------------------------------
+# Post-init module configuration
+# ------------------------------
+
+#
 # zsh-history-substring-search
+#
+
 # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
@@ -19,6 +68,9 @@ bindkey '^P' history-substring-search-up
 bindkey '^N' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+# }}} End configuration added by Zim install
+
+export DOTFILES_PATH=$HOME/Code/github/setup
 
 # ZSH Ops
 setopt autopushd
@@ -51,23 +103,3 @@ source $DOTFILES_PATH/terminal/init.zsh
 fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
 autoload -Uz promptinit && promptinit
 prompt davesnx
-
-source $DOTFILES_PATH/terminal/zsh/key-bindings.zsh
-
-# Load autojump
-source /usr/local/share/autojump/autojump.zsh
-
-# Load forgit
-source "$DOTFILES_PATH/git/forgit.zsh"
-
-# Load fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Load fnm a relacement of nvm
-eval "`fnm env`"
-
-# load opam
-eval $(opam env)
-
-# Load direnv
-eval "$(direnv hook zsh)"
