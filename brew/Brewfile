@@ -38,6 +38,7 @@ brew "pgcli"
 brew "opam"
 brew "flux"
 brew "zsh-syntax-highlighting"
+brew "fswatch"
 
 cask "alfred"
 cask "enpass"
