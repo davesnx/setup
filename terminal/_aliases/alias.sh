@@ -19,10 +19,10 @@ alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias cl="clear"
 
 # Edit setup
-alias cfg="\${EDITOR} \${DOTFILES_PATH}"
+alias cfg="code \${DOTFILES_PATH}"
 
-# Opem etc/hosts file
-alias hosts="\${EDITOR} /etc/hosts"
+# Edit etc/hosts file
+alias hosts="code /etc/hosts"
 
 alias quit="exit"
 alias export=" export"
