@@ -9,6 +9,7 @@
   "workbench.activityBar.visible": true,
   "workbench.colorTheme": "Ayu Mirage",
   "workbench.editor.tabSizing": "shrink",
+  "workbench.editor.untitled.hint": "hidden",
   "workbench.fontAliasing": "auto",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.startupEditor": "newUntitledFile",
@@ -32,37 +33,27 @@
     80,
     120
   ],
-  "editor.snippetSuggestions": "top",
   "editor.suggestFontSize": 12,
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.useTabStops": true,
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
   "editor.wrappingIndent": "indent",
+  "editor.snippetSuggestions": "bottom",
 
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "extensions.autoUpdate": true,
   "extensions.ignoreRecommendations": true,
 
+  "emmet.showSuggestionsAsSnippets": true,
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
 
   "eslint.alwaysShowStatus": true,
-  "eslint.autoFixOnSave": true,
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
-  "eslint.validate": [
-    {
-      "language": "javascript",
-      "autoFix": true
-    },
-    {
-      "language": "javascriptreact",
-      "autoFix": true
-    }
-  ],
 
   "files.associations": {
     "*.jsx": "javascriptreact",
@@ -78,13 +69,7 @@
     "suppressGitVersionWarning": false,
     "suppressLineUncommittedWarning": false,
     "suppressNoRepositoryWarning": false,
-    "suppressResultsExplorerNotice": false,
-    "suppressShowKeyBindingsNotice": true,
-    "suppressUpdateNotice": true,
-    "suppressWelcomeNotice": false
   },
-  "gitlens.advanced.telemetry.enabled": false,
-  "gitlens.advanced.useSymmetricDifferenceNotation": false,
   "gitlens.blame.separateLines": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": true,
@@ -94,17 +79,11 @@
   "gitlens.hovers.currentLine.over": "line",
   "gitlens.keymap": "alternate",
   "gitlens.showWhatsNewAfterUpgrades": false,
-  "gitlens.views.fileHistory.enabled": true,
-  "gitlens.views.lineHistory.enabled": true,
   "gitlens.views.repositories.includeWorkingTree": false,
 
   "html.format.enable": true,
   "html.format.preserveNewLines": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "reason_language_server.dependencies_codelens": true,
-  "reason_language_server.refmt": "/usr/local/bin/refmt",
-  "reason_language_server.reloadOnChange": true,
-  "reason_language_server.useOldDuneProcess": false,
   "search.exclude": {
     "**/.git": true,
     "**/.next": true,
@@ -114,18 +93,8 @@
   },
   "typescript.check.npmIsInstalled": false,
 
-  // Language specific
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "remimarsal.prettier-now"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "remimarsal.prettier-now"
-  },
-  "[reason]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "jaredly.reason-vscode"
-  },
   "html.format.indentInnerHtml": true,
+
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   }
