@@ -15,28 +15,6 @@ export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/brew/Brewfile
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-paths=(
-  "$HOME/bin"
-  "$DOTFILES_PATH/bin"
-  "$PHP_PATH/bin"
-  "$PHP_PATH/sbin"
-  "$RUBY_PATH/bin"
-  "$GOPATH/bin"
-  "$GEM_HOME/bin"
-  "$PYTHON_PATH/libexec/bin"
-  "/usr/local/opt/libpq/bin"
-  "/usr/local/bin"
-  "/usr/local/sbin"
-  "/bin"
-  "/sbin"
-  "/usr/bin"
-  "/usr/sbin"
-)
-
-PATH=$(IFS=":"; echo "${paths[*]}";)
-
-export PATH;
-
 export EDITOR='code -w';
 
 # Enable persistent REPL history for `node`.

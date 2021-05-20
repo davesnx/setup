@@ -22,6 +22,7 @@ echo "👇 Installing $OPERATIVE_SYSTEM common packages 👇"
 # Zsh
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
+ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
 # Git
 ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
