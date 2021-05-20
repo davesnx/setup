@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+source "$DOTFILES_PATH/scripts/core/_main.sh"
+
+##? Dump OCaml AST from file, works with Reason
+##? 0.1.0
+##?
+##? Usage:
+##?    dumpast file.ml
+##?    dumpast file.re
+##?    dumpast -e "foo(2)"
+
+if [[ "$1" == *re ]]
+then
+  temp=$(mktemp -u).ml
+  cat "$1" > "$temp";
+  refmt --parse re --assume-explicit-arity --print ml --in-place "$temp";
+  ocamlfind ppx_tools/dumpast "$temp" | sed '1d;2d;$d';
+else
+  ocamlfind ppx_tools/dumpast "$@" | sed '1d;2d;$d';
+fi
