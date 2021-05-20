@@ -121,19 +121,19 @@ alias pg='pgcli'
 alias my='mycli'
 
 # https://github.com/sharkdp/fd
-alias _find="find"
+alias _find="command find"
 alias find="fd"
 
 # https://github.com/sindresorhus/fkill-cli
-alias _kill="kill"
+alias _kill="command kill"
 alias kill="fkill"
 
 # https://github.com/sharkdp/bat
-alias _cat="cat"
+alias _cat="command cat"
 alias cat="bat"
 
 # https://github.com/htop-dev/htop
-alias _top="top"
+alias _top="command top"
 alias top="htop"
 
 # Generate a uuid
