@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    connect
 
-docs::eval "$@"
+docs::parse "$@"
 
 if docker ps > /dev/null 2>&1; then
     container=$(docker ps | awk '{if (NR!=1) print $1 ": " $(NF)}' | fzf --height 40%)

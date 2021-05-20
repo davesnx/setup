@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    cdf
 
-docs::eval "$@"
+docs::parse "$@"
 
 # cd to Finder open folder
 cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"

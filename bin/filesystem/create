@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    create <filename>
 
-docs::eval "$@"
+docs::parse "$@"
 
 mkdir -p "$(dirname "$1")" && touch "$1"

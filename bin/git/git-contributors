@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    git-contributors
 
-docs::eval "$@"
+docs::parse "$@"
 
 git shortlog --summary --numbered

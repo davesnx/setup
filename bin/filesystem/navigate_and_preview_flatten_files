@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    navigate_and_preview_flatten_files
 
-docs::eval "$@"
+docs::parse "$@"
 
 fzf --preview 'bat --color \"always\" {}'

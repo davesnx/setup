@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    git-show-ignored
 
-docs::eval "$@"
+docs::parse "$@"
 
 git status --ignored -s | grep "\!\!"

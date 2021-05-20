@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    count_files_recursive
 
-docs::eval "$@"
+docs::parse "$@"
 
 find . -type f -print | wc -l

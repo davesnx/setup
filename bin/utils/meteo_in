@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    meteo_in <city>
 
-docs::eval "$@"
+docs::parse "$@"
 
 curl -4 http://wttr.in/$1

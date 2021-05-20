@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    size_of_directory
 
-docs::eval "$@"
+docs::parse "$@"
 
 ncdu --color dark -rr -x

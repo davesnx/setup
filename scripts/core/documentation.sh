@@ -64,3 +64,12 @@ docs::eval_help_first_arg() {
     ;;
   esac
 }
+
+docs::parse() {
+  if ! platform::command_exists docpars; then
+    log::error "You need to have docpars installed in order to use dotly"
+    exit 1
+  fi
+
+  eval "$(docpars -h "$(grep "^##?" "$0" | cut -c 5-)" : "$@")"
+}

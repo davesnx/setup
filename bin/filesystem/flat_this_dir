@@ -10,6 +10,6 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    flat_this_dir
 
-docs::eval "$@"
+docs::parse "$@"
 
 sudo find . -mindepth 2 -type f -exec mv -i '{}' . ';'

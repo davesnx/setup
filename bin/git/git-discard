@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    git-discard
 
-docs::eval "$@"
+docs::parse "$@"
 
 git add -A
 git reset --hard > /dev/null 2>&1

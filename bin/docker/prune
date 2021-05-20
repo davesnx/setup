@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    prune
 
-docs::eval "$@"
+docs::parse "$@"
 
 docker stop "$(docker ps -a -q)"
 yes | docker system prune -a
