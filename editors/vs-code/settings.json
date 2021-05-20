@@ -17,18 +17,19 @@
   "editor.autoIndent": "brackets",
   "editor.colorDecorators": false,
   "editor.cursorBlinking": "phase",
+  "editor.cursorStyle": "block",
   "editor.detectIndentation": true,
   "editor.fontFamily": "SF Mono, Fira Code, Droid Sans Mono, Monaco",
   "editor.fontSize": 13,
   "editor.formatOnPaste": false,
   "editor.formatOnSave": false,
   "editor.insertSpaces": true,
-  "editor.lineHeight": 21,
+  "editor.lineHeight": 22,
   "editor.minimap.renderCharacters": false,
   "editor.minimap.showSlider": "always",
   "editor.multiCursorModifier": "ctrlCmd",
   "editor.renderControlCharacters": true,
-  "editor.renderWhitespace": "none",
+  "editor.renderWhitespace": "boundary",
   "editor.rulers": [
     80,
     120
@@ -97,5 +98,21 @@
 
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[reason]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "tabnine.experimentalAutoImports": true,
 }
