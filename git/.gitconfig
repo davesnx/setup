@@ -29,12 +29,18 @@
 
 [push]
 	# https://git-scm.com/docs/git-config#git-config-pushdefault
-	default = simple
+	default = upstream
 	# Make `git push` push relevant annotated tags when pushing branches out.
 	followTags = true
 
 [credential]
 	helper = osxkeychain
+
+[branch]
+  autosetuprebase = always
+
+[commit]
+  gpgsign = true
 
 [color]
 	# Use colors in Git commands that are capable of colored output when
@@ -55,6 +61,8 @@
 [merge]
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
+	defaulttoupstream = true
+	conflictstyle = diff3
 
 [init]
 	defaultBranch = main
@@ -75,4 +83,3 @@
 	insteadOf = "gist:"
 
 [core.excludesfile]
-
