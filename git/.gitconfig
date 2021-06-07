@@ -1,6 +1,7 @@
 [user]
 	email = dsnxmoreno@gmail.com
 	name = David Sancho
+	signingkey = F787BAB4BC07467D
 
 [core]
 	editor = vim
