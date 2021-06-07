@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 source "$DOTFILES_PATH/scripts/core/_main.sh"
 
 ##? Prints the owner for a port
@@ -9,7 +7,5 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##?
 ##? Usage:
 ##?    port_owner <port>
-
-docs::parse "$@"
 
 lsof -n -i4TCP:$1 | grep LISTEN
