@@ -24,9 +24,10 @@
   "editor.formatOnPaste": false,
   "editor.formatOnSave": false,
   "editor.insertSpaces": true,
-  "editor.lineHeight": 22,
+  "editor.lineHeight": 24,
   "editor.minimap.renderCharacters": false,
   "editor.minimap.showSlider": "always",
+  "editor.scrollPredominantAxis": true,
   "editor.multiCursorModifier": "ctrlCmd",
   "editor.renderControlCharacters": true,
   "editor.renderWhitespace": "boundary",
@@ -40,6 +41,7 @@
   "editor.useTabStops": true,
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
   "editor.wrappingIndent": "indent",
+  "editor.wordWrap": "wordWrapColumn",
   "editor.snippetSuggestions": "bottom",
 
   "explorer.confirmDelete": false,
@@ -82,19 +84,26 @@
   "gitlens.showWhatsNewAfterUpgrades": false,
   "gitlens.views.repositories.includeWorkingTree": false,
 
+  "tabnine.experimentalAutoImports": true,
+
   "html.format.enable": true,
   "html.format.preserveNewLines": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.check.npmIsInstalled": false,
+  "html.format.indentInnerHtml": true,
+
   "search.exclude": {
     "**/.git": true,
+    "**/.vscode": true,
     "**/.next": true,
     "**/build": true,
     "**/dist": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+    "**/_esy": true,
+    "**/esy.lock": true,
+    "**/_opam": true,
+    "**/_build": true
   },
-  "typescript.check.npmIsInstalled": false,
-
-  "html.format.indentInnerHtml": true,
 
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
@@ -114,5 +123,4 @@
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
-  "tabnine.experimentalAutoImports": true,
 }
