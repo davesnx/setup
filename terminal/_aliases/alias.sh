@@ -141,6 +141,7 @@ alias uuid=" uuidgen | tr '[:upper:]' '[:lower:]'"
 
 # Know what process uses the port
 alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
+alias listen="lsof -n | grep LISTEN"
 
 alias dumpast="source \${DOTFILES_PATH}/bin/ocaml/dumpast"
 alias re2ml="source \${DOTFILES_PATH}/bin/ocaml/re2ml"
