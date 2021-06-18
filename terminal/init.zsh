@@ -35,3 +35,5 @@ eval $(opam env)
 
 # Load direnv
 eval "$(direnv hook zsh)"
+
+export GPG_TTY=$(tty)

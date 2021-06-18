@@ -1,6 +1,6 @@
 {
   "atomKeymap.promptV3Features": true,
-  "breadcrumbs.enabled": true,
+  "breadcrumbs.enabled": false,
 
   "window.nativeTabs": true,
   "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
@@ -41,11 +41,12 @@
   "editor.useTabStops": true,
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
   "editor.wrappingIndent": "indent",
-  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrap": "on",
   "editor.snippetSuggestions": "bottom",
 
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
+  "explorer.openEditors.visible": 0,
   "extensions.autoUpdate": true,
   "extensions.ignoreRecommendations": true,
 
@@ -54,9 +55,10 @@
     "javascript": "javascriptreact"
   },
 
-  "eslint.alwaysShowStatus": true,
-  "eslint.lintTask.enable": true,
-  "eslint.packageManager": "yarn",
+  "workbench.colorCustomizations": {
+    "statusBarItem.remoteBackground": "#5a34a0",
+    "statusBarItem.remoteForeground": "#fff"
+  },
 
   "files.associations": {
     "*.jsx": "javascriptreact",
@@ -64,6 +66,23 @@
   },
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
+  "files.watcherExclude": {
+    "**/_build/**": true,
+    "**/_opam/**": true,
+    "**/esy.lock/**": true,
+    "**/_esy/**": true,
+    "**/lib/bs/**": true,
+    "**/lib/js/**": true,
+    "**/lib/ocaml/**": true,
+    "**/*.bs.js": true,
+    "**/rust/target/**": true
+  },
+
+  "remote.SSH.remoteServerListenOnSocket": true,
+  "remote.SSH.remotePlatform": {
+    "febox1": "linux"
+  },
+  "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
 
   "gitlens.advanced.messages": {
     "suppressCommitHasNoPreviousCommitWarning": false,
@@ -86,12 +105,6 @@
 
   "tabnine.experimentalAutoImports": true,
 
-  "html.format.enable": true,
-  "html.format.preserveNewLines": true,
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.check.npmIsInstalled": false,
-  "html.format.indentInnerHtml": true,
-
   "search.exclude": {
     "**/.git": true,
     "**/.vscode": true,
@@ -109,18 +122,33 @@
     "source.fixAll.eslint": true
   },
 
+  /* "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.re$",
+        "isAsync": true,
+        "cmd": "yarn bsrefmt --in-place -w 120 ${file}"
+      }
+    ]
+  }, */
+  "html.format.enable": true,
+  "html.format.preserveNewLines": true,
+  "html.format.indentInnerHtml": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.check.npmIsInstalled": false,
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
-
   "[reason]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
+  "peacock.affectDebuggingStatusBar": true,
+  "security.workspace.trust.untrustedFiles": "open"
 }

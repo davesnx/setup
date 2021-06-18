@@ -1,7 +1,7 @@
 [user]
 	email = dsnxmoreno@gmail.com
 	name = David Sancho
-	signingkey = F787BAB4BC07467D
+	signingkey = F2AFF7CDA8CF596A
 
 [core]
 	editor = vim
@@ -41,7 +41,7 @@
   autosetuprebase = always
 
 [commit]
-  gpgsign = true
+	gpgsign = true
 
 [color]
 	# Use colors in Git commands that are capable of colored output when

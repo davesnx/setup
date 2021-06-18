@@ -73,22 +73,12 @@
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "[Backquote] shift+cmd",
-    "command": "gitlens.diffLineWithPrevious",
-    "when": "editorTextFocus && config.gitlens.keymap == 'alternate' && gitlens:activeFileStatus =~ /tracked/"
-  },
-  {
-    "key": "alt+[Backquote]",
-    "command": "-gitlens.diffLineWithPrevious",
-    "when": "editorTextFocus && config.gitlens.keymap == 'alternate' && gitlens:activeFileStatus =~ /tracked/"
-  },
-  {
     "key": "shift+alt+down",
-    "command": "editor.action.smartSelect.expand",
+    "command": "editor.action.smartSelect.shrink",
     "when": "editorTextFocus"
   },
   {
-    "key": "ctrl+shift+right",
+    "key": "shift+alt+up",
     "command": "editor.action.smartSelect.expand",
     "when": "editorTextFocus"
   },
