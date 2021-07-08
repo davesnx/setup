@@ -11,7 +11,7 @@
   # Input/output
 
   # Set editor default keymap to emacs (`-e`) or vi (`-v`)
-  bindkey -v
+  bindkey -e
 
   # Prompt for spelling correction of commands.
   setopt CORRECT
