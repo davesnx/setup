@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 coll::is_empty() {
    local var=${1}

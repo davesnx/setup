@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 if ! ${DOT_MAIN_SOURCED:-false} ; then
    source "$DOTFILES_PATH/scripts/core/args.sh"

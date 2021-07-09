@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 export PYTHON_PATH='/usr/local/opt/python'
 export RUBY_PATH='/usr/local/opt/ruby'

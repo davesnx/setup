@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 alias d='docker'
 alias dc="\${DOTFILES_PATH}/bin/docker/connect"

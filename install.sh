@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#! /usr/bin/env sh
 
 CURRENT_FILE_PATH="$(pwd)/$(dirname $0)"
 export DOTFILES_PATH=${CURRENT_FILE_PATH%"/."}

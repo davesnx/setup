@@ -1,4 +1,4 @@
-#!/bin/zsh
+#! /bin/zsh
 
 # Register all aliases
 for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*;
