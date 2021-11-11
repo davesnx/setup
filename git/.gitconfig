@@ -2,6 +2,9 @@
 	email = dsnxmoreno@gmail.com
 	name = David Sancho Moreno
 
+[credential]
+	helper = osxkeychain
+
 [core]
 	editor = vim
 
@@ -33,16 +36,22 @@
 	# Make `git push` push relevant annotated tags when pushing branches out.
 	followTags = true
 
-[credential]
-	helper = osxkeychain
+[merge]
+	# Include summaries of merged commits in newly created merge commit messages
+	log = true
+	defaulttoupstream = true
+	conflictstyle = diff3
+
+[diff]
+	# Detect copies as well as renames
+	renames = copies
+  colorMoved = zebra
+
+[init]
+	defaultBranch = main
 
 [branch]
 	autosetuprebase = always
-
-[color]
-	# Use colors in Git commands that are capable of colored output when
-	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
-	ui = auto
 
 [help]
 	autocorrect = 1
@@ -50,20 +59,6 @@
 [apply]
 	# Detect whitespace errors when applying a patch
 	whitespace = fix
-
-[diff]
-	# Detect copies as well as renames
-	renames = copies
-  colorMoved = zebra
-
-[merge]
-	# Include summaries of merged commits in newly created merge commit messages
-	log = true
-	defaulttoupstream = true
-	conflictstyle = diff3
-
-[init]
-	defaultBranch = main
 
 # URL shorthands
 [url "git@github.com:"]
@@ -79,3 +74,8 @@
 
 [url "git://gist.github.com/"]
 	insteadOf = "gist:"
+
+[color]
+	# Use colors in Git commands that are capable of colored output when
+	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+	ui = auto
