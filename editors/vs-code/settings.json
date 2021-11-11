@@ -4,10 +4,10 @@
 
   "window.nativeTabs": true,
   "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
-  "window.zoomLevel": 2,
+  "window.zoomLevel": 1,
 
   "workbench.activityBar.visible": true,
-  "workbench.colorTheme": "Ayu Mirage",
+  "workbench.colorTheme": "Ayu Mirage Bordered",
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.untitled.hint": "hidden",
   "workbench.fontAliasing": "auto",
@@ -19,12 +19,12 @@
   "editor.cursorBlinking": "phase",
   "editor.cursorStyle": "block",
   "editor.detectIndentation": true,
-  "editor.fontFamily": "SF Mono, Fira Code, Droid Sans Mono, Monaco",
-  "editor.fontSize": 13,
+  "editor.fontFamily": "SF Mono, JetBrains Mono, Monaco",
+  "editor.fontSize": 16,
+  "editor.lineHeight": 28,
   "editor.formatOnPaste": false,
   "editor.formatOnSave": false,
   "editor.insertSpaces": true,
-  "editor.lineHeight": 24,
   "editor.minimap.renderCharacters": false,
   "editor.minimap.showSlider": "always",
   "editor.scrollPredominantAxis": true,
@@ -43,6 +43,9 @@
   "editor.wrappingIndent": "indent",
   "editor.wordWrap": "on",
   "editor.snippetSuggestions": "bottom",
+  "editor.bracketPairColorization.enabled": true,
+
+  "security.workspace.trust.untrustedFiles": "open",
 
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
@@ -57,9 +60,24 @@
 
   "workbench.colorCustomizations": {
     "statusBarItem.remoteBackground": "#5a34a0",
-    "statusBarItem.remoteForeground": "#fff"
+    "statusBarItem.remoteForeground": "#fff",
+    "editorBracketHighlight.foreground1": "#cccac2",
+    "editorBracketHighlight.foreground2": "#c0beb4",
+    "editorBracketHighlight.foreground3": "#b5b2a6",
+    "editorBracketHighlight.foreground4": "#9e9a8a",
+    "editorBracketHighlight.foreground5": "#928e7d",
+    "editorBracketHighlight.unexpectedBracket.foreground": "#cccac2",
   },
 
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "node_modules": true,
+  },
   "files.associations": {
     "*.jsx": "javascriptreact",
     "*.js": "javascriptreact"
@@ -79,10 +97,10 @@
   },
 
   "remote.SSH.remoteServerListenOnSocket": true,
+  "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
   "remote.SSH.remotePlatform": {
     "febox1": "linux"
   },
-  "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
 
   "gitlens.advanced.messages": {
     "suppressCommitHasNoPreviousCommitWarning": false,
@@ -122,33 +140,69 @@
     "source.fixAll.eslint": true
   },
 
-  /* "emeraldwalk.runonsave": {
-    "commands": [
-      {
-        "match": "\\.re$",
-        "isAsync": true,
-        "cmd": "yarn bsrefmt --in-place -w 120 ${file}"
-      }
-    ]
-  }, */
   "html.format.enable": true,
   "html.format.preserveNewLines": true,
   "html.format.indentInnerHtml": true,
+
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.check.npmIsInstalled": false,
+  "js/ts.implicitProjectConfig.strictNullChecks": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.referencesCodeLens.enabled": false,
   "[javascript]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+  ],
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
+
   "[reason]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
-  "peacock.affectDebuggingStatusBar": true,
-  "security.workspace.trust.untrustedFiles": "open"
+  "[rescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "chenglou92.rescript-vscode"
+  },
+  "[ocaml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+
+  "[json]": {
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace",
+    "gitlens.codeLens.scopes": [
+      "document"
+    ],
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  },
+  "[jsonc]": {
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace",
+    "gitlens.codeLens.scopes": [
+      "document"
+    ],
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  },
+  "terminal.external.osxExec": "iTerm.app",
+  "git.autofetch": true,
 }
