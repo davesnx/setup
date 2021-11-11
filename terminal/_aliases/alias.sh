@@ -36,13 +36,13 @@ else # macOS `ls`
 	export LSCOLORS='BxBxhxDxfxhxhxhxhxcxcx'
 fi
 
-# List all files colorized in long format
-alias l="ls -lF \${colorflag}"
+# List all files colorized in short format
+alias l="ls -F \${colorflag}"
 
 # List only directories
 alias ld="ls -lF \${colorflag} | grep --color=never '^d'"
 
-# Override ls with lsha
+# Extend ls
 alias ls="ls -lhAFrt \${colorflag}"
 
 # Always enable colored `grep` output
