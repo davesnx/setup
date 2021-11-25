@@ -61,12 +61,14 @@
   "workbench.colorCustomizations": {
     "statusBarItem.remoteBackground": "#5a34a0",
     "statusBarItem.remoteForeground": "#fff",
-    "editorBracketHighlight.foreground1": "#cccac2",
-    "editorBracketHighlight.foreground2": "#c0beb4",
-    "editorBracketHighlight.foreground3": "#b5b2a6",
-    "editorBracketHighlight.foreground4": "#9e9a8a",
-    "editorBracketHighlight.foreground5": "#928e7d",
-    "editorBracketHighlight.unexpectedBracket.foreground": "#cccac2",
+    "editorBracketHighlight.foreground6": "#E8E5E3",
+    "editorBracketHighlight.foreground5": "#DFDCD8",
+    "editorBracketHighlight.foreground4": "#D6D3CD",
+    "editorBracketHighlight.foreground3": "#CCCAC2",
+    "editorBracketHighlight.foreground2": "#B1AFA8",
+    "editorBracketHighlight.foreground1": "#96948E",
+    "editorBracketHighlight.foreground0": "#7A7974",
+    "editorB5racketHighlight.unexpectedBracket.foreground": "#8C0F61",
   },
 
   "files.exclude": {
@@ -76,7 +78,7 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    "node_modules": true,
+    "node_modules": false,
   },
   "files.associations": {
     "*.jsx": "javascriptreact",
@@ -205,4 +207,5 @@
   },
   "terminal.external.osxExec": "iTerm.app",
   "git.autofetch": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
 }
