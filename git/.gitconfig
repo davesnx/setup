@@ -1,81 +1,84 @@
 [user]
-	email = dsnxmoreno@gmail.com
-	name = David Sancho Moreno
+  email = dsnxmoreno@gmail.com
+  name = David Sancho Moreno
 
 [credential]
-	helper = osxkeychain
+  helper = osxkeychain
 
 [core]
-	editor = vim
+  editor = vim
 
-	# Use custom `.gitignore` and `.gitattributes`
-	excludesfile = /Users/davesnx/.gitignore_global
-	attributesfile = ~/.gitattributes
+  # Use custom `.gitignore` and `.gitattributes`
+  excludesfile = /Users/davesnx/.gitignore_global
+  attributesfile = ~/.gitattributes
 
-	# Treat spaces before tabs and all kinds of trailing whitespace as an error
-	# [default] trailing-space: looks for spaces at the end of a line
-	# [default] space-before-tab: looks for spaces before tabs at the beginning of a line
-	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+  # Treat spaces before tabs and all kinds of trailing whitespace as an error
+  # [default] trailing-space: looks for spaces at the end of a line
+  # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+  whitespace = space-before-tab,-indent-with-non-tab,trailing-space
 
-	# Make `git rebase` safer on macOS
-	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-	trustctime = false
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
 
-	# Prevent showing files whose names contain non-ASCII symbols as unversioned.
-	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
-	precomposeunicode = false
+  # Prevent showing files whose names contain non-ASCII symbols as unversioned.
+  # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
+  precomposeunicode = false
 
-	# Speed up commands involving untracked files such as `git status`.
-	# https://git-scm.com/docs/git-update-index#_untracked_cache
-	untrackedCache = true
-	autocrlf = input
+  # Speed up commands involving untracked files such as `git status`.
+  # https://git-scm.com/docs/git-update-index#_untracked_cache
+  untrackedCache = true
+  autocrlf = input
 
 [push]
-	# https://git-scm.com/docs/git-config#git-config-pushdefault
-	default = upstream
-	# Make `git push` push relevant annotated tags when pushing branches out.
-	followTags = true
+  # https://git-scm.com/docs/git-config#git-config-pushdefault
+  default = upstream
+  # Make `git push` push relevant annotated tags when pushing branches out.
+  followTags = true
 
 [merge]
-	# Include summaries of merged commits in newly created merge commit messages
-	log = true
-	defaulttoupstream = true
-	conflictstyle = diff3
+  # Include summaries of merged commits in newly created merge commit messages
+  log = true
+  defaulttoupstream = true
+  conflictstyle = diff3
 
 [diff]
-	# Detect copies as well as renames
-	renames = copies
+  # Detect copies as well as renames
+  renames = copies
   colorMoved = zebra
 
+[pull]
+  rebase = false
+
 [init]
-	defaultBranch = main
+  defaultBranch = main
 
 [branch]
-	autosetuprebase = always
-
-[help]
-	autocorrect = 1
+  autosetuprebase = always
 
 [apply]
-	# Detect whitespace errors when applying a patch
-	whitespace = fix
+  # Detect whitespace errors when applying a patch
+  whitespace = fix
+
+[help]
+  autocorrect = 1
 
 # URL shorthands
 [url "git@github.com:"]
-	insteadOf = "https://github.com"
+  insteadOf = "https://github.com"
 
 [url "git://github.com/"]
-	insteadOf = "github:"
+  insteadOf = "github:"
 
 [url "git@gist.github.com:"]
-	insteadOf = "gst:"
-	pushInsteadOf = "gist:"
-	pushInsteadOf = "git://gist.github.com/"
+  insteadOf = "gst:"
+  pushInsteadOf = "gist:"
+  pushInsteadOf = "git://gist.github.com/"
 
 [url "git://gist.github.com/"]
-	insteadOf = "gist:"
+  insteadOf = "gist:"
 
 [color]
-	# Use colors in Git commands that are capable of colored output when
-	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
-	ui = auto
+  # Use colors in Git commands that are capable of colored output when
+  # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+  ui = auto
