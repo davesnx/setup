@@ -206,6 +206,7 @@
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   },
   "terminal.external.osxExec": "iTerm.app",
+  "terminal.explorerKind": "external",
   "git.autofetch": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
 }
