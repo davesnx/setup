@@ -17,4 +17,4 @@ alias ga='forgit::add'
 alias gd='forgit::diff'
 alias gitignore='forgit::ignore'
 
-alias stashl="\${DOTFILES_PATH}/bin/git/stash-list"
+alias stashl="\${DOTFILES_PATH}/bin/git-extras/stash-list"

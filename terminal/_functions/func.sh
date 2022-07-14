@@ -41,5 +41,10 @@ function j {
 }
 
 function port {
-	sudo lsof -i:$1
+  sudo lsof -i:"$1"
+}
+
+function restart-ssh {
+  sudo launchctl stop com.openssh.sshd
+  sudo launchctl start com.openssh.sshd
 }

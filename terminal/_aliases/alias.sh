@@ -13,12 +13,15 @@ alias o="oni2"
 alias c="code"
 alias n="npm"
 alias y="yarn"
+alias p="pnpm"
 alias e="esy"
 alias m="make"
 alias q="query-json"
 alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias cl="clear"
+alias fly="/\${HOME}/.fly/bin/flyctl"
+alias x="dum"
 
 # Edit setup
 alias cfg="code \${DOTFILES_PATH}"
@@ -30,7 +33,6 @@ alias quit="exit"
 alias export=" export"
 
 # Extend ls
-# alias ls="ls -lhAFrt \${colorflag}"
 alias l="exa --group-directories-first -al --no-time"
 alias ls="exa --group-directories-first -alh --octal-permissions"
 
@@ -137,6 +139,7 @@ alias uuid=" uuidgen | tr '[:upper:]' '[:lower:]'"
 alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
 alias listen="lsof -n | grep LISTEN"
 
+# OCaml
 alias dumpast="source \${DOTFILES_PATH}/bin/ocaml/dumpast"
 alias re2ml="source \${DOTFILES_PATH}/bin/ocaml/re2ml"
 alias ml2re="source \${DOTFILES_PATH}/bin/ocaml/ml2re"

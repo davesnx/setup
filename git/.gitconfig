@@ -9,7 +9,7 @@
   editor = vim
 
   # Use custom `.gitignore` and `.gitattributes`
-  excludesfile = /Users/davesnx/.gitignore_global
+  excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes
 
   # Treat spaces before tabs and all kinds of trailing whitespace as an error
@@ -35,6 +35,8 @@
   default = upstream
   # Make `git push` push relevant annotated tags when pushing branches out.
   followTags = true
+  # https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushautoSetupRemote
+  autoSetupRemote = true
 
 [merge]
   # Include summaries of merged commits in newly created merge commit messages
@@ -82,3 +84,5 @@
   # Use colors in Git commands that are capable of colored output when
   # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
   ui = auto
+[gpg]
+	program = gpg

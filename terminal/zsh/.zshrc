@@ -1,3 +1,5 @@
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
 #! /bin/zsh
 
 # Start configuration added by Zim install {{{
@@ -20,11 +22,9 @@
   WORDCHARS=""
 
   # completion
-
   zstyle ':zim:termtitle' format '%1~'
 
   # zsh-syntax-highlighting
-
   # Set what highlighters will be used.
   # See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
   ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
@@ -103,3 +103,6 @@ source $DOTFILES_PATH/terminal/init.zsh
 fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
 autoload -Uz promptinit && promptinit
 prompt davesnx
+
+# opam configuration
+[[ ! -r /Users/davesnx/.opam/opam-init/init.zsh ]] || source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
