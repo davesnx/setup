@@ -48,3 +48,8 @@ function restart-ssh {
   sudo launchctl stop com.openssh.sshd
   sudo launchctl start com.openssh.sshd
 }
+
+function denoflare {
+  deno run --unstable --allow-read --allow-net --allow-env --allow-run \
+  https://raw.githubusercontent.com/skymethod/denoflare/v0.5.3/cli/cli.ts "$@"
+}

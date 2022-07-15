@@ -2,6 +2,7 @@
 
 paths=(
   "$HOME/bin"
+  "$HOME.deno/bin"
   "$HOME/.cargo/bin"
   "$DOTFILES_PATH/bin"
   "$PHP_PATH/bin"
