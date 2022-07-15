@@ -1,212 +1,234 @@
 {
-  "gitlens.blame.separateLines" : false,
-  "editor.wordSeparators" : "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>\/?",
-  "editor.formatOnPaste" : false,
-  "typescript.implementationsCodeLens.enabled" : true,
-  "terminal.integrated.lineHeight" : 1.3,
-  "editor.codeActionsOnSave" : {
-    "source.fixAll.eslint" : true
+  /* Window */
+  "window.nativeTabs": true,
+  "window.zoomLevel": 1,
+  "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
+  /* Workbench */
+  "workbench.panel.opensMaximized": "never",
+  "workbench.panel.defaultLocation": "right",
+  "workbench.colorTheme": "Ayu Mirage",
+  "workbench.colorCustomizations": {
+    "editorBracketHighlight.foreground1": "#96948E",
+    "editorBracketHighlight.foreground4": "#D6D3CD",
+    "statusBarItem.remoteForeground": "#fff",
+    "editorBracketHighlight.foreground2": "#B1AFA8",
+    "statusBarItem.remoteBackground": "#5a34a0",
+    "editorBracketHighlight.foreground5": "#DFDCD8",
+    "editorBracketHighlight.foreground0": "#7A7974",
+    "editorBracketHighlight.foreground3": "#CCCAC2",
+    "editorB5racketHighlight.unexpectedBracket.foreground": "#8C0F61",
+    "editorBracketHighlight.foreground6": "#E8E5E3"
   },
-  "terminal.integrated.defaultLocation" : "view",
-  "html.format.preserveNewLines" : true,
-  "editor.lineHeight" : 37,
-  "workbench.panel.opensMaximized" : "never",
-  "editor.bracketPairColorization.enabled" : true,
-  "window.nativeTabs" : true,
-  "explorer.confirmDragAndDrop" : false,
-  "search.smartCase" : true,
-  "workbench.panel.defaultLocation" : "right",
-  "editor.renderWhitespace" : "boundary",
-  "remote.SSH.configFile" : "\/Users\/davesnx\/.ssh\/config",
-  "gitlens.hovers.annotations.enabled" : false,
-  "files.insertFinalNewline" : true,
-  "workbench.colorTheme" : "Ayu Mirage",
-  "editor.fontSize" : 21,
-  "gitlens.hovers.currentLine.over" : "line",
-  "terminal.integrated.fontWeight" : "normal",
-  "atomKeymap.promptV3Features" : true,
-  "[ocaml,dune,menhir]" : {
-    "editor.formatOnSave" : true,
-    "editor.defaultFormatter" : "ocamllabs.ocaml-platform"
+  "workbench.editor.untitled.hint": "hidden",
+  "workbench.sideBar.location": "left",
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.fontAliasing": "default",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.editor.tabSizing": "shrink",
+  /* Keymap */
+  "atomKeymap.promptV3Features": true,
+  /* Explorer */
+  "explorer.confirmDragAndDrop": false,
+  "explorer.openEditors.visible": 0,
+  "explorer.confirmDelete": false,
+  /* Files */
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {},
+  "files.watcherExclude": {
+    "**\/.esy": false,
+    "**\/_opam": false,
+    "**\/.DS_Store": true,
+    "node_modules": false,
+    "**\/Thumbs.db": true,
+    "**\/.git": false
   },
-  "editor.wordWrap" : "on",
-  "editor.minimap.showSlider" : "always",
-  "emmet.includeLanguages" : {
-    "javascript" : "javascriptreact"
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+    "*.mly": "ocaml.menhir",
+    "*.js": "javascriptreact"
   },
-  "gitlens.hovers.annotations.changes" : false,
-  "editor.detectIndentation" : true,
-  "editor.wrappingIndent" : "indent",
-  "workbench.colorCustomizations" : {
-    "editorBracketHighlight.foreground1" : "#96948E",
-    "editorBracketHighlight.foreground4" : "#D6D3CD",
-    "statusBarItem.remoteForeground" : "#fff",
-    "editorBracketHighlight.foreground2" : "#B1AFA8",
-    "statusBarItem.remoteBackground" : "#5a34a0",
-    "editorBracketHighlight.foreground5" : "#DFDCD8",
-    "editorBracketHighlight.foreground0" : "#7A7974",
-    "editorBracketHighlight.foreground3" : "#CCCAC2",
-    "editorB5racketHighlight.unexpectedBracket.foreground" : "#8C0F61",
-    "editorBracketHighlight.foreground6" : "#E8E5E3"
+  /* Search */
+  "search.showLineNumbers": true,
+  "search.smartCase": true,
+  "search.exclude": {
+    "**\/_build": true,
+    "**\/node_modules": true,
+    "**\/.git": true,
+    "**\/dist": true,
+    "**\/.vscode": true,
+    "**\/_esy": true,
+    "**\/build": true,
+    "**\/esy.lock": true,
+    "**\/_opam": true,
+    "**\/.next": true
   },
-  "editor.inlineSuggest.enabled" : true,
-  "html.format.indentInnerHtml" : true,
-  "gitlens.advanced.repositorySearchDepth" : 1,
-  "workbench.editor.untitled.hint" : "hidden",
-  "javascript.updateImportsOnFileMove.enabled" : "always",
-  "[rescript]" : {
-    "editor.formatOnSave" : true,
-    "editor.defaultFormatter" : "chenglou92.rescript-vscode"
+  /* Editor */
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>\/?",
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   },
-  "gitlens.codeLens.enabled" : false,
-  "workbench.sideBar.location" : "left",
-  "explorer.openEditors.visible" : 0,
-  "editor.renderControlCharacters" : true,
-  "workbench.startupEditor" : "newUntitledFile",
-  "editor.useTabStops" : true,
-  "files.trimTrailingWhitespace" : true,
-  "editor.snippetSuggestions" : "bottom",
-  "workbench.fontAliasing" : "default",
-  "security.workspace.trust.untrustedFiles" : "open",
-  "[json,jsonc]" : {
-    "gitlens.codeLens.scopes" : [
-      "document"
-    ],
-    "editor.formatOnPaste" : false,
-    "editor.defaultFormatter" : "rvest.vs-code-prettier-eslint",
-    "editor.quickSuggestions" : {
-      "strings" : true
-    },
-    "editor.formatOnSave" : true,
-    "editor.suggest.insertMode" : "replace"
-  },
-  "editor.cursorBlinking" : "phase",
-  "extensions.ignoreRecommendations" : true,
-  "gitlens.views.repositories.includeWorkingTree" : false,
-  "editor.insertSpaces" : true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled" : true,
-  "material-icon-theme.folders.theme" : "specific",
-  "typescript.referencesCodeLens.enabled" : false,
-  "search.showLineNumbers" : true,
-  "gitlens.advanced.messages" : {
-    "suppressCommitHasNoPreviousCommitWarning" : false,
-    "suppressCommitNotFoundWarning" : false,
-    "suppressGitVersionWarning" : false,
-    "suppressFileNotUnderSourceControlWarning" : false,
-    "suppressLineUncommittedWarning" : false,
-    "suppressNoRepositoryWarning" : false
-  },
-  "gitlens.hovers.avatars" : false,
-  "files.exclude" : {
-    "**\/.esy" : false,
-    "**\/_opam" : false,
-    "**\/.DS_Store" : true,
-    "node_modules" : false,
-    "**\/Thumbs.db" : true,
-    "**\/.git" : false
-  },
-  "terminal.integrated.gpuAcceleration" : "on",
-  "files.watcherExclude" : {
-    "**\/lib\/js\/**" : true,
-    "**\/_opam\/**" : true,
-    "**\/_build\/**" : true,
-    "**\/_esy\/**" : true,
-    "**\/esy.lock\/**" : true,
-    "**\/lib\/bs\/**" : true,
-    "**\/lib\/ocaml\/**" : true,
-    "**\/*.bs.js" : true,
-    "**\/rust\/target\/**" : true
-  },
-  "editor.tabCompletion" : "on",
-  "terminal.external.osxExec" : "iTerm.app",
-  "editor.cursorStyle" : "block",
-  "where-am-i.color" : "#FFFFFF",
-  "[reason]" : {
-    "editor.formatOnSave" : false,
-    "editor.defaultFormatter" : "ocamllabs.ocaml-platform"
-  },
-  "search.exclude" : {
-    "**\/_build" : true,
-    "**\/node_modules" : true,
-    "**\/.git" : true,
-    "**\/dist" : true,
-    "**\/.vscode" : true,
-    "**\/_esy" : true,
-    "**\/build" : true,
-    "**\/esy.lock" : true,
-    "**\/_opam" : true,
-    "**\/.next" : true
-  },
-  "editor.formatOnSave" : false,
-  "html.format.enable" : true,
-  "editor.minimap.renderCharacters" : false,
-  "terminal.integrated.fontSize" : 21,
-  "terminal.integrated.tabs.enabled" : true,
-  "terminal.integrated.fontFamily" : "SFMono-Light",
-  "editor.tabSize" : 2,
-  "settingsSync.keybindingsPerPlatform" : false,
-  "emmet.showSuggestionsAsSnippets" : true,
-  "github.copilot.enable" : {
-    "markdown" : true,
-    "*" : true,
-    "plaintext" : false,
-    "yaml" : false
-  },
-  "editor.multiCursorModifier" : "ctrlCmd",
-  "typescript.updateImportsOnFileMove.enabled" : "always",
-  "terminal.integrated.allowMnemonics" : true,
-  "editor.fontFamily" : "SFMono-Light, JetBrains Mono, Monaco",
-  "gitlens.currentLine.enabled" : true,
-  "editor.accessibilitySupport" : "off",
-  "workbench.iconTheme" : "material-icon-theme",
-  "terminal.integrated.drawBoldTextInBrightColors" : true,
-  "[javascriptreact]" : {
-    "editor.formatOnSave" : true,
-    "editor.defaultFormatter" : "rvest.vs-code-prettier-eslint"
-  },
-  "editor.scrollPredominantAxis" : true,
-  "typescript.inlayHints.parameterTypes.enabled" : true,
-  "js\/ts.implicitProjectConfig.strictNullChecks" : true,
-  "editor.rulers" : [
+  "editor.lineHeight": 32,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.fontSize": 18,
+  "editor.wordWrap": "on",
+  "editor.minimap.showSlider": "always",
+  "editor.detectIndentation": true,
+  "editor.wrappingIndent": "indent",
+  "editor.inlineSuggest.enabled": true,
+  "editor.renderControlCharacters": true,
+  "editor.useTabStops": true,
+  "editor.snippetSuggestions": "bottom",
+  "editor.cursorBlinking": "phase",
+  "editor.insertSpaces": true,
+  "editor.tabCompletion": "on",
+  "editor.cursorStyle": "block",
+  "editor.formatOnSave": false,
+  "editor.minimap.renderCharacters": false,
+  "editor.tabSize": 2,
+  "editor.multiCursorModifier": "ctrlCmd",
+  "editor.fontFamily": "SFMono-Light, JetBrains Mono, Monaco",
+  "editor.accessibilitySupport": "off",
+  "editor.scrollPredominantAxis": true,
+  "editor.rulers": [
     80,
     120
   ],
-  "files.associations" : {
-    "*.jsx" : "javascriptreact",
-    "*.mly" : "ocaml.menhir",
-    "*.js" : "javascriptreact"
+  "editor.unicodeHighlight.allowedCharacters": {
+    "’": true
   },
-  "extensions.autoUpdate" : true,
-  "explorer.confirmDelete" : false,
-  "editor.unicodeHighlight.allowedCharacters" : {
-    "’" : true
+  "editor.suggestFontSize": 12,
+  "editor.autoIndent": "brackets",
+  "editor.colorDecorators": false,
+  /* Terminal */
+  "terminal.integrated.lineHeight": 1.3,
+  "terminal.integrated.defaultLocation": "view",
+  "terminal.integrated.fontWeight": "normal",
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.external.osxExec": "iTerm.app",
+  "terminal.integrated.fontSize": 21,
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.fontFamily": "SFMono-Light",
+  "terminal.integrated.allowMnemonics": true,
+  "terminal.integrated.drawBoldTextInBrightColors": true,
+  "terminal.explorerKind": "external",
+  "terminal.integrated.env.osx": {},
+  "settingsSync.keybindingsPerPlatform": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  /* Language specific */
+  /* HTML */
+  "html.format.enable": true,
+  "html.format.preserveNewLines": true,
+  "html.format.indentInnerHtml": true,
+  /* TypeScript */
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.referencesCodeLens.enabled": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  /* JavaScript */
+  "[javascriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
-  "editor.suggestFontSize" : 12,
-  "eslint.validate" : [
+  "js\/ts.implicitProjectConfig.strictNullChecks": true,
+  "eslint.validate": [
+    "javascriptreact",
     "javascript",
     "typescript"
   ],
-  "workbench.editor.tabSizing" : "shrink",
-  "window.zoomLevel" : 0.5,
-  "terminal.explorerKind" : "external",
-  "remote.SSH.remotePlatform" : {
-    "febox1" : "linux"
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
-  "gitlens.keymap" : "alternate",
-  "editor.autoIndent" : "brackets",
-  "[typescript]" : {
-    "editor.formatOnSave" : true,
-    "editor.defaultFormatter" : "rvest.vs-code-prettier-eslint"
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
-  "editor.colorDecorators" : false,
-  "remote.SSH.remoteServerListenOnSocket" : true,
-  "window.title" : "${dirty} ${activeEditorMedium}${separator}${rootName}",
-  "[javascript]" : {
-    "editor.formatOnSave" : true,
-    "editor.defaultFormatter" : "rvest.vs-code-prettier-eslint"
+  /* OCaml */
+  "[ocaml,dune,menhir]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  /* ReScript */
+  "[rescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "chenglou92.rescript-vscode"
+  },
+  /* JSON */
+  "[json]": {
+    "gitlens.codeLens.scopes": [
+      "document"
+    ],
+    "editor.formatOnPaste": false,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.formatOnSave": true,
+    "editor.suggest.insertMode": "replace"
+  },
+  "[jsonc]": {
+    "gitlens.codeLens.scopes": [
+      "document"
+    ],
+    "editor.formatOnPaste": false,
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.formatOnSave": true,
+    "editor.suggest.insertMode": "replace"
+  },
+  /* Reason */
+  "[reason]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  /* Extensions */
+  "extensions.autoUpdate": true,
+  "extensions.ignoreRecommendations": true,
+  /* GitLens */
+  "gitlens.blame.separateLines": false,
+  "gitlens.hovers.annotations.enabled": false,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.hovers.annotations.changes": false,
+  "gitlens.advanced.repositorySearchDepth": 1,
   "gitlens.showWhatsNewAfterUpgrades": false,
-  "terminal.integrated.env.osx": {
-    "FIG_NEW_SESSION": "1"
-  }
+  "gitlens.codeLens.enabled": false,
+  "gitlens.views.repositories.includeWorkingTree": false,
+  "gitlens.advanced.messages": {
+    "suppressCommitHasNoPreviousCommitWarning": false,
+    "suppressCommitNotFoundWarning": false,
+    "suppressGitVersionWarning": false,
+    "suppressFileNotUnderSourceControlWarning": false,
+    "suppressLineUncommittedWarning": false,
+    "suppressNoRepositoryWarning": false
+  },
+  "gitlens.hovers.avatars": false,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.keymap": "alternate",
+  /* Emmet */
+  "emmet.showSuggestionsAsSnippets": true,
+  /* Remote */
+  "remote.SSH.remotePlatform": {
+    "febox1": "linux"
+  },
+  "remote.SSH.remoteServerListenOnSocket": true,
+  "remote.SSH.configFile": "\/Users\/davesnx\/.ssh\/config",
+  /* */
+  "where-am-i.color": "#FFFFFF",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "github.copilot.enable": {
+    "markdown": true,
+    "*": true,
+    "plaintext": false,
+    "yaml": false
+  },
+  "material-icon-theme.folders.theme": "specific",
 }
