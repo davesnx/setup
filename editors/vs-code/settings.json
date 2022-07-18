@@ -2,7 +2,7 @@
   /* Window */
   "window.nativeTabs": true,
   "window.zoomLevel": 1,
-  "window.title": "${dirty} ${activeEditorMedium}${separator}${rootName}",
+  "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   /* Workbench */
   "workbench.panel.opensMaximized": "never",
   "workbench.panel.defaultLocation": "right",
