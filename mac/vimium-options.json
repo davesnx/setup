@@ -1,0 +1,70 @@
+{
+  "settingsVersion": "1.67",
+  "exclusionRules": [
+    {
+      "pattern": "https?://git.ahrefs.com/*",
+      "passKeys": "t"
+    },
+    {
+      "pattern": "https?://www.youtube.com/*",
+      "passKeys": "j"
+    },
+    {
+      "pattern": "https?://www.youtube.com/*",
+      "passKeys": "k"
+    },
+    {
+      "pattern": "https?://github.com/*",
+      "passKeys": "t"
+    },
+    {
+      "pattern": "https?://www.figma.com/*",
+      "passKeys": "f"
+    },
+    {
+      "pattern": "https?://www.youtube.com/*",
+      "passKeys": "f"
+    },
+    {
+      "pattern": "https?://www.youtube.com/*",
+      "passKeys": "l"
+    },
+    {
+      "pattern": "https?://www.youtube.com/*",
+      "passKeys": "m"
+    },
+    {
+      "pattern": "https?://calendar.google.com/*",
+      "passKeys": "d"
+    },
+    {
+      "pattern": "https?://calendar.google.com/*",
+      "passKeys": "w"
+    },
+    {
+      "pattern": "https?://calendar.google.com/*",
+      "passKeys": "m"
+    },
+    {
+      "pattern": "https?://calendar.google.com/*",
+      "passKeys": ""
+    }
+  ],
+  "filterLinkHints": false,
+  "waitForEnterForFilteredHints": true,
+  "hideHud": false,
+  "keyMappings": "# Insert your preferred key mappings here.",
+  "linkHintCharacters": "sadfjklewcmpgh",
+  "linkHintNumbers": "0123456789",
+  "newTabUrl": "about:newtab",
+  "nextPatterns": "next,more,newer,>,›,→,»,≫,>>",
+  "previousPatterns": "prev,previous,back,older,<,‹,←,«,≪,<<",
+  "regexFindMode": false,
+  "ignoreKeyboardLayout": false,
+  "scrollStepSize": 60,
+  "smoothScroll": true,
+  "grabBackFocus": true,
+  "searchEngines": "w: https://www.wikipedia.org/w/index.php?title=Special:Search&search=%s Wikipedia\n\n# More examples.\n#\n# (Vimium supports search completion Wikipedia, as\n# above, and for these.)\n#\n# g: https://www.google.com/search?q=%s Google\n# l: https://www.google.com/search?q=%s&btnI I'm feeling lucky...\n# y: https://www.youtube.com/results?search_query=%s Youtube\n# gm: https://www.google.com/maps?q=%s Google maps\n# b: https://www.bing.com/search?q=%s Bing\n# d: https://duckduckgo.com/?q=%s DuckDuckGo\n# az: https://www.amazon.com/s/?field-keywords=%s Amazon\n# qw: https://www.qwant.com/?q=%s Qwant",
+  "searchUrl": "https://www.google.com/search?q=",
+  "userDefinedLinkHintCss": ":root {\n    --font-size: 13;\n    --font-size-hints: 12;\n    --font-size-url: 12;\n\n    --font-weight: normal;\n    --font-weight-medium: medium;\n    --font-weight-bold: bold;\n\n    --font: \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif; /* Font used in the UI */\n    \n    --shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n    --shadow-vomnibar: 0 2px 16px rgba(0,0,0,0.3);\n\n/* -------- VOMNIBAR & HUD -------- */\n    --fg: #FFFFFF;\n    --fg-dark: #ffffff65;\n    --fg-selected: #d4e7ff;\n\n    --bg: #2A2A2E;\n    --bg-searcharea: #222225;\n    --bg-selected: #2165D9;\n\n    --border: #404046;\n\n/* -------- HINTS -------- */\n    --bg-hints: #FFD752;      /* Background color of link hints */\n    --border-hints: #F4CA46;  /* Border color of link hints */\n    --fg-hints: #000000;      /* Text color of link hints, (don't forget to change `#vimiumHintMarkerContainer div > .matchingCharacter ~ span`) */\n}\n\n/* --------------------------------- CSS --------------------------------- */\n\n/* -------- HINTS -------- */\n#vimiumHintMarkerContainer div.internalVimiumHintMarker, #vimiumHintMarkerContainer div.vimiumHintMarker {\n    background: var(--bg-hints);\n    border: 1px solid var(--border-hints);\n    box-shadow: var(--shadow);\n    padding: 2px 3px;\n}\n\n#vimiumHintMarkerContainer div span {\n    color: var(--fg-hints);\n    font-family: var(--font);\n    font-size: var(--font-size-hints);\n    font-weight: var(--font-weight-bold);\n    text-shadow: none;\n}\n\n#vimiumHintMarkerContainer div > .matchingCharacter {\n    opacity: 0.3;\n}\n\n#vimiumHintMarkerContainer div > .matchingCharacter ~ span {\n    color: var(--hints-main-fg);\n}\n\n/* -------- VOMNIBAR -------- */\n#vomnibar {\n    border-radius: 0;\n    border: 0;\n    box-shadow: var(--shadow-vomnibar);\n    left: 50%;\n    margin-left: -320px;\n    max-width: 640px;\n    top: 18px;\n}\n\n#vomnibar .vomnibarSearchArea {\n    background: var(--bg-searcharea);\n    border: 0;\n    border-radius: 0;\n    padding: 0;\n}\n\n#vomnibar input {\n    background: var(--bg-searcharea);\n    color: var(--fg);\n    font-family: var(--font);\n    border-radius: 0;\n    border: 0;\n    box-shadow: none;\n    font-size: 24px;\n    height: initial;\n    padding: 16px 24px;\n}\n\n#vomnibar ul {\n    background: var(--bg);\n    border-radius: 0;\n    padding: 0;\n    margin: 0;\n}\n\n#vomnibar li {\n    background: var(--bg);\n    border: 0;\n    display: flex;\n    line-height: 1;\n    padding: 8px 16px 8px 24px;\n}\n\n#vomnibar li .vomnibarTopHalf,\n#vomnibar li .vomnibarBottomHalf {\n    font-size: var(--font-size);\n    font-family: var(--font);\n    font-weight: var(--font-weight-medium);\n    margin: 0;\n    padding: 0;\n}\n\n#vomnibar li .vomnibarTopHalf {\n    display: flex;\n    flex: 0 0 67%;\n    margin-right: 16px;\n}\n\n#vomnibar li .vomnibarBottomHalf {\n    flex: 0 0 33%;\n}\n\n#vomnibar li .vomnibarSource.vomnibarNoInsertText,\n#vomnibar li .vomnibarSource.vomnibarInsertText {\n    display: none;\n}\n\n#vomnibar li .vomnibarSource,\n#vomnibar li .vomnibarUrl {\n    color: var(--fg-dark);\n}\n\n#vomnibar li .vomnibarSource {\n    display: block;\n    flex-shrink: 0;\n    font-size: 11px;\n    font-weight: var(--font-weight-bold);\n    line-height: 2;\n    margin-right: 12px;\n    text-transform: uppercase;\n}\n\n#vomnibar li .vomnibarTitle,\n#vomnibar li .vomnibarUrl {\n    line-height: 1.6;\n}\n\n#vomnibar li .vomnibarTitle {\n    color: var(--fg);\n    display: block;\n    margin: 0;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n#vomnibar li .vomnibarUrl {\n    padding-right: 6px;\n    display: block;\n    margin: 0;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n#vomnibar li .vomnibarMatch {\n    color: inherit;\n}\n\n#vomnibar li .vomnibarTitle .vomnibarMatch {\n    color: var(--fg);  \n}\n\n#vomnibar li.vomnibarSelected {\n    background: var(--bg-selected);\n}\n\n#vomnibar li.vomnibarSelected .vomnibarSource,\n#vomnibar li.vomnibarSelected .vomnibarUrl {\n    color: var(--fg-selected);\n}\n\n#vomnibar li.vomnibarSelected .vomnibarTitle {\n    color: var(--fg);\n}\n\n#vomnibar li.vomnibarSelected .vomnibarMatch {\n    color: inherit;\n}\n\n/* -------- HUD -------- */\ndiv.vimiumHUD {\n    background: var(--bg);\n    border: 1px solid var(--border);\n    box-shadow: var(--shadow);\n    border-radius: 0px;\n}\n\ndiv.vimiumHUD span#hud-find-input,\ndiv.vimiumHUD .vimiumHUDSearchAreaInner {\n    color: var(--fg);\n    font-family: var(--font);\n    font-size: 11;\n    font-weight: var(--font-weight-medium);\n}\n\ndiv.vimiumHUD .hud-find {\n    background-color: transparent;\n    border: none;\n}\n\ndiv.vimiumHUD .vimiumHUDSearchArea {\n    background-color: transparent;\n    padding-top: 3px;\n    padding-bottom: 3px;\n    padding-left: 5px;\n    padding-right: 3px;\n}"
+}
