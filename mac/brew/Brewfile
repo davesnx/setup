@@ -39,6 +39,7 @@ brew "opam"
 brew "flux"
 brew "zsh-syntax-highlighting"
 brew "fswatch"
+brew "diff-so-fancy"
 
 cask "alfred"
 cask "enpass"

@@ -28,7 +28,7 @@ source "$DOTFILES_PATH/git/forgit.zsh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Load fnm a relacement of nvm
-eval "`fnm env`"
+eval "$(fnm env --use-on-cd --shell zsh)"
 
 # load opam
 eval $(opam env)

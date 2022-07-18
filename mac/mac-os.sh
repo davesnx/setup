@@ -1,3 +1,4 @@
+#! /bin/sh
 # Inspired by https://github.com/mathiasbynens/dotfiles/blob/master/.macos
 
 # Close any open System Preferences panes, to prevent them from overriding
@@ -13,7 +14,19 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
 
-defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
+# Scrollbars show always
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+
+# Enable Firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+
+# Non-breaking spaces: https://superuser.com/questions/78245/how-to-disable-the-option-space-key-combination-for-non-breaking-spaces
+mkdir -p ~/Library/KeyBindings
+cat > ~/Library/KeyBindings/DefaultKeyBinding.dict <<EOF
+{
+"~ " = ("insertText:", " ");
+}
+EOF
 
 # Disable the over-the-top focus ring animation
 defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false

@@ -30,6 +30,8 @@
   untrackedCache = true
   autocrlf = input
 
+  pager = "diff-so-fancy | less --tabs=2 -RFX"
+
 [push]
   # https://git-scm.com/docs/git-config#git-config-pushdefault
   default = upstream
@@ -83,6 +85,25 @@
 [color]
   # Use colors in Git commands that are capable of colored output when
   # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
-  ui = auto
+  ui = true
+
+[color.diff-highlight]
+  oldNormal = "red bold"
+  oldHighlight = "red bold 52"
+  newNormal = "green bold"
+  newHighlight = "green bold 22"
+
+[color.diff]
+  meta = "11"
+  frag = "magenta bold"
+  func = "146 bold"
+  commit = "yellow bold"
+  old = "red bold"
+  new = "green bold"
+  whitespace = "red reverse"
+
 [gpg]
 	program = gpg
+
+[diff-so-fancy]
+  markEmptyLines = false
