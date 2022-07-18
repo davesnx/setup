@@ -37,9 +37,10 @@ brew "gpatch"
 brew "pgcli"
 brew "opam"
 brew "flux"
-brew "zsh-syntax-highlighting"
 brew "fswatch"
 brew "diff-so-fancy"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
 
 cask "alfred"
 cask "enpass"
@@ -54,7 +55,6 @@ cask "quicklook-json"
 cask "rectangle"
 cask "spotify"
 cask "telegram"
-cask "typora"
 cask "visual-studio-code"
 cask "vlc"
 cask "whatsapp"
@@ -63,3 +63,8 @@ cask "notion"
 cask "kap"
 cask "slack"
 cask "discord"
+cask "cloudflare-warp" # https://1.1.1.1/
+cask "centered" # https://www.centered.app/download
+cask "monitorcontrol" # https://github.com/MonitorControl/MonitorControl#readme
+cask "alt-tab" # https://alt-tab-macos.netlify.app/
+cask "insomnia" # https://insomnia.rest/
