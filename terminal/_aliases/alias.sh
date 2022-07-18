@@ -1,12 +1,15 @@
 #! /usr/bin/env bash
 
+# Remove all aliases
+unalias -m '*'
+
 # Easier navigation
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-# One liners
+# One chars
 alias .="open ."
 alias h="history 1"
 alias o="oni2"
@@ -19,8 +22,6 @@ alias m="make"
 alias q="query-json"
 alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
-alias cl="clear"
-alias fly="/\${HOME}/.fly/bin/flyctl"
 alias x="dum"
 
 # Edit setup
@@ -30,16 +31,19 @@ alias cfg="code \${DOTFILES_PATH}"
 alias hosts="code /etc/hosts"
 
 alias quit="exit"
+
+# Re-alias "export" to " export" to remove from history
 alias export=" export"
-
-# Extend ls
-alias l="exa --group-directories-first -al --no-time"
-alias ls="exa --group-directories-first -alh --octal-permissions"
-
-# List all files colorized in short format
 
 # List only directories
 alias ld="ls -D"
+
+# IP addresses
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+alias localip="ipconfig getifaddr en0"
+alias privateip="localip"
+
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
@@ -56,11 +60,6 @@ alias week='date +%V'
 # Google Chrome
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 
-# IP addresses
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-alias localip="ipconfig getifaddr en0"
-alias privateip="localip"
 
 # Show active network interfaces
 alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
@@ -110,11 +109,16 @@ alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET
 # Test zsh startup time
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
 
-# Improved clis
+# Improved CLIs
 alias copy="pbcopy"
 alias paste="pbpaste"
 alias pg='pgcli'
 alias my='mycli'
+alias fly="/\${HOME}/.fly/bin/flyctl"
+
+# Extend ls
+alias l="exa --group-directories-first -al --no-time"
+alias ls="exa --group-directories-first -alh --octal-permissions"
 
 # https://github.com/sharkdp/fd
 alias _find="command find"
