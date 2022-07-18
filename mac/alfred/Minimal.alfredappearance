@@ -41,8 +41,8 @@
       "paddingVertical" : 2
     },
     "window" : {
-      "color" : "#111113CC",
-      "paddingHorizontal" : 12,
+      "color" : "#111113E5",
+      "paddingHorizontal" : 8,
       "width" : 648,
       "borderPadding" : 0,
       "borderColor" : "#FEFFFF00",
@@ -51,7 +51,6 @@
       "paddingVertical" : 10
     },
     "credit" : "David Sancho",
-    "visualEffectMode" : 2,
     "separator" : {
       "color" : "#00000005",
       "thickness" : 0
