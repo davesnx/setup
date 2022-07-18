@@ -42,8 +42,8 @@
     },
     "window" : {
       "color" : "#111113CC",
-      "paddingHorizontal" : 10,
-      "width" : 603,
+      "paddingHorizontal" : 12,
+      "width" : 648,
       "borderPadding" : 0,
       "borderColor" : "#FEFFFF00",
       "blur" : 0,
@@ -54,7 +54,7 @@
     "visualEffectMode" : 2,
     "separator" : {
       "color" : "#00000005",
-      "thickness" : 1
+      "thickness" : 0
     },
     "scrollbar" : {
       "color" : "#53535761",
