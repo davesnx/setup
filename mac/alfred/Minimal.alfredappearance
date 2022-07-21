@@ -41,7 +41,7 @@
       "paddingVertical" : 2
     },
     "window" : {
-      "color" : "#111113E5",
+      "color" : "#000000E5",
       "paddingHorizontal" : 8,
       "width" : 648,
       "borderPadding" : 0,

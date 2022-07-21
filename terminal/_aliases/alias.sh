@@ -24,6 +24,9 @@ alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias x="dum"
 
+# Git
+alias gam="git commit --amend --no-edit"
+
 # Edit setup
 alias cfg="code \${DOTFILES_PATH}"
 
