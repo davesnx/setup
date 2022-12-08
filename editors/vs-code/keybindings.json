@@ -1,4 +1,5 @@
 [
+  /* Change editor tabs */
   {
     "key": "ctrl+tab",
     "command": "workbench.action.nextEditor"
@@ -7,6 +8,7 @@
     "key": "ctrl+shift+tab",
     "command": "workbench.action.previousEditor"
   },
+  /* Select by index */
   {
     "key": "cmd+1",
     "command": "workbench.action.openEditorAtIndex1"
@@ -43,6 +45,7 @@
     "key": "cmd+9",
     "command": "workbench.action.openEditorAtIndex9"
   },
+  /* Going up */
   {
     "key": "cmd+j",
     "command": "cursorMove",
@@ -53,6 +56,7 @@
     },
     "when": "editorTextFocus"
   },
+  /* Going down */
   {
     "key": "cmd+k",
     "command": "cursorMove",
@@ -127,6 +131,7 @@
     "command": "workbench.action.terminal.new",
     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
+  /* Disable zoom */
   {
     "key": "cmd+[BracketRight]",
     "command": "-workbench.action.zoomIn"
@@ -176,13 +181,73 @@
     "when": "remoteFileDialogVisible"
   },
   {
+    "key": "f12",
+    "command": "-editor.action.revealDefinition",
+    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
+  },
+  {
     "key": "alt+x",
     "command": "editor.action.revealDefinition",
     "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
   },
   {
-    "key": "f12",
-    "command": "-editor.action.revealDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
+    "key": "alt+right",
+    "command": "cursorWordPartRight",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+shift+right",
+    "command": "cursorWordPartRightSelect",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+left",
+    "command": "cursorWordPartLeft",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+shift+left",
+    "command": "cursorWordPartLeftSelect",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+backspace",
+    "command": "deleteWordPartLeft",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+shift+backspace",
+    "command": "deleteWordPartRight",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+alt+right",
+    "command": "cursorWordRight",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+alt+shift+right",
+    "command": "cursorWordRightSelect",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+alt+left",
+    "command": "cursorWordLeft",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+alt+shift+left",
+    "command": "cursorWordLeftSelect",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+alt+backspace",
+    "command": "deleteWordLeft",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+alt+shift+backspace",
+    "command": "deleteWordRight",
+    "when": "textInputFocus && !editorReadonly"
   }
 ]

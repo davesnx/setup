@@ -1,28 +1,36 @@
 {
   /* Window */
   "window.nativeTabs": true,
-  "window.zoomLevel": 1,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   /* Workbench */
   "workbench.panel.opensMaximized": "never",
+  "workbench.editor.labelFormat": "short",
   "workbench.panel.defaultLocation": "right",
   "workbench.colorTheme": "Ayu Mirage",
   "workbench.colorCustomizations": {
-    "editorBracketHighlight.foreground1": "#96948E",
-    "editorBracketHighlight.foreground4": "#D6D3CD",
+    "[Ayu Mirage][Ayu Mirage Bordered]": {
+      "editorBracketHighlight.foreground1": "#96948E",
+      "editorBracketHighlight.foreground2": "#B1AFA8",
+      "editorBracketHighlight.foreground3": "#CCCAC2",
+      "editorBracketHighlight.foreground4": "#D6D3CD",
+      "editorBracketHighlight.foreground5": "#DFDCD8",
+      "editorBracketHighlight.foreground6": "#E8E5E3"
+    },
+    "[Ayu Light][Ayu Light Bordered]": {
+      "editorBracketHighlight.foreground6": "#2a2927",
+      "editorBracketHighlight.foreground5": "#5d5b56",
+      "editorBracketHighlight.foreground4": "#76746e",
+      "editorBracketHighlight.foreground3": "#76746e",
+      "editorBracketHighlight.foreground2": "#a6a49f",
+      "editorBracketHighlight.foreground1": "#bebcb9"
+    },
     "statusBarItem.remoteForeground": "#fff",
-    "editorBracketHighlight.foreground2": "#B1AFA8",
     "statusBarItem.remoteBackground": "#5a34a0",
-    "editorBracketHighlight.foreground5": "#DFDCD8",
-    "editorBracketHighlight.foreground0": "#7A7974",
-    "editorBracketHighlight.foreground3": "#CCCAC2",
-    "editorB5racketHighlight.unexpectedBracket.foreground": "#8C0F61",
-    "editorBracketHighlight.foreground6": "#E8E5E3"
   },
   "workbench.editor.untitled.hint": "hidden",
   "workbench.sideBar.location": "left",
   "workbench.startupEditor": "newUntitledFile",
-  "workbench.fontAliasing": "default",
+  "workbench.fontAliasing": "antialiased",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.tabSizing": "shrink",
   /* Keymap */
@@ -34,7 +42,9 @@
   /* Files */
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "files.exclude": {},
+  "files.exclude": {
+    "**\/.esy": true,
+  },
   "files.watcherExclude": {
     "**\/.esy": false,
     "**\/_opam": false,
@@ -64,15 +74,17 @@
     "**\/.next": true
   },
   /* Editor */
+  "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>\/?",
   "editor.formatOnPaste": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "editor.lineHeight": 32,
+  "editor.lineHeight": 1.9,
   "editor.bracketPairColorization.enabled": true,
   "editor.renderWhitespace": "boundary",
-  "editor.fontSize": 18,
+  "editor.fontSize": 14,
+  "editor.fontWeight": 400,
   "editor.wordWrap": "on",
   "editor.minimap.showSlider": "always",
   "editor.detectIndentation": true,
@@ -89,7 +101,8 @@
   "editor.minimap.renderCharacters": false,
   "editor.tabSize": 2,
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.fontFamily": "SFMono-Light, JetBrains Mono, Monaco",
+  "editor.fontFamily": "SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontLigatures": true,
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
   "editor.rulers": [
@@ -97,20 +110,24 @@
     120
   ],
   "editor.unicodeHighlight.allowedCharacters": {
-    "’": true
+    "’": true,
+    "‹": true,
+    "›": true,
+    "–": true
   },
-  "editor.suggestFontSize": 12,
+  "editor.suggestFontSize": 14,
   "editor.autoIndent": "brackets",
   "editor.colorDecorators": false,
   /* Terminal */
+  "terminal.integrated.persistentSessionReviveProcess": "never",
   "terminal.integrated.lineHeight": 1.3,
   "terminal.integrated.defaultLocation": "view",
   "terminal.integrated.fontWeight": "normal",
   "terminal.integrated.gpuAcceleration": "on",
   "terminal.external.osxExec": "iTerm.app",
-  "terminal.integrated.fontSize": 21,
+  "terminal.integrated.fontSize": 18,
   "terminal.integrated.tabs.enabled": true,
-  "terminal.integrated.fontFamily": "SFMono-Light",
+  "terminal.integrated.fontFamily": "SFMonoLigaturized-Regular",
   "terminal.integrated.allowMnemonics": true,
   "terminal.integrated.drawBoldTextInBrightColors": true,
   "terminal.explorerKind": "external",
@@ -122,6 +139,9 @@
   "html.format.enable": true,
   "html.format.preserveNewLines": true,
   "html.format.indentInnerHtml": true,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
   /* TypeScript */
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
@@ -131,7 +151,7 @@
   /* JavaScript */
   "[javascriptreact]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "js\/ts.implicitProjectConfig.strictNullChecks": true,
   "eslint.validate": [
@@ -145,10 +165,14 @@
   },
   "[javascript]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   /* OCaml */
-  "[ocaml,dune,menhir]": {
+  "[dune]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "[ocaml]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
@@ -211,24 +235,34 @@
   "gitlens.hovers.avatars": false,
   "gitlens.currentLine.enabled": true,
   "gitlens.keymap": "alternate",
-  /* Emmet */
-  "emmet.showSuggestionsAsSnippets": true,
-  /* Remote */
-  "remote.SSH.remotePlatform": {
-    "febox1": "linux"
-  },
-  "remote.SSH.remoteServerListenOnSocket": true,
-  "remote.SSH.configFile": "\/Users\/davesnx\/.ssh\/config",
-  /* */
-  "where-am-i.color": "#FFFFFF",
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact"
-  },
+  /* Copilot */
   "github.copilot.enable": {
     "markdown": true,
     "*": true,
     "plaintext": false,
     "yaml": false
   },
+  /* Emmet */
+  "emmet.showSuggestionsAsSnippets": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  /* Remote */
+  "remote.SSH.remotePlatform": {
+    "nspawn": "linux"
+  },
+  "remote.SSH.remoteServerListenOnSocket": true,
+  "remote.SSH.configFile": "\/Users\/davesnx\/.ssh\/config",
+  /* Codesnap */
+  "codesnap.showWindowControls": false,
+  "codesnap.containerPadding": "5em",
+  "codesnap.backgroundColor": "#525869",
+  "codesnap.boxShadow": "rgba(0, 0, 0, 0.25) 0px 30px 50px",
+  /* Other extensions */
+  "where-am-i.color": "#FFFFFF",
   "material-icon-theme.folders.theme": "specific",
+  "window.zoomLevel": 2,
+  "settingsSync.ignoredExtensions": [
+    "github.copilot"
+  ],
 }

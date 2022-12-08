@@ -94,7 +94,7 @@ precmd() {
 # Fuzzy Autocompletion
 zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:approximate:*' max-errors 3 numeric
-zstyle ':completion:*' matcher-list 'm:{a-z}={  A-Z}' # match upper from lower case
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
 
 source $DOTFILES_PATH/terminal/init.zsh
 
@@ -102,5 +102,8 @@ fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
 autoload -Uz promptinit && promptinit
 prompt davesnx
 
-# opam configuration
+# opam-zsh autocompletion
 [[ ! -r /Users/davesnx/.opam/opam-init/init.zsh ]] || source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
+
+# Add identity to ssh
+ssh-add --apple-use-keychain ~/.ssh/id &> /dev/null

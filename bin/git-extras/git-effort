@@ -14,7 +14,7 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 docs::parse "$@"
 
 git_extra_mktemp() {
-    mktemp -t "$(basename "$0")".XXXXXXX
+  mktemp -t "$(basename "$0")".XXXXXXX
 }
 
 tmp=$(git_extra_mktemp)

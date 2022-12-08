@@ -23,6 +23,7 @@ alias q="query-json"
 alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias x="dum"
+alias d='docker'
 
 # Git
 alias gam="git commit --amend --no-edit"
@@ -47,7 +48,6 @@ alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[
 alias localip="ipconfig getifaddr en0"
 alias privateip="localip"
 
-
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
 alias grep='grep --color=auto'
@@ -62,7 +62,6 @@ alias week='date +%V'
 
 # Google Chrome
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
-
 
 # Show active network interfaces
 alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
@@ -117,7 +116,6 @@ alias copy="pbcopy"
 alias paste="pbpaste"
 alias pg='pgcli'
 alias my='mycli'
-alias fly="/\${HOME}/.fly/bin/flyctl"
 
 # Extend ls
 alias l="exa --group-directories-first -al --no-time"
@@ -140,13 +138,37 @@ alias _top="command top"
 alias top="htop"
 
 # Generate a uuid
-alias uuid=" uuidgen | tr '[:upper:]' '[:lower:]'"
+alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
 
 # Know what process uses the port
 alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
 alias listen="lsof -n | grep LISTEN"
 
-# OCaml
-alias dumpast="source \${DOTFILES_PATH}/bin/ocaml/dumpast"
-alias re2ml="source \${DOTFILES_PATH}/bin/ocaml/re2ml"
-alias ml2re="source \${DOTFILES_PATH}/bin/ocaml/ml2re"
+function _calcram() {
+  local sum
+  sum=0
+  for i in `\ps aux | grep -i "$1" | grep -v "grep" | awk '{print $6}'`; do
+    sum=$(($i + $sum))
+  done
+  sum=$(echo "scale=0; $sum / 1024.0" | bc)
+  echo $sum
+}
+
+function ram() {
+  local sum
+  local app="$1"
+  if [ -z "$app" ]; then
+    echo "First argument - pattern to grep from processes"
+    return 0
+  fi
+
+  while true; do
+    sum=$(_calcram $app)
+    if [[ $sum != "0" ]]; then
+      echo -en "${fg[blue]}${app}${reset_color} uses ${fg[green]}${sum}${reset_color} MB of RAM\r"
+    else
+      echo -en "No active processes matching pattern '${fg[blue]}${app}${reset_color}'\r"
+    fi
+    sleep 1
+  done
+}
