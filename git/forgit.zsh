@@ -453,5 +453,5 @@ fi
 FORGIT_INSTALL_DIR="$( dirname -- "$0")"
 
 if [[ -n "$FORGIT_INSTALL_DIR" ]]; then
-    export FORGIT_INSTALL_DIR
+  export FORGIT_INSTALL_DIR
 fi

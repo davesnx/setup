@@ -1,14 +1,15 @@
 {
   /* Window */
   "window.nativeTabs": true,
+  "window.zoomLevel": 2,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   /* Workbench */
+  "workbench.colorTheme": "Fosk",
   "workbench.panel.opensMaximized": "never",
   "workbench.editor.labelFormat": "short",
   "workbench.panel.defaultLocation": "right",
-  "workbench.colorTheme": "Ayu Mirage",
   "workbench.colorCustomizations": {
-    "[Ayu Mirage][Ayu Mirage Bordered]": {
+    "[Fosk]": {
       "editorBracketHighlight.foreground1": "#96948E",
       "editorBracketHighlight.foreground2": "#B1AFA8",
       "editorBracketHighlight.foreground3": "#CCCAC2",
@@ -16,16 +17,8 @@
       "editorBracketHighlight.foreground5": "#DFDCD8",
       "editorBracketHighlight.foreground6": "#E8E5E3"
     },
-    "[Ayu Light][Ayu Light Bordered]": {
-      "editorBracketHighlight.foreground6": "#2a2927",
-      "editorBracketHighlight.foreground5": "#5d5b56",
-      "editorBracketHighlight.foreground4": "#76746e",
-      "editorBracketHighlight.foreground3": "#76746e",
-      "editorBracketHighlight.foreground2": "#a6a49f",
-      "editorBracketHighlight.foreground1": "#bebcb9"
-    },
     "statusBarItem.remoteForeground": "#fff",
-    "statusBarItem.remoteBackground": "#5a34a0",
+    "statusBarItem.remoteBackground": "#5a34a0"
   },
   "workbench.editor.untitled.hint": "hidden",
   "workbench.sideBar.location": "left",
@@ -43,7 +36,7 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "files.exclude": {
-    "**\/.esy": true,
+    "**\/.esy": true
   },
   "files.watcherExclude": {
     "**\/.esy": false,
@@ -76,12 +69,9 @@
   /* Editor */
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>\/?",
-  "editor.formatOnPaste": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
   "editor.lineHeight": 1.9,
   "editor.bracketPairColorization.enabled": true,
+  "breadcrumbs.enabled": false,
   "editor.renderWhitespace": "boundary",
   "editor.fontSize": 14,
   "editor.fontWeight": 400,
@@ -97,7 +87,13 @@
   "editor.insertSpaces": true,
   "editor.tabCompletion": "on",
   "editor.cursorStyle": "block",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
   "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.formatOnSaveMode": "file",
   "editor.minimap.renderCharacters": false,
   "editor.tabSize": 2,
   "editor.multiCursorModifier": "ctrlCmd",
@@ -125,7 +121,7 @@
   "terminal.integrated.fontWeight": "normal",
   "terminal.integrated.gpuAcceleration": "on",
   "terminal.external.osxExec": "iTerm.app",
-  "terminal.integrated.fontSize": 18,
+  "terminal.integrated.fontSize": 14,
   "terminal.integrated.tabs.enabled": true,
   "terminal.integrated.fontFamily": "SFMonoLigaturized-Regular",
   "terminal.integrated.allowMnemonics": true,
@@ -149,10 +145,6 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "typescript.inlayHints.parameterTypes.enabled": true,
   /* JavaScript */
-  "[javascriptreact]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "js\/ts.implicitProjectConfig.strictNullChecks": true,
   "eslint.validate": [
     "javascriptreact",
@@ -165,7 +157,11 @@
   },
   "[javascript]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
   /* OCaml */
   "[dune]": {
@@ -251,6 +247,7 @@
   "remote.SSH.remotePlatform": {
     "nspawn": "linux"
   },
+  "remote.SSH.useLocalServer": false,
   "remote.SSH.remoteServerListenOnSocket": true,
   "remote.SSH.configFile": "\/Users\/davesnx\/.ssh\/config",
   /* Codesnap */
@@ -261,8 +258,16 @@
   /* Other extensions */
   "where-am-i.color": "#FFFFFF",
   "material-icon-theme.folders.theme": "specific",
-  "window.zoomLevel": 2,
   "settingsSync.ignoredExtensions": [
     "github.copilot"
   ],
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  },
+  "editor.linkedEditing": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.guides.bracketPairsHorizontal": false,
+  "remote.SSH.defaultExtensions": [
+    "gitpod.gitpod-remote-ssh"
+  ]
 }

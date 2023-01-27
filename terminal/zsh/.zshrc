@@ -70,6 +70,11 @@
 
 export DOTFILES_PATH=$HOME/Code/github/setup
 
+fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
+autoload -Uz promptinit && promptinit
+
+prompt davesnx
+
 # ZSH Ops
 setopt autopushd
 
@@ -96,14 +101,47 @@ zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
 
-source $DOTFILES_PATH/terminal/init.zsh
+# Register all aliases
+for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*;
+  do source $aliasToSource;
+done
 
-fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
-autoload -Uz promptinit && promptinit
-prompt davesnx
+# Register all exports
+for exportToSource in "$DOTFILES_PATH/terminal/_exports/"*;
+  do source $exportToSource;
+done
 
+# Register all functions
+for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*;
+  do source $functionToSource;
+done
+
+# Load autojump
+source /usr/local/share/autojump/autojump.zsh
+
+# Load forgit
+source "$DOTFILES_PATH/git/forgit.zsh"
+
+# Load fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Load key-bindings for fzf
+source "$DOTFILES_PATH/terminal/zsh/key-bindings.zsh"
+
+# Load fnm a relacement of nvm
+eval "$(fnm env --use-on-cd --shell zsh)"
+
+# load opam
+eval "$(opam env)"
 # opam-zsh autocompletion
 [[ ! -r /Users/davesnx/.opam/opam-init/init.zsh ]] || source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
 
-# Add identity to ssh
+# Load direnv
+eval "$(direnv hook zsh)"
+
+export GPG_TTY=$(tty)
+
+# Add identities to ssh
 ssh-add --apple-use-keychain ~/.ssh/id &> /dev/null
+ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
+
+ulimit -n 2048
