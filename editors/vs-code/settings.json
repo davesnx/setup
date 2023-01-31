@@ -10,12 +10,20 @@
   "workbench.panel.defaultLocation": "right",
   "workbench.colorCustomizations": {
     "[Fosk]": {
-      "editorBracketHighlight.foreground1": "#96948E",
-      "editorBracketHighlight.foreground2": "#B1AFA8",
-      "editorBracketHighlight.foreground3": "#CCCAC2",
-      "editorBracketHighlight.foreground4": "#D6D3CD",
-      "editorBracketHighlight.foreground5": "#DFDCD8",
-      "editorBracketHighlight.foreground6": "#E8E5E3"
+      /* "editorBracketHighlight.foreground1": "#96948E", */
+      /* "editorBracketHighlight.foreground2": "#B1AFA8", */
+      /* "editorBracketHighlight.foreground3": "#CCCAC2", */
+      /* "editorBracketHighlight.foreground4": "#D6D3CD", */
+      /* "editorBracketHighlight.foreground5": "#DFDCD8", */
+      /* "editorBracketHighlight.foreground6": "#E8E5E3" */
+      "editorBracketHighlight.foreground1": "#cbccc6",
+      "editorBracketHighlight.foreground2": "#ffcc66",
+      "editorBracketHighlight.foreground3": "#73d0ff",
+      "editorBracketHighlight.foreground4": "#c172d9",
+      "editorBracketHighlight.foreground5": "#bae67e",
+      "editorBracketHighlight.foreground6": "#4fb1bc",
+      /* "editorBracketHighlight.unexpectedBracket.foreground": "#db6165" */
+      "editorBracketHighlight.unexpectedBracket.foreground": "#ff3333"
     },
     "statusBarItem.remoteForeground": "#fff",
     "statusBarItem.remoteBackground": "#5a34a0"
