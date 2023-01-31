@@ -21,7 +21,8 @@ alias e="esy"
 alias m="make"
 alias q="query-json"
 alias t="itomate"
-alias r=" source \${DOTFILES_PATH}/bin/scripts"
+alias r=" source \${DOTFILES_PATH}/bin/yarn-scripts"
+alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
 alias d='docker'
 
