@@ -105,7 +105,7 @@
   "editor.minimap.renderCharacters": false,
   "editor.tabSize": 2,
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.fontFamily": "SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontFamily": "LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
   "editor.fontLigatures": true,
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
