@@ -40,6 +40,22 @@ alias export=" export"
 # List only directories
 alias ld="ls -D"
 
+# Docker
+docker-clear () {
+    docker ps -a -q | xargs docker kill -f
+    docker ps -a -q | xargs docker rm -f
+    docker images | grep "api\|none" | awk '{print $3}' | xargs docker rmi -f
+    docker volume prune -f
+}
+
+docker-reset () {
+    docker-clear
+    docker images -q | xargs docker rmi -f
+    docker volume rm $(docker volume ls | awk '{print $2}')
+    rm -rf ~/Library/Containers/com.docker.docker/Data/*
+    docker system prune -a
+}
+
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
@@ -106,6 +122,9 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
+# Open a HTTP server on port 8000 with the current directory exposed
+alias serve="python3 -m http.server"
+
 # Test zsh startup time
 alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
 
@@ -134,6 +153,10 @@ alias cat="bat"
 # https://github.com/htop-dev/htop
 alias _top="command top"
 alias top="htop"
+
+# https://hasseg.org/trash/
+alias _rm="command rm"
+alias rm="trash"
 
 # Generate a uuid
 alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
