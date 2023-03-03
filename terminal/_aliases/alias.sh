@@ -26,9 +26,6 @@ alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
 alias d='docker'
 
-# Git
-alias gam="git commit --amend --no-edit"
-
 # Edit setup
 alias cfg="code \${DOTFILES_PATH}"
 

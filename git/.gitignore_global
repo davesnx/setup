@@ -49,7 +49,7 @@ _opam
 *.log
 
 # VSCode
-# .vscode
+.vscode
 
 # General
 .DS_Store

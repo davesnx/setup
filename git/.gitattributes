@@ -1,3 +1,16 @@
 *.json diff=json
 *.png diff=exif
 *.jpg diff=exif
+
+* text eol=lf
+
+*.re linguist-language=Reason
+*.rei linguist-language=Reason
+
+*.res linguist-language=ReScript
+*.resi linguist-language=ReScript
+
+*.ml linguist-language=OCaml
+*.mli linguist-language=OCaml
+*.mll linguist-language=OCaml
+*.mly linguist-language=OCaml

@@ -9,6 +9,7 @@ alias gm='git commit -m'
 alias gma='git commit --amend'
 alias gcl='git clone'
 alias gf="git fetch"
+alias gam="git commit --amend --no-edit"
 alias master='git checkout master'
 alias main='git checkout main'
 
