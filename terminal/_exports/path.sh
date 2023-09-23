@@ -15,6 +15,7 @@ paths=(
   "$GOPATH/bin"
   "$GEM_HOME/bin"
   "$PYTHON_PATH/libexec/bin"
+  "/usr/local/opt/openssl@3/bin"
   "/usr/local/opt/libpq/bin"
   "/usr/local/bin"
   "/usr/local/sbin"

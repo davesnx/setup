@@ -26,12 +26,13 @@ prompt_setup() {
 
   prompt_opts=(cr percent sp subst)
 
-  zstyle ':zim:git-info:branch' format '%F{green}%b'
+  zstyle ':zim:git-info:branch' format '%F{green}%b
+'
   zstyle ':zim:git-info:commit' format '%c'
   zstyle ':zim:git-info:clean' format '%F{white}$NONE'
   zstyle ':zim:git-info:dirty' format '%F{yellow}$DIRTY'
   zstyle ':zim:git-info:keys' format \
-    'prompt' ' %F{cyan}%b%c %C%D'
+  'prompt' ' %F{cyan}%b%c%C%D'
 
   PS1="${prompt_setup_status}\$(prompt_pwd)\$(prompt_git)%f "
   RPS1=''

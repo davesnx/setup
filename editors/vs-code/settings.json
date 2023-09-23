@@ -1,7 +1,11 @@
 {
   /* Window */
   "window.nativeTabs": true,
+  "window.titleBarStyle": "native",
   "window.zoomLevel": 2,
+  "workbench.tree.indent": 15,
+  "workbench.tree.renderIndentGuides": "always",
+  "keyboard.dispatch": "keyCode",
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   "window.newWindowDimensions": "inherit",
   /* Workbench */
@@ -9,23 +13,17 @@
   "workbench.activityBar.visible": false,
   "workbench.panel.opensMaximized": "never",
   "workbench.editor.labelFormat": "short",
+  "workbench.settings.editor": "json",
   "workbench.panel.defaultLocation": "right",
   "workbench.colorCustomizations": {
     "[Fosk]": {
-      /* "editorBracketHighlight.foreground1": "#96948E", */
-      /* "editorBracketHighlight.foreground2": "#B1AFA8", */
-      /* "editorBracketHighlight.foreground3": "#CCCAC2", */
-      /* "editorBracketHighlight.foreground4": "#D6D3CD", */
-      /* "editorBracketHighlight.foreground5": "#DFDCD8", */
-      /* "editorBracketHighlight.foreground6": "#E8E5E3" */
+      "tree.indentGuidesStroke": "#707a8c",
       "editorBracketHighlight.foreground1": "#cbccc6",
       "editorBracketHighlight.foreground2": "#ffcc66",
       "editorBracketHighlight.foreground3": "#73d0ff",
-      /* "editorBracketHighlight.foreground3": "#5ccfe6", */
       "editorBracketHighlight.foreground4": "#c172d9",
       "editorBracketHighlight.foreground5": "#bae67e",
       "editorBracketHighlight.foreground6": "#4fb1bc",
-      /* "editorBracketHighlight.unexpectedBracket.foreground": "#db6165" */
       "editorBracketHighlight.unexpectedBracket.foreground": "#ff3333"
     },
     "statusBarItem.remoteForeground": "#fff",
@@ -39,7 +37,7 @@
   "workbench.editor.tabSizing": "shrink",
   /* Explorer */
   "explorer.confirmDragAndDrop": false,
-  "explorer.openEditors.visible": 0,
+  "explorer.openEditors.visible": 1,
   "explorer.confirmDelete": false,
   /* Files */
   "files.insertFinalNewline": true,
@@ -94,7 +92,7 @@
   "editor.renderControlCharacters": true,
   "editor.useTabStops": true,
   "editor.snippetSuggestions": "bottom",
-  "editor.cursorBlinking": "phase",
+  "editor.cursorBlinking": "solid",
   "editor.insertSpaces": true,
   "editor.tabCompletion": "on",
   "editor.cursorStyle": "block",
@@ -108,7 +106,9 @@
   "editor.minimap.renderCharacters": false,
   "editor.tabSize": 2,
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.fontFamily": "LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontFamily": "Lilex-Regular, LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
+  "editor.codeLensFontSize": 14,
+  "editor.codeLensFontFamily": "Lilex-Regular, LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
   "editor.fontLigatures": true,
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
@@ -123,6 +123,7 @@
     "–": true
   },
   "editor.suggestFontSize": 14,
+  "editor.suggest.insertMode": "replace",
   "editor.autoIndent": "brackets",
   "editor.colorDecorators": false,
   "editor.renderWhitespace": "boundary",
@@ -138,12 +139,11 @@
   "terminal.external.osxExec": "iTerm.app",
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.tabs.enabled": true,
-  "terminal.integrated.fontFamily": "SFMonoLigaturized-Regular",
+  "terminal.integrated.fontFamily": "Lilex-Regular, LigaLexMono",
   "terminal.integrated.allowMnemonics": true,
   "terminal.integrated.drawBoldTextInBrightColors": true,
   "terminal.explorerKind": "external",
   "terminal.integrated.env.osx": {},
-  "settingsSync.keybindingsPerPlatform": false,
   "security.workspace.trust.untrustedFiles": "open",
   /* Language specific */
   /* HTML */
@@ -183,12 +183,24 @@
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
   },
   "javascript.updateImportsOnFileMove.enabled": "always",
+  "vs-code-prettier-eslint.prettierLast": true,
   /* OCaml */
+  "ocaml.dune.autoDetect": true,
+  "ocaml.server.codelens": true,
+  "ocaml.server.extendedHover": true,
   "[dune]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
   "[ocaml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "[ocaml.interface]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "[ocaml.opam]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
@@ -226,6 +238,10 @@
   "[reason]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "[cram]": {
+    "editor.tabSize": 2,
+    "files.trimTrailingWhitespace": false,
   },
   /* Extensions */
   "extensions.autoUpdate": true,
@@ -274,7 +290,34 @@
   "codesnap.containerPadding": "5em",
   "codesnap.backgroundColor": "#525869",
   "codesnap.boxShadow": "rgba(0, 0, 0, 0.25) 0px 30px 50px",
+  /* Apc Customize UI++ */
+  "apc.activityBar": {
+    "position": "bottom",
+    "hideSettings": true,
+    "size": 20
+  },
+  "apc.statusBar": {
+    "height": 24,
+    "fontSize": 10
+  },
+  "apc.electron": {
+    "frame": false,
+    "titleBarStyle": "hiddenInset",
+    "trafficLightPosition": {
+      "x": 8,
+      "y": 10
+    }
+  },
+  "apc.header": {
+    "height": 34,
+    "fontSize": 13
+  },
+  "apc.listRow": {
+    "height": 23,
+    "fontSize": 13
+  },
   /* Other extensions */
   "where-am-i.color": "#FFFFFF",
-  "material-icon-theme.folders.theme": "specific"
+  "material-icon-theme.folders.theme": "specific",
+  "tabnine.experimentalAutoImports": true
 }

@@ -35,3 +35,8 @@ export LESS_TERMCAP_md=${yellow}
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
+
+# dream > conf-libssl > openssl
+export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"

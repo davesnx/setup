@@ -2,8 +2,6 @@
 *.png diff=exif
 *.jpg diff=exif
 
-* text eol=lf
-
 *.re linguist-language=Reason
 *.rei linguist-language=Reason
 

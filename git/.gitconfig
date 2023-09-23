@@ -1,6 +1,7 @@
 [user]
   email = dsnxmoreno@gmail.com
   name = David Sancho Moreno
+  signingkey = 4175FBECA4EB3CA6
 
 [credential]
   helper = osxkeychain
@@ -54,6 +55,9 @@
 [pull]
   rebase = false
 
+[commit]
+  gpgsign = true
+
 [init]
   defaultBranch = main
 
@@ -70,6 +74,9 @@
 # URL shorthands
 [url "git@github.com:"]
   insteadOf = "https://github.com"
+
+[url "https://github.com/"]
+  pushInsteadOf = "git@github.com:"
 
 [url "git://github.com/"]
   insteadOf = "github:"
@@ -102,11 +109,9 @@
   new = "green bold"
   whitespace = "red reverse"
 
-[gpg]
-	program = gpg
-
 [diff-so-fancy]
   markEmptyLines = false
 
 [alias]
   empty = "commit --allow-empty --allow-empty-message --no-edit --no-verify"
+
