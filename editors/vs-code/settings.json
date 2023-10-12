@@ -236,7 +236,7 @@
   },
   /* Reason */
   "[reason]": {
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
   "[cram]": {

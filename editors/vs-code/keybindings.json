@@ -141,7 +141,7 @@
     "key": "cmd+numpad_subtract",
     "command": "-workbench.action.zoomOut"
   },
-  /* Disable opening files */
+  /* Disable opening files (it's crazy slow) */
   {
     "key": "cmd+o",
     "command": "-workbench.action.files.openFile",
