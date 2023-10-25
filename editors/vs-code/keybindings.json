@@ -114,7 +114,7 @@
   },
   /* Disable zoom */
   {
-    "key": "cmd+[BracketRight]",
+    "key": "cmd++",
     "command": "-workbench.action.zoomIn"
   },
   {

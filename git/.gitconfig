@@ -113,5 +113,5 @@
   markEmptyLines = false
 
 [alias]
-  empty = "commit --allow-empty --allow-empty-message --no-edit --no-verify"
+  empty = "commit --allow-empty --no-verify"
 
