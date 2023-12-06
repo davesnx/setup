@@ -96,11 +96,6 @@ precmd() {
   echo -ne "\e]1;$(short_pwd)\a"
 }
 
-# Fuzzy Autocompletion
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:approximate:*' max-errors 3 numeric
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
-
 # Register all aliases
 for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*;
   do source $aliasToSource;
@@ -117,13 +112,14 @@ for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*;
 done
 
 # Load autojump
-source /usr/local/share/autojump/autojump.zsh
+# source /usr/local/share/autojump/autojump.zsh
 
 # Load forgit
 source "$DOTFILES_PATH/git/forgit.zsh"
 
 # Load fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # Load key-bindings for fzf
 source "$DOTFILES_PATH/terminal/zsh/key-bindings.zsh"
 
@@ -132,11 +128,15 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 
 # load opam
 eval "$(opam env)"
+
 # opam-zsh autocompletion
 [[ ! -r /Users/davesnx/.opam/opam-init/init.zsh ]] || source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
 
 # Load direnv
 eval "$(direnv hook zsh)"
+
+# Load z
+eval "$(zoxide init zsh --cmd j)"
 
 export GPG_TTY=$(tty)
 
@@ -144,20 +144,9 @@ export GPG_TTY=$(tty)
 ssh-add --apple-use-keychain ~/.ssh/id &> /dev/null
 ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
 
+# Fuzzy Autocompletion
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:approximate:*' max-errors 3 numeric
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
+
 ulimit -n 2048
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-# __conda_setup="$('/Users/davesnx/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-# if [ $? -eq 0 ]; then
-    # eval "$__conda_setup"
-# else
-    # if [ -f "/Users/davesnx/anaconda3/etc/profile.d/conda.sh" ]; then
-        # . "/Users/davesnx/anaconda3/etc/profile.d/conda.sh"
-    # else
-        # export PATH="/Users/davesnx/anaconda3/bin:$PATH"
-    # fi
-# fi
-# unset __conda_setup
-# <<< conda initialize <<<
-

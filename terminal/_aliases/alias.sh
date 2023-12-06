@@ -14,7 +14,7 @@ alias .="open ."
 alias h="history 1"
 alias o="oni2"
 alias c="code"
-alias z="zed"
+# alias z="zed"
 alias n="npm"
 alias y="yarn"
 alias p="pnpm"
@@ -26,6 +26,7 @@ alias r=" source \${DOTFILES_PATH}/bin/yarn-scripts"
 alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
 alias d='docker'
+alias z=__zoxide_zi
 
 # Edit setup
 alias cfg="code \${DOTFILES_PATH}"
@@ -142,10 +143,6 @@ alias ls="exa --group-directories-first -alh --octal-permissions"
 # https://github.com/sharkdp/fd
 alias _find="command find"
 alias find="fd"
-
-# https://github.com/sindresorhus/fkill-cli
-alias _kill="command kill"
-alias kill="fkill"
 
 # https://github.com/sharkdp/bat
 alias _cat="command cat"

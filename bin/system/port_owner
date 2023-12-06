@@ -8,4 +8,29 @@ source "$DOTFILES_PATH/scripts/core/_main.sh"
 ##? Usage:
 ##?    port_owner <port>
 
-lsof -n -i4TCP:$1 | grep LISTEN
+if [ -z "$1" ]; then
+    echo "Usage: port [port]"
+    return 1
+fi
+
+# Getting the protocol and the PID of the process listening on the specified port
+read protocol pid <<<$(lsof -n -i:$1 | awk '/LISTEN/ {print $8, $2}' | head -1)
+
+if [ -z "$pid" ]; then
+    echo "No process found listening on port $1"
+    return 1
+fi
+# Getting the command and time from ps
+# etime = elapsed time since the process was started, in the form [[DD-]hh:]mm:ss
+# command = command with all its arguments as a string
+read etime command <<<$(ps -p $pid -o etime=,command=)
+
+# Getting the working directory of the process
+pwd=$(lsof -p $pid | awk '$4=="cwd" {print $9}')
+
+echo "Port: $1"
+echo "Protocol: $protocol"
+echo "PID: $pid"
+echo "PWD: $pwd"
+echo "Command: $command"
+echo "Age: $etime"

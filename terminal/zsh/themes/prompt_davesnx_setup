@@ -1,10 +1,7 @@
+#! /bin/zsh
+
 FIRST_CHARACTER_OK="→"
 FIRST_CHARACTER_KO="→"
-AHEAD="↑"
-BEHIND="↓"
-DIVERGED="⥄"
-DIRTY="✗"
-NONE="✓"
 
 prompt_pwd() {
   prompt_short_dir=$(short_pwd)
@@ -24,8 +21,6 @@ prompt_setup() {
 
   autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_precmd
 
-  prompt_opts=(cr percent sp subst)
-
   zstyle ':zim:git-info:branch' format '%F{green}%b'
   zstyle ':zim:git-info:commit' format '%c'
   zstyle ':zim:git-info:clean' format ' %F{white}'
@@ -34,7 +29,7 @@ prompt_setup() {
 
   PS1="\$(prompt_pwd)\$(prompt_git)%f
 ${prompt_setup_status} "
-  RPS1=''
+  export RPS1=''
 }
 
 prompt_setup "${@}"

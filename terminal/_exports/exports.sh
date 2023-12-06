@@ -23,6 +23,9 @@ export NODE_REPL_HISTORY=~/.node_history
 export NODE_REPL_HISTORY_SIZE='32768'
 # Use sloppy mode by default, matching web browsers.
 export NODE_REPL_MODE='sloppy'
+# fnm doesn't set this, so we do it here
+# WHICH_NODE=$(which node)
+# export NODE_BIN_PATH=$WHICH_NODE
 
 # Increase Bash history size. Allow 32³ entries; the default is 500.
 export HISTSIZE='32768'

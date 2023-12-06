@@ -31,7 +31,7 @@ ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
 chsh -s "$(command -v zsh)"
 
 # Create the autojump historic file
-touch "$HOME/.z"
+# touch "$HOME/.z"
 
 # Install zimfw
 curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh

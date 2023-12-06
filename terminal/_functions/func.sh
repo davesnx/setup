@@ -32,14 +32,6 @@ function digga() {
 	dig +nocmd "$1" any +multiline +noall +answer;
 }
 
-function j {
-  fname=$(declare -f -F _z)
-
-  [ -n "$fname" ] || . "\${HOME}/bin/z.sh"
-
-  _z "$1"
-}
-
 function port {
   sudo lsof -i:"$1"
 }

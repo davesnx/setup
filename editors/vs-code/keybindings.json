@@ -55,6 +55,17 @@
     "command": "editor.action.blockComment",
     "when": "editorTextFocus && !editorReadonly"
   },
+  /* Reveal file in sidebar */
+  {
+    "key": "shift+cmd+e",
+    "command": "workbench.files.action.showActiveFileInExplorer",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+e",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "sideBarFocus"
+  },
   /* Upper/Downer selection with shift+alt */
   {
     "key": "shift+alt+down",
@@ -70,47 +81,6 @@
     "key": "shift+alt+up",
     "command": "-editor.action.copyLinesUpAction",
     "when": "editorTextFocus && !editorReadonly"
-  },
-  /* {
-    "key": "cmd+[Backquote]",
-    "command": "workbench.action.focusActiveEditorGroup",
-    "when": "terminalFocus && terminalHasBeenCreated"
-  },
-  {
-    "key": "cmd+[Backquote]",
-    "command": "terminal.focus",
-    "when": "editorTextFocus"
-  }, */
-  {
-    "key": "ctrl+l",
-    "command": "workbench.action.terminal.clear",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  {
-    "key": "cmd+k",
-    "command": "-workbench.action.terminal.clear",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  /* Same shortcurts as iTerm for Terminal */
-  {
-    "key": "cmd+d",
-    "command": "workbench.action.terminal.split",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  {
-    "key": "cmd+shift+d",
-    "command": "workbench.action.terminal.split",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  {
-    "key": "cmd+w",
-    "command": "workbench.action.terminal.kill",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  },
-  {
-    "key": "cmd+n",
-    "command": "workbench.action.terminal.new",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
   /* Disable zoom */
   {
@@ -166,12 +136,18 @@
   {
     "key": "f12",
     "command": "-editor.action.revealDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
+    "when": "editorTextFocus && !isInEmbeddedEditor"
   },
   {
     "key": "alt+x",
     "command": "editor.action.revealDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
+    "when": "editorTextFocus && !isInEmbeddedEditor"
+  },
+  /* Preview definition */
+  {
+    "key": "alt+z",
+    "command": "editor.action.showDefinitionPreviewHover",
+    "when": "editorTextFocus"
   },
   /* Smarter cursorWord jumping */
   {
@@ -234,11 +210,7 @@
     "command": "deleteWordRight",
     "when": "textInputFocus && !editorReadonly"
   },
-  {
-    "key": "alt+z",
-    "command": "editor.action.showDefinitionPreviewHover",
-    "when": "editorTextFocus"
-  },
+  /* Disable copilot keys */
   {
     "key": "shift+alt+`",
     "command": "editor.action.inlineSuggest.trigger",
@@ -263,5 +235,9 @@
     "key": "ctrl+/",
     "command": "-github.copilot.acceptCursorPanelSolution",
     "when": "github.copilot.activated && github.copilot.panelVisible"
+  },
+  {
+    "key": "alt+cmd+\\",
+    "command": "-workbench.files.action.showActiveFileInExplorer"
   }
 ]

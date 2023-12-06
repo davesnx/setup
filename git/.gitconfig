@@ -115,3 +115,5 @@
 [alias]
   empty = "commit --allow-empty --no-verify"
 
+[checkout]
+  defaultRemote = "origin"
