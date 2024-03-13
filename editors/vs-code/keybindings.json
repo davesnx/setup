@@ -45,26 +45,22 @@
     "key": "cmd+9",
     "command": "workbench.action.openEditorAtIndex9"
   },
-  /* Open sidebar */
+  /* Toggle sidebar */
   {
     "key": "shift+cmd+b",
     "command": "workbench.action.toggleSidebarVisibility"
   },
-  {
-    "key": "cmd+-",
-    "command": "editor.action.blockComment",
-    "when": "editorTextFocus && !editorReadonly"
-  },
   /* Reveal file in sidebar */
   {
     "key": "shift+cmd+e",
-    "command": "workbench.files.action.showActiveFileInExplorer",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
+    /* "command": "workbench.action.focusSideBar" */
+    "command": "workbench.explorer.fileView.focus"
   },
   {
     "key": "shift+cmd+e",
-    "command": "workbench.action.focusActiveEditorGroup",
-    "when": "sideBarFocus"
+    "when": "sideBarFocus",
+    "command": "workbench.action.focusActiveEditorGroup"
   },
   /* Upper/Downer selection with shift+alt */
   {
@@ -209,6 +205,18 @@
     "key": "ctrl+alt+shift+backspace",
     "command": "deleteWordRight",
     "when": "textInputFocus && !editorReadonly"
+  },
+  /* Go to next error */
+  {
+    "key": "cmd+shift+r",
+    "command": "go-to-next-error.next.error",
+    "when": "editorFocus"
+  },
+  /* Block comment */
+  {
+    "key": "cmd+-",
+    "command": "editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
   },
   /* Disable copilot keys */
   {

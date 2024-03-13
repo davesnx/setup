@@ -43,15 +43,15 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "files.exclude": {
-    "**\/.esy": true
+    "**/.esy": true
   },
   "files.watcherExclude": {
-    "**\/.esy": false,
-    "**\/_opam": false,
-    "**\/.DS_Store": true,
+    "**/.esy": false,
+    "**/_opam": false,
+    "**/.DS_Store": true,
     "node_modules": false,
-    "**\/Thumbs.db": true,
-    "**\/.git": false
+    "**/Thumbs.db": true,
+    "**/.git": false
   },
   "files.associations": {
     "*.jsx": "javascriptreact",
@@ -62,23 +62,23 @@
   "search.showLineNumbers": true,
   "search.smartCase": true,
   "search.exclude": {
-    "**\/_build": true,
-    "**\/node_modules": true,
-    "**\/.git": true,
-    "**\/dist": true,
-    "**\/.vscode": true,
-    "**\/_esy": true,
-    "**\/build": true,
-    "**\/esy.lock": true,
-    "**\/_opam": true,
-    "**\/.next": true
+    "**/_build": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/dist": true,
+    "**/.vscode": true,
+    "**/_esy": true,
+    "**/build": true,
+    "**/esy.lock": true,
+    "**/_opam": true,
+    "**/.next": true
   },
   /* Breadcrumbs */
   "breadcrumbs.enabled": true,
   "breadcrumbs.icons": true,
   /* Editor */
   "editor.acceptSuggestionOnCommitCharacter": false,
-  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>\/?",
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
   "editor.lineHeight": 1.9,
   "editor.bracketPairColorization.enabled": true,
   "editor.fontSize": 14,
@@ -112,10 +112,7 @@
   "editor.fontLigatures": true,
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
-  "editor.rulers": [
-    80,
-    120
-  ],
+  "editor.rulers": [80, 120],
   "editor.unicodeHighlight.allowedCharacters": {
     "’": true,
     "‹": true,
@@ -160,12 +157,8 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "typescript.inlayHints.parameterTypes.enabled": true,
   /* JavaScript */
-  "js\/ts.implicitProjectConfig.strictNullChecks": true,
-  "eslint.validate": [
-    "javascriptreact",
-    "javascript",
-    "typescript"
-  ],
+  "js/ts.implicitProjectConfig.strictNullChecks": true,
+  "eslint.validate": ["javascriptreact", "javascript", "typescript"],
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
@@ -211,9 +204,7 @@
   },
   /* JSON */
   "[json]": {
-    "gitlens.codeLens.scopes": [
-      "document"
-    ],
+    "gitlens.codeLens.scopes": ["document"],
     "editor.formatOnPaste": false,
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
     "editor.quickSuggestions": {
@@ -223,9 +214,7 @@
     "editor.suggest.insertMode": "replace"
   },
   "[jsonc]": {
-    "gitlens.codeLens.scopes": [
-      "document"
-    ],
+    "gitlens.codeLens.scopes": ["document"],
     "editor.formatOnPaste": false,
     "editor.defaultFormatter": "vscode.json-language-features",
     "editor.quickSuggestions": {
@@ -241,7 +230,7 @@
   },
   "[cram]": {
     "editor.tabSize": 2,
-    "files.trimTrailingWhitespace": false,
+    "files.trimTrailingWhitespace": false
   },
   /* Extensions */
   "extensions.autoUpdate": true,
@@ -284,7 +273,7 @@
   },
   "remote.SSH.useLocalServer": false,
   "remote.SSH.remoteServerListenOnSocket": true,
-  "remote.SSH.configFile": "\/Users\/davesnx\/.ssh\/config",
+  "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
   /* Codesnap */
   "codesnap.showWindowControls": false,
   "codesnap.containerPadding": "5em",
