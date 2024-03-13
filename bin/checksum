@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+source "$DOTFILES_PATH/scripts/core/_main.sh"
+
+##? Get checksum of a url
+#?? 0.0.1
+##?
+##? Usage:
+##?    checksum <url>
+
+if [[ -z "$1" ]]; then
+    echo ""
+    echo "  Error: No url provided. Usage: checksum <url>"
+    echo ""
+    exit 1
+fi
+curl -sL $1 | sha512sum
