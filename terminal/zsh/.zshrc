@@ -77,6 +77,7 @@ prompt davesnx
 
 # ZSH Ops
 setopt autopushd
+unsetopt cdablevars
 
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
 setopt HIST_IGNORE_ALL_DUPS # Delete old recorded entry if new entry is a duplicate.
@@ -97,22 +98,19 @@ precmd() {
 }
 
 # Register all aliases
-for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*;
-  do source $aliasToSource;
+for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*; do
+  source $aliasToSource;
 done
 
 # Register all exports
-for exportToSource in "$DOTFILES_PATH/terminal/_exports/"*;
-  do source $exportToSource;
+for exportToSource in "$DOTFILES_PATH/terminal/_exports/"*; do
+  source $exportToSource;
 done
 
 # Register all functions
-for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*;
-  do source $functionToSource;
+for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*; do
+  source $functionToSource;
 done
-
-# Load autojump
-# source /usr/local/share/autojump/autojump.zsh
 
 # Load forgit
 source "$DOTFILES_PATH/git/forgit.zsh"
@@ -127,6 +125,7 @@ source "$DOTFILES_PATH/terminal/zsh/key-bindings.zsh"
 eval "$(fnm env --use-on-cd --shell zsh)"
 
 # load opam
+# echo "$(opam env --sexp)" | awk -f $DOTFILES_PATH/scripts/opam_env_awk.awk
 eval "$(opam env)"
 
 # opam-zsh autocompletion
@@ -134,9 +133,6 @@ eval "$(opam env)"
 
 # Load direnv
 eval "$(direnv hook zsh)"
-
-# Load z
-eval "$(zoxide init zsh --cmd j)"
 
 export GPG_TTY=$(tty)
 

@@ -4,15 +4,15 @@
 unalias -m '*'
 
 # Easier navigation
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
+alias .="cd .."
+alias ..="cd ../.."
+alias ...="cd ../../.."
+alias ....="cd ../../../.."
+alias .....="cd ../../../../.."
 
 # One chars
-alias .="open ."
 alias h="history 1"
-alias o="oni2"
+alias o="open ."
 alias c="code"
 # alias z="zed"
 alias n="npm"
@@ -26,7 +26,7 @@ alias r=" source \${DOTFILES_PATH}/bin/yarn-scripts"
 alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
 alias d='docker'
-alias z=__zoxide_zi
+alias j=__zoxide_zi
 
 # Edit setup
 alias cfg="code \${DOTFILES_PATH}"
@@ -38,9 +38,6 @@ alias quit="exit"
 
 # Re-alias "export" to " export" to remove from history
 alias export=" export"
-
-# List only directories
-alias ld="ls -D"
 
 # Docker
 docker-clear () {
@@ -96,7 +93,8 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 # Airport CLI alias
 alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
 
-# Stuff I never really use but cannot delete either because of http://xkcd.com/530/
+# Stuff I never really use but cannot delete either
+# because of http://xkcd.com/530/
 alias stfu="osascript -e 'set volume output muted true'"
 alias pumpitup="osascript -e 'set volume output volume 100'"
 
@@ -111,6 +109,7 @@ alias reload="exec \${SHELL} -l"
 alias path='echo -e ${PATH//:/\\n}'
 
 alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 
@@ -122,13 +121,11 @@ alias df="df -h"
 # Flush Directory Service cache
 alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 
-alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
-
 # Open a HTTP server on port 8000 with the current directory exposed
 alias serve="python3 -m http.server"
 
 # Test zsh startup time
-alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -i -c exit}"
+alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 10 {time zsh -l -i -c exit}"
 
 # Improved CLIs
 alias copy="pbcopy"
@@ -139,6 +136,8 @@ alias my='mycli'
 # Extend ls
 alias l="exa --group-directories-first -al --no-time"
 alias ls="exa --group-directories-first -alh --octal-permissions"
+# List only directories
+alias ld="ls -D"
 
 # https://github.com/sharkdp/fd
 alias _find="command find"

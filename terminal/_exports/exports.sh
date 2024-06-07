@@ -2,9 +2,11 @@
 
 export PYTHON_PATH='/usr/local/opt/python'
 export RUBY_PATH='/usr/local/opt/ruby'
+export BUN_INSTALL="$HOME/.bun"
 export GEM_HOME="$HOME/.gem"
 
 export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
+export FORGIT_LOG_FZF_OPTS="--no-height"
 export FZF_COMPLETION_OPTS='+c -x'
 
 export HOMEBREW_AUTO_UPDATE_SECS=86400

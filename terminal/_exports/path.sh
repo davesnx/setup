@@ -4,6 +4,7 @@ paths=(
   "$HOME/bin"
   "$HOME/.deno/bin"
   "$HOME/.cargo/bin"
+  "$BUN_INSTALL/bin"
   "$HOME/.fly/bin"
   "$DOTFILES_PATH/bin"
   "$DOTFILES_PATH/bin/git-extras"

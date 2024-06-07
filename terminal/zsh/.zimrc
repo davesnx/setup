@@ -8,7 +8,7 @@ zmodule input
 zmodule termtitle
 
 # Utility aliases and functions. Adds colour to ls, grep and less
-zmodule utility
+# zmodule utility
 
 # Exposes git repository status information to prompts, used by davesnx theme
 zmodule git-info
@@ -29,7 +29,7 @@ zmodule zsh-users/zsh-history-substring-search
 
 # Fish-like syntax highlighting for Zsh
 # zsh-users/zsh-syntax-highlighting must be sourced after completion
-zmodule https://github.com/zsh-users/zsh-syntax-highlighting.git
+zmodule zsh-users/zsh-syntax-highlighting
 
 # Autojump alternative
 zmodule kiesman99/zim-zoxide

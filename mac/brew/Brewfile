@@ -43,7 +43,6 @@ brew "diff-so-fancy"
 brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 
-cask "alfred"
 cask "enpass"
 cask "docker"
 cask "firefox"
@@ -65,7 +64,6 @@ cask "kap"
 cask "slack"
 cask "discord"
 cask "cloudflare-warp" # https://1.1.1.1/
-cask "centered" # https://www.centered.app/download
 cask "monitorcontrol" # https://github.com/MonitorControl/MonitorControl#readme
 cask "alt-tab" # https://alt-tab-macos.netlify.app/
 cask "insomnia" # https://insomnia.rest/
