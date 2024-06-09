@@ -14,4 +14,5 @@ if [[ -z "$1" ]]; then
     echo ""
     exit 1
 fi
+
 curl -sL $1 | sha512sum

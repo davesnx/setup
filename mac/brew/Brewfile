@@ -8,51 +8,41 @@ tap "homebrew/core"
 tap "homebrew/services"
 
 brew "sqlite"
-brew "fnm"
 brew "openssl"
 brew "coreutils"
 brew "nghttp2"
 brew "fzf"
 brew "gcc"
 brew "git"
-brew "go"
-brew "autojump"
-brew "hdf5"
-brew "htop"
+brew "htop" # https://hisham.hm/htop/
 brew "jq"
 brew "make"
 brew "mysql"
+brew "fnm"
 brew "node"
 brew "yarn"
-brew "parallel"
-brew "shellcheck"
+brew "parallel" # https://www.gnu.org/software/parallel/
+brew "shellcheck" # https://www.shellcheck.net/
 brew "tree"
 brew "vim"
 brew "watch"
 brew "wget"
-brew "tig"
+brew "tig" # https://jonas.github.io/tig
 brew "bat"
-brew "httpie"
 brew "gpatch"
 brew "pgcli"
 brew "ripgrep"
 brew "opam"
-brew "flux"
 brew "fswatch"
 brew "diff-so-fancy"
 brew "zsh-completions"
 brew "zsh-syntax-highlighting"
+brew "httpie" # https://httpie.io
 
-cask "enpass"
-cask "docker"
 cask "firefox"
 cask "figma"
 cask "tableplus"
 cask "google-backup-and-sync"
-cask "qlcolorcode"
-cask "qlmarkdown"
-cask "quicklook-json"
-cask "rectangle"
 cask "spotify"
 cask "telegram"
 cask "visual-studio-code"
@@ -60,10 +50,27 @@ cask "vlc"
 cask "whatsapp"
 cask "zoomus"
 cask "notion"
-cask "kap"
 cask "slack"
+mas "Instapaper", id: 288545208
+mas "The Unarchiver", id: 425424353
 cask "discord"
+brew "flux" # https://justgetflux.com/
+cask "enpass" # https://www.enpass.io/
+cask "kap" # https://getkap.co/
+cask "rectangle" # https://rectangleapp.com/
 cask "cloudflare-warp" # https://1.1.1.1/
 cask "monitorcontrol" # https://github.com/MonitorControl/MonitorControl#readme
 cask "alt-tab" # https://alt-tab-macos.netlify.app/
 cask "insomnia" # https://insomnia.rest/
+cask "raycast" # https://raycast.com/
+cask "daisydisk" # https://daisydiskapp.com/
+# Amphetamine
+# DaisyDisk
+# RDM
+# noTunes
+# camo studio
+
+# Quicklook
+cask "qlcolorcode"
+cask "qlmarkdown"
+cask "quicklook-json"
