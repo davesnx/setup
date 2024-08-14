@@ -1,22 +1,29 @@
 {
+  "update.mode": "default",
   /* Window */
-  "window.nativeTabs": true,
-  "window.titleBarStyle": "native",
-  "window.zoomLevel": 2,
-  "workbench.tree.indent": 15,
-  "workbench.tree.renderIndentGuides": "always",
-  "keyboard.dispatch": "keyCode",
+  "window.zoomLevel": 1,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
-  "window.newWindowDimensions": "inherit",
+  "window.commandCenter": false,
   /* Workbench */
-  "workbench.colorTheme": "Fosk",
-  "workbench.activityBar.visible": false,
+  "workbench.tips.enabled": false,
+  "workbench.editor.editorActionsLocation": "hidden",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.layoutControl.enabled": false,
+  /* Controls the location of the activity bar. Hides the menu of icons */
+  "workbench.activityBar.location": "hidden",
+  "workbench.tree.indent": 12,
+  /* Controls whether the tree should render indent guides. */
+  "workbench.tree.renderIndentGuides": "always",
+  /* Controls whether the panel opens maximized. It can either always open maximized,
+     never open maximized, or open to the last state it was in before being closed. */
   "workbench.panel.opensMaximized": "never",
-  "workbench.editor.labelFormat": "short",
+  /* Determines which settings editor to use by default. */
   "workbench.settings.editor": "json",
-  "workbench.panel.defaultLocation": "right",
+  /* Overrides colors from the currently selected color theme */
+  "workbench.colorTheme": "Fosk",
   "workbench.colorCustomizations": {
     "[Fosk]": {
+      /* This should be part of Fosk */
       "tree.indentGuidesStroke": "#707a8c",
       "editorBracketHighlight.foreground1": "#cbccc6",
       "editorBracketHighlight.foreground2": "#ffcc66",
@@ -24,21 +31,27 @@
       "editorBracketHighlight.foreground4": "#c172d9",
       "editorBracketHighlight.foreground5": "#bae67e",
       "editorBracketHighlight.foreground6": "#4fb1bc",
-      "editorBracketHighlight.unexpectedBracket.foreground": "#ff3333"
+      "editorBracketHighlight.unexpectedBracket.foreground": "#db4d3f"
     },
-    "statusBarItem.remoteForeground": "#fff",
-    "statusBarItem.remoteBackground": "#5a34a0"
+    /* Hide statusBarItem */
+    "statusBarItem.remoteForeground": "#1F2430",
+    "statusBarItem.remoteBackground": "#707a8c"
   },
-  "workbench.editor.untitled.hint": "hidden",
-  "workbench.sideBar.location": "left",
-  "workbench.startupEditor": "newUntitledFile",
+  /* Controls which editor is shown at startup */
+  "workbench.startupEditor": "none",
   "workbench.fontAliasing": "antialiased",
   "workbench.iconTheme": "material-icon-theme",
+  "material-icon-theme.folders.theme": "specific",
+  "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
+  "workbench.statusBar.visible": true,
   /* Explorer */
+  "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "explorer.openEditors.visible": 1,
-  "explorer.confirmDelete": false,
+  "explorer.compactFolders": false,
+  "explorer.decorations.colors": true,
+  "explorer.decorations.badges": true,
   /* Files */
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
@@ -75,68 +88,89 @@
   },
   /* Breadcrumbs */
   "breadcrumbs.enabled": true,
-  "breadcrumbs.icons": true,
+  "breadcrumbs.filePath": "on",
+  "breadcrumbs.icons": false,
+  /* Keyboard */
+  "keyboard.dispatch": "keyCode",
   /* Editor */
-  "editor.acceptSuggestionOnCommitCharacter": false,
-  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
-  "editor.lineHeight": 1.9,
-  "editor.bracketPairColorization.enabled": true,
-  "editor.fontSize": 14,
+  "editor.fontFamily": "Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.codeLensFontSize": 16,
+  "editor.codeLensFontFamily": "Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontLigatures": true,
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 2,
+  "editor.fontSize": 16,
   "editor.fontWeight": 400,
   "editor.wordWrap": "on",
-  "editor.minimap.showSlider": "always",
+  "editor.folding": true,
   "editor.glyphMargin": false,
-  "editor.detectIndentation": true,
+  "editor.renderWhitespace": "boundary",
   "editor.wrappingIndent": "indent",
-  "editor.inlineSuggest.enabled": true,
-  "editor.renderControlCharacters": true,
-  "editor.useTabStops": true,
-  "editor.snippetSuggestions": "bottom",
-  "editor.cursorBlinking": "solid",
-  "editor.insertSpaces": true,
-  "editor.tabCompletion": "on",
   "editor.cursorStyle": "block",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
   "editor.formatOnSaveMode": "file",
+  "editor.inlineSuggest.enabled": true,
+  "editor.renderLineHighlight": "none",
+  "editor.lightbulb.enabled": "off",
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.scrollbar.vertical": "hidden",
+  "editor.occurrencesHighlight": "singleFile",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
+  "editor.lineHeight": 2,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "editor.renderControlCharacters": true,
+  "editor.useTabStops": false,
+  "editor.detectIndentation": false,
+  "editor.snippetSuggestions": "bottom",
+  "editor.cursorBlinking": "smooth",
+  "editor.hover.enabled": true,
+  "editor.cursorSmoothCaretAnimation": "off",
+  "editor.insertSpaces": true,
+  "editor.tabCompletion": "on",
+  "editor.stickyScroll.enabled": false,
   "editor.minimap.renderCharacters": false,
-  "editor.tabSize": 2,
+  "editor.minimap.showSlider": "always",
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.fontFamily": "Lilex-Regular, LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
-  "editor.codeLensFontSize": 14,
-  "editor.codeLensFontFamily": "Lilex-Regular, LigaLexMono, IBM Plex Mono, SFMonoLigaturized-Regular, Fira Code, JetBrains Mono, Martian Mono, Monaco",
-  "editor.fontLigatures": true,
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
-  "editor.rulers": [80, 120],
+  "editor.guides.bracketPairs": "active",
+  "editor.guides.bracketPairsHorizontal": false,
   "editor.unicodeHighlight.allowedCharacters": {
     "’": true,
     "‹": true,
     "›": true,
     "–": true
   },
-  "editor.suggestFontSize": 14,
+  "editor.suggestFontSize": 16,
   "editor.suggest.insertMode": "replace",
-  "editor.autoIndent": "brackets",
+  "editor.autoIndent": "full",
   "editor.colorDecorators": false,
-  "editor.renderWhitespace": "boundary",
   "editor.linkedEditing": true,
-  "editor.guides.bracketPairs": "active",
-  "editor.guides.bracketPairsHorizontal": false,
+  "editor.suggest.showIcons": true,
+  "editor.lineNumbers": "on",
+  /* scm */
+  "scm.diffDecorationsGutterVisibility": "always",
+  "scm.alwaysShowActions": true,
+  "scm.diffDecorations": "all",
   /* Terminal */
+  "terminal.integrated.tabs.location": "left",
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
   "terminal.integrated.persistentSessionReviveProcess": "never",
   "terminal.integrated.lineHeight": 1.3,
   "terminal.integrated.defaultLocation": "view",
   "terminal.integrated.fontWeight": "normal",
   "terminal.integrated.gpuAcceleration": "on",
   "terminal.external.osxExec": "iTerm.app",
+  "terminal.integrated.inheritEnv": true,
   "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontWeightBold": "normal",
   "terminal.integrated.tabs.enabled": true,
-  "terminal.integrated.fontFamily": "Lilex-Regular, LigaLexMono",
+  "terminal.integrated.fontFamily": "Ligalex Mono",
   "terminal.integrated.allowMnemonics": true,
   "terminal.integrated.drawBoldTextInBrightColors": true,
   "terminal.explorerKind": "external",
@@ -148,7 +182,12 @@
   "html.format.preserveNewLines": true,
   "html.format.indentInnerHtml": true,
   "[html]": {
-    "editor.defaultFormatter": "vscode.html-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   /* TypeScript */
   "typescript.implementationsCodeLens.enabled": true,
@@ -159,41 +198,24 @@
   /* JavaScript */
   "js/ts.implicitProjectConfig.strictNullChecks": true,
   "eslint.validate": ["javascriptreact", "javascript", "typescript"],
-  "[typescript]": {
+  "[typescript][typescriptreact][javascript][javascriptreact][json][jsonc]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
   },
-  "[typescriptreact]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-  },
-  "[javascript]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-  },
-  "[javascriptreact]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-  },
-  "javascript.updateImportsOnFileMove.enabled": "always",
   "vs-code-prettier-eslint.prettierLast": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
   /* OCaml */
   "ocaml.dune.autoDetect": true,
   "ocaml.server.codelens": true,
   "ocaml.server.extendedHover": true,
-  "[dune]": {
+  "[dune][ocaml.interface][ocaml.opam][ocaml.menhir][ocaml.ocamlformat]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
   "[ocaml]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
-  },
-  "[ocaml.interface]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "ocamllabs.ocaml-platform"
-  },
-  "[ocaml.opam]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
@@ -203,20 +225,10 @@
     "editor.defaultFormatter": "chenglou92.rescript-vscode"
   },
   /* JSON */
-  "[json]": {
+  "[json][jsonc]": {
     "gitlens.codeLens.scopes": ["document"],
     "editor.formatOnPaste": false,
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
-    "editor.quickSuggestions": {
-      "strings": true
-    },
-    "editor.formatOnSave": true,
-    "editor.suggest.insertMode": "replace"
-  },
-  "[jsonc]": {
-    "gitlens.codeLens.scopes": ["document"],
-    "editor.formatOnPaste": false,
-    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.quickSuggestions": {
       "strings": true
     },
@@ -233,28 +245,19 @@
     "files.trimTrailingWhitespace": false
   },
   /* Extensions */
-  "extensions.autoUpdate": true,
+  "extensions.autoUpdate": "onlyEnabledExtensions",
   "extensions.ignoreRecommendations": true,
+  /* Error Lens */
+  "errorLens.scrollbarHackEnabled": false,
+  "errorLens.enabled": true,
+  "errorLens.padding": "0",
+  "errorLens.gutterIconsEnabled": true,
+  "errorLens.removeLinebreaks": false,
+  "errorLens.fontWeight": "400",
   /* GitLens */
-  "gitlens.blame.separateLines": false,
-  "gitlens.hovers.annotations.enabled": false,
-  "gitlens.hovers.currentLine.over": "line",
-  "gitlens.hovers.annotations.changes": false,
-  "gitlens.advanced.repositorySearchDepth": 1,
-  "gitlens.showWhatsNewAfterUpgrades": false,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.views.repositories.includeWorkingTree": false,
-  "gitlens.advanced.messages": {
-    "suppressCommitHasNoPreviousCommitWarning": false,
-    "suppressCommitNotFoundWarning": false,
-    "suppressGitVersionWarning": false,
-    "suppressFileNotUnderSourceControlWarning": false,
-    "suppressLineUncommittedWarning": false,
-    "suppressNoRepositoryWarning": false
-  },
+  "git.decorations.enabled": true,
   "gitlens.hovers.avatars": false,
-  "gitlens.currentLine.enabled": true,
-  "gitlens.keymap": "alternate",
+  "gitlens.statusBar.enabled": false,
   /* Copilot */
   "github.copilot.enable": {
     "markdown": true,
@@ -280,33 +283,22 @@
   "codesnap.backgroundColor": "#525869",
   "codesnap.boxShadow": "rgba(0, 0, 0, 0.25) 0px 30px 50px",
   /* Apc Customize UI++ */
-  "apc.activityBar": {
-    "position": "bottom",
-    "hideSettings": true,
-    "size": 20
-  },
-  "apc.statusBar": {
-    "height": 24,
-    "fontSize": 10
-  },
-  "apc.electron": {
-    "frame": false,
-    "titleBarStyle": "hiddenInset",
-    "trafficLightPosition": {
-      "x": 8,
-      "y": 10
-    }
-  },
+  "apc.font.family": "IBM Plex Mono",
   "apc.header": {
-    "height": 34,
-    "fontSize": 13
+    "height": 40,
+    "fontSize": 14
   },
   "apc.listRow": {
     "height": 23,
     "fontSize": 13
   },
-  /* Other extensions */
-  "where-am-i.color": "#FFFFFF",
-  "material-icon-theme.folders.theme": "specific",
-  "tabnine.experimentalAutoImports": true
+  "apc.electron": {
+    "titleBarStyle": "hidden"
+  },
+  /* Misc */
+  "go-to-next-error.multiSeverityHandlingMethod": "hover",
+  "supermaven.enable": {
+    "*": true
+  },
+  "continue.enableTabAutocomplete": false
 }

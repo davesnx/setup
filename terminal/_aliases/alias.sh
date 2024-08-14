@@ -133,7 +133,7 @@ alias pg='pgcli'
 alias my='mycli'
 
 # Extend ls
-alias l="exa --group-directories-first -al --no-time"
+alias l="exa --group-directories-first -a --oneline"
 alias ls="exa --group-directories-first -alh --octal-permissions"
 # List only directories
 alias ld="ls -D"
