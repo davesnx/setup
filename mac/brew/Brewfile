@@ -38,6 +38,7 @@ brew "diff-so-fancy"
 brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 brew "httpie" # https://httpie.io
+brew "hovrly"
 
 cask "firefox"
 cask "figma"
@@ -51,7 +52,6 @@ cask "whatsapp"
 cask "zoomus"
 cask "notion"
 cask "slack"
-mas "Instapaper", id: 288545208
 mas "The Unarchiver", id: 425424353
 cask "discord"
 brew "flux" # https://justgetflux.com/
@@ -64,11 +64,16 @@ cask "alt-tab" # https://alt-tab-macos.netlify.app/
 cask "insomnia" # https://insomnia.rest/
 cask "raycast" # https://raycast.com/
 cask "daisydisk" # https://daisydiskapp.com/
+# Brave
+# OBS
+# Cursor
+# Choosy
 # Amphetamine
 # DaisyDisk
 # RDM
 # noTunes
 # camo studio
+# xnapper
 
 # Quicklook
 cask "qlcolorcode"

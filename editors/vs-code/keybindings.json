@@ -54,7 +54,6 @@
   {
     "key": "shift+cmd+e",
     "when": "editorTextFocus",
-    /* "command": "workbench.action.focusSideBar" */
     "command": "workbench.explorer.fileView.focus"
   },
   {
@@ -143,6 +142,12 @@
   {
     "key": "alt+z",
     "command": "editor.action.showDefinitionPreviewHover",
+    "when": "editorTextFocus"
+  },
+  /* Fold current block */
+  {
+    "key": "alt+c",
+    "command": "editor.toggleFold",
     "when": "editorTextFocus"
   },
   /* Smarter cursorWord jumping */

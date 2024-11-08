@@ -1,9 +1,11 @@
 {
+  /* Configure whether you receive automatic updates. Requires a restart after change. The updates are fetched from a Microsoft online service */
   "update.mode": "default",
   /* Window */
   "window.zoomLevel": 1,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   "window.commandCenter": false,
+  "window.newWindowDimensions": "inherit",
   /* Workbench */
   "workbench.tips.enabled": false,
   "workbench.editor.editorActionsLocation": "hidden",
@@ -19,8 +21,7 @@
   "workbench.panel.opensMaximized": "never",
   /* Determines which settings editor to use by default. */
   "workbench.settings.editor": "json",
-  /* Overrides colors from the currently selected color theme */
-  "workbench.colorTheme": "Fosk",
+  "workbench.list.smoothScrolling": true,
   "workbench.colorCustomizations": {
     "[Fosk]": {
       /* This should be part of Fosk */
@@ -69,9 +70,11 @@
   "files.associations": {
     "*.jsx": "javascriptreact",
     "*.mly": "ocaml.menhir",
+    "*.mlx": "ocaml",
     "*.js": "javascriptreact"
   },
   /* Search */
+  "search.mode": "reuseEditor",
   "search.showLineNumbers": true,
   "search.smartCase": true,
   "search.exclude": {
@@ -93,9 +96,9 @@
   /* Keyboard */
   "keyboard.dispatch": "keyCode",
   /* Editor */
-  "editor.fontFamily": "Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
   "editor.codeLensFontSize": 16,
-  "editor.codeLensFontFamily": "Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.codeLensFontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
   "editor.fontLigatures": true,
   "editor.rulers": [80, 120],
   "editor.tabSize": 2,
@@ -125,12 +128,12 @@
   "editor.unicodeHighlight.nonBasicASCII": false,
   "editor.renderControlCharacters": true,
   "editor.useTabStops": false,
-  "editor.detectIndentation": false,
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
   "editor.snippetSuggestions": "bottom",
   "editor.cursorBlinking": "smooth",
   "editor.hover.enabled": true,
   "editor.cursorSmoothCaretAnimation": "off",
-  "editor.insertSpaces": true,
   "editor.tabCompletion": "on",
   "editor.stickyScroll.enabled": false,
   "editor.minimap.renderCharacters": false,
@@ -148,7 +151,7 @@
   },
   "editor.suggestFontSize": 16,
   "editor.suggest.insertMode": "replace",
-  "editor.autoIndent": "full",
+  "editor.autoIndent": "none",
   "editor.colorDecorators": false,
   "editor.linkedEditing": true,
   "editor.suggest.showIcons": true,
@@ -227,6 +230,7 @@
   /* JSON */
   "[json][jsonc]": {
     "gitlens.codeLens.scopes": ["document"],
+    "editor.autoIndent": "full",
     "editor.formatOnPaste": false,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.quickSuggestions": {
@@ -255,9 +259,13 @@
   "errorLens.removeLinebreaks": false,
   "errorLens.fontWeight": "400",
   /* GitLens */
-  "git.decorations.enabled": true,
+  "git.decorations.enabled": false,
   "gitlens.hovers.avatars": false,
+  "gitlens.codeLens.authors.enabled": false,
+  "gitlens.codeLens.enabled": false,
   "gitlens.statusBar.enabled": false,
+  "gitlens.currentLine.format": "${message|50?} ${'in 'pullRequest}• ${agoOrDate} by ${author}",
+  "gitlens.currentLine.uncommittedChangesFormat": "${message|50?} ${'in 'pullRequest}• ${agoOrDate}",
   /* Copilot */
   "github.copilot.enable": {
     "markdown": true,
@@ -295,10 +303,12 @@
   "apc.electron": {
     "titleBarStyle": "hidden"
   },
-  /* Misc */
+  /* Go to next error */
   "go-to-next-error.multiSeverityHandlingMethod": "hover",
+  /* AIs */
   "supermaven.enable": {
     "*": true
   },
-  "continue.enableTabAutocomplete": false
+  "continue.enableTabAutocomplete": false,
+  "workbench.colorTheme": "Fosk"
 }

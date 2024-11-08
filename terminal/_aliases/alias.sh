@@ -12,12 +12,12 @@ alias .....="cd ../../../../.."
 
 # One chars
 alias h="history 1"
-alias c="code"
+alias c="cursor"
 alias z="zed"
 alias n="npm"
 alias y="yarn"
 # alias p="pnpm"
-alias e="esy"
+# alias e="esy"
 alias m="make"
 alias q="query-json"
 alias t="itomate"
@@ -28,10 +28,10 @@ alias d='docker'
 alias j=__zoxide_zi
 
 # Edit setup
-alias cfg="code \${DOTFILES_PATH}"
+alias cfg="cursor \${DOTFILES_PATH}"
 
 # Edit etc/hosts file
-alias hosts="code /etc/hosts"
+alias hosts="cursor /etc/hosts"
 
 alias quit="exit"
 
