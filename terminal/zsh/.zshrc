@@ -146,3 +146,10 @@ zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
 
 ulimit -n 2048
+
+# dune
+source $HOME/.local/share/dune/env/env.zsh
+
+# load autocompletion (not sure if it's the right thing with zim)
+autoload -Uz compinit
+compinit

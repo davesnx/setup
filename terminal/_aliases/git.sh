@@ -21,3 +21,6 @@ alias gl="forgit::log"
 alias ga="forgit::add"
 alias gd="forgit::diff"
 alias gitignore="forgit::ignore"
+
+# fast
+alias yolo='git add . && git commit -m "$(date)" && git push --no-verify'

@@ -11,6 +11,7 @@ paths=(
   "$DOTFILES_PATH/bin/ocaml"
   "$DOTFILES_PATH/bin/system"
   "$GEM_HOME/bin"
+  "$HOME/.elan/bin" # lean
   "$PYTHON_PATH/libexec/bin"
   "/usr/local/opt/openssl@3/bin"
   "/usr/local/opt/libpq/bin"

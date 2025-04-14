@@ -12,8 +12,8 @@ alias .....="cd ../../../../.."
 
 # One chars
 alias h="history 1"
-alias c="cursor"
-alias z="zed"
+alias c="open $1 -a \"Cursor\""
+alias z="open $1 -a \"Zed\""
 alias n="npm"
 alias y="yarn"
 # alias p="pnpm"
@@ -28,10 +28,10 @@ alias d='docker'
 alias j=__zoxide_zi
 
 # Edit setup
-alias cfg="cursor \${DOTFILES_PATH}"
+alias cfg="\${EDITOR} \${DOTFILES_PATH}"
 
 # Edit etc/hosts file
-alias hosts="cursor /etc/hosts"
+alias hosts="\${EDITOR} /etc/hosts"
 
 alias quit="exit"
 

@@ -252,5 +252,47 @@
   {
     "key": "alt+cmd+\\",
     "command": "-workbench.files.action.showActiveFileInExplorer"
-  }
+  },
+  /* Disable ai stuff */
+  {
+    "key": "cmd+l",
+    "command": "-aichat.newchataction"
+  },
+  {
+    "key": "shift+cmd+l",
+    "command": "-aichat.insertselectionintochat"
+  },
+  {
+    "key": "cmd+enter",
+    "command": "-repl.execute",
+    "when": "isCompositeNotebook && activeEditor == 'workbench.editor.repl'"
+  },
+  {
+    "key": "cmd+k",
+    "command": "-aipopup.action.modal.generate",
+    "when": "editorFocus && !composerBarIsVisible"
+  },
+  {
+    "key": "shift+cmd+k",
+    "command": "-aipopup.action.modal.generate",
+    "when": "editorFocus && !composerBarIsVisible"
+  },
+  {
+    "key": "shift+cmd+k",
+    "command": "-composer.openAsBar"
+  },
+  {
+    "key": "shift+cmd+d",
+    "command": "-composer.fixerrormessage",
+    "when": "(arbitrary function)"
+  },
+  {
+    "key": "shift+enter",
+    "command": "-ocaml.evaluate-selection",
+    "when": "editorTextFocus && editorLangId == 'ocaml' || editorTextFocus && editorLangId == 'ocaml.interface' || editorTextFocus && editorLangId == 'ocaml.menhir' || editorTextFocus && editorLangId == 'ocaml.ocamllex' || editorTextFocus && editorLangId == 'reason'"
+  },
+  {
+    "key": "cmd+i",
+    "command": "composerMode.agent"
+  },
 ]

@@ -1,8 +1,7 @@
 {
-  /* Configure whether you receive automatic updates. Requires a restart after change. The updates are fetched from a Microsoft online service */
   "update.mode": "default",
   /* Window */
-  "window.zoomLevel": 1,
+  "window.zoomLevel": 1.2,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
@@ -23,25 +22,22 @@
   "workbench.settings.editor": "json",
   "workbench.list.smoothScrolling": true,
   "workbench.colorCustomizations": {
-    "[Fosk]": {
-      /* This should be part of Fosk */
-      "tree.indentGuidesStroke": "#707a8c",
-      "editorBracketHighlight.foreground1": "#cbccc6",
-      "editorBracketHighlight.foreground2": "#ffcc66",
-      "editorBracketHighlight.foreground3": "#73d0ff",
-      "editorBracketHighlight.foreground4": "#c172d9",
-      "editorBracketHighlight.foreground5": "#bae67e",
-      "editorBracketHighlight.foreground6": "#4fb1bc",
-      "editorBracketHighlight.unexpectedBracket.foreground": "#db4d3f"
-    },
     /* Hide statusBarItem */
     "statusBarItem.remoteForeground": "#1F2430",
-    "statusBarItem.remoteBackground": "#707a8c"
+    "statusBarItem.remoteBackground": "#707a8c",
+    /* little overrides for fosk */
+    "editorBracketHighlight.foreground1": "#cbccc699",
+    "editorBracketHighlight.foreground2": "#cbccc699",
+    "editorBracketHighlight.foreground3": "#cbccc699",
+    "editorBracketHighlight.foreground4": "#cbccc699",
+    "editorBracketHighlight.foreground5": "#cbccc699",
+    "editorBracketHighlight.foreground6": "#cbccc699",
   },
   /* Controls which editor is shown at startup */
   "workbench.startupEditor": "none",
   "workbench.fontAliasing": "antialiased",
   "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "Fosk",
   "material-icon-theme.folders.theme": "specific",
   "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
@@ -69,9 +65,9 @@
   },
   "files.associations": {
     "*.jsx": "javascriptreact",
+    "*.js": "javascriptreact",
     "*.mly": "ocaml.menhir",
-    "*.mlx": "ocaml",
-    "*.js": "javascriptreact"
+    "*.mlx": "ocaml"
   },
   /* Search */
   "search.mode": "reuseEditor",
@@ -96,13 +92,16 @@
   /* Keyboard */
   "keyboard.dispatch": "keyCode",
   /* Editor */
-  "editor.fontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.fontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
   "editor.codeLensFontSize": 16,
-  "editor.codeLensFontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, JetBrains Mono, Martian Mono, Monaco",
+  "editor.codeLensFontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
   "editor.fontLigatures": true,
-  "editor.rulers": [80, 120],
+  "editor.rulers": [
+    80,
+    120
+  ],
   "editor.tabSize": 2,
-  "editor.fontSize": 16,
+  "editor.fontSize": 15,
   "editor.fontWeight": 400,
   "editor.wordWrap": "on",
   "editor.folding": true,
@@ -110,6 +109,7 @@
   "editor.renderWhitespace": "boundary",
   "editor.wrappingIndent": "indent",
   "editor.cursorStyle": "block",
+  "editor.columnSelection": false,
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
@@ -122,7 +122,7 @@
   "editor.occurrencesHighlight": "singleFile",
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\\\|;:'\\\",.<>/?",
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[]{}\\\\|;:'\\\",.<>/?",
   "editor.lineHeight": 2,
   "editor.bracketPairColorization.enabled": true,
   "editor.unicodeHighlight.nonBasicASCII": false,
@@ -131,12 +131,15 @@
   "editor.detectIndentation": true,
   "editor.insertSpaces": true,
   "editor.snippetSuggestions": "bottom",
-  "editor.cursorBlinking": "smooth",
+  "editor.cursorBlinking": "phase",
   "editor.hover.enabled": true,
+  "editor.hover.above": true,
+  "editor.hover.sticky": true,
   "editor.cursorSmoothCaretAnimation": "off",
   "editor.tabCompletion": "on",
   "editor.stickyScroll.enabled": false,
   "editor.minimap.renderCharacters": false,
+  "editor.minimap.enabled": true,
   "editor.minimap.showSlider": "always",
   "editor.multiCursorModifier": "ctrlCmd",
   "editor.accessibilitySupport": "off",
@@ -173,7 +176,7 @@
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.fontWeightBold": "normal",
   "terminal.integrated.tabs.enabled": true,
-  "terminal.integrated.fontFamily": "Ligalex Mono",
+  "terminal.integrated.fontFamily": "JetBrains Mono",
   "terminal.integrated.allowMnemonics": true,
   "terminal.integrated.drawBoldTextInBrightColors": true,
   "terminal.explorerKind": "external",
@@ -185,13 +188,15 @@
   "html.format.preserveNewLines": true,
   "html.format.indentInnerHtml": true,
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "vscode.html-language-features",
     "editor.formatOnSave": true
   },
   "[css]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.css-language-features"
   },
+  /* Makefile */
+  "makefile.configureOnOpen": true,
   /* TypeScript */
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
@@ -200,15 +205,22 @@
   "typescript.inlayHints.parameterTypes.enabled": true,
   /* JavaScript */
   "js/ts.implicitProjectConfig.strictNullChecks": true,
-  "eslint.validate": ["javascriptreact", "javascript", "typescript"],
+  "eslint.validate": [
+    "javascriptreact",
+    "javascript",
+    "typescript",
+    "typescriptreact",
+  ],
+  "eslint.enable": true,
+  "eslint.format.enable": true,
   "[typescript][typescriptreact][javascript][javascriptreact][json][jsonc]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.defaultFormatter": "biomejs.biome",
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
+      "source.fixAll.eslint": "explicit",
+      "source.fixAll.ts": "always"
     }
   },
-  "vs-code-prettier-eslint.prettierLast": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
   /* OCaml */
   "ocaml.dune.autoDetect": true,
@@ -229,10 +241,9 @@
   },
   /* JSON */
   "[json][jsonc]": {
-    "gitlens.codeLens.scopes": ["document"],
     "editor.autoIndent": "full",
     "editor.formatOnPaste": false,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "vscode.json-language-features",
     "editor.quickSuggestions": {
       "strings": true
     },
@@ -259,20 +270,15 @@
   "errorLens.removeLinebreaks": false,
   "errorLens.fontWeight": "400",
   /* GitLens */
-  "git.decorations.enabled": false,
+  "git.decorations.enabled": true,
+  "gitlens.mode.active": "review",
+  "gitlens.codeLens.scopes": [],
   "gitlens.hovers.avatars": false,
   "gitlens.codeLens.authors.enabled": false,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.statusBar.enabled": false,
+  "gitlens.codeLens.enabled": true,
+  "gitlens.statusBar.enabled": true,
   "gitlens.currentLine.format": "${message|50?} ${'in 'pullRequest}• ${agoOrDate} by ${author}",
   "gitlens.currentLine.uncommittedChangesFormat": "${message|50?} ${'in 'pullRequest}• ${agoOrDate}",
-  /* Copilot */
-  "github.copilot.enable": {
-    "markdown": true,
-    "*": true,
-    "plaintext": false,
-    "yaml": false
-  },
   /* Emmet */
   "emmet.showSuggestionsAsSnippets": true,
   "emmet.includeLanguages": {
@@ -285,16 +291,11 @@
   "remote.SSH.useLocalServer": false,
   "remote.SSH.remoteServerListenOnSocket": true,
   "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
-  /* Codesnap */
-  "codesnap.showWindowControls": false,
-  "codesnap.containerPadding": "5em",
-  "codesnap.backgroundColor": "#525869",
-  "codesnap.boxShadow": "rgba(0, 0, 0, 0.25) 0px 30px 50px",
   /* Apc Customize UI++ */
-  "apc.font.family": "IBM Plex Mono",
+  "apc.font.family": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
   "apc.header": {
     "height": 40,
-    "fontSize": 14
+    "fontSize": 15
   },
   "apc.listRow": {
     "height": 23,
@@ -305,10 +306,8 @@
   },
   /* Go to next error */
   "go-to-next-error.multiSeverityHandlingMethod": "hover",
-  /* AIs */
-  "supermaven.enable": {
+  /* AI */
+  "github.copilot.enable": {
     "*": true
-  },
-  "continue.enableTabAutocomplete": false,
-  "workbench.colorTheme": "Fosk"
+  }
 }
