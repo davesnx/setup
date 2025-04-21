@@ -51,6 +51,8 @@
   # zsh-history-substring-search
   #
 
+  autoload -U history-substring-search-up history-substring-search-down
+
   # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
   bindkey '^[[A' history-substring-search-up
   bindkey '^[[B' history-substring-search-down
