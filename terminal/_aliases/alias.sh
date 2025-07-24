@@ -136,10 +136,6 @@ alias ls="exa --group-directories-first -alh --octal-permissions"
 # List only directories
 alias ld="ls -D"
 
-# https://github.com/sharkdp/fd
-alias _find="command find"
-alias find="fd"
-
 # https://github.com/sharkdp/bat
 alias _cat="command cat"
 alias cat="bat"

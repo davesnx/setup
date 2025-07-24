@@ -18,6 +18,11 @@ zmodule https://github.com/zsh-users/zsh-completions.git
 
 # Enables and configures smart and extensive tab completion
 # completion must be sourced after zsh-users/zsh-completions
+zmodule zsh-users/zsh-completions --fpath src
+# Enables and configures smart and extensive tab completion. Must be sourced after all modules that add completion definitions.
+if [[ -d /opt/homebrew/share/zsh ]] && [[ $(uname) == Darwin ]] && [[ $(uname -m) == arm64 ]] ; then
+    zmodule /opt/homebrew/share/zsh/site-functions --fpath .
+fi
 zmodule completion
 
 # Fish-like autosuggestions for Zsh
@@ -32,4 +37,10 @@ zmodule zsh-users/zsh-history-substring-search
 zmodule zsh-users/zsh-syntax-highlighting
 
 # Autojump alternative
-zmodule kiesman99/zim-zoxide
+# zmodule kiesman99/zim-zoxide
+
+# Defer loading of modules until after compinit
+zmodule romkatv/zsh-defer -d
+
+# https://github.com/mroth/evalcache
+zmodule mroth/evalcache

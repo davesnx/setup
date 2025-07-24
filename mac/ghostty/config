@@ -1,0 +1,77 @@
+confirm-close-surface = false
+
+cursor-style = block
+adjust-cell-height = 35%
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 2
+
+window-padding-balance = true
+window-save-state = always
+window-decoration = true
+window-title-font-family = "JetBrains Mono"
+window-inherit-working-directory = true
+
+font-size = 23
+font-family = "JetBrains Mono"
+font-feature=-liga
+font-thicken = false
+font-thicken-strength = 200
+adjust-cell-height = 3
+bold-is-bright = true
+
+cursor-style = block
+cursor-style-blink = true
+shell-integration-features = no-cursor
+
+scrollback-limit = 4294967296
+
+shell-integration = none
+
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+
+window-padding-x = 4
+window-padding-y = 4
+
+# Theme
+background = #161b23
+foreground = #c4b5b1
+
+cursor-color = #f6efee
+cursor-text = #c4b5b1
+
+selection-background = #434343
+selection-foreground = #c4b5b1
+
+# Normal colors (0-7)
+palette = 0=#1a1a1a
+palette = 1=#db6165
+palette = 2=#a6cc70
+palette = 3=#ffa759
+palette = 4=#d4bfff
+palette = 5=#c594c5
+palette = 6=#68c1ed
+palette = 7=#c4b5b1
+
+# Bright colors (8-15)
+palette = 8=#7f7f7f
+palette = 9=#f28779
+palette = 10=#bae67e
+palette = 11=#ffd580
+palette = 12=#acb9e9
+palette = 13=#d4bfff
+palette = 14=#5ccfe6
+palette = 15=#f6efef
+
+# Keybinds
+
+# Dance between splits
+keybind = opt+shift+left=goto_split:left
+keybind = opt+shift+right=goto_split:right
+keybind = opt+shift+up=goto_split:up
+keybind = opt+shift+down=goto_split:down
+
+# Classic macos in spanish
+keybind = opt+ñ=text:~
+
+keybind = opt+shift+r=reload_config

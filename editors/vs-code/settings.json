@@ -1,7 +1,8 @@
 {
   "update.mode": "default",
   /* Window */
-  "window.zoomLevel": 1.2,
+  "window.zoomLevel": 2,
+  "workbench.colorTheme": "Fosk (development)",
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
@@ -21,27 +22,15 @@
   /* Determines which settings editor to use by default. */
   "workbench.settings.editor": "json",
   "workbench.list.smoothScrolling": true,
-  "workbench.colorCustomizations": {
-    /* Hide statusBarItem */
-    "statusBarItem.remoteForeground": "#1F2430",
-    "statusBarItem.remoteBackground": "#707a8c",
-    /* little overrides for fosk */
-    "editorBracketHighlight.foreground1": "#cbccc699",
-    "editorBracketHighlight.foreground2": "#cbccc699",
-    "editorBracketHighlight.foreground3": "#cbccc699",
-    "editorBracketHighlight.foreground4": "#cbccc699",
-    "editorBracketHighlight.foreground5": "#cbccc699",
-    "editorBracketHighlight.foreground6": "#cbccc699",
-  },
   /* Controls which editor is shown at startup */
   "workbench.startupEditor": "none",
   "workbench.fontAliasing": "antialiased",
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.colorTheme": "Fosk",
   "material-icon-theme.folders.theme": "specific",
   "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
   "workbench.statusBar.visible": true,
+  "workbench.colorCustomizations": {},
   /* Explorer */
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
@@ -64,6 +53,7 @@
     "**/.git": false
   },
   "files.associations": {
+    ".env*": "dotenv",
     "*.jsx": "javascriptreact",
     "*.js": "javascriptreact",
     "*.mly": "ocaml.menhir",
@@ -71,6 +61,7 @@
   },
   /* Search */
   "search.mode": "reuseEditor",
+  "search.useReplacePreview": true,
   "search.showLineNumbers": true,
   "search.smartCase": true,
   "search.exclude": {
@@ -97,7 +88,6 @@
   "editor.codeLensFontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
   "editor.fontLigatures": true,
   "editor.rulers": [
-    80,
     120
   ],
   "editor.tabSize": 2,
@@ -140,7 +130,6 @@
   "editor.stickyScroll.enabled": false,
   "editor.minimap.renderCharacters": false,
   "editor.minimap.enabled": true,
-  "editor.minimap.showSlider": "always",
   "editor.multiCursorModifier": "ctrlCmd",
   "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
@@ -153,7 +142,7 @@
     "–": true
   },
   "editor.suggestFontSize": 16,
-  "editor.suggest.insertMode": "replace",
+  "editor.suggest.insertMode": "insert",
   "editor.autoIndent": "none",
   "editor.colorDecorators": false,
   "editor.linkedEditing": true,
@@ -211,8 +200,8 @@
     "typescript",
     "typescriptreact",
   ],
-  "eslint.enable": true,
-  "eslint.format.enable": true,
+  "eslint.enable": false,
+  "eslint.format.enable": false,
   "[typescript][typescriptreact][javascript][javascriptreact][json][jsonc]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome",
@@ -236,6 +225,7 @@
   },
   /* ReScript */
   "[rescript]": {
+    "rescript.settings.askToStartBuild": false,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "chenglou92.rescript-vscode"
   },
@@ -271,11 +261,10 @@
   "errorLens.fontWeight": "400",
   /* GitLens */
   "git.decorations.enabled": true,
-  "gitlens.mode.active": "review",
   "gitlens.codeLens.scopes": [],
   "gitlens.hovers.avatars": false,
   "gitlens.codeLens.authors.enabled": false,
-  "gitlens.codeLens.enabled": true,
+  "gitlens.codeLens.enabled": false,
   "gitlens.statusBar.enabled": true,
   "gitlens.currentLine.format": "${message|50?} ${'in 'pullRequest}• ${agoOrDate} by ${author}",
   "gitlens.currentLine.uncommittedChangesFormat": "${message|50?} ${'in 'pullRequest}• ${agoOrDate}",
@@ -292,7 +281,15 @@
   "remote.SSH.remoteServerListenOnSocket": true,
   "remote.SSH.configFile": "/Users/davesnx/.ssh/config",
   /* Apc Customize UI++ */
-  "apc.font.family": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
+  "window.titleBarStyle": "custom",
+  "apc.electron": {
+    "titleBarStyle": "hiddenInset",
+    "trafficLightPosition": {
+      "x": 12,
+      "y": 8
+    }
+  },
+  "apc.font.family": "JetBrains Mono",
   "apc.header": {
     "height": 40,
     "fontSize": 15
@@ -301,11 +298,31 @@
     "height": 23,
     "fontSize": 13
   },
-  "apc.electron": {
-    "titleBarStyle": "hidden"
-  },
+  "apc.stylesheet": {},
+  /* Where am I */
+  "where-am-i.textTransfrom": "none",
   /* Go to next error */
   "go-to-next-error.multiSeverityHandlingMethod": "hover",
+  /* colorize */
+  "colorize.hide_current_line_decorations": false,
+  "colorize.languages": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "reason",
+    "ocaml",
+    "*"
+    // ...
+  ],
+  "colorize.colorized_colors": [
+    "HEXA",
+    "ARGB",
+    "RGB",
+    "HSL",
+    "OKLAB",
+    "OKLCH"
+  ],
   /* AI */
   "github.copilot.enable": {
     "*": true
