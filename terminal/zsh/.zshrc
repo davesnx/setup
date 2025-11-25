@@ -1,12 +1,11 @@
 #! /bin/zsh
 
 # History
-setopt HIST_IGNORE_ALL_DUPS  # Remove older command from the history if a duplicate is to be added.
+setopt HIST_IGNORE_ALL_DUPS # Remove older command from the history if a duplicate is to be added.
 setopt HIST_REDUCE_BLANKS # Remove superfluous blanks before recording entry.
 setopt hist_ignore_space # ignore commands that start with space
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
 setopt HIST_IGNORE_ALL_DUPS # Delete old recorded entry if new entry is a duplicate.
-setopt no_share_history # No share history between all sessions.
 HISTFILE=~/.zhistory
 export HISTSIZE='32768' # Increase Bash history size. Allow 32³ entries
 export HISTFILESIZE="${HISTSIZE}"
@@ -52,8 +51,6 @@ if [[ -n ${terminfo[kcuu1]} && -n ${terminfo[kcud1]} ]]; then
   bindkey ${terminfo[kcud1]} history-substring-search-down
 fi
 
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
@@ -94,6 +91,8 @@ export BUN_INSTALL="$HOME/.bun"
 export BIOME_CONFIG_PATH="${DOTFILES_PATH}/editors/biome.json"
 
 export HOMEBREW_AUTO_UPDATE_SECS=86400
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_ENV_HINTS=1
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
 export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/brew/Brewfile
@@ -157,5 +156,10 @@ export NODE_REPL_MODE='sloppy' # Use sloppy mode by default, matching web browse
 zsh-defer _evalcache opam env
 # opam-zsh autocompletion
 zsh-defer source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
+
 # load dune autocompletions
+compopt() { return 0; } # disable compopt since dune/env use bash compt with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
+
+# load Alice env
+# zsh-defer source "$HOME/.alice/env/env.zsh"

@@ -57,6 +57,9 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+# Disable window dragging
+defaults write -g NSWindowShouldDragOnGesture -bool false
+
 ###############################################################################
 # SSD-specific tweaks                                                         #
 ###############################################################################

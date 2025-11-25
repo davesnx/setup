@@ -16,14 +16,16 @@ alias c="open $1 -a \"Cursor\""
 alias z="open $1 -a \"Zed\""
 alias n="npm"
 alias y="yarn"
+alias p="pnpm"
 alias m="make"
 alias q="query-json"
 alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
-alias d='docker'
-alias j=__zoxide_zi
+alias d="docker"
+alias j="__zoxide_z"
+alias jj="__zoxide_zi"
 
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
@@ -70,8 +72,10 @@ alias sudo='sudo '
 # Get week number
 alias week='date +%V'
 
-# Google Chrome
-alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+# Browser
+alias _chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+alias chrome='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser'
+alias brave='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser'
 
 # Show active network interfaces
 alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
@@ -131,8 +135,9 @@ alias pg='pgcli'
 alias my='mycli'
 
 # Extend ls
-alias l="exa --group-directories-first -a --oneline"
-alias ls="exa --group-directories-first -alh --octal-permissions"
+alias l="exa --group-directories-first --oneline"
+alias ls="exa --group-directories-first -lh --octal-permissions"
+alias lsa="exa --group-directories-first -alh --octal-permissions"
 # List only directories
 alias ld="ls -D"
 
@@ -154,6 +159,9 @@ alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
 # Know what process uses the port
 alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
 alias listen="lsof -n | grep LISTEN"
+
+# Applications/Terminal.app and not Applications/Ghostty.app because the rename
+alias ghostty="/Applications/Terminal.app/Contents/MacOS/ghostty"
 
 function _calcram() {
   local sum

@@ -5,16 +5,15 @@ paths=(
   "$HOME/.deno/bin"
   "$HOME/.cargo/bin"
   "$BUN_INSTALL/bin"
-  "$HOME/.fly/bin"
   "$DOTFILES_PATH/bin"
   "$DOTFILES_PATH/bin/git-extras"
   "$DOTFILES_PATH/bin/ocaml"
-  "$DOTFILES_PATH/bin/system"
+  "$DOTFILES_PATH/bin/fs"
+  "$HOME/.local/bin" # dune
   "$GEM_HOME/bin"
   "$HOME/.elan/bin" # lean
   "$PYTHON_PATH/libexec/bin"
   "/usr/local/opt/openssl@3/bin"
-  "/usr/local/opt/libpq/bin"
   "/usr/local/bin"
   "/usr/local/sbin"
   "/bin"

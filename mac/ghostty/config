@@ -1,21 +1,26 @@
 confirm-close-surface = false
+scrollback-limit = 4294967296
 
 cursor-style = block
 adjust-cell-height = 35%
 mouse-hide-while-typing = true
 mouse-scroll-multiplier = 2
 
-window-padding-balance = true
+shell-integration = zsh
 window-save-state = always
 window-decoration = true
-window-title-font-family = "JetBrains Mono"
 window-inherit-working-directory = true
+
+# Theme
+window-title-font-family = "JetBrains Mono"
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
 
 font-size = 23
 font-family = "JetBrains Mono"
-font-feature=-liga
 font-thicken = false
-font-thicken-strength = 200
+font-feature = -liga
 adjust-cell-height = 3
 bold-is-bright = true
 
@@ -23,45 +28,45 @@ cursor-style = block
 cursor-style-blink = true
 shell-integration-features = no-cursor
 
-scrollback-limit = 4294967296
-
-shell-integration = none
-
+window-theme = ghostty
 macos-titlebar-style = tabs
-macos-option-as-alt = true
+macos-window-shadow = true
 
-window-padding-x = 4
-window-padding-y = 4
+unfocused-split-opacity = 0.9
 
-# Theme
-background = #161b23
-foreground = #c4b5b1
+window-titlebar-background = #161B23
+window-titlebar-foreground = #C4B5B1
 
-cursor-color = #f6efee
-cursor-text = #c4b5b1
+background = #161B23
+foreground = #C4B5B1
+
+cursor-color = #E4B75E
+cursor-text = #C4B5B1
 
 selection-background = #434343
-selection-foreground = #c4b5b1
+selection-foreground = #C4B5B1
+
+split-divider-color = #36373C
 
 # Normal colors (0-7)
-palette = 0=#1a1a1a
-palette = 1=#db6165
-palette = 2=#a6cc70
-palette = 3=#ffa759
-palette = 4=#d4bfff
-palette = 5=#c594c5
-palette = 6=#68c1ed
-palette = 7=#c4b5b1
+palette = 0=#1A1A1A
+palette = 1=#DB6165
+palette = 2=#A6CC70
+palette = 3=#FFA759
+palette = 4=#D4BFFF
+palette = 5=#C594C5
+palette = 6=#68C1ED
+palette = 7=#C4B5B1
 
 # Bright colors (8-15)
-palette = 8=#7f7f7f
-palette = 9=#f28779
-palette = 10=#bae67e
-palette = 11=#ffd580
-palette = 12=#acb9e9
-palette = 13=#d4bfff
-palette = 14=#5ccfe6
-palette = 15=#f6efef
+palette = 8=#7F7F7F
+palette = 9=#F28779
+palette = 10=#BAE67E
+palette = 11=#FFD580
+palette = 12=#ACB9E9
+palette = 13=#D4BFFF
+palette = 14=#5CCFE6
+palette = 15=#F6EFEF
 
 # Keybinds
 
@@ -71,7 +76,7 @@ keybind = opt+shift+right=goto_split:right
 keybind = opt+shift+up=goto_split:up
 keybind = opt+shift+down=goto_split:down
 
-# Classic macos in spanish
+# Classic MacOS in spanish ._.
 keybind = opt+ñ=text:~
+keybind = cmd+shift+r=reload_config
 
-keybind = opt+shift+r=reload_config
