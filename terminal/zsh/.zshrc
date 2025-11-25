@@ -88,14 +88,12 @@ export RUBY_PATH='/usr/local/opt/ruby'
 export GEM_HOME="$HOME/.gem"
 export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 export BUN_INSTALL="$HOME/.bun"
-export BIOME_CONFIG_PATH="${DOTFILES_PATH}/editors/biome.json"
-
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 export HOMEBREW_NO_ENV_HINTS=1
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
-export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/brew/Brewfile
+export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/mac/brew/Brewfile
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

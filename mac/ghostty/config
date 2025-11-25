@@ -1,8 +1,6 @@
 confirm-close-surface = false
 scrollback-limit = 4294967296
 
-cursor-style = block
-adjust-cell-height = 35%
 mouse-hide-while-typing = true
 mouse-scroll-multiplier = 2
 

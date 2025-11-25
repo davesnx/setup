@@ -1,10 +1,6 @@
 tap "buo/cask-upgrade"
 tap "denisidoro/tools"
 tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/cask-drivers"
-tap "homebrew/cask-versions"
-tap "homebrew/core"
 tap "homebrew/services"
 
 brew "sqlite"
@@ -39,11 +35,12 @@ brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 brew "httpie" # https://httpie.io
 brew "hovrly"
+brew "eza"
 
 cask "firefox"
 cask "figma"
 cask "tableplus"
-cask "google-backup-and-sync"
+cask "google-drive"
 cask "spotify"
 cask "telegram"
 cask "visual-studio-code"
@@ -54,7 +51,7 @@ cask "notion"
 cask "slack"
 mas "The Unarchiver", id: 425424353
 cask "discord"
-brew "flux" # https://justgetflux.com/
+cask "flux" # https://justgetflux.com/
 cask "enpass" # https://www.enpass.io/
 cask "kap" # https://getkap.co/
 cask "rectangle" # https://rectangleapp.com/

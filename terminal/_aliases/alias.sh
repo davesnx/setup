@@ -19,7 +19,6 @@ alias y="yarn"
 alias p="pnpm"
 alias m="make"
 alias q="query-json"
-alias t="itomate"
 alias r=" source \${DOTFILES_PATH}/bin/scripts"
 alias er=" source \${DOTFILES_PATH}/bin/esy-scripts"
 alias x="dum"
@@ -135,9 +134,9 @@ alias pg='pgcli'
 alias my='mycli'
 
 # Extend ls
-alias l="exa --group-directories-first --oneline"
-alias ls="exa --group-directories-first -lh --octal-permissions"
-alias lsa="exa --group-directories-first -alh --octal-permissions"
+alias l="eza --group-directories-first --oneline"
+alias ls="eza --group-directories-first -lh --octal-permissions"
+alias lsa="eza --group-directories-first -alh --octal-permissions"
 # List only directories
 alias ld="ls -D"
 
@@ -156,8 +155,7 @@ alias rm="trash"
 # Generate a uuid
 alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
 
-# Know what process uses the port
-alias port="source \${DOTFILES_PATH}/bin/system/port_owner"
+# Know what process uses the port
 alias listen="lsof -n | grep LISTEN"
 
 # Applications/Terminal.app and not Applications/Ghostty.app because the rename
