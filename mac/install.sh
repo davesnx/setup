@@ -16,3 +16,7 @@ sudo truncate -s 0 /etc/paths
 # VS Code
 ln -sf "$DOTFILES_PATH/editors/vs-code/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
 ln -sf "$DOTFILES_PATH/editors/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+
+# Cursor
+ln -sf "$DOTFILES_PATH/editors/vs-code/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
+ln -sf "$DOTFILES_PATH/editors/vs-code/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"

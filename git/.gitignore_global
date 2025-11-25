@@ -20,9 +20,6 @@ Thumbs.db
 .idea-compl
 *.sc
 
-# Mac
-.DS_Store
-
 # Clojure
 .lein-repl-history
 .lein-failures
