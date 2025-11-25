@@ -221,3 +221,6 @@ itomate.yml
 # Cursor
 .cursorrules
 .cursor/
+
+# Ignore direnv
+.envrc

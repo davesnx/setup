@@ -5,18 +5,22 @@ setopt HIST_IGNORE_ALL_DUPS # Remove older command from the history if a duplica
 setopt HIST_REDUCE_BLANKS # Remove superfluous blanks before recording entry.
 setopt hist_ignore_space # ignore commands that start with space
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
-setopt HIST_IGNORE_ALL_DUPS # Delete old recorded entry if new entry is a duplicate.
 HISTFILE=~/.zhistory
 export HISTSIZE='32768' # Increase Bash history size. Allow 32³ entries
-export HISTFILESIZE="${HISTSIZE}"
-export HISTCONTROL='ignoreboth' # Omit duplicates and commands that begin with a space from history.
-
+SAVEHIST=$HISTSIZE
 bindkey -e # Set editor default keymap to emacs (`-e`) or vi (`-v`)
 
 setopt CORRECT # Prompt for spelling correction of commands.
 
 # Remove path separator from WORDCHARS.
 WORDCHARS=""
+
+# Better globbing
+setopt EXTENDED_GLOB    # Enables ^, ~, # in patterns (e.g., ls ^*.txt)
+
+# Completion behavior
+setopt COMPLETE_IN_WORD # Tab completes from cursor position, not just end
+setopt ALWAYS_TO_END    # Move cursor to end after completion
 
 # completion
 zstyle ':zim:termtitle' format '%1~'
@@ -149,11 +153,11 @@ export NODE_REPL_HISTORY=~/.node_history # Enable persistent REPL history for `n
 export NODE_REPL_HISTORY_SIZE='32768' # Allow 32³ entries; the default is 1000.
 export NODE_REPL_MODE='sloppy' # Use sloppy mode by default, matching web browsers.
 
+# opam-zsh autocompletion (using version from dotfiles, not ~/.opam/opam-init)
+zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
 # load opam
 # eval "$(opam env)"
 zsh-defer _evalcache opam env
-# opam-zsh autocompletion
-zsh-defer source /Users/davesnx/.opam/opam-init/init.zsh > /dev/null 2> /dev/null
 
 # load dune autocompletions
 compopt() { return 0; } # disable compopt since dune/env use bash compt with zsh
