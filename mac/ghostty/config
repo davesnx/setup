@@ -77,4 +77,6 @@ keybind = opt+shift+down=goto_split:down
 # Classic MacOS in spanish ._.
 keybind = opt+ñ=text:~
 keybind = cmd+shift+r=reload_config
+keybind = shift+enter=text:\n
+keybind = control+enter=text:\n
 
