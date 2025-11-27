@@ -65,7 +65,7 @@ autoload -Uz promptinit && promptinit
 
 prompt davesnx
 
-# ZSH Ops
+# zsh options
 setopt autopushd # Automatically adds directories to the directory stack when you use cd
 unsetopt cdablevars # Disables the ability to use variable names as directory shortcuts with cd
 setopt promptsubst # allow substitution in PS1
@@ -119,8 +119,8 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
   ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
 } &!
 
-# Initialize zsh-defer.
-source ${ZIM_HOME}/modules/zsh-defer/zsh-defer.plugin.zsh
+# Initialize zsh-defer
+autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 
 # Load zoxide
 zsh-defer _evalcache zoxide init zsh
@@ -135,8 +135,7 @@ ulimit -n 2048
 # Load forgit
 zsh-defer source "$DOTFILES_PATH/git/forgit.zsh"
 
-# Load fzf (it should be loaded by zim)
-zsh-defer source ~/.fzf.zsh
+# Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
 export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
 export FORGIT_LOG_FZF_OPTS="--no-height"
@@ -144,20 +143,45 @@ export FZF_COMPLETION_OPTS='+c -x'
 
 # Load direnv
 # eval "$(direnv hook zsh)"
-zsh-defer _evalcache direnv hook zsh
+if [[ -n "$CURSOR_AGENT" ]]; then
+  eval "$(direnv hook zsh)"
+else
+  zsh-defer _evalcache direnv hook zsh
+fi
 
-# Load fnm a relacement of nvm
-# eval "$(fnm env --use-on-cd --shell zsh)"
-zsh-defer _evalcache fnm env --use-on-cd --shell zsh
+# Load fnm (without --use-on-cd, we handle that ourselves below)
+# Re-add fnm to PATH after direnv runs (direnv's opam env can remove it)
+# Hook is registered AFTER direnv's hook, so it runs last on chpwd
+_fnm_post_direnv_hook() {
+  if [[ -f .node-version || -f .nvmrc ]]; then
+    eval "$(fnm env --shell zsh)"
+    fnm use --silent-if-unchanged
+  fi
+}
+_setup_fnm() {
+  eval "$(fnm env --shell zsh)"
+  add-zsh-hook chpwd _fnm_post_direnv_hook
+}
+if [[ -n "$CURSOR_AGENT" ]]; then
+  _setup_fnm
+else
+  zsh-defer _setup_fnm
+fi
+
 export NODE_REPL_HISTORY=~/.node_history # Enable persistent REPL history for `node`.
 export NODE_REPL_HISTORY_SIZE='32768' # Allow 32³ entries; the default is 1000.
 export NODE_REPL_MODE='sloppy' # Use sloppy mode by default, matching web browsers.
 
 # opam-zsh autocompletion (using version from dotfiles, not ~/.opam/opam-init)
-zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
 # load opam
 # eval "$(opam env)"
-zsh-defer _evalcache opam env
+if [[ -n "$CURSOR_AGENT" ]]; then
+  source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
+  eval "$(opam env)"
+else
+  zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
+  zsh-defer _evalcache opam env
+fi
 
 # load dune autocompletions
 compopt() { return 0; } # disable compopt since dune/env use bash compt with zsh

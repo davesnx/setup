@@ -37,7 +37,7 @@ zmodule zsh-users/zsh-history-substring-search
 zmodule zsh-users/zsh-syntax-highlighting
 
 # Autojump alternative
-# zmodule kiesman99/zim-zoxide
+zmodule kiesman99/zim-zoxide
 
 # Defer loading of modules until after compinit
 zmodule romkatv/zsh-defer -d
