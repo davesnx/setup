@@ -36,8 +36,8 @@ zmodule zsh-users/zsh-history-substring-search
 # zsh-users/zsh-syntax-highlighting must be sourced after completion
 zmodule zsh-users/zsh-syntax-highlighting
 
-# Autojump alternative
-zmodule kiesman99/zim-zoxide
+# zoxide is initialized manually in .zshrc with evalcache
+# zmodule kiesman99/zim-zoxide
 
 # Defer loading of modules until after compinit
 zmodule romkatv/zsh-defer -d

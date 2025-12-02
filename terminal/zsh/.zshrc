@@ -108,15 +108,11 @@ my_paths=(
 
 export PATH="${(j.:.)my_paths}"
 
-# Register all aliases
-for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*; do
-  source $aliasToSource;
-done
-
-# Register all functions
-for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*; do
-  source $functionToSource;
-done
+# Register all aliases (direct sourcing avoids glob expansion overhead)
+source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
+source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
+source "$DOTFILES_PATH/terminal/_aliases/git.sh"
+source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 export HOMEBREW_NO_INSTALL_CLEANUP=1

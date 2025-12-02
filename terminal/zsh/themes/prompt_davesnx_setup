@@ -3,9 +3,16 @@
 FIRST_CHARACTER_OK="→"
 FIRST_CHARACTER_KO="→"
 
+prompt_short_pwd() {
+  if [[ $PWD == $HOME ]]; then
+    print -n "~"
+  else
+    print -n ${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h}}#(|.)[^.]}}/${PWD:t}}//\/~/\~}/\/\//\/}
+  fi
+}
+
 prompt_pwd() {
-  prompt_short_dir=$(short_pwd)
-  print -n "%F{yellow}${prompt_short_dir}"
+  print -n "%F{yellow}$(prompt_short_pwd)"
 }
 
 prompt_git() {
