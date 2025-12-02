@@ -122,7 +122,7 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 alias serve="python3 -m http.server"
 
 # Test zsh startup time
-alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 25 {time zsh -l -i -c exit}"
+alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 25 {time ZSH_BENCHMARK=1 zsh -l -i -c exit}"
 
 # Improved CLIs
 alias copy="pbcopy"

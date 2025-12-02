@@ -13,6 +13,7 @@ sh "$DOTFILES_PATH/mac/install.sh"
 
 # Zsh
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
+ln -s -i "$DOTFILES_PATH/terminal/zsh/.zprofile" "$HOME/.zprofile"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
 ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
 

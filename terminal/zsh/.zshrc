@@ -1,12 +1,18 @@
 #! /bin/zsh
 
+# DOTFILES_PATH is set in .zprofile, but fallback for non-login shells
+export DOTFILES_PATH=${DOTFILES_PATH:-$HOME/Code/github/setup}
+
+# (Instant prompt) Must be at the very top before any other output
+[[ -r "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh" ]] && source "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh"
+
 # History
 setopt HIST_IGNORE_ALL_DUPS # Remove older command from the history if a duplicate is to be added.
 setopt HIST_REDUCE_BLANKS # Remove superfluous blanks before recording entry.
 setopt hist_ignore_space # ignore commands that start with space
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
 HISTFILE=~/.zhistory
-export HISTSIZE='32768' # Increase Bash history size. Allow 32³ entries
+export HISTSIZE='32768'
 SAVEHIST=$HISTSIZE
 bindkey -e # Set editor default keymap to emacs (`-e`) or vi (`-v`)
 
@@ -41,7 +47,6 @@ source ${ZIM_HOME}/init.zsh
 # ------------------------------
 
 # zsh-history-substring-search
-
 autoload -U history-substring-search-up history-substring-search-down
 
 # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
@@ -58,8 +63,6 @@ fi
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
-export DOTFILES_PATH=$HOME/Code/github/setup
-
 fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
 autoload -Uz promptinit && promptinit
 
@@ -70,79 +73,16 @@ setopt autopushd # Automatically adds directories to the directory stack when yo
 unsetopt cdablevars # Disables the ability to use variable names as directory shortcuts with cd
 setopt promptsubst # allow substitution in PS1
 
+# GPG (must be in .zshrc - tty changes per terminal)
 export GPG_TTY=$(tty)
 
-export PYTHON_PATH='/usr/local/opt/python'
-export RUBY_PATH='/usr/local/opt/ruby'
-export GEM_HOME="$HOME/.gem"
-export BUN_INSTALL="$HOME/.bun"
-
-my_paths=(
-  # User-specific paths
-  "$HOME/bin"
-  "$HOME/.local/bin" # dune, pipx, etc.
-  "$HOME/.deno/bin" # deno
-  "$HOME/.cargo/bin" # rust
-  "$BUN_INSTALL/bin" # bun
-  "$GEM_HOME/bin" # ruby
-  "$HOME/.elan/bin" # lean
-
-  # Dotfiles scripts
-  "$DOTFILES_PATH/bin"
-  "$DOTFILES_PATH/bin/git-extras"
-  "$DOTFILES_PATH/bin/ocaml"
-  "$DOTFILES_PATH/bin/fs"
-
-  # Homebrew
-  "/opt/homebrew/bin"
-  "/opt/homebrew/sbin"
-
-  # System paths
-  "/usr/local/bin"
-  "/usr/local/sbin"
-  "/usr/bin"
-  "/usr/sbin"
-  "/bin"
-  "/sbin"
-)
-
-export PATH="${(j.:.)my_paths}"
-
-# Register all aliases (direct sourcing avoids glob expansion overhead)
+# Register all aliases
 source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
 source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
 source "$DOTFILES_PATH/terminal/_aliases/git.sh"
 source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 
-export HOMEBREW_AUTO_UPDATE_SECS=86400
-export HOMEBREW_NO_INSTALL_CLEANUP=1
-export HOMEBREW_NO_ENV_HINTS=1
-export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
-export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/mac/brew/Brewfile
-
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-
-export EDITOR="cursor"
-export VISUAL="cursor"
-
-export LESS_TERMCAP_md=${yellow} # Highlight section titles in manual pages.
-export MANPAGER='less -X'; # Don’t clear the screen after quitting a manual page.
-
-# Homebrew & OpenSSL paths for native dependencies (OCaml, etc.)
-# export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
-# export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
-
-export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
-
-export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
-export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
-export C_INCLUDE_PATH="/opt/homebrew/include:$C_INCLUDE_PATH"
-
-
-# Add identities to sshrm
+# Add SSH identities (background job)
 {
   ssh-add --apple-use-keychain ~/.ssh/id     &> /dev/null
   ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
@@ -150,6 +90,9 @@ export C_INCLUDE_PATH="/opt/homebrew/include:$C_INCLUDE_PATH"
 
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
+
+# Load autosuggestions (deferred for faster startup)
+zsh-defer source ~/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Homebrew env vars (HOMEBREW_PREFIX, MANPATH, etc.)
 zsh-defer _evalcache /opt/homebrew/bin/brew shellenv
@@ -162,28 +105,20 @@ zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
 
-ulimit -n 2048
-
 # Load forgit
 zsh-defer source "$DOTFILES_PATH/git/forgit.zsh"
 
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
-export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
-export FORGIT_LOG_FZF_OPTS="--no-height"
-export FZF_COMPLETION_OPTS='+c -x'
 
 # Load direnv
-# eval "$(direnv hook zsh)"
 if [[ -n "$CURSOR_AGENT" ]]; then
   eval "$(direnv hook zsh)"
 else
   zsh-defer _evalcache direnv hook zsh
 fi
 
-# Load fnm (without --use-on-cd, we handle that ourselves below)
-# Re-add fnm to PATH after direnv runs (direnv's opam env can remove it)
-# Hook is registered AFTER direnv's hook, so it runs last on chpwd
+# Load fnm
 _fnm_post_direnv_hook() {
   if command -v fnm &>/dev/null && [[ -f .node-version || -f .nvmrc ]]; then
     eval "$(fnm env --shell zsh)"
@@ -202,13 +137,7 @@ else
   zsh-defer _setup_fnm
 fi
 
-export NODE_REPL_HISTORY=~/.node_history # Enable persistent REPL history for `node`.
-export NODE_REPL_HISTORY_SIZE='32768' # Allow 32³ entries; the default is 1000.
-export NODE_REPL_MODE='sloppy' # Use sloppy mode by default, matching web browsers.
-
-# opam-zsh autocompletion (using version from dotfiles, not ~/.opam/opam-init)
-# load opam
-# eval "$(opam env)"
+# Load opam
 if [[ -n "$CURSOR_AGENT" ]]; then
   source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
   eval "$(opam env)"
@@ -217,9 +146,6 @@ else
   zsh-defer _evalcache opam env
 fi
 
-# load dune autocompletions
-compopt() { return 0; } # disable compopt since dune/env use bash compt with zsh
+# Load dune autocompletions
+compopt() { return 0; } # disable compopt since dune/env use bash compat with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
-
-# load Alice env
-# zsh-defer source "$HOME/.alice/env/env.zsh"

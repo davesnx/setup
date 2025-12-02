@@ -25,15 +25,15 @@ if [[ -d /opt/homebrew/share/zsh ]] && [[ $(uname) == Darwin ]] && [[ $(uname -m
 fi
 zmodule completion
 
-# Fish-like autosuggestions for Zsh
-zmodule zsh-users/zsh-autosuggestions
+# Fish-like autosuggestions for Zsh (deferred in .zshrc for faster startup)
+# zmodule zsh-users/zsh-autosuggestions --no-source
 
 # Fish-like history search (up arrow) for Zsh
 # zsh-users/zsh-history-substring-search must be sourced after zsh-users/zsh-syntax-highlighting
 zmodule zsh-users/zsh-history-substring-search
 
 # Fish-like syntax highlighting for Zsh
-# zsh-users/zsh-syntax-highlighting must be sourced after completion
+# Must be sourced after completion
 zmodule zsh-users/zsh-syntax-highlighting
 
 # zoxide is initialized manually in .zshrc with evalcache
