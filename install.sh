@@ -21,6 +21,9 @@ ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$DOTFILES_PATH/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
 
+# GPG
+ln -s -i "$DOTFILES_PATH/mac/gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"
 

@@ -137,9 +137,14 @@ alias lsa="eza --group-directories-first -alh --octal-permissions"
 # List only directories
 alias ld="ls -D"
 
-# https://github.com/sharkdp/bat
-alias _cat="command cat"
-alias cat="bat"
+# https://github.com/sharkdp/bat
+cat() {
+  if [[ -t 1 ]]; then
+    bat "$@"
+  else
+    command cat "$@"
+  fi
+}
 
 # https://github.com/htop-dev/htop
 alias _top="command top"

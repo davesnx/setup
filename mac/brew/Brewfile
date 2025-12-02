@@ -1,7 +1,5 @@
 tap "buo/cask-upgrade"
 tap "denisidoro/tools"
-tap "homebrew/bundle"
-tap "homebrew/services"
 
 brew "sqlite"
 brew "openssl"
@@ -15,8 +13,6 @@ brew "jq"
 brew "make"
 brew "mysql"
 brew "fnm"
-brew "node"
-brew "yarn"
 brew "parallel" # https://www.gnu.org/software/parallel/
 brew "shellcheck" # https://www.shellcheck.net/
 brew "tree"
@@ -36,6 +32,10 @@ brew "zsh-syntax-highlighting"
 brew "httpie" # https://httpie.io
 brew "hovrly"
 brew "eza"
+brew "zoxide"
+brew "gnupg"
+brew "pkgconf"
+brew "pinentry-mac"
 
 cask "firefox"
 cask "figma"
@@ -44,6 +44,7 @@ cask "google-drive"
 cask "spotify"
 cask "telegram"
 cask "visual-studio-code"
+cask "cursor"
 cask "vlc"
 cask "whatsapp"
 cask "zoomus"
@@ -61,16 +62,14 @@ cask "alt-tab" # https://alt-tab-macos.netlify.app/
 cask "insomnia" # https://insomnia.rest/
 cask "raycast" # https://raycast.com/
 cask "daisydisk" # https://daisydiskapp.com/
-# Brave
-# OBS
-# Cursor
-# Choosy
-# Amphetamine
-# DaisyDisk
-# RDM
-# noTunes
-# camo studio
-# xnapper
+cask "brave-browser" # https://brave.com/
+cask "obs" # https://obsproject.com/
+cask "choosy" # https://www.choosyosx.com/
+cask "amphetamine" # https://apps.apple.com/app/amphetamine/id937984704
+# cask "rdm" # https://github.com/avibrazil/RDM
+cask "noTunes" # https://apps.apple.com/app/no-tunes/id1544743990
+cask "camo studio" # https://apps.apple.com/app/camo-studio/id1544743990
+cask "xnapper" # https://apps.apple.com/app/xnapper/id1544743990
 
 # Quicklook
 cask "qlcolorcode"

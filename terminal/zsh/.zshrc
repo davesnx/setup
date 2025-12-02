@@ -72,14 +72,45 @@ setopt promptsubst # allow substitution in PS1
 
 export GPG_TTY=$(tty)
 
+export PYTHON_PATH='/usr/local/opt/python'
+export RUBY_PATH='/usr/local/opt/ruby'
+export GEM_HOME="$HOME/.gem"
+export BUN_INSTALL="$HOME/.bun"
+
+my_paths=(
+  # User-specific paths
+  "$HOME/bin"
+  "$HOME/.local/bin" # dune, pipx, etc.
+  "$HOME/.deno/bin" # deno
+  "$HOME/.cargo/bin" # rust
+  "$BUN_INSTALL/bin" # bun
+  "$GEM_HOME/bin" # ruby
+  "$HOME/.elan/bin" # lean
+
+  # Dotfiles scripts
+  "$DOTFILES_PATH/bin"
+  "$DOTFILES_PATH/bin/git-extras"
+  "$DOTFILES_PATH/bin/ocaml"
+  "$DOTFILES_PATH/bin/fs"
+
+  # Homebrew
+  "/opt/homebrew/bin"
+  "/opt/homebrew/sbin"
+
+  # System paths
+  "/usr/local/bin"
+  "/usr/local/sbin"
+  "/usr/bin"
+  "/usr/sbin"
+  "/bin"
+  "/sbin"
+)
+
+export PATH="${(j.:.)my_paths}"
+
 # Register all aliases
 for aliasToSource in "$DOTFILES_PATH/terminal/_aliases/"*; do
   source $aliasToSource;
-done
-
-# Register all exports
-for exportToSource in "$DOTFILES_PATH/terminal/_exports/"*; do
-  source $exportToSource;
 done
 
 # Register all functions
@@ -87,11 +118,6 @@ for functionToSource in "$DOTFILES_PATH/terminal/_functions/"*; do
   source $functionToSource;
 done
 
-export PYTHON_PATH='/usr/local/opt/python'
-export RUBY_PATH='/usr/local/opt/ruby'
-export GEM_HOME="$HOME/.gem"
-export JAVA_HOME=$(/usr/libexec/java_home -v 11)
-export BUN_INSTALL="$HOME/.bun"
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 export HOMEBREW_NO_ENV_HINTS=1
@@ -108,12 +134,19 @@ export VISUAL="cursor"
 export LESS_TERMCAP_md=${yellow} # Highlight section titles in manual pages.
 export MANPAGER='less -X'; # Don’t clear the screen after quitting a manual page.
 
-# dream > conf-libssl > openssl
-export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
-export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
-export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
+# Homebrew & OpenSSL paths for native dependencies (OCaml, etc.)
+# export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+# export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
 
-# Add identities to ssh
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+
+export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
+export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
+export C_INCLUDE_PATH="/opt/homebrew/include:$C_INCLUDE_PATH"
+
+
+# Add identities to sshrm
 {
   ssh-add --apple-use-keychain ~/.ssh/id     &> /dev/null
   ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
@@ -121,6 +154,9 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
 
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
+
+# Homebrew env vars (HOMEBREW_PREFIX, MANPATH, etc.)
+zsh-defer _evalcache /opt/homebrew/bin/brew shellenv
 
 # Load zoxide
 zsh-defer _evalcache zoxide init zsh
@@ -153,14 +189,16 @@ fi
 # Re-add fnm to PATH after direnv runs (direnv's opam env can remove it)
 # Hook is registered AFTER direnv's hook, so it runs last on chpwd
 _fnm_post_direnv_hook() {
-  if [[ -f .node-version || -f .nvmrc ]]; then
+  if command -v fnm &>/dev/null && [[ -f .node-version || -f .nvmrc ]]; then
     eval "$(fnm env --shell zsh)"
     fnm use --silent-if-unchanged
   fi
 }
 _setup_fnm() {
-  eval "$(fnm env --shell zsh)"
-  add-zsh-hook chpwd _fnm_post_direnv_hook
+  if command -v fnm &>/dev/null; then
+    eval "$(fnm env --shell zsh)"
+    add-zsh-hook chpwd _fnm_post_direnv_hook
+  fi
 }
 if [[ -n "$CURSOR_AGENT" ]]; then
   _setup_fnm
