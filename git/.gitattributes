@@ -1,4 +1,5 @@
 *.json diff=json
+*.jsonc diff=json
 *.png diff=exif
 *.jpg diff=exif
 
@@ -10,5 +11,6 @@
 
 *.ml linguist-language=OCaml
 *.mli linguist-language=OCaml
+*.mlx linguist-language=OCaml
 *.mll linguist-language=OCaml
 *.mly linguist-language=OCaml

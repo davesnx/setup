@@ -21,10 +21,10 @@ my_paths=(
   "$HOME/.elan/bin" # lean
 
   # Dotfiles scripts
-  "$DOTFILES_PATH/bin"
-  "$DOTFILES_PATH/bin/git-extras"
-  "$DOTFILES_PATH/bin/ocaml"
-  "$DOTFILES_PATH/bin/fs"
+  "$DOTFILES_PATH/terminal/bin"
+  "$DOTFILES_PATH/terminal/bin/git-extras"
+  "$DOTFILES_PATH/terminal/bin/ocaml"
+  "$DOTFILES_PATH/terminal/bin/fs"
 
   # Homebrew
   "/opt/homebrew/bin"

@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+source "$DOTFILES_PATH/terminal/core/_main.sh"
+
+##? Transform Reason to OCaml files
+##? 0.1.0
+##?
+##? Usage:
+##?    re2ml file.re
+##?    re2ml file.rei
+
+refmt --parse re --print ml --assume-explicit-arity "$@"
