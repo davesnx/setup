@@ -21,7 +21,7 @@ brew "watch"
 brew "wget"
 brew "tig" # https://jonas.github.io/tig
 brew "bat"
-brew "gpatch"
+brew "gpatch" # https://www.gnu.org/software/patch/
 brew "pgcli"
 brew "ripgrep"
 brew "opam"
@@ -36,6 +36,7 @@ brew "zoxide"
 brew "gnupg"
 brew "pkgconf"
 brew "pinentry-mac"
+brew "direnv"
 
 cask "firefox"
 cask "figma"

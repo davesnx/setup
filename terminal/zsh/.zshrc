@@ -1,7 +1,77 @@
 #! /bin/zsh
 
-# DOTFILES_PATH is set in .zprofile, but fallback for non-login shells
-export DOTFILES_PATH=${DOTFILES_PATH:-$HOME/Code/github/setup}
+export DOTFILES_PATH="$HOME/Code/github/setup"
+
+# Language toolchain paths
+export PYTHON_PATH='/usr/local/opt/python'
+export RUBY_PATH='/usr/local/opt/ruby'
+export GEM_HOME="$HOME/.gem"
+export BUN_INSTALL="$HOME/.bun"
+
+# PATH setup
+my_paths=(
+  # User-specific paths
+  "$HOME/bin"
+  "$HOME/.local/bin" # dune, pipx, etc.
+  "$HOME/.deno/bin" # deno
+  "$HOME/.cargo/bin" # rust
+  "$BUN_INSTALL/bin" # bun
+  "$GEM_HOME/bin" # ruby
+  "$HOME/.elan/bin" # lean
+
+  # Dotfiles scripts
+  "$DOTFILES_PATH/terminal/bin"
+  "$DOTFILES_PATH/terminal/bin/git-extras"
+  "$DOTFILES_PATH/terminal/bin/ocaml"
+  "$DOTFILES_PATH/terminal/bin/fs"
+
+  # Homebrew
+  "/opt/homebrew/bin"
+  "/opt/homebrew/sbin"
+
+  # System paths
+  "/usr/local/bin"
+  "/usr/local/sbin"
+  "/usr/bin"
+  "/usr/sbin"
+  "/bin"
+  "/sbin"
+)
+export PATH="${(j.:.)my_paths}"
+
+# Homebrew config
+export HOMEBREW_AUTO_UPDATE_SECS=86400
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
+export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/mac/brew/Brewfile
+
+# Locale
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# less/man
+export LESS_TERMCAP_md=${yellow} # Highlight section titles in manual pages.
+export MANPAGER='less -X' # Don't clear the screen after quitting a manual page.
+
+# Build flags (for OCaml, native deps, etc.)
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
+export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
+export LIBRARY_PATH="/opt/homebrew/opt/libev/lib:$LIBRARY_PATH"
+export C_INCLUDE_PATH="/opt/homebrew/include:$C_INCLUDE_PATH"
+
+# Node REPL
+export NODE_REPL_HISTORY=~/.node_history
+export NODE_REPL_HISTORY_SIZE='32768'
+export NODE_REPL_MODE='sloppy'
+
+# FZF
+export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
+export FORGIT_LOG_FZF_OPTS="--no-height"
+export FZF_COMPLETION_OPTS='+c -x'
 
 # (Instant prompt) Must be at the very top before any other output
 [[ -r "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh" ]] && source "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh"
@@ -73,10 +143,14 @@ setopt autopushd # Automatically adds directories to the directory stack when yo
 unsetopt cdablevars # Disables the ability to use variable names as directory shortcuts with cd
 setopt promptsubst # allow substitution in PS1
 
-# GPG (must be in .zshrc - tty changes per terminal)
+# GPG
 export GPG_TTY=$(tty)
 
-# Register all aliases
+# Editor
+export EDITOR="cursor"
+export VISUAL="cursor"
+
+# register all aliases
 source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
 source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
 source "$DOTFILES_PATH/terminal/_aliases/git.sh"
@@ -95,10 +169,18 @@ autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 zsh-defer source ~/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Homebrew env vars (HOMEBREW_PREFIX, MANPATH, etc.)
-zsh-defer _evalcache /opt/homebrew/bin/brew shellenv
+if [[ -n "$CURSOR_AGENT" ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+  zsh-defer _evalcache /opt/homebrew/bin/brew shellenv
+fi
 
 # Load zoxide
-zsh-defer _evalcache zoxide init zsh
+if [[ -n "$CURSOR_AGENT" ]]; then
+  eval "$(zoxide init zsh)"
+else
+  zsh-defer _evalcache zoxide init zsh
+fi
 
 # Fuzzy Autocompletion
 zstyle ':completion:*' completer _complete _match _approximate
@@ -111,12 +193,11 @@ zsh-defer source "$DOTFILES_PATH/git/forgit.zsh"
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
 
+# Load opam
+zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
+
 # Load direnv
-if [[ -n "$CURSOR_AGENT" ]]; then
-  eval "$(direnv hook zsh)"
-else
-  zsh-defer _evalcache direnv hook zsh
-fi
+eval "$(direnv hook zsh)"
 
 # Load fnm
 _fnm_post_direnv_hook() {
@@ -125,25 +206,25 @@ _fnm_post_direnv_hook() {
     fnm use --silent-if-unchanged
   fi
 }
-_setup_fnm() {
-  if command -v fnm &>/dev/null; then
-    eval "$(fnm env --shell zsh)"
-    add-zsh-hook chpwd _fnm_post_direnv_hook
+add-zsh-hook chpwd _fnm_post_direnv_hook
+
+eval "$(fnm env --shell zsh)"
+
+# Load opam local switch
+_opam_local_switch_hook() {
+  if [[ -d "_opam" ]]; then
+    eval "$(opam env)"
   fi
 }
-if [[ -n "$CURSOR_AGENT" ]]; then
-  _setup_fnm
-else
-  zsh-defer _setup_fnm
-fi
+add-zsh-hook chpwd _opam_local_switch_hook
 
-# Load opam
-if [[ -n "$CURSOR_AGENT" ]]; then
-  source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
-  eval "$(opam env)"
-else
-  zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
-  zsh-defer _evalcache opam env
+# Initialize opam env if starting in a directory with local switch
+if [[ -d "_opam" ]]; then
+  if [[ -n "$CURSOR_AGENT" ]]; then
+    eval "$(opam env)"
+  else
+    zsh-defer _evalcache opam env
+  fi
 fi
 
 # Load dune autocompletions

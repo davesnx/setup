@@ -1,6 +1,6 @@
 if [[ -o interactive ]]; then
   if (( ${+functions[zsh-defer]} )); then
-    [[ ! -r "$DOTFILES_PATH/terminal/opam-init/complete.zsh" ]] || zsh-defer source "$DOTFILES_PATH/terminal/opam-init/complete.zsh"
+    [[ ! -r "$DOTFILES_PATH/terminal/opam-init/complete.zsh" ]] || source "$DOTFILES_PATH/terminal/opam-init/complete.zsh"
   else
     [[ ! -r "$DOTFILES_PATH/terminal/opam-init/complete.zsh" ]] || source "$DOTFILES_PATH/terminal/opam-init/complete.zsh"
   fi

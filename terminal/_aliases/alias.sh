@@ -26,6 +26,8 @@ alias d="docker"
 alias j="__zoxide_z"
 alias jj="__zoxide_zi"
 
+alias opencode="/Users/davesnx/.opencode/bin/opencode"
+
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
 
