@@ -43,3 +43,8 @@ The working tree already contained uncommitted Zsh changes when this session beg
 - Baseline already defers autosuggestions, Homebrew shellenv, zoxide, forgit, fzf bindings, direnv, opam, and dune setup through `zsh-defer` for normal interactive shells.
 - The benchmark suppresses the custom instant prompt with `ZSH_BENCHMARK=1`; this avoids terminal output affecting the timing.
 - `$HOME/.zshrc` links to this repository, while `$HOME/.zprofile` is an unmanaged OrbStack/Elan profile. Therefore `.zprofile` repository edits do not affect the current benchmark.
+- `zprof` showed the main synchronous costs: Zim completion freshness scanning (~21 ms), generic prompt discovery (~12 ms), nine `zsh-defer` calls (~8 ms), and `compinit` (~6 ms).
+- Removed duplicate synchronous `zim-zoxide`; the existing deferred evalcache setup preserves zoxide initialization and improved the median from 96.603 ms to 92.323 ms.
+- Direct custom prompt setup produced a 64.804 ms minimum but an inferior noisy median and briefly removed the generic prompt API, so it was discarded.
+- Native `.zshrc` wordcode is effective. A deferred source-newer check now rebuilds the ignored local cache after edits; a confirmed median of 88.815 ms is 17.2% below the first baseline.
+- Replaced `fnm env` with equivalent native Zsh exports and a unique per-shell symlink to `~/.fnm/aliases/default`. This preserves `fnm use` multishell behavior without caching a stale path and improved the median to 71.061 ms, 33.7% below baseline.
