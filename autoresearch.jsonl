@@ -20,3 +20,4 @@
 {"run":19,"commit":"9a29663","metric":86.694,"metrics":{"min_ms":64.486,"max_ms":120.682},"status":"discard","description":"combining fixed fnm exports does not improve wordcode execution","timestamp":1784825900,"segment":0}
 {"run":20,"commit":"9a29663","metric":99.883,"metrics":{"min_ms":72.751,"max_ms":126.167},"status":"discard","description":"restored fnm exports pass checks but host contention raises the median","timestamp":1784825940,"segment":0}
 {"run":21,"commit":"9a29663","metric":91.472,"metrics":{"min_ms":73.873,"max_ms":171.920},"status":"discard","description":"deriving fnm architecture from CPUTYPE is portable but does not improve the metric","timestamp":1784825980,"segment":0}
+{"run":22,"commit":"f7a7fde","metric":87.107,"metrics":{"min_ms":73.050,"max_ms":192.639},"status":"discard","description":"final kept-state check passes all contracts but remains above the best noisy median","timestamp":1784826122,"segment":0}

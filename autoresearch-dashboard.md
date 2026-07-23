@@ -1,9 +1,9 @@
 # Autoresearch Dashboard: zsh-startup
 
-**Runs:** 21 | **Kept:** 5 | **Discarded:** 14 | **Crashed:** 0 | **Checks failed:** 2  
-**Baseline:** startup_ms: 107.238 ms (#1)  
-**Best:** startup_ms: 71.061 ms (#18, -33.7%)  
-**Confidence:** 4.55x (best improvement 36.177 ms / MAD 7.959 ms)
+**Runs:** 22 | **Kept:** 5 | **Discarded:** 15 | **Crashed:** 0 | **Checks failed:** 2
+**Baseline:** startup_ms: 107.238 ms (#1)
+**Best:** startup_ms: 71.061 ms (#18, -33.7%)
+**Confidence:** 4.42x (best improvement 36.177 ms / MAD 8.185 ms)
 
 | # | commit | startup_ms | status | description |
 |---|--------|------------|--------|-------------|
@@ -28,3 +28,4 @@
 | 19 | 9a29663 | 86.694 ms (-19.2%) | discard | combining fixed fnm exports does not improve wordcode execution |
 | 20 | 9a29663 | 99.883 ms (-6.9%) | discard | restored fnm exports pass checks but host contention raises the median |
 | 21 | 9a29663 | 91.472 ms (-14.7%) | discard | deriving fnm architecture from CPUTYPE is portable but does not improve the metric |
+| 22 | f7a7fde | 87.107 ms (-18.8%) | discard | final kept-state check passes all contracts but remains above the best noisy median |

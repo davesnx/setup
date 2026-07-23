@@ -155,6 +155,13 @@
 - Insight: The value is equivalent on this machine but cannot be kept under the primary-metric rule; repository setup is currently macOS arm64-specific.
 - Next: Restore the measured kept state and close state-integrity gaps.
 
+### Run 22: Kept-state confirmation - startup_ms=87.107 (DISCARD)
+- Timestamp: 2026-07-23 19:02
+- What changed: No runtime change; reran the committed kept state with all contract checks.
+- Result: median 87.107 ms, min 73.050 ms, max 192.639 ms; 22.6% above the best.
+- Insight: Correctness remains green and the warm samples stay below the original ~80 ms floor, but host outliers continue to dominate 10-run medians.
+- Next: Retain run 18 as the best controlled result and avoid sacrificing completion freshness or prompt availability for benchmark-only gains.
+
 ## Key Insights
 - `$HOME/.zshrc` links to the repository, but `$HOME/.zprofile` does not; only `.zshrc` and its sourced files affect this benchmark.
 - External tool initialization is mostly deferred already, so synchronous Zim module loading and completion setup are likely the main optimization surface.
