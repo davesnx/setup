@@ -165,6 +165,11 @@ source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 
+# Refresh native wordcode after edits; Zsh ignores it whenever the source is newer.
+_zshrc_source="$DOTFILES_PATH/terminal/zsh/.zshrc"
+[[ "$_zshrc_source.zwc" -nt "$_zshrc_source" ]] || zsh-defer zcompile "$_zshrc_source"
+unset _zshrc_source
+
 # Load autosuggestions (deferred for faster startup)
 zsh-defer source ~/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh
 
