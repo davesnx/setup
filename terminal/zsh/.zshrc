@@ -213,7 +213,20 @@ _fnm_post_direnv_hook() {
 }
 add-zsh-hook chpwd _fnm_post_direnv_hook
 
-eval "$(fnm env --shell zsh)"
+zmodload zsh/datetime
+zmodload -F zsh/files b:zf_ln
+export FNM_DIR="$HOME/.fnm"
+export FNM_MULTISHELL_PATH="$HOME/.local/state/fnm_multishells/${$}_${EPOCHREALTIME//./}"
+export FNM_VERSION_FILE_STRATEGY="local"
+export FNM_LOGLEVEL="info"
+export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
+export FNM_COREPACK_ENABLED="false"
+export FNM_RESOLVE_ENGINES="true"
+export FNM_ARCH="arm64"
+zf_ln -s "$FNM_DIR/aliases/default" "$FNM_MULTISHELL_PATH"
+export PATH="$FNM_MULTISHELL_PATH/bin:$PATH"
+rehash
+zmodload -u zsh/files zsh/datetime
 
 # Load opam local switch
 _opam_local_switch_hook() {

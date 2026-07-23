@@ -17,6 +17,10 @@ ZSH_BENCHMARK=1 zsh -l -i -c '
   (( ${+functions[_opam_local_switch_hook]} ))
   (( ${+functions[spawn]} ))
   (( ${+aliases[testzsh]} ))
+  [[ -L $FNM_MULTISHELL_PATH ]]
+  [[ $FNM_MULTISHELL_PATH:A == $FNM_DIR/aliases/default:A ]]
+  [[ $commands[node] == $FNM_MULTISHELL_PATH/bin/node ]]
+  (( ${#_zsh_defer_tasks} >= 8 ))
   [[ $HISTSIZE == 32768 ]]
   [[ $KEYTIMEOUT == 40 ]]
   [[ $options[correct] == on ]]
