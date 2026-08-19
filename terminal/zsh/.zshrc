@@ -208,7 +208,9 @@ _fnm_post_direnv_hook() {
 }
 add-zsh-hook chpwd _fnm_post_direnv_hook
 
-eval "$(fnm env --shell zsh)"
+if command -v fnm &>/dev/null; then
+  eval "$(fnm env --shell zsh)"
+fi
 
 # Load opam local switch
 _opam_local_switch_hook() {
