@@ -298,16 +298,20 @@
   },
   {
     "key": "shift+cmd+d",
-    "command": "-composer.fixerrormessage",
-    "when": "(arbitrary function)"
+    "command": "-composer.fixerrormessage"
   },
   {
     "key": "shift+enter",
     "command": "-ocaml.evaluate-selection",
     "when": "editorTextFocus && editorLangId == 'ocaml' || editorTextFocus && editorLangId == 'ocaml.interface' || editorTextFocus && editorLangId == 'ocaml.menhir' || editorTextFocus && editorLangId == 'ocaml.mlx' || editorTextFocus && editorLangId == 'ocaml.ocamllex' || editorTextFocus && editorLangId == 'reason'"
   },
+  /* Open composer agent */
+  {
+    "key": "shift+cmd+i",
+    "command": "composer.startComposerPrompt"
+  },
   {
     "key": "cmd+i",
-    "command": "composerMode.agent"
+    "command": "-composer.startComposerPrompt"
   }
 ]
