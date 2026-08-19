@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+set -u
+
+if (( $# < 2 )); then
+  echo "usage: line <line-number> <file>..." >&2
+  exit 1
+fi
+
+lineno="$1"
+shift
+
+files=()
+for file in "$@"; do
+  [[ "$file" == -* ]] && file="./$file"
+  files+=("$file")
+done
+
+sed -n "${lineno}p" "${files[@]}"
