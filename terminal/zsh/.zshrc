@@ -193,12 +193,6 @@ fi
 compopt() { return 0; } # disable compopt since dune/env use bash compat with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
 
-# Reattach to one persistent tmux session per remote project.
-spawn() {
-  local project="${1:?usage: spawn <project>}"
-  mosh nspawn -- tmux new-session -A -s "$project" -c "/home/me/$project"
-}
-
 # Local machine-only exports (ignored by git)
 [[ -f "$DOTFILES_PATH/export.sh" ]] && source "$DOTFILES_PATH/export.sh"
 
