@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "chrome-devtools": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "chrome-devtools-mcp@1.2.0",
+        "--browser-url=http://127.0.0.1:9222",
+      ],
+    },
+    "playwriter": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "playwriter@latest"],
+      "environment": {
+        "PLAYWRITER_HOST": "127.0.0.1",
+      },
+    },
+  },
+}

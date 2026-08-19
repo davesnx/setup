@@ -230,3 +230,8 @@ fi
 # Load dune autocompletions
 compopt() { return 0; } # disable compopt since dune/env use bash compat with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
+
+# Load the selected OpenCode host profile when it is installed.
+if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
+  export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
+fi

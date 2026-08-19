@@ -1,0 +1,239 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "ghostBg": "#161B23",
+    "ghostFg": "#EEEEEE",
+    "ghostCursor": "#E4B75E",
+    "ghostSelection": "#434343",
+    "ghostDivider": "#36373C",
+    "ghost0": "#1A1A1A",
+    "ghost1": "#DB6165",
+    "ghost2": "#A6CC70",
+    "ghost3": "#FFA759",
+    "ghost4": "#D4BFFF",
+    "ghost5": "#C594C5",
+    "ghost6": "#68C1ED",
+    "ghost7": "#C4B5B1",
+    "ghost8": "#7F7F7F",
+    "ghost9": "#F28779",
+    "ghost10": "#BAE67E",
+    "ghost11": "#FFD580",
+    "ghost12": "#ACB9E9",
+    "ghost13": "#D4BFFF",
+    "ghost14": "#5CCFE6",
+    "ghost15": "#F6EFEF",
+    "ocBgStep2": "#20252D",
+    "ocBgStep3": "#2A2F37",
+    "ocBgStep4": "#343941",
+    "ocBgStep5": "#3E434B",
+    "ocBgStep6": "#484D55",
+    "ocBgStep7": "#545961",
+    "ocBgStep8": "#6C7179",
+    "ocDiffAddedBg": "#2C4154",
+    "ocDiffRemovedBg": "#433345",
+    "ocDiffAddedLineBg": "#273C4D",
+    "ocDiffRemovedLineBg": "#392F3F"
+  },
+  "theme": {
+    "primary": {
+      "dark": "ghost6",
+      "light": "ghost6"
+    },
+    "secondary": {
+      "dark": "ghost4",
+      "light": "ghost4"
+    },
+    "accent": {
+      "dark": "ghostCursor",
+      "light": "ghostCursor"
+    },
+    "error": {
+      "dark": "ghost1",
+      "light": "ghost1"
+    },
+    "warning": {
+      "dark": "ghost3",
+      "light": "ghost3"
+    },
+    "success": {
+      "dark": "ghost2",
+      "light": "ghost2"
+    },
+    "info": {
+      "dark": "ghost14",
+      "light": "ghost14"
+    },
+    "text": {
+      "dark": "ghostFg",
+      "light": "ghostFg"
+    },
+    "textMuted": {
+      "dark": "ghost8",
+      "light": "ghost8"
+    },
+    "background": {
+      "dark": "ghostBg",
+      "light": "ghostBg"
+    },
+    "backgroundPanel": {
+      "dark": "ocBgStep2",
+      "light": "ocBgStep2"
+    },
+    "backgroundElement": {
+      "dark": "ocBgStep3",
+      "light": "ocBgStep3"
+    },
+    "border": {
+      "dark": "ghostDivider",
+      "light": "ghostDivider"
+    },
+    "borderActive": {
+      "dark": "ocBgStep8",
+      "light": "ocBgStep8"
+    },
+    "borderSubtle": {
+      "dark": "ocBgStep6",
+      "light": "ocBgStep6"
+    },
+    "diffAdded": {
+      "dark": "ghost10",
+      "light": "ghost10"
+    },
+    "diffRemoved": {
+      "dark": "ghost9",
+      "light": "ghost9"
+    },
+    "diffContext": {
+      "dark": "ghost8",
+      "light": "ghost8"
+    },
+    "diffHunkHeader": {
+      "dark": "ghost12",
+      "light": "ghost12"
+    },
+    "diffHighlightAdded": {
+      "dark": "ghost2",
+      "light": "ghost2"
+    },
+    "diffHighlightRemoved": {
+      "dark": "ghost1",
+      "light": "ghost1"
+    },
+    "diffAddedBg": {
+      "dark": "ocDiffAddedBg",
+      "light": "ocDiffAddedBg"
+    },
+    "diffRemovedBg": {
+      "dark": "ocDiffRemovedBg",
+      "light": "ocDiffRemovedBg"
+    },
+    "diffContextBg": {
+      "dark": "ocBgStep2",
+      "light": "ocBgStep2"
+    },
+    "diffLineNumber": {
+      "dark": "ocBgStep7",
+      "light": "ocBgStep7"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "ocDiffAddedLineBg",
+      "light": "ocDiffAddedLineBg"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "ocDiffRemovedLineBg",
+      "light": "ocDiffRemovedLineBg"
+    },
+    "markdownText": {
+      "dark": "ghostFg",
+      "light": "ghostFg"
+    },
+    "markdownHeading": {
+      "dark": "ghost12",
+      "light": "ghost12"
+    },
+    "markdownLink": {
+      "dark": "ghost14",
+      "light": "ghost14"
+    },
+    "markdownLinkText": {
+      "dark": "ghost6",
+      "light": "ghost6"
+    },
+    "markdownCode": {
+      "dark": "ghost10",
+      "light": "ghost10"
+    },
+    "markdownBlockQuote": {
+      "dark": "ghost8",
+      "light": "ghost8"
+    },
+    "markdownEmph": {
+      "dark": "ghost11",
+      "light": "ghost11"
+    },
+    "markdownStrong": {
+      "dark": "ghost3",
+      "light": "ghost3"
+    },
+    "markdownHorizontalRule": {
+      "dark": "ghostDivider",
+      "light": "ghostDivider"
+    },
+    "markdownListItem": {
+      "dark": "ghost6",
+      "light": "ghost6"
+    },
+    "markdownListEnumeration": {
+      "dark": "ghost11",
+      "light": "ghost11"
+    },
+    "markdownImage": {
+      "dark": "ghost12",
+      "light": "ghost12"
+    },
+    "markdownImageText": {
+      "dark": "ghost14",
+      "light": "ghost14"
+    },
+    "markdownCodeBlock": {
+      "dark": "ghostFg",
+      "light": "ghostFg"
+    },
+    "syntaxComment": {
+      "dark": "ghost8",
+      "light": "ghost8"
+    },
+    "syntaxKeyword": {
+      "dark": "ghost4",
+      "light": "ghost4"
+    },
+    "syntaxFunction": {
+      "dark": "ghost14",
+      "light": "ghost14"
+    },
+    "syntaxVariable": {
+      "dark": "ghost7",
+      "light": "ghost7"
+    },
+    "syntaxString": {
+      "dark": "ghost10",
+      "light": "ghost10"
+    },
+    "syntaxNumber": {
+      "dark": "ghost11",
+      "light": "ghost11"
+    },
+    "syntaxType": {
+      "dark": "ghost12",
+      "light": "ghost12"
+    },
+    "syntaxOperator": {
+      "dark": "ghost13",
+      "light": "ghost13"
+    },
+    "syntaxPunctuation": {
+      "dark": "ghostFg",
+      "light": "ghostFg"
+    }
+  }
+}
