@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-export DOTFILES_PATH="$HOME/Code/github/setup"
+export DOTFILES_PATH="${DOTFILES_PATH:-${${:-$HOME/.zshrc}:A:h:h:h}}"
 
 # Language toolchain paths
 export PYTHON_PATH='/usr/local/opt/python'
@@ -234,4 +234,9 @@ zsh-defer source $HOME/.local/share/dune/env/env.zsh
 # Load the selected OpenCode host profile when it is installed.
 if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
   export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
+fi
+
+# Load machine-specific values last so they can override shared defaults.
+if [[ -r "$DOTFILES_PATH/local/overrides.zsh" ]]; then
+  source "$DOTFILES_PATH/local/overrides.zsh"
 fi
