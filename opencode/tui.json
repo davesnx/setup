@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "theme": "fosk",
+  "keybinds": {
+    "input_buffer_home": "home,super+up",
+    "input_buffer_end": "end,super+down"
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "share": "disabled",
+  "autoupdate": "notify",
+  "snapshot": true,
+  // Cheap model for titles/summaries/compaction; main model stays whatever you
+  // pick in the TUI (set "model" here if you want a fixed default).
+  "small_model": "anthropic/claude-haiku-4-5",
+  // pstack skills: no per-role model pinning, subagents inherit the session
+  // model. Managed by the setup-pstack skill; re-run it to change.
+  "instructions": ["pstack-models.md"],
+  "experimental": {
+    "disable_paste_summary": true,
+  },
+  "watcher": {
+    "ignore": [".opencode/**"],
+  },
+  // Third-party, experimental: session-scoped /goal that auto-continues the
+  // agent unattended until a goal completes or a safety limit hits. Pinned so
+  // startup doesn't hit the registry; bump deliberately.
+  "plugin": [
+    "opencode-goal-plugin@0.4.0",
+    "cursor-oauth-opencode@0.1.8",
+    "./plugins/opencode-notify/src/notify.ts",
+    "@plannotator/opencode@latest",
+  ],
+  "provider": {
+    "anthropic": {
+      "options": {
+        // Read from the shell environment, never hardcode secrets in config.
+        "apiKey": "{env:OPENCODE_ANTHROPIC_API_KEY}",
+      },
+    },
+    // Cursor proprietary models (incl. Composer 2.5 Fast) bridged via the
+    // cursor-oauth-opencode plugin. The `npm`/`api` fields and a seed `models`
+    // entry are REQUIRED so opencode can construct the provider and list models
+    // before login; the `api` URL is a placeholder that the plugin overrides
+    // at runtime with its local proxy port. After `opencode auth login`
+    // (OAuth), the plugin replaces these with live model discovery.
+    "cursor": {
+      "name": "Cursor",
+      "npm": "@ai-sdk/openai-compatible",
+      "api": "http://127.0.0.1:65535/v1",
+      "models": {
+        "composer-2.5-fast": {
+          "name": "Composer 2.5 Fast",
+          "reasoning": true,
+          "temperature": true,
+          "attachment": false,
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 64000 },
+        },
+        "composer-2.5": {
+          "name": "Composer 2.5",
+          "reasoning": true,
+          "temperature": true,
+          "attachment": false,
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 64000 },
+        },
+      },
+    },
+  },
+  "command": {
+    "autoresearch": {
+      "description": "Run web research with citations",
+      "agent": "general",
+      "subtask": true,
+      "template": "Use the `autoresearch` skill to research: $ARGUMENTS\n\nRequirements:\n- Start with 4-8 focused search queries.\n- Use websearch for discovery and webfetch for source verification.\n- Prefer primary and official sources.\n- Cross-check claims across independent sources.\n- Return output with sections: Objective, Findings, Conflicts/Uncertainty, Sources, Next questions.\n- In Sources include title + URL and a one-line relevance note.\n- If evidence is weak, say so explicitly.",
+    },
+    "goal": {
+      "description": "Set a session-scoped goal and auto-continue until complete.",
+      "template": "$ARGUMENTS",
+      "agent": "build",
+    },
+  },
+  // Posture: allow by default, deny the genuinely destructive. Rules are
+  // evaluated with the LAST match winning, so broad rules go first and the
+  // deny list goes last.
+  "permission": {
+    "external_directory": {
+      "*": "ask",
+      "/tmp/**": "allow",
+      // "$HOME" is not expanded by opencode; "~/" is. "~/**" does not match
+      // bare "~", so list both.
+      "~": "allow",
+      "~/**": "allow",
+      "~/.ssh/**": "deny",
+      "~/.aws/**": "deny",
+    },
+    // Path-matched, so these hold even when cwd is $HOME and the
+    // external_directory rules above never fire. Re-states the built-in .env
+    // defaults, which defining "read" would otherwise replace.
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "~/.ssh/**": "deny",
+      "~/.aws/**": "deny",
+    },
+    "bash": {
+      "*": "allow",
+      // Patterns are matched against each PARSED command, not the raw command
+      // line: opencode splits on "|" and "&&" and tests every segment
+      // separately. Verified empirically -- "echo ok && sudo --version" is
+      // caught by the unanchored "sudo *" rule below.
+      //
+      // Consequently these patterns are anchored at the start. A leading "*"
+      // is not needed to catch a command mid-pipeline, and adding one causes
+      // false positives: it makes the rule fire on any command that merely
+      // MENTIONS the string in a quoted argument or heredoc, e.g.
+      //   gh pr comment -b "never use git push --force"
+      // Path patterns (.ssh/id_* below) are the exception -- they match an
+      // argument rather than the command name, so they keep their wildcard.
+      //
+      // Destructive filesystem operations.
+      "rm -rf *": "deny",
+      "rm -fr *": "deny",
+      "shred *": "deny",
+      "dd if=*": "deny",
+      "mkfs*": "deny",
+      // Git: --force is banned on every subcommand, not just push. This also
+      // catches --force-with-lease and --force-if-includes; add an explicit
+      // "allow" for those BELOW this line if you ever want them back.
+      "git *--force*": "deny",
+      // The -f shorthand, enumerated per subcommand. A blanket "git *-f*"
+      // cannot be used: it would also match --format, --follow, --file.
+      "git push -f*": "deny",
+      "git clean -f*": "deny",
+      "git checkout -f*": "deny",
+      "git switch -f*": "deny",
+      "git branch -f*": "deny",
+      // Hook bypass: --no-verify covers commit and push, and the -c
+      // core.hooksPath route skips hooks without naming --no-verify.
+      "git *--no-verify*": "deny",
+      "git *commit *-n*": "deny",
+      "git *core.hooksPath*": "deny",
+      // History rewriting.
+      "git reset --hard*": "deny",
+      "git filter-branch*": "deny",
+      // A bare shell reading stdin, i.e. the receiving half of
+      // "curl ... | sh". Because pipelines are split into separate commands,
+      // this cannot be expressed as a pattern spanning the pipe -- such a
+      // pattern never matches anything.
+      //
+      // Deliberately "ask", not "allow": a bare shell bypasses EVERY deny
+      // rule above it, since "echo 'git push --force' | sh" splits into
+      // "echo '...'" and "sh" and neither segment matches a git rule. Leaving
+      // it open would make the whole deny list advisory. "ask" keeps piped
+      // installers usable -- the prompt shows the URL -- while requiring one
+      // confirmation for the one command that can launder any other.
+      // Change these five to "allow" if you want installs fully unattended.
+      "sh": "ask",
+      "bash": "ask",
+      "zsh": "ask",
+      "sh -s*": "ask",
+      "bash -s*": "ask",
+      // Privilege escalation and host control.
+      "sudo *": "deny",
+      "su *": "deny",
+      "shutdown*": "deny",
+      "reboot*": "deny",
+      // Secret exfiltration via shell, which "read" rules cannot see.
+      "*.ssh/id_*": "deny",
+      "*.aws/credentials*": "deny",
+    },
+  },
+  "tool_output": {
+    "max_lines": 500,
+    "max_bytes": 30000,
+  },
+  "compaction": {
+    "auto": true,
+    "tail_turns": 20,
+  },
+  "mcp": {
+    "notion": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.notion.com/mcp",
+    },
+    "ahrefs": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://api.ahrefs.me/mcp/mcp",
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking",
+      ],
+    },
+    "linear": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.linear.app/mcp",
+    },
+  },
+}
