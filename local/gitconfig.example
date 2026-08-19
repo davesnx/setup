@@ -1,0 +1,10 @@
+# Machine-specific Git settings override the shared configuration.
+
+[user]
+  name = Your Name
+  email = you@example.com
+  # signingkey = YOUR_SIGNING_KEY
+
+# Select the credential helper available on this machine.
+# [credential]
+#   helper = osxkeychain
