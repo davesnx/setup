@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <version>"
+    echo "Example: $0 1.0.0"
+    exit 1
+fi
+
+VERSION=$1
+
+# Check if tag exists locally
+if ! git rev-parse --verify --quiet "refs/tags/$VERSION" >/dev/null; then
+    echo "Error: Tag '$VERSION' does not exist locally"
+    exit 1
+fi
+
+# Check if tag exists remotely without treating connection failures as a missing tag
+if ! REMOTE_TAG=$(git ls-remote --tags origin "refs/tags/$VERSION"); then
+    echo "Error: Could not query tags from origin"
+    exit 1
+fi
+
+if [ -z "$REMOTE_TAG" ]; then
+    echo "Warning: Tag '$VERSION' does not exist on remote, only deleting locally"
+    git tag -d "$VERSION"
+    echo ""
+    echo "✅ Local tag $VERSION deleted successfully!"
+    exit 0
+fi
+
+echo "Deleting remote tag $VERSION..."
+git push origin --delete "$VERSION"
+
+echo "Deleting local tag $VERSION..."
+git tag -d "$VERSION"
+
+echo ""
+echo "✅ Tag $VERSION deleted locally and remotely!"
+echo ""

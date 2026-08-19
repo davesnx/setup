@@ -1,7 +1,6 @@
-#! /bin/zsh
+#!/bin/zsh
 
-FIRST_CHARACTER_OK="→"
-FIRST_CHARACTER_KO="→"
+FIRST_CHARACTER="→"
 
 prompt_short_pwd() {
   if [[ $PWD == $HOME ]]; then
@@ -24,7 +23,7 @@ prompt_precmd() {
 }
 
 prompt_setup() {
-  local prompt_setup_status="%(?:%F{green}$FIRST_CHARACTER_OK:%F{red}$FIRST_CHARACTER_KO)%b"
+  local prompt_setup_status="%(?:%F{green}$FIRST_CHARACTER:%F{red}$FIRST_CHARACTER)%b"
 
   autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_precmd
 

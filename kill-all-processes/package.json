@@ -1,0 +1,62 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "kill-all-processes",
+  "title": "Kill All Processes",
+  "description": "Terminate all processes matching an exact process name",
+  "icon": "icon.png",
+  "author": "davesnx",
+  "platforms": ["macOS", "Windows"],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Kill All Processes",
+      "description": "Terminates every process matching the provided exact process name",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "processName",
+          "placeholder": "node",
+          "type": "text",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "preferences": [
+    {
+      "description": "Send SIGKILL on macOS or Force on Windows.",
+      "label": "Force Kill",
+      "name": "forceKill",
+      "required": false,
+      "default": false,
+      "type": "checkbox"
+    },
+    {
+      "description": "Skip the confirmation dialog before killing matching processes.",
+      "label": "Skip Confirmation",
+      "name": "skipConfirmation",
+      "required": false,
+      "default": false,
+      "type": "checkbox"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.104.1"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.1.1",
+    "@types/node": "22.13.10",
+    "@types/react": "19.0.10",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

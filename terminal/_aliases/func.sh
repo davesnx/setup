@@ -36,3 +36,10 @@ function denoflare {
   deno run --unstable --allow-read --allow-net --allow-env --allow-run \
   https://raw.githubusercontent.com/skymethod/denoflare/v0.5.3/cli/cli.ts "$@"
 }
+
+# Connect to nspawn: one persistent tmux session per project
+# usage: spawn styled-ppx
+function ns() {
+  local proj="${1:?usage: spawn <project>}"
+  mosh nspawn -- tmux new-session -A -s "$proj" -c "/home/me/$proj"
+}

@@ -17,6 +17,7 @@ brew "parallel" # https://www.gnu.org/software/parallel/
 brew "shellcheck" # https://www.shellcheck.net/
 brew "tree"
 brew "vim"
+brew "neovim"
 brew "watch"
 brew "wget"
 brew "tig" # https://jonas.github.io/tig

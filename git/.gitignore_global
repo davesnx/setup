@@ -179,6 +179,15 @@ _esy
 _opam
 _opam_*
 
+*.cmi
+*.cmo
+*.cmj
+*.cmt
+*.cmti
+*.cmx
+*.cmxa
+*.cmxs
+
 # Dune
 # dune.lock
 _build/
@@ -219,8 +228,7 @@ Temporary Items
 itomate.yml
 
 # Cursor
-.cursorrules
-.cursor/
+.cursor/ignore/*
 
 # Ignore direnv
 .envrc

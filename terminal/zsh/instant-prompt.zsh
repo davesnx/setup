@@ -40,27 +40,9 @@ _instant_prompt_pwd() {
   print -Pn "%F{yellow}${pwd_str}%f\n%F{green}${prompt_char}%f "
 }
 
-# Hide cursor and disable echo while loading continues
-# This allows the user to type ahead (input is buffered)
-() {
-  # Save terminal state
-  typeset -g _INSTANT_PROMPT_TERM_STATE
-  _INSTANT_PROMPT_TERM_STATE=$(stty -g 2>/dev/null)
-
-  # Hide what user types (they can still type, it's just hidden)
-  # Comment this out if you want to see what you type during load
-  # stty -echo 2>/dev/null
-}
-
 # Function called after .zshrc finishes to "finalize" the prompt
 _instant_prompt_finalize() {
   unset _INSTANT_PROMPT_ACTIVE
-
-  # Restore terminal state if we modified it
-  if [[ -n "$_INSTANT_PROMPT_TERM_STATE" ]]; then
-    stty "$_INSTANT_PROMPT_TERM_STATE" 2>/dev/null
-    unset _INSTANT_PROMPT_TERM_STATE
-  fi
 
   # Clear the instant prompt line and let the real prompt take over
   # Move cursor up 2 lines (the pwd line and arrow line), clear to end

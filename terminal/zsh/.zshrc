@@ -1,77 +1,7 @@
 #! /bin/zsh
 
-export DOTFILES_PATH="$HOME/Code/github/setup"
-
-# Language toolchain paths
-export PYTHON_PATH='/usr/local/opt/python'
-export RUBY_PATH='/usr/local/opt/ruby'
-export GEM_HOME="$HOME/.gem"
-export BUN_INSTALL="$HOME/.bun"
-
-# PATH setup
-my_paths=(
-  # User-specific paths
-  "$HOME/bin"
-  "$HOME/.local/bin" # dune, pipx, etc.
-  "$HOME/.deno/bin" # deno
-  "$HOME/.cargo/bin" # rust
-  "$BUN_INSTALL/bin" # bun
-  "$GEM_HOME/bin" # ruby
-  "$HOME/.elan/bin" # lean
-
-  # Dotfiles scripts
-  "$DOTFILES_PATH/terminal/bin"
-  "$DOTFILES_PATH/terminal/bin/git-extras"
-  "$DOTFILES_PATH/terminal/bin/ocaml"
-  "$DOTFILES_PATH/terminal/bin/fs"
-
-  # Homebrew
-  "/opt/homebrew/bin"
-  "/opt/homebrew/sbin"
-
-  # System paths
-  "/usr/local/bin"
-  "/usr/local/sbin"
-  "/usr/bin"
-  "/usr/sbin"
-  "/bin"
-  "/sbin"
-)
-export PATH="${(j.:.)my_paths}"
-
-# Homebrew config
-export HOMEBREW_AUTO_UPDATE_SECS=86400
-export HOMEBREW_NO_INSTALL_CLEANUP=1
-export HOMEBREW_NO_ENV_HINTS=1
-export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_INSTALL_BADGE="(ʘ‿ʘ)"
-export HOMEBREW_BUNDLE_FILE_PATH=${DOTFILES_PATH}/mac/brew/Brewfile
-
-# Locale
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-
-# less/man
-export LESS_TERMCAP_md=${yellow} # Highlight section titles in manual pages.
-export MANPAGER='less -X' # Don't clear the screen after quitting a manual page.
-
-# Build flags (for OCaml, native deps, etc.)
-export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
-export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
-export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
-export LIBRARY_PATH="/opt/homebrew/opt/libev/lib:$LIBRARY_PATH"
-export C_INCLUDE_PATH="/opt/homebrew/include:$C_INCLUDE_PATH"
-
-# Node REPL
-export NODE_REPL_HISTORY=~/.node_history
-export NODE_REPL_HISTORY_SIZE='32768'
-export NODE_REPL_MODE='sloppy'
-
-# FZF
-export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
-export FORGIT_LOG_FZF_OPTS="--no-height"
-export FZF_COMPLETION_OPTS='+c -x'
+# DOTFILES_PATH is set in .zprofile, but fallback for non-login shells.
+export DOTFILES_PATH=${DOTFILES_PATH:-$HOME/Code/github/setup}
 
 # (Instant prompt) Must be at the very top before any other output
 [[ -r "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh" ]] && source "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh"
@@ -86,6 +16,7 @@ export HISTSIZE='32768'
 SAVEHIST=$HISTSIZE
 bindkey -e # Set editor default keymap to emacs (`-e`) or vi (`-v`)
 
+setopt nonomatch
 setopt CORRECT # Prompt for spelling correction of commands.
 
 # Remove path separator from WORDCHARS.
@@ -144,11 +75,7 @@ unsetopt cdablevars # Disables the ability to use variable names as directory sh
 setopt promptsubst # allow substitution in PS1
 
 # GPG
-export GPG_TTY=$(tty)
-
-# Editor
-export EDITOR="cursor"
-export VISUAL="cursor"
+export GPG_TTY=/dev/tty
 
 # register all aliases
 source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
@@ -198,11 +125,13 @@ zsh-defer source "$DOTFILES_PATH/git/forgit.zsh"
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
 
-# Load opam
-zsh-defer source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
-
-# Load direnv
-eval "$(direnv hook zsh)"
+# Load direnv synchronously for command-mode agent shells.
+if [[ -n "$CURSOR_AGENT" ]]; then
+  eval "$(direnv hook zsh)"
+  _direnv_hook
+else
+  zsh-defer -c 'eval "$(direnv hook zsh)"'
+fi
 
 # Load fnm
 _fnm_post_direnv_hook() {
@@ -228,23 +157,48 @@ export PATH="$FNM_MULTISHELL_PATH/bin:$PATH"
 rehash
 zmodload -u zsh/files zsh/datetime
 
-# Load opam local switch
+# Load opam and switch automatically when entering or leaving a local switch.
 _opam_local_switch_hook() {
-  if [[ -d "_opam" ]]; then
-    eval "$(opam env)"
+  local switch_root="$PWD"
+  while [[ "$switch_root" != "/" && ! -d "$switch_root/_opam" ]]; do
+    switch_root="${switch_root:h}"
+  done
+
+  local target="$_OPAM_DEFAULT_SWITCH"
+  [[ -d "$switch_root/_opam" ]] && target="$switch_root"
+
+  if [[ -n "$target" && "$target" != "$_OPAM_ACTIVE_SWITCH" ]]; then
+    eval "$(opam env --switch="$target" --set-switch)" || return
+    typeset -g _OPAM_ACTIVE_SWITCH="$target"
   fi
 }
 add-zsh-hook chpwd _opam_local_switch_hook
 
-# Initialize opam env if starting in a directory with local switch
-if [[ -d "_opam" ]]; then
-  if [[ -n "$CURSOR_AGENT" ]]; then
-    eval "$(opam env)"
-  else
-    zsh-defer _evalcache opam env
-  fi
+_initialize_opam() {
+  source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
+  typeset -g _OPAM_DEFAULT_SWITCH="$(opam switch show --safe 2>/dev/null)"
+  typeset -g _OPAM_ACTIVE_SWITCH=""
+  _opam_local_switch_hook
+}
+
+if [[ -n "$CURSOR_AGENT" ]]; then
+  _initialize_opam
+else
+  zsh-defer _initialize_opam
 fi
 
 # Load dune autocompletions
 compopt() { return 0; } # disable compopt since dune/env use bash compat with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
+
+# Reattach to one persistent tmux session per remote project.
+spawn() {
+  local project="${1:?usage: spawn <project>}"
+  mosh nspawn -- tmux new-session -A -s "$project" -c "/home/me/$project"
+}
+
+# Local machine-only exports (ignored by git)
+[[ -f "$DOTFILES_PATH/export.sh" ]] && source "$DOTFILES_PATH/export.sh"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"

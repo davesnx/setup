@@ -20,3 +20,7 @@ ln -sf "$DOTFILES_PATH/editors/vs-code/keybindings.json" "$HOME/Library/Applicat
 # Cursor
 ln -sf "$DOTFILES_PATH/editors/vs-code/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
 ln -sf "$DOTFILES_PATH/editors/vs-code/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"
+
+# Neovim
+mkdir -p "$HOME/.config"
+ln -sfn "$DOTFILES_PATH/editors/nvim" "$HOME/.config/nvim"
