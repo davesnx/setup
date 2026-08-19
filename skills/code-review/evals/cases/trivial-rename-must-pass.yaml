@@ -1,0 +1,30 @@
+schema_version: 2
+id: trivial-rename-must-pass
+mode: prose
+skill_under_test: code-review
+skills_loaded: [code-review]
+description: "Merged review must not invent blockers for a complete rename"
+tags: [false-positive, calibration]
+
+setup:
+  fixtures:
+    "diff.patch": fixtures/trivial-rename.diff
+
+prompt: |
+  Review diff.patch in Standard mode. Write the final review to review.md.
+  This is an evaluation fixture, so do not edit the diff or repository.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: review.md
+  - kind: llm_judge
+    target_file: review.md
+    samples: 1
+    rubric: |
+      The rename is complete and preserves the exported alias. PASS if the
+      review approves it or states that there are no blocking findings. FAIL
+      if it invents a bug, demands unrelated tests or docs, or blocks on style.

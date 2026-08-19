@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if [ "${EVAL_HARNESS_RUNNING:-0}" = "1" ] && [ -n "${OPENCODE_CONFIG_DIR:-}" ]; then
+  python3 - "$OPENCODE_CONFIG_DIR/opencode.json" "$OPENCODE_CONFIG_DIR/skills/**" <<'PY'
+import json
+import sys
+
+path, skills_pattern = sys.argv[1:]
+config = {
+    "$schema": "https://opencode.ai/config.json",
+    "permission": {
+        "external_directory": {
+            "*": "deny",
+            skills_pattern: "allow",
+        }
+    },
+}
+with open(path, "w", encoding="utf-8") as output:
+    json.dump(config, output)
+PY
+fi
+
+exec "${OPENCODE_REAL_BIN:?OPENCODE_REAL_BIN is required}" "$@"

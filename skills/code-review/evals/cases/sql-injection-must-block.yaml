@@ -1,0 +1,30 @@
+schema_version: 2
+id: sql-injection-must-block
+mode: prose
+skill_under_test: code-review
+skills_loaded: [code-review]
+description: "Merged review must catch a reachable SQL injection regression"
+tags: [security, correctness, merged-thermo]
+
+setup:
+  fixtures:
+    "diff.patch": fixtures/sql-injection.diff
+
+prompt: |
+  Review diff.patch in Standard mode. Write the final review to review.md.
+  This is an evaluation fixture, so do not edit the diff or repository.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: review.md
+  - kind: llm_judge
+    target_file: review.md
+    samples: 1
+    rubric: |
+      PASS only if the review identifies SQL injection caused by interpolating
+      name into the query, rates it High or Critical, and recommends restoring
+      a parameterized query. FAIL if any of those three requirements is absent.

@@ -3,6 +3,7 @@
 set -eu
 
 ROOT=$(CDPATH='' cd "$(dirname "$0")" && pwd)
+SKILLS_HOME=$(CDPATH='' cd "$ROOT/../skills" && pwd)
 PROFILE=${1:-}
 
 if [ -z "$PROFILE" ]; then
@@ -25,7 +26,7 @@ AGENTS_HOME="$HOME/.agents"
 STAMP=$(date +%Y%m%d%H%M%S)
 BACKUP_ROOT=${XDG_STATE_HOME:-"$HOME/.local/state"}/setup/backups/$STAMP
 
-mkdir -p "$CONFIG_HOME" "$AGENTS_HOME/skills" "$BACKUP_ROOT/opencode" "$BACKUP_ROOT/skills"
+mkdir -p "$CONFIG_HOME" "$AGENTS_HOME" "$BACKUP_ROOT/opencode"
 
 link_path() {
   source_path=$1
@@ -51,13 +52,11 @@ for name in agents commands themes; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 
-link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc" "$BACKUP_ROOT/opencode/host.jsonc"
+link_path "$SKILLS_HOME" "$CONFIG_HOME/skills" "$BACKUP_ROOT/opencode/skills"
+link_path "$ROOT/AGENTS.md" "$AGENTS_HOME/AGENTS.md" "$BACKUP_ROOT/agents-AGENTS.md"
+link_path "$SKILLS_HOME" "$AGENTS_HOME/skills" "$BACKUP_ROOT/agents-skills"
 
-for source_path in "$ROOT"/skills/*; do
-  [ -d "$source_path" ] || continue
-  name=${source_path##*/}
-  link_path "$source_path" "$AGENTS_HOME/skills/$name" "$BACKUP_ROOT/skills/$name"
-done
+link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc" "$BACKUP_ROOT/opencode/host.jsonc"
 
 PLUGIN_HOME="$CONFIG_HOME/plugins/opencode-notify"
 if [ ! -e "$PLUGIN_HOME" ] && command -v git >/dev/null 2>&1; then

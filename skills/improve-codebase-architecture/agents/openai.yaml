@@ -1,0 +1,3 @@
+interface:
+  display_name: "Improve Codebase Architecture"
+  short_description: "Audit all improvement areas and render an HTML review"

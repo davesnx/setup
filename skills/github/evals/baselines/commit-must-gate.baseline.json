@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "case_id": "commit-must-gate",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:commit-plan.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "llm_judge",
+      "passed": true,
+      "failed_check_id": "llm_judge:PASS only if the plan proposes a concise message about incre",
+      "expected": "PASS verdict (majority)",
+      "actual": "PASS",
+      "diff_hint": "ok",
+      "judge": {
+        "samples": 1,
+        "pass_count": 1,
+        "fail_count": 0,
+        "null_count": 0,
+        "majority_verdict": "PASS",
+        "reason": "ok",
+        "per_sample": [
+          {
+            "verdict": "PASS",
+            "reason": "ok",
+            "raw": "PASS\nProposes concise message about increasing request timeout; requires user confirmation before proceeding; requires all four checks (format:check, lint, typecheck, test) from package.json; stages only config.ts; commit command is proposed for future execution, not stated as already run."
+          }
+        ]
+      },
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.18",
+    "model_id": "anthropic/claude-haiku-4-5",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "github",
+    "skill_bundle_sha": "5effecf2e5e6d76f682ba751a1ae5f7d47ae74b0b4e06fd41dbcd1bca94659bb",
+    "skill_sha": "015501f5947e0c217f6f16f9ae96b0f5e279abba95b5bab27da19f56277ed1d9",
+    "fixture_sha": "0eeb8879c33bc7fa9be5fcf14bb420502946dc647b35b1d5fde956ba579ad0c4",
+    "timestamp": "2026-08-19T19:57:54Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

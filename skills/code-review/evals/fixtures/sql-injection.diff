@@ -1,0 +1,10 @@
+diff --git a/users.py b/users.py
+index 8f4a2d1..a81d1b0 100644
+--- a/users.py
++++ b/users.py
+@@ -10,5 +10,5 @@ def find_user(connection, name):
+-    return connection.execute(
+-        "SELECT id, name FROM users WHERE name = %s", (name,)
+-    ).fetchone()
++    query = f"SELECT id, name FROM users WHERE name = '{name}'"
++    return connection.execute(query).fetchone()

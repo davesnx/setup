@@ -1,0 +1,28 @@
+schema_version: 2
+id: conflict-must-preserve-both
+mode: deterministic
+skill_under_test: github
+skills_loaded: [github]
+description: "Merge-conflict mode must preserve compatible intent from both sides"
+tags: [merge-conflict, behavior-preservation]
+
+setup:
+  fixtures:
+    "labels.mjs.b64": fixtures/labels.mjs.b64
+
+prompt: |
+  Decode labels.mjs.b64 into labels.mjs, then use GitHub Merge conflicts mode.
+  Resolve labels.mjs without running git. Both labels are distinct and
+  compatible, so preserve both. Write a concise explanation to resolution.md.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: resolution.md
+  - kind: shell
+    cmd: "node -e 'import(\"./labels.mjs\").then(m => console.log(m.labels([]).sort().join(\",\")))'"
+    unsafe_shell: true
+    expect_exact: "git,github"

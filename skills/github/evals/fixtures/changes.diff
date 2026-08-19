@@ -1,0 +1,7 @@
+diff --git a/config.ts b/config.ts
+index 1fe91ab..b24d10a 100644
+--- a/config.ts
++++ b/config.ts
+@@ -1 +1 @@
+-export const requestTimeoutMs = 3_000
++export const requestTimeoutMs = 5_000

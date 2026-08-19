@@ -1,0 +1,2 @@
+8d2f2aa Increase retry delay
+40c18df Add request timeout

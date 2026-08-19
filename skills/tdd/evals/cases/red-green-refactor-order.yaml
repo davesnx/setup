@@ -1,0 +1,30 @@
+schema_version: 2
+id: red-green-refactor-order
+mode: prose
+skill_under_test: tdd
+skills_loaded: [tdd, architect]
+description: "TDD mode must preserve red-green-refactor ordering and seam discipline"
+tags: [tdd, red-green-refactor]
+
+setup:
+  fixtures:
+    "requirement.md": fixtures/email-requirement.md
+
+prompt: |
+  Use TDD Red-green-refactor mode for requirement.md. Do not implement code.
+  Write an ordered execution plan to plan.md.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: plan.md
+  - kind: llm_judge
+    target_file: plan.md
+    samples: 1
+    rubric: |
+      PASS only if the plan identifies an observable interface or seam, writes
+      one failing behavior test before implementation, adds only enough code to
+      pass, and refactors only after green while tests stay green.

@@ -1,0 +1,30 @@
+schema_version: 2
+id: domain-modeling-writes-glossary
+mode: prose
+skill_under_test: tdd
+skills_loaded: [tdd]
+description: "Domain-modeling mode must create a precise glossary without an ADR"
+tags: [domain-modeling, glossary, adr-calibration]
+
+setup:
+  fixtures:
+    "brief.md": fixtures/cancellation-brief.md
+
+prompt: |
+  Use TDD Domain modeling mode for brief.md. Write the resolved domain model to
+  CONTEXT.md. Do not create an ADR because the brief does not meet the ADR bar.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: CONTEXT.md
+  - kind: llm_judge
+    target_file: CONTEXT.md
+    samples: 1
+    rubric: |
+      PASS only if CONTEXT.md defines cancellation, cancellation reason, and
+      the shipped-order constraint in domain language without implementation
+      details. FAIL if it calls cancellation deletion or contains an ADR.

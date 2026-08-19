@@ -1,0 +1,12 @@
+diff --git a/paths.ts b/paths.ts
+index 7e6cc91..969d8fd 100644
+--- a/paths.ts
++++ b/paths.ts
+@@ -1,5 +1,5 @@
+-export function getCwd(): string {
++export function getCurrentWorkingDirectory(): string {
+   return process.cwd()
+ }
+
+-export { getCwd as cwd }
++export { getCurrentWorkingDirectory as cwd }

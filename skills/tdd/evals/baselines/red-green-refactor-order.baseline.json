@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "case_id": "red-green-refactor-order",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:plan.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "llm_judge",
+      "passed": true,
+      "failed_check_id": "llm_judge:PASS only if the plan identifies an observable interface or ",
+      "expected": "PASS verdict (majority)",
+      "actual": "PASS",
+      "diff_hint": "ok",
+      "judge": {
+        "samples": 1,
+        "pass_count": 1,
+        "fail_count": 0,
+        "null_count": 0,
+        "majority_verdict": "PASS",
+        "reason": "ok",
+        "per_sample": [
+          {
+            "verdict": "PASS",
+            "reason": "ok",
+            "raw": "PASS\nThe plan identifies a clear observable seam (the `normalizeEmail` function's return value and thrown exceptions), writes one failing behavior test before each implementation step, adds only enough code to pass each cycle, and defers refactoring until after green."
+          }
+        ]
+      },
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.18",
+    "model_id": "anthropic/claude-haiku-4-5",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "tdd",
+    "skill_bundle_sha": "40a51de93f17f64d731e7b91fdec757b8f326c8d1cf255e500c1bdf9d3a50e95",
+    "skill_sha": "ff8688a3d5391fa215eb6b459604cbb66344e0f380d30a42b7d71ea68afe3326",
+    "fixture_sha": "ed27c2706bc002dea52824156f6333777ce2643a717647ea51149be065ccf09f",
+    "timestamp": "2026-08-19T19:50:57Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

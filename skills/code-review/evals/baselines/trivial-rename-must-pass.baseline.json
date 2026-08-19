@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "case_id": "trivial-rename-must-pass",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:review.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "llm_judge",
+      "passed": true,
+      "failed_check_id": "llm_judge:The rename is complete and preserves the exported alias. PAS",
+      "expected": "PASS verdict (majority)",
+      "actual": "PASS",
+      "diff_hint": "ok",
+      "judge": {
+        "samples": 1,
+        "pass_count": 1,
+        "fail_count": 0,
+        "null_count": 0,
+        "majority_verdict": "PASS",
+        "reason": "ok",
+        "per_sample": [
+          {
+            "verdict": "PASS",
+            "reason": "ok",
+            "raw": "PASS"
+          }
+        ]
+      },
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.18",
+    "model_id": "anthropic/claude-haiku-4-5",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "code-review",
+    "skill_bundle_sha": "e117069c69fbe78721f56570a3434cc1d5c41bb069c7a6779cc36017a320811e",
+    "skill_sha": "22dbde933817502a2b3b9bdf1560668603f352cc39182f5e8983e54acd440fe9",
+    "fixture_sha": "d8e6b057cf0f6489388fa9f87692168ed7fa2cf442b26ce2dcc88026ab8c0ef1",
+    "timestamp": "2026-08-19T20:18:11Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

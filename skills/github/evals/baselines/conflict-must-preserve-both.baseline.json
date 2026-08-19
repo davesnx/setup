@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "case_id": "conflict-must-preserve-both",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:resolution.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'import(\"./labels.mjs\").then(m => console.log(m.labels([]).sort().join(\",\")))'",
+      "expected": "git,github",
+      "actual": "git,github",
+      "diff_hint": "",
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.18",
+    "model_id": "anthropic/claude-haiku-4-5",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "github",
+    "skill_bundle_sha": "131dd5f72fe9a60c2701d244bec5d8fb1964a05ab382d4180b57643cee14bb4a",
+    "skill_sha": "de16aa1163798ea5b7f50fed55a46663c7d9b8f901875aefca55043b8c502c27",
+    "fixture_sha": "4ba3a86bed2a1b869ee855b4e4359155b404a4944ff0a5dd8b6a4594946adfc6",
+    "timestamp": "2026-08-19T20:19:02Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

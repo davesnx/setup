@@ -3,7 +3,7 @@
 No per-role model overrides. Every pstack role uses opencode's configured
 default model.
 
-When a pstack skill (arena, interrogate, how, reflect, architect, why, or any
+When a pstack skill (interrogate, how, reflect, architect, why, or any
 other) names a specific model, a model list, or a "configured X model" for a
 subagent, ignore the model choice: opencode's Task tool has no model parameter.
 Spawn the subagent with `subagent_type: "general"` (or `"explore"` for

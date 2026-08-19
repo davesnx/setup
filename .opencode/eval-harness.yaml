@@ -1,0 +1,5 @@
+model: anthropic/claude-haiku-4-5
+budget_usd: 2.00
+max_seconds: 180
+llm_judge:
+  model: anthropic/claude-sonnet-4-6
