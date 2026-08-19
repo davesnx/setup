@@ -26,7 +26,9 @@ alias d="docker"
 alias j="__zoxide_z"
 alias jj="__zoxide_zi"
 
-alias opencode="/Users/davesnx/.opencode/bin/opencode"
+alias oc="/opt/homebrew/bin/opencode"
+alias occ="/opt/homebrew/bin/opencode --continue"
+alias ccc="claude --continue"
 
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
@@ -35,6 +37,9 @@ alias cfg="\${EDITOR} \${DOTFILES_PATH}"
 alias hosts="\${EDITOR} /etc/hosts"
 
 alias quit="exit"
+
+# enpass
+alias enpass="enpass-cli --vault /Users/davesnx/Documents/Enpass/Vaults/primary --sort -pin"
 
 # Re-alias "export" to " export" to remove from history
 alias export=" export"
@@ -50,7 +55,9 @@ docker-clear () {
 docker-reset () {
     docker-clear
     docker images -q | xargs docker rmi -f
-    docker volume rm $(docker volume ls | awk '{print $2}')
+    while IFS= read -r volume; do
+        docker volume rm "$volume"
+    done < <(docker volume ls -q)
     rm -rf ~/Library/Containers/com.docker.docker/Data/*
     docker system prune -a
 }
