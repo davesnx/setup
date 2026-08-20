@@ -161,6 +161,8 @@ fi
 
 # Load opam and switch automatically when entering or leaving a local switch.
 _opam_local_switch_hook() {
+  (( ${+commands[opam]} )) || return
+
   local switch_root="$PWD"
   while [[ "$switch_root" != "/" && ! -d "$switch_root/_opam" ]]; do
     switch_root="${switch_root:h}"
@@ -169,17 +171,35 @@ _opam_local_switch_hook() {
   local target="$_OPAM_DEFAULT_SWITCH"
   [[ -d "$switch_root/_opam" ]] && target="$switch_root"
 
-  if [[ -n "$target" && "$target" != "$_OPAM_ACTIVE_SWITCH" ]]; then
-    eval "$(opam env --switch="$target" --set-switch)" || return
-    typeset -g _OPAM_ACTIVE_SWITCH="$target"
+  [[ "$target" == "$_OPAM_ACTIVE_SWITCH" ]] && return
+
+  local opam_env
+  if [[ -n "$target" ]]; then
+    opam_env="$(opam env --shell=zsh --readonly --inplace-path --switch="$target" --set-switch)" || return
+  else
+    opam_env="$(opam env --shell=zsh --readonly --revert)" || return
   fi
+
+  eval "$opam_env" || return
+  if [[ -z "$target" ]]; then
+    unset OPAMSWITCH
+  fi
+
+  typeset -g _OPAM_ACTIVE_SWITCH="$target"
 }
 add-zsh-hook chpwd _opam_local_switch_hook
 
 _initialize_opam() {
-  source "$DOTFILES_PATH/terminal/opam-init/init.zsh"
-  typeset -g _OPAM_DEFAULT_SWITCH="$(opam switch show --safe 2>/dev/null)"
-  typeset -g _OPAM_ACTIVE_SWITCH=""
+  (( ${+commands[opam]} )) || return
+
+  local opam_init="${OPAMROOT:-$HOME/.opam}/opam-init"
+  [[ ! -r "$opam_init/complete.zsh" ]] || source "$opam_init/complete.zsh"
+
+  typeset -g _OPAM_DEFAULT_SWITCH="$(
+    unset OPAMSWITCH OPAM_SWITCH_PREFIX
+    cd "$HOME" && opam switch show --safe 2>/dev/null
+  )"
+  typeset -g _OPAM_ACTIVE_SWITCH="${OPAMSWITCH:-${OPAM_SWITCH_PREFIX:-}}"
   _opam_local_switch_hook
 }
 
