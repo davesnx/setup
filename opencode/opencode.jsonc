@@ -5,7 +5,7 @@
   "snapshot": true,
   // Cheap model for titles/summaries/compaction; main model stays whatever you
   // pick in the TUI (set "model" here if you want a fixed default).
-  "small_model": "cursor/composer-2.5-fast",
+  "small_model": "openai/gpt-5.4-nano",
   "experimental": {
     "disable_paste_summary": true,
   },
