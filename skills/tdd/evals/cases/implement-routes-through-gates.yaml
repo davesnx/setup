@@ -1,0 +1,31 @@
+schema_version: 2
+id: implement-routes-through-gates
+mode: prose
+skill_under_test: tdd
+skills_loaded: [tdd, architect, code-review, github]
+description: "Implement mode must route a ticket through TDD, validation, review, and commit confirmation"
+tags: [implement, tdd, review, commit-gate]
+
+setup:
+  fixtures:
+    "ticket.md": fixtures/implementation-ticket.md
+
+prompt: |
+  Use TDD Implement mode for ticket.md. Do not write code or run commands.
+  Write the ordered execution plan to implementation-plan.md.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: implementation-plan.md
+  - kind: llm_judge
+    target_file: implementation-plan.md
+    samples: 1
+    rubric: |
+      PASS only if the plan states the public-function seam, uses one failing
+      behavior test per red-green-refactor cycle, includes npm test and npm run
+      typecheck, runs code-review after implementation, and requires explicit
+      GitHub Commit confirmation before committing.

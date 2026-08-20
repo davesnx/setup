@@ -5,10 +5,7 @@
   "snapshot": true,
   // Cheap model for titles/summaries/compaction; main model stays whatever you
   // pick in the TUI (set "model" here if you want a fixed default).
-  "small_model": "anthropic/claude-haiku-4-5",
-  // pstack skills: no per-role model pinning, subagents inherit the session
-  // model. Managed by the setup-pstack skill; re-run it to change.
-  "instructions": ["pstack-models.md"],
+  "small_model": "cursor/composer-2.5-fast",
   "experimental": {
     "disable_paste_summary": true,
   },
@@ -22,12 +19,11 @@
     "opencode-goal-plugin@0.4.0",
     "cursor-oauth-opencode@0.1.8",
     "./plugins/opencode-notify/src/notify.ts",
-    "@plannotator/opencode@latest",
+    "opencode-diffs@0.0.3",
   ],
   "provider": {
     "anthropic": {
       "options": {
-        // Read from the shell environment, never hardcode secrets in config.
         "apiKey": "{env:OPENCODE_ANTHROPIC_API_KEY}",
       },
     },
@@ -78,8 +74,9 @@
   // evaluated with the LAST match winning, so broad rules go first and the
   // deny list goes last.
   "permission": {
+    "*": "allow",
     "external_directory": {
-      "*": "ask",
+      "*": "allow",
       "/tmp/**": "allow",
       // "$HOME" is not expanded by opencode; "~/" is. "~/**" does not match
       // bare "~", so list both.

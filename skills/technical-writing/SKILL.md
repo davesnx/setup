@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: Write or review technical docs, RFCs, READMEs, PR descriptions, commit messages, and X posts with clear structure and plain language. Use for "technical writing", docs, tutorials, how-to guides, reference, explanation, RFCs, "write a tweet", "write an X post", "optimize this post", or diagnosing why an X post underperformed.
+description: Research technical questions and write or review technical docs, RFCs, READMEs, PR descriptions, commit messages, and X posts with clear structure and plain language. Use for "research this", "gather primary sources", technical writing, docs, tutorials, how-to guides, reference, explanation, RFCs, "write a tweet", "write an X post", "optimize this post", or diagnosing why an X post underperformed.
 metadata:
   source: "https://github.com/cursor/plugins/blob/main/pstack/skills/technical-writing/SKILL.md"
   x-algorithm-source: "https://github.com/xai-org/x-algorithm"
@@ -13,6 +13,7 @@ Write text that a tired engineer understands on the first read.
 ## Modes
 
 - **Technical document**: Apply the four writing layers below. Pick one Diataxis mode for each document.
+- **Research**: Read [references/research.md](references/research.md), investigate against primary sources, and save a cited Markdown artifact before drawing conclusions.
 - **X post**: Apply the sentence rules below, then read [references/x-posts.md](references/x-posts.md). Use verified recommendation-system facts only as constraints, not as guaranteed growth tactics.
 
 Both modes use `unslop` as the final editing pass.

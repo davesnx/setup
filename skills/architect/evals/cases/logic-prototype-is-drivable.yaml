@@ -1,0 +1,33 @@
+schema_version: 2
+id: logic-prototype-is-drivable
+mode: prose
+skill_under_test: architect
+skills_loaded: [architect]
+model: anthropic/claude-sonnet-4-6
+description: "Logic prototype mode must create a self-contained drivable state-model artifact"
+tags: [prototype, state-model, html]
+
+setup:
+  fixtures:
+    "question.md": fixtures/cancellation-model.md
+
+prompt: |
+  Use Architect Logic prototype mode to answer question.md. Write the complete
+  artifact to prototype.html. Do not use external libraries or network assets.
+
+budget:
+  max_tokens: 10000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: prototype.html
+  - kind: llm_judge
+    target_file: prototype.html
+    samples: 3
+    rubric: |
+      PASS only if the HTML is self-contained, visibly states the cancellation
+      question, isolates transition logic from DOM handlers, shows current
+      state, provides free-play action controls, and includes guided scenarios
+      for a happy path, paid cancellation with refund, and illegal cancellation
+      after shipment.

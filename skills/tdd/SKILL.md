@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development and domain modeling. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", wants integration tests, asks for "domain modeling", "ubiquitous language", glossary or CONTEXT.md work, needs to sharpen domain terms, or wants to record an architectural decision or ADR.
+description: Test-driven development, implementation from specs or tickets, and domain modeling. Use when the user says "implement this", provides a spec or ticket to build, wants to build features or fix bugs test-first, mentions "red-green-refactor", wants integration tests, asks for "domain modeling", "ubiquitous language", glossary or CONTEXT.md work, needs to sharpen domain terms, or wants to record an architectural decision or ADR.
 ---
 
 # TDD
@@ -8,6 +8,7 @@ description: Test-driven development and domain modeling. Use when the user want
 ## Modes
 
 - **Red-green-refactor**: Build behavior test-first through agreed seams.
+- **Implement**: Read [references/implement.md](references/implement.md), then deliver a spec or ticket through vertical TDD slices, validation, review, and the GitHub Commit gate.
 - **Domain modeling**: Sharpen domain language, test concepts with scenarios, maintain `CONTEXT.md`, and record qualifying ADRs. Read [references/domain-modeling.md](references/domain-modeling.md) before starting.
 
 Use both modes when test design exposes unclear domain concepts. Resolve the language and scenarios first, then name tests and interfaces with the settled vocabulary.

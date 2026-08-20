@@ -1,9 +1,0 @@
-# Machine-specific shell settings load after the shared configuration.
-
-# export EDITOR="code"
-# export VISUAL="$EDITOR"
-
-# Add machine-only commands without replacing the shared PATH.
-# path=("$DOTFILES_PATH/local/bin" $path)
-
-# alias work="cd $HOME/Code/work"

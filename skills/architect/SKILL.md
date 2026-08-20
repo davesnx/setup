@@ -1,11 +1,16 @@
 ---
 name: architect
-description: "Design deep modules, interfaces, seams, types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', 'design this module', 'improve this interface', 'deepen this module', or non-trivial work where jumping to code would lock in the wrong shape."
+description: "Design deep modules, interfaces, seams, types, signatures, and module structure before code, or build a throwaway logic prototype to answer a state-model question. Use for /architect, 'architect this', 'design this', 'design this module', 'improve this interface', 'deepen this module', 'prototype this logic', 'does this state model work', or non-trivial work where jumping to production code would lock in the wrong shape."
 ---
 
 # Architect
 
 Design before implementing. Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Synthesize across multiple model perspectives, then fill in code against the chosen sketch. If implementation proves the sketch wrong, throw it out and redesign.
+
+## Modes
+
+- **Architecture**: Use the Ground, Sketch, Agree, Implement, and Scrap phases below.
+- **Logic prototype**: Read [references/logic-prototype.md](references/logic-prototype.md). Build one throwaway, self-contained HTML artifact that lets a human test a state model through scenarios. Do not run the production implementation phases.
 
 ## Start
 

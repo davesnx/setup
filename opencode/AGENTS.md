@@ -28,3 +28,19 @@
 - Before pushing, verify that every outgoing commit passed the required checks
   against its final tree. A pre-existing failure is still a failure and is not
   permission to push another red commit.
+
+## Working Style
+
+- Act without confirmation for normal work. Ask first when an action is
+  destructive, irreversible, or when you are unsure between real options.
+- Never revert user-authored changes unless the user asks.
+- Never accept a snapshot or promoted diff you cannot explain.
+
+## Code
+
+- Write comments only to explain why, never to restate what code does or to
+  delimit sections.
+- Fix root causes. Do not silence findings with casts, lint suppressions, or
+  silent fallbacks.
+- When a change alters behavior, update the docs that describe that behavior in
+  the same change.
