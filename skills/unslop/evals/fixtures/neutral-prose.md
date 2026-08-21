@@ -1,0 +1,1 @@
+The archive contains 418 records collected between 2008 and 2012. Researchers classified the records by county, but the collector's identity is unknown. It is important to note that the archive does not include records from 2010.

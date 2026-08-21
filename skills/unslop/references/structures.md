@@ -1,8 +1,8 @@
-# Structures to Avoid
+# Structures to avoid
 
-## Binary Contrasts
+## Binary contrasts
 
-These create false drama. State the point directly.
+These create false drama when the negation exists only to set up a reveal. State the point directly, but keep a contrast that carries a real distinction.
 
 | Pattern | Problem |
 |---------|---------|
@@ -18,20 +18,20 @@ These create false drama. State the point directly.
 | "is about X but not Y" | False distinction |
 | "not just X but also Y" | Additive hedge |
 
-**Instead:** State Y directly. "The problem is Y." "Y matters here." Drop the negation entirely.
+**Instead:** State Y directly when the negation exists only for drama. Keep the contrast when X and Y form a meaningful distinction.
 
-## Negative Listing
+## Negative listing
 
-Listing what something is *not* before revealing what it *is*. A rhetorical striptease.
+Listing what something is *not* before revealing what it *is*. The structure becomes theatrical when the negations add no information.
 
 | Pattern | Problem |
 |---------|---------|
 | "Not a X... Not a Y... A Z." | Dramatic buildup through negation |
 | "It wasn't X. It wasn't Y. It was Z." | Same structure, past tense |
 
-**Instead:** State Z. The reader doesn't need the runway.
+**Instead:** State Z when X and Y are semantically redundant. Otherwise preserve all three distinctions in one less theatrical sentence.
 
-## Dramatic Fragmentation
+## Dramatic fragmentation
 
 Sentence fragments for emphasis read as manufactured profundity.
 
@@ -43,7 +43,7 @@ Sentence fragments for emphasis read as manufactured profundity.
 
 **Instead:** Complete sentences. Trust content over presentation.
 
-## Rhetorical Setups
+## Rhetorical setups
 
 These announce insight rather than deliver it.
 
@@ -52,20 +52,13 @@ These announce insight rather than deliver it.
 | "What if [reframe]?" | Socratic posturing |
 | "Here's what I mean:" | Redundant preview |
 | "Think about it:" | Condescending prompt |
-| "And that's okay." | Unnecessary permission |
+| "And that's okay." | Formulaic permission when it adds no conclusion |
 
-**Instead:** Make the point. Let readers draw conclusions.
+**Instead:** Remove the setup. Preserve a conclusion or distinction in a direct sentence.
 
-## Formulaic Constructions
+## False agency
 
-| Pattern | Problem |
-|---------|---------|
-| "By the time X, I was Y." | Narrative template |
-| "X that isn't Y" | Indirect. Say "X is broken" |
-
-## False Agency
-
-Giving inanimate things human verbs. Complaints don't "become" fixes. Bets don't "live or die." Decisions don't "emerge." A person does something to make those things happen. AI loves this because it avoids naming the actor.
+Inanimate subjects can hide who acted. Complaints don't "become" fixes, and decisions don't "emerge" without a person deciding. Name the actor when doing so improves the sentence.
 
 | Pattern | Problem |
 |---------|---------|
@@ -74,27 +67,26 @@ Giving inanimate things human verbs. Complaints don't "become" fixes. Bets don't
 | "the decision emerges" | Decisions don't emerge. Someone decides. |
 | "the culture shifts" | Cultures don't shift on their own. People change behavior. |
 | "the conversation moves toward" | Conversations don't move. Someone steers. |
-| "the data tells us" | Data sits there. Someone reads it and draws a conclusion. |
-| "the market rewards" | Markets don't reward. Buyers pay for things. |
+| "the data tells us" | May hide who interpreted the data; "the data shows" is ordinary shorthand. |
+| "the market rewards" | May obscure the buyers or behavior responsible for the result. |
 
-**Instead:** Name the human. "The team fixed it that week" beats "the complaint becomes a fix." If no specific person fits, use "you" to put the reader in the seat.
+**Instead:** Use an actor or timeframe only when the source supplies one. If it does not, keep a neutral construction rather than inventing who acted or when. Ordinary shorthand such as "the data shows" is fine when it is clear and natural.
 
-## Narrator-from-a-Distance
+## Narrator-from-a-distance
 
-Floating above the scene instead of putting the reader in it.
+Floating above the scene instead of putting the reader in it. This applies to personal and instructional prose, not neutral reference writing.
 
 | Pattern | Problem |
 |---------|---------|
-| "Nobody designed this." | Disembodied observation |
 | "This happens because..." | Lecturer voice |
 | "This is why..." | Same |
 | "People tend to..." | Armchair sociologist |
 
-**Instead:** Put the reader in the room. "You don't sit down one day and decide to..." beats "Nobody designed this."
+**Instead:** Use a closer perspective only when the source supports it. Do not replace "nobody" or "people" with "you" when that changes scope or agency.
 
-## Passive Voice
+## Passive voice
 
-Every sentence needs a subject doing something. Passive voice hides the actor and drains energy.
+Prefer active voice when it clarifies who acted. Passive voice is appropriate when the actor is unknown, irrelevant, or deliberately omitted.
 
 | Pattern | Fix |
 |---------|-----|
@@ -105,30 +97,30 @@ Every sentence needs a subject doing something. Passive voice hides the actor an
 
 **Instead:** Find the actor. Put them at the front of the sentence.
 
-## Sentence Starters to Avoid
+## Sentence starters to avoid
 
 | Pattern | Fix |
 |---------|-----|
-| Sentences starting with What, When, Where, Which, Who, Why, How | Restructure. Lead with the subject or the verb. |
+| Repeated What, When, Where, Which, Who, Why, or How openings | Vary them when they become a crutch. |
 | Paragraphs starting with "So" | Start with content |
 | Sentences starting with "Look," | Remove |
 
 Wh- openers become a crutch. "What makes this hard is..." becomes "The constraint is..." or better, name the specific constraint.
 
-## Rhythm Patterns
+## Rhythm patterns
 
 | Pattern | Fix |
 |---------|-----|
-| Three-item lists | Use two items or one |
+| Forced three-item lists | Use the natural number of items |
 | Questions answered immediately | Let questions breathe or cut them |
 | Every paragraph ends punchily | Vary endings |
-| Em-dashes | Remove. Use commas or periods. No em dashes at all. |
+| Repeated or formulaic em dashes | Use commas or periods unless the writer's established style calls for em dashes |
 | Staccato fragmentation | Don't stack short punchy sentences |
 | "Not always. Not perfectly." | Hedging disguised as reassurance |
 
-## Word Patterns
+## Word patterns
 
 | Pattern | Problem |
 |---------|---------|
-| Lazy extremes (every, always, never, everyone, everybody, nobody) | False authority. Use specifics instead of sweeping claims. |
-| All adverbs (-ly words, "really," "just," "literally," "genuinely," "honestly," "simply," "actually") | Empty emphasis. See phrases.md for full list. |
+| Unsupported extremes (every, always, never, everyone, everybody, nobody) | Keep a supported quantifier; otherwise flag it instead of inventing a narrower claim. |
+| Adverbs used as empty emphasis ("really," "just," "literally," "genuinely," "honestly," "simply," "actually") | Cut them or use a stronger verb. See phrases.md for the full list. |

@@ -26,4 +26,5 @@ checks:
     rubric: |
       PASS only if the revision preserves all three facts (reload every 30
       seconds, YAML and JSON support, invalid-key logging) while removing the
-      significance inflation, "at its core", and "not just X" construction.
+      significance inflation, "at its core", and "not just X" construction,
+      and adds no new claim, mechanism, number, source, or opinion.
