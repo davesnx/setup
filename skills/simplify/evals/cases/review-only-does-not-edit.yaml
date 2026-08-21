@@ -1,0 +1,36 @@
+schema_version: 2
+id: simplify-review-only-does-not-edit
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify, code-review]
+description: "The simplicity lens respects an explicit review-only boundary"
+tags: [review, read-only, scope]
+
+setup:
+  fixtures:
+    "bloated.mjs": fixtures/bloated.mjs
+    "expected.mjs": fixtures/bloated.mjs
+
+prompt: |
+  Review bloated.mjs for avoidable complexity. Do not edit source files. Write
+  concise, evidence-based findings to review.md.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: review.md
+  - kind: output_contains
+    value: '"name":"simplify"'
+  - kind: output_contains
+    value: '"name":"code-review"'
+  - kind: shell
+    cmd: "cmp -s bloated.mjs expected.mjs && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const target=/NameFormatter/.test(s)&&/trim\\(\\)/.test(s); const finding=/one-use|pass-through|abstraction|remove the .*class/i.test(s); process.stdout.write(target&&finding?\"focused\":\"vague\")'"
+    unsafe_shell: true
+    expect_exact: "focused"

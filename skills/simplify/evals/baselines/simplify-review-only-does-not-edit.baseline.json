@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "case_id": "simplify-review-only-does-not-edit",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:review.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_contains",
+      "passed": true,
+      "failed_check_id": "output_contains:\"name\":\"simplify\"",
+      "expected": "\"name\":\"simplify\"",
+      "actual": "present",
+      "diff_hint": "",
+      "transcript_span": {
+        "start_line": 4,
+        "end_line": 4,
+        "transcript_path": "/tmp/opencode/simplify-eval-state-openai/runs/2026-08-21T23-26-18Z-13244/simplify-review-only-does-not-edit/transcript.jsonl"
+      },
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_contains",
+      "passed": true,
+      "failed_check_id": "output_contains:\"name\":\"code-review\"",
+      "expected": "\"name\":\"code-review\"",
+      "actual": "present",
+      "diff_hint": "",
+      "transcript_span": {
+        "start_line": 3,
+        "end_line": 3,
+        "transcript_path": "/tmp/opencode/simplify-eval-state-openai/runs/2026-08-21T23-26-18Z-13244/simplify-review-only-does-not-edit/transcript.jsonl"
+      },
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:cmp -s bloated.mjs expected.mjs && printf unchanged",
+      "expected": "unchanged",
+      "actual": "unchanged",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const target=/NameFormatter/.test(s)&&/trim\\(\\)/.test(s); const finding=/one-use|pass-through|abstraction|remove the .*class/i.test(s); process.stdout.write(target&&finding?\"focused\":\"vague\")'",
+      "expected": "focused",
+      "actual": "focused",
+      "diff_hint": "",
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.20",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "simplify",
+    "skill_bundle_sha": "a93868c51e030a9210b6b1701371f1de28bfe0e9ce1fbe63e72c88302d8565e3",
+    "skill_sha": "269b0e7c46df339c057c1ef0822ea84e781538ef16f2f8cbb98f73be85e529cc",
+    "fixture_sha": "6f2d4f8dc939ef4f056b829fcda04ed79061498cd067163150d1db45ba682d39",
+    "timestamp": "2026-08-21T23:27:56Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

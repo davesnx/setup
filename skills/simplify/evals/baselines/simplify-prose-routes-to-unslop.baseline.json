@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "case_id": "simplify-prose-routes-to-unslop",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:revised.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_contains",
+      "passed": true,
+      "failed_check_id": "output_contains:\"name\":\"unslop\"",
+      "expected": "\"name\":\"unslop\"",
+      "actual": "present",
+      "diff_hint": "",
+      "transcript_span": {
+        "start_line": 3,
+        "end_line": 3,
+        "transcript_path": "/tmp/opencode/simplify-eval-state-openai/runs/2026-08-21T23-26-18Z-13244/simplify-prose-routes-to-unslop/transcript.jsonl"
+      },
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:cmp -s app.mjs expected.mjs && printf unchanged",
+      "expected": "unchanged",
+      "actual": "unchanged",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[\"30 seconds\",\"YAML\",\"JSON\",\"invalid keys\"].every(x=>s.includes(x)); const slop=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!slop?\"plain\":\"sloppy\")'",
+      "expected": "plain",
+      "actual": "plain",
+      "diff_hint": "",
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.20",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "simplify",
+    "skill_bundle_sha": "a93868c51e030a9210b6b1701371f1de28bfe0e9ce1fbe63e72c88302d8565e3",
+    "skill_sha": "269b0e7c46df339c057c1ef0822ea84e781538ef16f2f8cbb98f73be85e529cc",
+    "fixture_sha": "6f2d4f8dc939ef4f056b829fcda04ed79061498cd067163150d1db45ba682d39",
+    "timestamp": "2026-08-21T23:27:17Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

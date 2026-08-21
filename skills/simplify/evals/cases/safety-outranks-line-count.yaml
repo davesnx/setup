@@ -1,0 +1,27 @@
+schema_version: 2
+id: simplify-safety-outranks-line-count
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify]
+description: "Simplification keeps trust-boundary and data-loss guards"
+tags: [safety, anti-overcompression, behavior-preservation]
+
+setup:
+  fixtures:
+    "withdraw.mjs": fixtures/withdraw.mjs
+
+prompt: |
+  Simplify withdraw.mjs. Preserve its public function and all observable
+  outcomes. Edit the file and write a short summary to cleanup.md.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: cleanup.md
+  - kind: shell
+    cmd: "node -e 'import(\"./withdraw.mjs\").then(({withdraw}) => console.log(JSON.stringify([withdraw({balance:100,amount:-1,authorized:false}),withdraw({balance:100,amount:NaN,authorized:true}),withdraw({balance:100,amount:Infinity,authorized:true}),withdraw({balance:100,amount:0,authorized:true}),withdraw({balance:100,amount:-1,authorized:true}),withdraw({balance:5,amount:10,authorized:true}),withdraw({balance:100,amount:10,authorized:true})])))'"
+    unsafe_shell: true
+    expect_exact: '[{"ok":false,"error":"forbidden"},{"ok":false,"error":"invalid_amount"},{"ok":false,"error":"invalid_amount"},{"ok":false,"error":"invalid_amount"},{"ok":false,"error":"invalid_amount"},{"ok":false,"error":"insufficient_funds"},{"ok":true,"balance":90}]'

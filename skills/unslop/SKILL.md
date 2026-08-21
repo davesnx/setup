@@ -1,22 +1,13 @@
 ---
 name: unslop
-description: Remove AI-generated slop from prose or recently changed code. Use when drafting, editing, or reviewing writing, or when the user says "unslop", "deslop", "simplify", "clean up code", "simplify code", or asks for a reuse, quality, efficiency, or AI-code cleanup pass. Preserves meaning in prose and behavior in code.
+description: Remove AI-generated slop from existing prose. Use only when the user explicitly asks to unslop or deslop writing, or to simplify, clean up, humanize, or remove AI patterns from prose. Do not use for source code or as a final pass for another writing skill.
 ---
 
 # Unslop
 
-## Choose A Mode
-
-- **Prose**: Use when the target is writing, documentation, copy, a report, or a message.
-- **Code**: Use when the target is source code, a diff, recent changes, or a named code-quality focus.
-
-Infer the mode from the target. Ask once when the request contains neither prose nor code context.
-
-## Prose Cleanup
-
 Edit text to remove AI patterns and add human voice.
 
-## Prose Process
+## Process
 
 1. Scan for the patterns below.
 2. Rewrite. Preserve meaning, match intended tone.
@@ -140,76 +131,3 @@ Below 35/50: revise.
 - [references/phrases.md](references/phrases.md): throat-clearing openers, emphasis crutches, business jargon table, adverb kill-list, meta-commentary, vague declaratives.
 - [references/structures.md](references/structures.md): binary contrasts, negative listing, false agency, narrator-from-a-distance, rhythm patterns.
 - [references/examples.md](references/examples.md): before/after transformations.
-
-## Code Cleanup
-
-Review the selected change scope for reuse, quality, efficiency, and AI-generated code patterns, then apply focused behavior-preserving fixes.
-
-### 1. Select The Scope
-
-Use explicit files or a fixed point when the user provides them. Otherwise combine unstaged and staged changed files. If the worktree has no changes, compare the current branch with its merge base against the repository's base branch.
-
-Do not include unrelated files. If there is no code in scope, report that and stop.
-
-### 2. Read The Code
-
-Read each selected file and the surrounding project conventions. Search for existing helpers before proposing a new extraction. A pattern is not redundant until its intended behavior and ownership are understood.
-
-### 3. Apply Four Lenses
-
-For more than two small files, launch three read-only reviewers in one parallel batch. Give each reviewer the exact file list, relevant diff, code paths or contents, user focus, and one lens below. Require `file:line` evidence and a concrete fix. For a trivial change, apply the same lenses directly.
-
-**Reuse**
-
-- Duplicated logic within or across changed files.
-- Copy-pasted patterns that should share one implementation.
-- New utilities that duplicate an existing canonical helper.
-- Helpers or abstractions that can be deleted in favor of a direct existing path.
-
-**Quality and AI-code slop**
-
-- Unused imports, variables, parameters, dead code, or unreachable branches.
-- Unnecessary comments that restate code or do not match local style.
-- Defensive checks, fallbacks, or `try`/`catch` blocks that are abnormal on trusted paths.
-- `any`, casts, optional values, or ignored errors used to bypass a type or invariant.
-- Deep nesting that should use early returns or a clearer model.
-- Poor names, broad abstractions, pass-through wrappers, and code inconsistent with its neighbors.
-
-**Efficiency**
-
-- Repeated computation, lookup, allocation, or copying with material cost.
-- Accidental quadratic work where a direct linear approach is clear.
-- Missed short-circuiting or unnecessary sequential work.
-- Intermediate state or variables that obscure rather than explain the flow.
-
-**Focus area**
-
-Weight the review toward any user-supplied focus, such as error handling, duplication, naming, memory, or performance. Do not ignore a clear correctness issue, but report it separately from cleanup work.
-
-### 4. Judge And Deduplicate
-
-Validate every suggestion against repository conventions and actual call sites. Merge overlapping findings and rank them:
-
-1. **High**: Significant duplication, structural confusion, unsafe type escape, or material inefficiency.
-2. **Medium**: Clear readability, naming, nesting, dead-code, or local-consistency improvement.
-3. **Low**: Optional style or inlining preference.
-
-Reject speculative abstractions, micro-optimizations, and churn that only moves complexity around.
-
-### 5. Apply Fixes
-
-Present one compact pre-edit summary grouped by file. Then apply High and Medium cleanup findings. Apply Low findings only when they are obvious, local, and reduce code. Keep edits inside the selected files.
-
-- Preserve behavior and public contracts.
-- Do not add dependencies.
-- Do not add an abstraction unless it removes demonstrated duplication or clarifies ownership.
-- Do not replace local style with a personal preference.
-- If review finds a bug that needs a behavior change, report it instead of folding it into cleanup unless the user also asked for bug fixes.
-
-### 6. Verify
-
-Run the repository-defined format, lint, typecheck, build, and relevant tests for the final files. If a check fails because of an unslop edit, fix that edit and rerun the affected checks. Do not hide failures or revert unrelated user work.
-
-### 7. Report
-
-Report the files changed, the slop removed, and the checks run. Keep the summary concise. Mention rejected or deferred findings only when they explain an important tradeoff.

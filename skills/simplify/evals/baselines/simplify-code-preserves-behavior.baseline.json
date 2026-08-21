@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "case_id": "simplify-code-preserves-behavior",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "file_exists",
+      "passed": true,
+      "failed_check_id": "file_exists:cleanup.md",
+      "expected": "file present",
+      "actual": "present",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'import(\"./sloppy.mjs\").then(m => console.log([m.firstPositive([-2, 0, 3, 4]), m.firstPositive([-2, 0])].join(\",\")))'",
+      "expected": "3,",
+      "actual": "3,",
+      "diff_hint": "",
+      "fix_proposal": null
+    },
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'const s=require(\"fs\").readFileSync(\"sloppy.mjs\",\"utf8\"); const banned=[\"try {\",\"Array.isArray\",\"typeof value\",\"This function loops\"]; process.stdout.write(banned.every(x=>!s.includes(x))?\"clean\":\"sloppy\")'",
+      "expected": "clean",
+      "actual": "clean",
+      "diff_hint": "",
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.20",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "simplify",
+    "skill_bundle_sha": "a93868c51e030a9210b6b1701371f1de28bfe0e9ce1fbe63e72c88302d8565e3",
+    "skill_sha": "269b0e7c46df339c057c1ef0822ea84e781538ef16f2f8cbb98f73be85e529cc",
+    "fixture_sha": "6f2d4f8dc939ef4f056b829fcda04ed79061498cd067163150d1db45ba682d39",
+    "timestamp": "2026-08-21T23:26:18Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

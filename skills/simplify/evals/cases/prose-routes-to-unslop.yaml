@@ -1,17 +1,20 @@
 schema_version: 2
-id: prose-preserves-facts
+id: simplify-prose-routes-to-unslop
 mode: deterministic
-skill_under_test: unslop
-skills_loaded: [unslop]
-description: "Prose mode must remove AI tells while preserving concrete facts"
-tags: [prose, fact-preservation]
+skill_under_test: simplify
+skills_loaded: [simplify, unslop]
+description: "Simplify does not claim prose cleanup from Unslop"
+tags: [routing, prose, skill-overlap]
 
 setup:
   fixtures:
     "sloppy.md": fixtures/sloppy-prose.md
+    "app.mjs": fixtures/sloppy.mjs
+    "expected.mjs": fixtures/sloppy.mjs
 
 prompt: |
-  Use Unslop on sloppy.md. Write the result to revised.md.
+  Simplify the prose in sloppy.md and write the result to revised.md. Do not
+  edit source code.
 
 budget:
   max_tokens: 3000
@@ -20,6 +23,12 @@ budget:
 checks:
   - kind: file_exists
     path: revised.md
+  - kind: output_contains
+    value: '"name":"unslop"'
+  - kind: shell
+    cmd: "cmp -s app.mjs expected.mjs && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
   - kind: shell
     cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[\"30 seconds\",\"YAML\",\"JSON\",\"invalid keys\"].every(x=>s.includes(x)); const slop=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!slop?\"plain\":\"sloppy\")'"
     unsafe_shell: true

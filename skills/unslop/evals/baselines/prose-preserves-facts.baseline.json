@@ -13,41 +13,26 @@
       "fix_proposal": null
     },
     {
-      "kind": "llm_judge",
+      "kind": "shell",
       "passed": true,
-      "failed_check_id": "llm_judge:PASS only if the revision preserves all three facts (reload ",
-      "expected": "PASS verdict (majority)",
-      "actual": "PASS",
-      "diff_hint": "ok",
-      "judge": {
-        "samples": 1,
-        "pass_count": 1,
-        "fail_count": 0,
-        "null_count": 0,
-        "majority_verdict": "PASS",
-        "reason": "ok",
-        "per_sample": [
-          {
-            "verdict": "PASS",
-            "reason": "ok",
-            "raw": "PASS\nAll three facts present. No \"at its core\", no \"not just X\", no significance inflation."
-          }
-        ]
-      },
+      "failed_check_id": "shell:node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[\"30 seconds\",\"YAML\",\"JSON\",\"invalid keys\"].every(x=>s.includes(x)); const slop=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!slop?\"plain\":\"sloppy\")'",
+      "expected": "plain",
+      "actual": "plain",
+      "diff_hint": "",
       "fix_proposal": null
     }
   ],
   "env_manifest": {
     "schema_version": 2,
-    "opencode_version": "1.18.18",
-    "model_id": "anthropic/claude-haiku-4-5",
+    "opencode_version": "1.18.20",
+    "model_id": "openai/gpt-5.6-sol",
     "node_version": "v22.22.0",
     "platform": "Linux-x86_64",
     "skill_under_test": "unslop",
-    "skill_bundle_sha": "db80afe8a4865188c4836e6bf9d54da9019d66947b86e971aaba0c3d9ca4dc3f",
-    "skill_sha": "dba72cff473b958b663057c71272bd8c5c5c7d1b47071031b1450f9ea6438f47",
-    "fixture_sha": "40034661c5e2a13abf712100536656e16be3518372ec739c7b8f07f087482262",
-    "timestamp": "2026-08-19T19:54:03Z"
+    "skill_bundle_sha": "a2541e1b0dc74f0a1623de8aa1de7f5c0d61328c8f98f33cb02a057f10b383a5",
+    "skill_sha": "e13066f8123d5686eaad78f7284dda10d9e55b1b8ad363a034f96c24153afd5d",
+    "fixture_sha": "86650310b391d49710ddb73c42c9f5842fc50ccb45f343112069ac0d0d1281ab",
+    "timestamp": "2026-08-21T23:36:01Z"
   },
   "last_seen_triggers": [
     "baseline"
