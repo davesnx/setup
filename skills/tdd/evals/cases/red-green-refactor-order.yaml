@@ -2,7 +2,7 @@ schema_version: 2
 id: red-green-refactor-order
 mode: prose
 skill_under_test: tdd
-skills_loaded: [tdd, architect]
+skills_loaded: [tdd]
 description: "TDD mode must preserve red-green-refactor ordering and seam discipline"
 tags: [tdd, red-green-refactor]
 

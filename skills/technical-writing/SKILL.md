@@ -13,10 +13,10 @@ Write text that a tired engineer understands on the first read.
 ## Modes
 
 - **Technical document**: Apply the four writing layers below. Pick one Diataxis mode for each document.
-- **Research**: Read [references/research.md](references/research.md), investigate against primary sources, and save a cited Markdown artifact before drawing conclusions.
+- **Research**: Read [references/research.md](references/research.md), investigate against primary sources, and save a cited Markdown artifact before drawing conclusions. Research mode is read-only apart from that artifact. Do not edit source code, commit, or push unless the user explicitly asks.
 - **X post**: Apply the sentence rules below, then read [references/x-posts.md](references/x-posts.md). Use verified recommendation-system facts only as constraints, not as guaranteed growth tactics.
 
-Both modes use `unslop` as the final editing pass.
+All modes use the review checklist below as the final editing pass.
 
 ## Rules above the layers
 
@@ -108,7 +108,7 @@ Do not mix modes inside one document. Split and link when the reader needs anoth
 
 ## Repository-specific rules
 
-- Apply `unslop` to every document this skill changes.
+- Apply the review checklist to every document this skill changes.
 - PR descriptions and commit messages use every layer except Diataxis.
 - Product UI strings use the product's copy guidance instead of this documentation workflow.
 - Write real paths and symbols. Verify every count, tree, and command against the current commit.
@@ -124,7 +124,7 @@ Do not mix modes inside one document. Split and link when the reader needs anoth
 6. Does each thing have one name throughout the text?
 7. Would a developer say these words aloud?
 8. Are symbols, paths, commands, and counts correct at this commit?
-9. Did `unslop` remove filler, AI vocabulary, formatting tells, and false drama?
+9. Did the final edit remove filler, AI vocabulary, formatting tells, and false drama?
 
 ## Sources
 

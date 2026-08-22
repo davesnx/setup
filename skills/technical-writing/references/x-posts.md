@@ -24,7 +24,7 @@ Treat these as architecture facts, not a formula for writing.
 4. Use terms the audience recognizes, but do not perform insider jargon for its own sake.
 5. Make the post understandable without requiring hidden context.
 6. Remove misleading claims, harassment, manipulation, and engagement bait that can produce blocks, mutes, reports, or "not interested" actions.
-7. Apply the technical-writing sentence rules and `unslop`.
+7. Apply the technical-writing sentence rules and final editing checklist.
 8. Offer the final post and a short rationale. Do not promise reach.
 
 For a thread, give each post one job and make the first post state the value of continuing. Do not stretch one post into a thread only to create more impressions.

@@ -25,6 +25,10 @@ Select one review target:
 - **Fixed point**: Confirm the commit, branch, or tag with `git rev-parse`, then use `git diff <fixed-point>...HEAD` and `git log <fixed-point>..HEAD --oneline`.
 - **PR number or URL**: Fetch the diff with `gh pr diff` and intent with `gh pr view --json title,body,commits`. Do not read review comments yet.
 
+Resolve a user-supplied short branch name before the review. If `git rev-parse` does not resolve it, search local and remote branches for a unique suffix match. Do not guess when more than one branch matches.
+
+When the `diff_review` tool is available and the review target is the current checkout, call it with `raw: "--base <comparison-base>"`. The `--base` value is the branch to compare against, not the branch being reviewed. The tool does not accept a positional review target. For a branch that is not checked out, use the explicit `git diff` workflow instead.
+
 Fail early on an invalid reference or empty diff. Record the exact diff command so every reviewer uses the same scope.
 
 Read every changed line. Also read the surrounding functions and any callers, consumers, tests, configuration, schemas, or dependency source needed to evaluate behavior without guessing. Do not report unrelated pre-existing issues.

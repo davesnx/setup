@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "case_id": "simplify-write-uses-native-feature",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "shell",
+      "passed": true,
+      "failed_check_id": "shell:node -e 'const s=require(\"fs\").readFileSync(\"profile.html\",\"utf8\"); const inputs=s.match(/<input[^>]*>/gi)||[]; const birth=inputs.find(x=>/id=[\\x22\\x27]birth-date[\\x22\\x27]/i.test(x)); const native=/<label[^>]*for=[\\x22\\x27]birth-date[\\x22\\x27][^>]*>/i.test(s)&&birth&&/name=[\\x22\\x27]birth-date[\\x22\\x27]/i.test(birth)&&/type=[\\x22\\x27]date[\\x22\\x27]/i.test(birth)&&/\\srequired(?:\\s|>|=)/i.test(birth); const preserved=inputs.some(x=>/id=[\\x22\\x27]name[\\x22\\x27]/i.test(x))&&/<button[^>]*type=[\\x22\\x27]submit[\\x22\\x27][^>]*>Save<\\/button>/i.test(s); const extra=/<script|<link[^>]+stylesheet/i.test(s)||s.includes(\"http://\")||s.includes(\"https://\"); process.stdout.write(native&&preserved&&!extra?\"native\":\"complex\")'",
+      "expected": "native",
+      "actual": "native",
+      "diff_hint": "",
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.20",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.22.0",
+    "platform": "Linux-x86_64",
+    "skill_under_test": "simplify",
+    "skill_bundle_sha": "a93868c51e030a9210b6b1701371f1de28bfe0e9ce1fbe63e72c88302d8565e3",
+    "skill_sha": "269b0e7c46df339c057c1ef0822ea84e781538ef16f2f8cbb98f73be85e529cc",
+    "fixture_sha": "6f2d4f8dc939ef4f056b829fcda04ed79061498cd067163150d1db45ba682d39",
+    "timestamp": "2026-08-21T23:30:02Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

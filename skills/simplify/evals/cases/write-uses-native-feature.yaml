@@ -1,0 +1,25 @@
+schema_version: 2
+id: simplify-write-uses-native-feature
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify]
+description: "New code stops at a native platform feature instead of building a component"
+tags: [write, native-platform, minimal-code]
+
+setup:
+  fixtures:
+    "profile.html": fixtures/profile.html
+
+prompt: |
+  Add a required birth-date field to the form in profile.html. Use Simplify and
+  edit the file. Do not use external libraries.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"profile.html\",\"utf8\"); const inputs=s.match(/<input[^>]*>/gi)||[]; const birth=inputs.find(x=>/id=[\\x22\\x27]birth-date[\\x22\\x27]/i.test(x)); const native=/<label[^>]*for=[\\x22\\x27]birth-date[\\x22\\x27][^>]*>/i.test(s)&&birth&&/name=[\\x22\\x27]birth-date[\\x22\\x27]/i.test(birth)&&/type=[\\x22\\x27]date[\\x22\\x27]/i.test(birth)&&/\\srequired(?:\\s|>|=)/i.test(birth); const preserved=inputs.some(x=>/id=[\\x22\\x27]name[\\x22\\x27]/i.test(x))&&/<button[^>]*type=[\\x22\\x27]submit[\\x22\\x27][^>]*>Save<\\/button>/i.test(s); const extra=/<script|<link[^>]+stylesheet/i.test(s)||s.includes(\"http://\")||s.includes(\"https://\"); process.stdout.write(native&&preserved&&!extra?\"native\":\"complex\")'"
+    unsafe_shell: true
+    expect_exact: "native"

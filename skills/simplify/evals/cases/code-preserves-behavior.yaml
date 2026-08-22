@@ -1,0 +1,32 @@
+schema_version: 2
+id: simplify-code-preserves-behavior
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify]
+description: "Existing-code simplification removes defensive slop without changing behavior"
+tags: [existing-code, behavior-preservation, cleanup]
+
+setup:
+  fixtures:
+    "sloppy.mjs": fixtures/sloppy.mjs
+
+prompt: |
+  Simplify sloppy.mjs. The function's trusted contract is number[]. Preserve
+  its observable behavior. Edit sloppy.mjs and write a concise summary to
+  cleanup.md.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: cleanup.md
+  - kind: shell
+    cmd: "node -e 'import(\"./sloppy.mjs\").then(m => console.log([m.firstPositive([-2, 0, 3, 4]), m.firstPositive([-2, 0])].join(\",\")))'"
+    unsafe_shell: true
+    expect_exact: "3,"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"sloppy.mjs\",\"utf8\"); const banned=[\"try {\",\"Array.isArray\",\"typeof value\",\"This function loops\"]; process.stdout.write(banned.every(x=>!s.includes(x))?\"clean\":\"sloppy\")'"
+    unsafe_shell: true
+    expect_exact: "clean"

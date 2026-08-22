@@ -30,7 +30,7 @@
   autocrlf = input
 
   # Use diff-so-fancy for pretty diffs
-  pager = "diff-so-fancy | less --tabs=2 -RFX"
+  pager = "diff-so-fancy | less --tabs=4 -RFX"
 
   # Ignore case in file names (macOS file paths are case insensitive)
   ignorecase = true
@@ -124,3 +124,6 @@
 # Machine-specific identity, signing, and credential settings.
 [include]
   path = ~/.gitconfig.local
+
+[interactive]
+  diffFilter = "diff-so-fancy --patch"
