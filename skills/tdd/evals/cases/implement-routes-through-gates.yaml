@@ -1,10 +1,10 @@
 schema_version: 2
-id: implement-routes-through-gates
+id: implement-stays-within-tdd
 mode: prose
 skill_under_test: tdd
-skills_loaded: [tdd, architect, code-review, github]
-description: "Implement mode must route a ticket through TDD, validation, review, and commit confirmation"
-tags: [implement, tdd, review, commit-gate]
+skills_loaded: [tdd]
+description: "Implement mode must route an explicit TDD ticket through vertical slices and validation without adding review or commit workflows"
+tags: [implement, tdd, scope]
 
 setup:
   fixtures:
@@ -26,6 +26,6 @@ checks:
     samples: 1
     rubric: |
       PASS only if the plan states the public-function seam, uses one failing
-      behavior test per red-green-refactor cycle, includes npm test and npm run
-      typecheck, runs code-review after implementation, and requires explicit
-      GitHub Commit confirmation before committing.
+      behavior test per red-green-refactor cycle, and includes npm test and npm
+      run typecheck. FAIL if it adds a code-review, commit, or push step that the
+      prompt did not request.

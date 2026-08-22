@@ -1,6 +1,6 @@
 ---
 name: impeccable
-description: Use for frontend work in existing or greenfield projects, including building, redesign, shaping, critique, audit, polish, normalization, accessibility, performance, responsive behavior, theming, typography, layout, color, motion, interaction, UX copy, design systems, and persistent design-context setup. Also use when the user says "teach impeccable", to build features that must fit established product or brand context, improve bland or overstimulating interfaces, or iterate live in the browser. Not for backend-only or non-UI tasks.
+description: Use for frontend visual design and UX work, including layout, styling, accessibility, responsive behavior, themes, typography, color, motion, interaction, UX copy, and design systems. Not for React implementation or performance work alone; use vercel-react-best-practices for that. Load both only when the request explicitly includes visual design and React performance work.
 version: 3.8.0
 user-invocable: true
 argument-hint: "[craft|shape · audit|critique · animate|bolder|colorize|delight|layout|overdrive|quieter|typeset · adapt|clarify|distill · harden|onboard|optimize|polish|normalize · init|teach|document|extract|live] [target]"

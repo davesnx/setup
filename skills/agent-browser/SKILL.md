@@ -1,6 +1,6 @@
 ---
 name: agent-browser
-description: Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to "open a website", "fill out a form", "click a button", "take a screenshot", "scrape data from a page", "test this web app", "login to a site", "automate browser actions", or any task requiring programmatic web interaction.
+description: Browser automation CLI for tasks that require interaction with a rendered website, such as navigation, forms, screenshots, scraping, login, or web-app testing. Do not use for GitHub pull requests, commits, or repository files when git, gh, or code-review can handle the request.
 allowed-tools: Bash(npx agent-browser:*), Bash(agent-browser:*)
 ---
 

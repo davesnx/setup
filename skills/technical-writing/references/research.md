@@ -11,7 +11,7 @@ Investigate one question against high-trust primary sources and write a cited Ma
 5. Record facts, conflicts, uncertainty, version or date limits, and unanswered questions.
 6. Write one Markdown file where the repository keeps research notes. If no convention exists, choose a clear path and report it.
 7. Cite each material claim with a URL, source path and line, API response, or specification section.
-8. Apply the Technical document rules and `unslop` before delivery.
+8. Apply the Technical document rules and final editing checklist before delivery.
 
 For a large reading set, delegate independent source groups to read-only subagents and keep raw source text out of the main context. The parent verifies citations before accepting a conclusion.
 

@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development, implementation from specs or tickets, and domain modeling. Use when the user says "implement this", provides a spec or ticket to build, wants to build features or fix bugs test-first, mentions "red-green-refactor", wants integration tests, asks for "domain modeling", "ubiquitous language", glossary or CONTEXT.md work, needs to sharpen domain terms, or wants to record an architectural decision or ADR.
+description: Use only when the user explicitly asks for TDD, test-first implementation, red-green-refactor, integration tests, domain modeling, ubiquitous language, glossary or CONTEXT.md work, or an ADR. Do not load for a generic implementation request, spec, ticket, or bug fix.
 ---
 
 # TDD
@@ -8,7 +8,7 @@ description: Test-driven development, implementation from specs or tickets, and 
 ## Modes
 
 - **Red-green-refactor**: Build behavior test-first through agreed seams.
-- **Implement**: Read [references/implement.md](references/implement.md), then deliver a spec or ticket through vertical TDD slices, validation, review, and the GitHub Commit gate.
+- **Implement**: When the user explicitly asks to implement a spec or ticket with TDD, read [references/implement.md](references/implement.md), then deliver it through vertical TDD slices and validation.
 - **Domain modeling**: Sharpen domain language, test concepts with scenarios, maintain `CONTEXT.md`, and record qualifying ADRs. Read [references/domain-modeling.md](references/domain-modeling.md) before starting.
 
 Use both modes when test design exposes unclear domain concepts. Resolve the language and scenarios first, then name tests and interfaces with the settled vocabulary.
@@ -33,7 +33,7 @@ A **seam** is the location where a module's interface lives and behavior can be 
 
 Ask: "What's the public interface, and which seams should we test?"
 
-When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — consult the `architect` skill's `references/codebase-design.md`. It is the shared source of the module, interface, depth, seam, adapter, leverage, and locality terms.
+When the shape of that interface is itself in question, agree on the seam with the user before continuing. Do not broaden TDD into architecture work unless the user explicitly asks for it.
 
 ## Anti-patterns
 
@@ -45,4 +45,4 @@ When the shape of that interface is itself in question — how deep the module i
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, exactly one new failing behavior test, and one minimal implementation per cycle. Do not batch several tests or assertions into one RED phase. Keep later examples in a backlog until their cycle starts.
-- **Refactor after green.** Improve names, duplication, interfaces, and structure only while the tests stay green. Do not add behavior during refactoring. Run `code-review` after the full set of slices is complete.
+- **Refactor after green.** Improve names, duplication, interfaces, and structure only while the tests stay green. Do not add behavior during refactoring. After the full set of slices, review the changed behavior and tests directly. Load `code-review` only when the user asks for a code review.

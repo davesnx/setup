@@ -2,7 +2,7 @@ schema_version: 2
 id: x-post-rejects-engagement-bait
 mode: prose
 skill_under_test: technical-writing
-skills_loaded: [technical-writing, unslop]
+skills_loaded: [technical-writing]
 description: "X-post mode must replace engagement bait with specific audience value"
 tags: [x-post, anti-bait, current-algorithm]
 

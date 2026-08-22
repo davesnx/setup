@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Diagnosis loop for hard bugs and performance regressions. Use when the user says "diagnose"/"debug this", or reports something broken/throwing/failing/slow.
+description: Diagnosis loop for hard bugs and performance regressions. Use when the user explicitly asks to diagnose or debug, or provides a concrete runtime failure or measured regression. Do not use to judge whether a pull request or commit is the wrong solution; use code-review instead.
 ---
 
 # Debug

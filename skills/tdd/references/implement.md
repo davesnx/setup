@@ -10,9 +10,8 @@ Implement a spec or ticket as a sequence of complete, test-driven slices.
 4. Order the work as vertical slices. Each slice delivers one observable behavior through Red-green-refactor mode.
 5. During each slice, run the single focused test and the smallest useful typecheck or build check. Do not wait until the end to discover structural errors.
 6. After all slices, run the repository's complete required format, lint, typecheck, build, and relevant test commands.
-7. Run `code-review` against the spec or ticket. Fix confirmed blockers and rerun every affected check.
-8. Load `github` Commit mode. Present the proposed message and intended files, then wait for explicit confirmation before committing.
+7. Compare the final diff with the source artifact. Fix missed or extra behavior and rerun every affected check. Do not start a separate review, commit, or push workflow unless the user asks for it.
 
 Do not silently expand scope. When a prerequisite or stop condition invalidates the plan, stop and report the evidence instead of improvising.
 
-Source integrated from `mattpocock/skills`, `skills/engineering/implement/SKILL.md`, read August 19, 2026. Its automatic commit step was replaced with the explicit GitHub Commit gate.
+Source integrated from `mattpocock/skills`, `skills/engineering/implement/SKILL.md`, read August 19, 2026. Its automatic review and commit steps were removed.
