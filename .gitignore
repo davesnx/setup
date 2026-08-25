@@ -19,7 +19,5 @@
 /opencode/host.jsonc
 
 # Machine-specific overrides
-/export.sh
 /local/*
 !/local/README.md
-!/local/*.example

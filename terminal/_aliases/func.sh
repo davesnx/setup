@@ -52,37 +52,3 @@ function npx() {
 
 	command npx "$@"
 }
-
-function eval-harness() {
-	local harness_root="$HOME/.config/opencode/node_modules/@nano-step/eval-harness/scripts/eval"
-	local command_name="${1:-run}"
-	local opencode_bin
-	local script
-
-	if [[ ! -d "$harness_root" ]]; then
-		printf 'eval-harness is not installed. Run ./opencode/install.sh first.\n' >&2
-		return 1
-	fi
-
-	opencode_bin="$(command -v opencode)" || return 1
-
-	case "$command_name" in
-		run|baseline|accept|status|trend|promote)
-			script="$harness_root/$command_name.sh"
-			shift
-			;;
-		*)
-			printf 'usage: eval-harness {run|baseline|accept|status|trend|promote} [options]\n' >&2
-			return 2
-			;;
-	 esac
-
-	OPENCODE_SKILLS_ROOT="$DOTFILES_PATH/skills" \
-	ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-${OPENCODE_ANTHROPIC_API_KEY:-}}" \
-	EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-anthropic/claude-haiku-4-5}" \
-	EVAL_FULL_MODEL="${EVAL_FULL_MODEL:-anthropic/claude-sonnet-4-6}" \
-	EVAL_PRICING_FILE="$DOTFILES_PATH/opencode/eval-harness-pricing.json" \
-	OPENCODE_REAL_BIN="$opencode_bin" \
-	PATH="$DOTFILES_PATH/opencode/eval-bin:$PATH" \
-	bash "$script" "$command_name" "$@"
-}

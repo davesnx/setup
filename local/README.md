@@ -1,19 +1,18 @@
 # Local overrides
 
 Files in this directory separate machine-specific settings from the shared
-setup. Git ignores the active files and tracks only this documentation and the
-examples.
+setup. Git ignores the active files and tracks only this documentation.
 
-Copy the examples without the `.example` suffix:
+Create one or more `.zsh` files for local shell configuration:
 
 ```sh
-cp local/overrides.zsh.example local/overrides.zsh
-cp local/gitconfig.example local/gitconfig
+$EDITOR local/overrides.zsh
 ```
 
-`overrides.zsh` loads after the shared shell configuration. Use it for local
-paths, environment values, aliases, and functions. Put machine-only commands
-in `local/bin` and add that directory to `path` from the override file.
+All `.zsh` files load in name order after the shared shell configuration. Use
+them for local paths, environment values, aliases, and functions. Put
+machine-only commands in `local/bin` and add that directory to `path` from a
+local `.zsh` file.
 
 The root installer links `local/gitconfig` to `~/.gitconfig.local`. Git loads
 it after the shared configuration, so its values take precedence.

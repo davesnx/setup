@@ -1,0 +1,30 @@
+schema_version: 2
+id: prose-keeps-neutral-register
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Prose mode must improve factual text without adding voice or facts"
+tags: [prose, fact-preservation, neutral-register]
+
+setup:
+  fixtures:
+    "neutral.md": fixtures/neutral-prose.md
+
+prompt: |
+  Use Unslop Prose mode on neutral.md. Write the result to revised.md.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: llm_judge
+    target_file: revised.md
+    samples: 1
+    rubric: |
+      PASS only if the revision preserves 418 records, the 2008-2012 range,
+      county classification, the unknown collector, and the missing 2010
+      records; removes "It is important to note that"; stays neutral; and
+      adds no opinion, first-person language, source, anecdote, or new fact.

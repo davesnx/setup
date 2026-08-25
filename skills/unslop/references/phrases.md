@@ -1,6 +1,6 @@
-# Phrases to Remove
+# Phrases to remove
 
-## Throat-Clearing Openers
+## Throat-clearing openers
 
 Remove these announcement phrases. State the content directly.
 
@@ -22,9 +22,9 @@ Remove these announcement phrases. State the content directly.
 
 Any "here's what/this/that" construction is throat-clearing before the point. Cut it and state the point.
 
-## Emphasis Crutches
+## Emphasis crutches
 
-These add no meaning. Delete them.
+These often add no meaning. Remove the crutch while preserving any causal explanation or conclusion attached to it.
 
 - "Full stop." / "Period."
 - "Let that sink in."
@@ -32,7 +32,7 @@ These add no meaning. Delete them.
 - "Make no mistake"
 - "Here's why that matters"
 
-## Business Jargon
+## Business jargon
 
 Replace with plain language.
 
@@ -52,7 +52,7 @@ Replace with plain language.
 
 ## Adverbs
 
-Kill all adverbs. No -ly words. No softeners, no intensifiers, no hedges.
+Cut adverbs that add only emphasis or prop up a weak verb. Keep qualifiers and any adverb that changes the meaning or matches the writer's voice.
 
 Specific offenders:
 
@@ -82,7 +82,7 @@ Also cut these filler phrases:
 - "In a world where"
 - "The reality is"
 
-## Meta-Commentary
+## Meta-commentary
 
 Remove self-referential asides. The essay should move, not announce its own structure.
 
@@ -98,7 +98,7 @@ Remove self-referential asides. The essay should move, not announce its own stru
 - "As we'll see..."
 - "I want to explore..."
 
-## Performative Emphasis
+## Performative emphasis
 
 False intimacy or manufactured sincerity:
 
@@ -106,7 +106,7 @@ False intimacy or manufactured sincerity:
 - "I promise"
 - "They exist, I promise"
 
-## Telling Instead of Showing
+## Telling instead of showing
 
 Announcing difficulty or significance rather than demonstrating it:
 
@@ -115,9 +115,9 @@ Announcing difficulty or significance rather than demonstrating it:
 - "This is what X actually looks like"
 - "actually matters"
 
-## Vague Declaratives
+## Vague declaratives
 
-Sentences that announce importance without naming the specific thing. Kill these.
+Sentences that announce importance without naming the specific thing. Rewrite them when they add no substantive claim.
 
 - "The reasons are structural"
 - "The implications are significant"
@@ -125,4 +125,4 @@ Sentences that announce importance without naming the specific thing. Kill these
 - "The stakes are high"
 - "The consequences are real"
 
-If a sentence says something is important/deep/structural without showing the specific thing, cut it or replace it with the specific thing.
+If the source explains why something is important, state that reason directly. Otherwise preserve or flag the claim instead of cutting it or inventing specifics.

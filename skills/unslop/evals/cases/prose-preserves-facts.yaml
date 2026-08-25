@@ -1,6 +1,6 @@
 schema_version: 2
 id: prose-preserves-facts
-mode: deterministic
+mode: prose
 skill_under_test: unslop
 skills_loaded: [unslop]
 description: "Prose mode must remove AI tells while preserving concrete facts"
@@ -11,7 +11,7 @@ setup:
     "sloppy.md": fixtures/sloppy-prose.md
 
 prompt: |
-  Use Unslop on sloppy.md. Write the result to revised.md.
+  Use Unslop Prose mode on sloppy.md. Write the result to revised.md.
 
 budget:
   max_tokens: 3000
@@ -20,7 +20,11 @@ budget:
 checks:
   - kind: file_exists
     path: revised.md
-  - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[\"30 seconds\",\"YAML\",\"JSON\",\"invalid keys\"].every(x=>s.includes(x)); const slop=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!slop?\"plain\":\"sloppy\")'"
-    unsafe_shell: true
-    expect_exact: "plain"
+  - kind: llm_judge
+    target_file: revised.md
+    samples: 1
+    rubric: |
+      PASS only if the revision preserves all three facts (reload every 30
+      seconds, YAML and JSON support, invalid-key logging) while removing the
+      significance inflation, "at its core", and "not just X" construction,
+      and adds no new claim, mechanism, number, source, or opinion.

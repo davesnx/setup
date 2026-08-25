@@ -1,4 +1,5 @@
 tap "buo/cask-upgrade"
+tap "jonahsnider/tap"
 
 brew "sqlite"
 brew "openssl"
@@ -52,17 +53,20 @@ cask "tableplus"
 cask "google-drive"
 cask "spotify"
 cask "telegram"
+cask "jordanbaird-ice"
+cask "wispr-flow"
 cask "visual-studio-code"
 cask "cursor"
 cask "vlc"
 cask "whatsapp"
-cask "zoomus"
+cask "zoom"
 cask "notion"
 cask "slack"
 mas "The Unarchiver", id: 425424353
+mas "Amphetamine", id: 937984704
+mas "Enpass", id: 732710998
 cask "discord"
 cask "flux-app" # https://justgetflux.com/
-cask "enpass" # https://www.enpass.io/
 cask "kap" # https://getkap.co/
 cask "rectangle" # https://rectangleapp.com/
 cask "cloudflare-warp" # https://1.1.1.1/
@@ -74,11 +78,11 @@ cask "daisydisk" # https://daisydiskapp.com/
 cask "brave-browser" # https://brave.com/
 cask "obs" # https://obsproject.com/
 cask "choosy" # https://www.choosyosx.com/
-cask "amphetamine" # https://apps.apple.com/app/amphetamine/id937984704
-# cask "rdm" # https://github.com/avibrazil/RDM
+cask "betterdisplay" # https://betterdisplay.pro/
 cask "noTunes" # https://apps.apple.com/app/no-tunes/id1544743990
 cask "camo-studio" # https://apps.apple.com/app/camo-studio/id1544743990
 cask "xnapper" # https://apps.apple.com/app/xnapper/id1544743990
+cask "jonahsnider/tap/audio-priority-bar" # https://github.com/tobi/AudioPriorityBar
 
 # Quicklook
 cask "qlcolorcode"
