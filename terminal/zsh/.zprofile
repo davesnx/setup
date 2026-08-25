@@ -1,5 +1,4 @@
 #! /bin/zsh
-# .zprofile - runs once per login session (not every subshell)
 
 export DOTFILES_PATH=${DOTFILES_PATH:-$HOME/Code/github/setup}
 
@@ -8,6 +7,8 @@ export PYTHON_PATH='/usr/local/opt/python'
 export RUBY_PATH='/usr/local/opt/ruby'
 export GEM_HOME="$HOME/.gem"
 export BUN_INSTALL="$HOME/.bun"
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # PATH setup
 paths=(
@@ -47,9 +48,6 @@ export LC_ALL="en_US.UTF-8"
 export EDITOR="cursor"
 export VISUAL="cursor"
 
-export LESS_TERMCAP_md=${yellow}
-export MANPAGER='less -X'
-
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -60,6 +58,7 @@ export NODE_REPL_HISTORY=~/.node_history
 export NODE_REPL_HISTORY_SIZE='32768'
 export NODE_REPL_MODE='sloppy'
 
-export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
-export FORGIT_LOG_FZF_OPTS="--no-height"
-export FZF_COMPLETION_OPTS='+c -x'
+# Load the selected OpenCode host profile when it is installed.
+if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
+  export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
+fi

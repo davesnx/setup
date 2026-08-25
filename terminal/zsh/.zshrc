@@ -43,6 +43,12 @@ fi
 
 source ${ZIM_HOME}/init.zsh
 
+export LESS_TERMCAP_md=${yellow}
+export MANPAGER='less -X'
+export FZF_DEFAULT_OPTS="--color=bg+:24 --reverse --height 40% --history=$HOME/.fzf_history"
+export FORGIT_LOG_FZF_OPTS="--no-height"
+export FZF_COMPLETION_OPTS='+c -x'
+
 # ------------------------------
 # Post-init module configuration
 # ------------------------------
@@ -83,12 +89,6 @@ source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
 source "$DOTFILES_PATH/terminal/_aliases/git.sh"
 source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 
-# Add SSH identities (background job)
-{
-  ssh-add --apple-use-keychain ~/.ssh/id     &> /dev/null
-  ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
-} &!
-
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 
@@ -99,13 +99,6 @@ unset _zshrc_source
 
 # Load autosuggestions (deferred for faster startup)
 zsh-defer source ~/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# Homebrew env vars (HOMEBREW_PREFIX, MANPATH, etc.)
-if [[ -n "$CURSOR_AGENT" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-  zsh-defer _evalcache /opt/homebrew/bin/brew shellenv
-fi
 
 # Load zoxide
 if [[ -n "$CURSOR_AGENT" ]]; then
@@ -216,12 +209,8 @@ zsh-defer source $HOME/.local/share/dune/env/env.zsh
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# Load the selected OpenCode host profile when it is installed.
-if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
-  export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
-fi
-
 # Load machine-specific values last so they can override shared defaults.
-if [[ -r "$DOTFILES_PATH/local/overrides.zsh" ]]; then
-  source "$DOTFILES_PATH/local/overrides.zsh"
-fi
+for local_config in "$DOTFILES_PATH"/local/*.zsh(N); do
+  source "$local_config"
+done
+unset local_config
