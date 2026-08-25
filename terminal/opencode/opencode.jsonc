@@ -22,7 +22,7 @@
     "opencode-goal-plugin@0.4.0",
     "cursor-oauth-opencode@0.1.8",
     "./plugins/opencode-notify/src/notify.ts",
-    "opencode-diffs@0.0.3",
+    "@plannotator/opencode@latest",
   ],
   "provider": {
     "anthropic": {
