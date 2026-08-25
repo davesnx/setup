@@ -1,6 +1,6 @@
 ---
 name: how
-description: Explain how something works in this codebase by exploring code and producing a clear architectural explanation. Optionally critique the architecture for issues.
+description: Explain or research how something works in this codebase by exploring code and producing a clear architectural explanation. Use for "how does X work", "research X", "trace X", or "where is X used" when X refers to the current codebase. Optionally critique the architecture for issues.
 ---
 
 # How

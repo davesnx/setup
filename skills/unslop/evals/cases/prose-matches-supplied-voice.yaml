@@ -1,0 +1,33 @@
+schema_version: 2
+id: prose-matches-supplied-voice
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "A supplied voice sample must override generic punctuation preferences"
+tags: [prose, voice-preservation]
+
+setup:
+  fixtures:
+    "voice.md": fixtures/voice-sample.md
+
+prompt: |
+  Use voice.md as my writing sample. Rewrite these sentences in my voice and
+  write only the result to revised.md: "My second deploy worked. I still have
+  not tested my rollback plan."
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: llm_judge
+    target_file: revised.md
+    samples: 1
+    rubric: |
+      PASS only if the rewrite preserves both facts (the writer's second deploy
+      worked and the writer has not tested the rollback plan), resembles the
+      supplied direct first-person voice, uses an em dash as part of that
+      established style, and invents no timestamp, event, feeling, or technical
+      detail.
