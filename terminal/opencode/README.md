@@ -7,21 +7,28 @@ Shared OpenCode settings and agent skills.
 Clone this repository, then select the profile for the machine:
 
 ```sh
-./opencode/install.sh local
-./opencode/install.sh ssh
+./terminal/opencode/install.sh local
+./terminal/opencode/install.sh ssh
 ```
 
 The script links the tracked OpenCode files into `~/.config/opencode`. All
 skills live in the repository-level `skills/` directory. The script links that
-directory to both `~/.config/opencode/skills` and `~/.agents/skills` so OpenCode
-and other compatible agents use the same source. Existing files move to a
-timestamped directory under `~/.local/state/setup/backups`.
+directory to `~/.config/opencode/skills`, `~/.agents/skills`, and
+`~/.claude/skills` so OpenCode, Claude Code, and other compatible agents use the
+same source. Existing files move to a timestamped directory under
+`~/.local/state/setup/backups`.
 
 The global `AGENTS.md` file is also linked to both
 `~/.config/opencode/AGENTS.md` and `~/.agents/AGENTS.md`.
 
 The shell configuration exports `OPENCODE_CONFIG` when the selected
 `host.jsonc` link exists. Start a new shell after installation.
+
+## Eval harness
+
+OpenCode agents run `~/.config/opencode/eval-harness` directly when an eval
+harness task needs it. The harness is not loaded into interactive shell
+sessions.
 
 ## Keep private
 

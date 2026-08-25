@@ -6,8 +6,8 @@
   // Cheap model for titles/summaries/compaction; main model stays whatever you
   // pick in the TUI (set "model" here if you want a fixed default).
   "small_model": "openai/gpt-5.4-nano",
-  // pstack skills: no per-role model pinning, subagents inherit the session
-  // model. Managed by the setup-pstack skill; re-run it to change.
+  // OpenCode cannot pin Task subagents per role, so pstack roles inherit the
+  // session model. The instruction file adapts upstream pstack model guidance.
   "instructions": ["pstack-models.md"],
   "experimental": {
     "disable_paste_summary": true,
@@ -70,6 +70,11 @@
     "goal": {
       "description": "Set a session-scoped goal and auto-continue until complete.",
       "template": "$ARGUMENTS",
+      "agent": "build",
+    },
+    "variate": {
+      "description": "Create and compare visual design variations",
+      "template": "Load the `variate` skill and follow it for this request: $ARGUMENTS",
       "agent": "build",
     },
   },

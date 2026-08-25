@@ -36,6 +36,11 @@
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
 
+## Eval Harness
+
+- For OpenCode eval harness tasks, run `~/.config/opencode/eval-harness`
+  directly. Do not load it into the user's interactive shell.
+
 ## Code
 
 - Write comments only to explain why, never to restate what code does or to
