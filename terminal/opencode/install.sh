@@ -54,7 +54,7 @@ for name in opencode.jsonc tui.json AGENTS.md pstack-models.md package.json eval
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 
-for name in agents themes; do
+for name in agents commands themes; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 

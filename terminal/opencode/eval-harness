@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-root=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
+script_path=$0
+if [[ -L "$script_path" ]]; then
+	script_path=$(readlink "$script_path")
+fi
+root=$(CDPATH='' cd "$(dirname "$script_path")/../.." && pwd)
 harness_root="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/node_modules/@nano-step/eval-harness/scripts/eval"
 command_name="${1:-run}"
 

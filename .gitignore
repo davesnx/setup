@@ -8,15 +8,15 @@
 /**/**/private-*
 
 # OpenCode private and generated state
-/opencode/service.json
-/opencode/user_profile.json
-/opencode/technical_memory.md
-/opencode/memory.instruction.md
-/opencode/tasks/
-/opencode/node_modules/
-/opencode/*.lock
-/opencode/package-lock.json
-/opencode/host.jsonc
+/terminal/opencode/service.json
+/terminal/opencode/user_profile.json
+/terminal/opencode/technical_memory.md
+/terminal/opencode/memory.instruction.md
+/terminal/opencode/tasks/
+/terminal/opencode/node_modules/
+/terminal/opencode/*.lock
+/terminal/opencode/package-lock.json
+/terminal/opencode/host.jsonc
 
 # Machine-specific overrides
 /local/*
