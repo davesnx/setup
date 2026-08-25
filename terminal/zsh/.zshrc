@@ -213,9 +213,6 @@ fi
 compopt() { return 0; } # disable compopt since dune/env use bash compat with zsh
 zsh-defer source $HOME/.local/share/dune/env/env.zsh
 
-# Local machine-only exports (ignored by git)
-[[ -f "$DOTFILES_PATH/export.sh" ]] && source "$DOTFILES_PATH/export.sh"
-
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 

@@ -6,6 +6,9 @@
   // Cheap model for titles/summaries/compaction; main model stays whatever you
   // pick in the TUI (set "model" here if you want a fixed default).
   "small_model": "openai/gpt-5.4-nano",
+  // pstack skills: no per-role model pinning, subagents inherit the session
+  // model. Managed by the setup-pstack skill; re-run it to change.
+  "instructions": ["pstack-models.md"],
   "experimental": {
     "disable_paste_summary": true,
   },

@@ -1,5 +1,4 @@
 tap "buo/cask-upgrade"
-tap "denisidoro/tools"
 
 brew "sqlite"
 brew "openssl"
@@ -15,6 +14,10 @@ brew "mysql"
 brew "fnm"
 brew "parallel" # https://www.gnu.org/software/parallel/
 brew "shellcheck" # https://www.shellcheck.net/
+brew "shfmt" # Format and verify setup shell scripts
+brew "gitleaks" # Scan setup files for credentials
+brew "bats-core" # Run setup shell tests
+brew "actionlint" # Validate setup workflows
 brew "tree"
 brew "vim"
 brew "watch"
@@ -30,15 +33,20 @@ brew "diff-so-fancy"
 brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 brew "httpie" # https://httpie.io
-brew "hovrly"
 brew "eza"
 brew "zoxide"
 brew "gnupg"
 brew "pkgconf"
 brew "pinentry-mac"
 brew "direnv"
+brew "gh"
+brew "opencode"
+brew "hyperfine"
+brew "mycli"
 
 cask "firefox"
+cask "google-chrome"
+cask "hovrly"
 cask "figma"
 cask "tableplus"
 cask "google-drive"
@@ -53,7 +61,7 @@ cask "notion"
 cask "slack"
 mas "The Unarchiver", id: 425424353
 cask "discord"
-cask "flux" # https://justgetflux.com/
+cask "flux-app" # https://justgetflux.com/
 cask "enpass" # https://www.enpass.io/
 cask "kap" # https://getkap.co/
 cask "rectangle" # https://rectangleapp.com/
@@ -69,7 +77,7 @@ cask "choosy" # https://www.choosyosx.com/
 cask "amphetamine" # https://apps.apple.com/app/amphetamine/id937984704
 # cask "rdm" # https://github.com/avibrazil/RDM
 cask "noTunes" # https://apps.apple.com/app/no-tunes/id1544743990
-cask "camo studio" # https://apps.apple.com/app/camo-studio/id1544743990
+cask "camo-studio" # https://apps.apple.com/app/camo-studio/id1544743990
 cask "xnapper" # https://apps.apple.com/app/xnapper/id1544743990
 
 # Quicklook
