@@ -232,3 +232,6 @@ itomate.yml
 
 # Ignore direnv
 .envrc
+
+# Opencode
+.opencode/*

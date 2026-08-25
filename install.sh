@@ -21,12 +21,12 @@ ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$DOTFILES_PATH/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
 
+# Tmux
+ln -s -i "$DOTFILES_PATH/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+
 if [ -f "$DOTFILES_PATH/local/gitconfig" ]; then
   ln -s -i "$DOTFILES_PATH/local/gitconfig" "$HOME/.gitconfig.local"
 fi
-
-# GPG
-ln -s -i "$DOTFILES_PATH/mac/gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
 
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"
