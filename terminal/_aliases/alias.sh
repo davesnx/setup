@@ -148,8 +148,10 @@ alias ld="ls -D"
 
 # https://github.com/sharkdp/bat
 cat() {
-  if [[ -t 1 ]]; then
-    bat "$@"
+  if [[ -t 1 && "$OSTYPE" == darwin* ]] && command -v bat >/dev/null 2>&1; then
+    command bat "$@"
+  elif [[ -t 1 && "$OSTYPE" == linux* ]] && command -v batcat >/dev/null 2>&1; then
+    command batcat "$@"
   else
     command cat "$@"
   fi
