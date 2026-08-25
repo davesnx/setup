@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "kill-all-processes",
   "title": "Kill All Processes",
-  "description": "Terminate all processes matching an exact process name",
+  "description": "Select a process name and terminate all matching processes",
   "icon": "icon.png",
   "author": "davesnx",
   "platforms": ["macOS", "Windows"],
@@ -11,16 +11,8 @@
     {
       "name": "index",
       "title": "Kill All Processes",
-      "description": "Terminates every process matching the provided exact process name",
-      "mode": "no-view",
-      "arguments": [
-        {
-          "name": "processName",
-          "placeholder": "node",
-          "type": "text",
-          "required": true
-        }
-      ]
+      "description": "Lists running processes and terminates every process matching the selected name",
+      "mode": "view"
     }
   ],
   "preferences": [
