@@ -1,0 +1,72 @@
+[
+  {
+    "context": "Workspace",
+    "use_key_equivalents": true,
+    "bindings": {
+      "cmd-o": null,
+      "cmd-+": null,
+      "cmd-=": null,
+      "cmd--": null,
+      "cmd-_": null,
+      "cmd-0": null,
+      "cmd-numpad0": null,
+      "cmd-numpad_add": null,
+      "cmd-numpad_subtract": null,
+      "cmd-shift-b": "workspace::ToggleLeftDock",
+      "cmd-shift-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Pane",
+    "use_key_equivalents": true,
+    "bindings": {
+      "ctrl-tab": "pane::ActivateNextItem",
+      "ctrl-shift-tab": "pane::ActivatePreviousItem",
+      "cmd-1": ["pane::ActivateItem", 0],
+      "cmd-2": ["pane::ActivateItem", 1],
+      "cmd-3": ["pane::ActivateItem", 2],
+      "cmd-4": ["pane::ActivateItem", 3],
+      "cmd-5": ["pane::ActivateItem", 4],
+      "cmd-6": ["pane::ActivateItem", 5],
+      "cmd-7": ["pane::ActivateItem", 6],
+      "cmd-8": ["pane::ActivateItem", 7],
+      "cmd-9": ["pane::ActivateItem", 8]
+    }
+  },
+  {
+    "context": "Editor && mode == full",
+    "use_key_equivalents": true,
+    "bindings": {
+      "alt-shift-down": "editor::SelectSmallerSyntaxNode",
+      "alt-shift-up": "editor::SelectLargerSyntaxNode",
+      "f12": null,
+      "alt-x": "editor::GoToDefinition",
+      "alt-z": "editor::Hover",
+      "alt-c": "editor::ToggleFold",
+      "alt-right": "editor::MoveToNextSubwordEnd",
+      "alt-shift-right": "editor::SelectToNextSubwordEnd",
+      "alt-left": "editor::MoveToPreviousSubwordStart",
+      "alt-shift-left": "editor::SelectToPreviousSubwordStart",
+      "alt-backspace": "editor::DeleteToPreviousSubwordStart",
+      "alt-shift-backspace": "editor::DeleteToNextSubwordEnd",
+      "ctrl-alt-right": "editor::MoveToNextWordEnd",
+      "ctrl-alt-shift-right": "editor::SelectToNextWordEnd",
+      "ctrl-alt-left": "editor::MoveToPreviousWordStart",
+      "ctrl-alt-shift-left": "editor::SelectToPreviousWordStart",
+      "ctrl-alt-backspace": [
+        "editor::DeleteToPreviousWordStart",
+        { "ignore_newlines": false, "ignore_brackets": false }
+      ],
+      "ctrl-alt-shift-backspace": [
+        "editor::DeleteToNextWordEnd",
+        { "ignore_newlines": false, "ignore_brackets": false }
+      ],
+      "cmd-shift-r": [
+        "editor::GoToDiagnostic",
+        { "severity": { "min": "error", "max": "error" } }
+      ],
+      "cmd--": "editor::ToggleBlockComments",
+      "cmd-shift-i": "agent::ToggleFocus"
+    }
+  }
+]

@@ -1,0 +1,159 @@
+{
+  "server_url": "https://zed.dev",
+  "$schema": "zed://schemas/settings",
+  "ssh_connections": [
+    {
+      "host": "nspawn",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/me/html_of_jsx"],
+        },
+      ],
+    },
+  ],
+  "collaboration_panel": {
+    "dock": "left",
+  },
+  "agent": {
+    "dock": "right",
+    "model_parameters": [],
+  },
+  "git_panel": {
+    "dock": "left",
+  },
+  "icon_theme": "Material Icon Theme",
+  "title_bar": {
+    "show_branch_status_icon": true,
+    "show_branch_name": true,
+    "show_project_items": true,
+    "show_onboarding_banner": false,
+    "show_user_picture": false,
+    "show_sign_in": false,
+    "show_menus": true,
+  },
+  "line_indicator_format": "long",
+  "terminal": {
+    "toolbar": {
+      "breadcrumbs": false
+    },
+    "font_size": 20,
+    "font_family": "JetBrains Mono",
+  },
+  "project_panel": {
+    "dock": "left",
+    "auto_fold_dirs": false,
+  },
+  "outline_panel": {
+    "dock": "left",
+    "git_status": true,
+  },
+  "preview_tabs": {
+    "enabled": false,
+  },
+  "tab_bar": {
+    "show": true,
+    "show_tab_bar_buttons": false,
+  },
+  "multi_cursor_modifier": "cmd_or_ctrl",
+  "use_smartcase_search": true,
+  "minimap": {
+    "show": "always",
+    "display_in": "active_editor",
+    "thumb": "always",
+    "max_width_columns": 80,
+    "current_line_highlight": "line",
+  },
+  "hover_popover_enabled": true,
+  "auto_indent_on_paste": false,
+  "linked_edits": true,
+  "use_on_type_format": false,
+  "show_edit_predictions": true,
+  "hard_tabs": false,
+  "file_types": {
+    "ocaml.menhir": ["*.mly"],
+    "ocaml": ["*.mlx"],
+    "javascriptreact": ["*.jsx", "*.js"],
+    "dotenv": [".env*"],
+  },
+  "theme": "Asulito Dark",
+  "toolbar": {
+    "quick_actions": false,
+    "breadcrumbs": true,
+  },
+  "wrap_guides": [120],
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+  },
+  "soft_wrap": "editor_width",
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "indent_guides": {
+    "enabled": true,
+  },
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000,
+    },
+  },
+  "gutter": {
+    "line_numbers": true,
+    "runnables": true,
+    "folds": true,
+  },
+  "scrollbar": {
+    "axes": {
+      "horizontal": false,
+    },
+    "show": "always",
+    "cursors": true,
+    "git_diff": true,
+    "search_results": true,
+    "selected_symbol": true,
+    "diagnostics": "all",
+  },
+  "inlay_hints": {
+    "enabled": true,
+    "show_parameter_hints": true,
+    "show_type_hints": true,
+  },
+  "base_keymap": "Atom",
+  "buffer_font_size": 20.0,
+  "buffer_font_weight": 400,
+  "ui_font_size": 20.0,
+  "ui_font_weight": 400,
+  "buffer_line_height": {
+    "custom": 2.2,
+  },
+  "show_whitespaces": "boundary",
+  "buffer_font_family": "JetBrains Mono",
+  "ui_font_family": "JetBrains Mono",
+  "cursor_blink": true,
+  "tab_size": 2,
+  "unnecessary_code_fade": 0.4,
+  "enable_language_server": true,
+  "cursor_shape": "block",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/_opam",
+    "**/_build",
+    "**/.settings",
+  ],
+  "vertical_scroll_margin": 0,
+  "git": {
+    "inline_blame": {
+      "enabled": false,
+      "delay_ms": 500,
+    },
+  },
+}
