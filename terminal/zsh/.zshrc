@@ -89,6 +89,14 @@ source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
 source "$DOTFILES_PATH/terminal/_aliases/git.sh"
 source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 
+# Restore SSH identities after a restart without blocking shell startup.
+if ! ssh-add -l &> /dev/null; then
+  {
+    ssh-add --apple-use-keychain ~/.ssh/id     &> /dev/null
+    ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
+  } &!
+fi
+
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 
