@@ -1,13 +1,151 @@
 {
-  "server_url": "https://zed.dev",
   "$schema": "zed://schemas/settings",
+  "server_url": "https://zed.dev",
   "ssh_connections": [
     {
       "host": "nspawn",
       "args": [],
       "projects": [
         {
+          "paths": ["/home/me/create-melange-app"],
+        },
+        {
+          "paths": ["/home/me/dune"],
+        },
+        {
+          "paths": ["/home/me/error-messages"],
+        },
+        {
           "paths": ["/home/me/html_of_jsx"],
+        },
+        {
+          "paths": ["/home/me/httpz"],
+        },
+        {
+          "paths": ["/home/me/melange"],
+        },
+        {
+          "paths": ["/home/me/melange-fest"],
+        },
+        {
+          "paths": ["/home/me/melange-opam-template"],
+        },
+        {
+          "paths": ["/home/me/melange-re.github.io"],
+        },
+        {
+          "paths": ["/home/me/melange-str"],
+        },
+        {
+          "paths": ["/home/me/melange-testing-library"],
+        },
+        {
+          "paths": ["/home/me/melange-vite"],
+        },
+        {
+          "paths": ["/home/me/mlx"],
+        },
+        {
+          "paths": ["/home/me/monorepo"],
+        },
+        {
+          "paths": ["/home/me/monorepo/backend"],
+        },
+        {
+          "paths": ["/home/me/mosaic"],
+        },
+        {
+          "paths": ["/home/me/ocaml"],
+        },
+        {
+          "paths": ["/home/me/ocaml-textmate-language"],
+        },
+        {
+          "paths": ["/home/me/ocaml-toon"],
+        },
+        {
+          "paths": ["/home/me/ocaml-use-state"],
+        },
+        {
+          "paths": ["/home/me/ocamlformat-mlx"],
+        },
+        {
+          "paths": ["/home/me/ochre"],
+        },
+        {
+          "paths": ["/home/me/ocre"],
+        },
+        {
+          "paths": ["/home/me/odoc"],
+        },
+        {
+          "paths": ["/home/me/opencode"],
+        },
+        {
+          "paths": ["/home/me/parseff"],
+        },
+        {
+          "paths": ["/home/me/parsing-1b-rows"],
+        },
+        {
+          "paths": ["/home/me/parsing-1b-rows-in-ocaml"],
+        },
+        {
+          "paths": ["/home/me/passage"],
+        },
+        {
+          "paths": ["/home/me/ppx_let"],
+        },
+        {
+          "paths": ["/home/me/query-json"],
+        },
+        {
+          "paths": ["/home/me/quickjs.ml"],
+        },
+        {
+          "paths": ["/home/me/react-implemented-with-ocaml-effects"],
+        },
+        {
+          "paths": ["/home/me/react-rules-of-hooks-ppx"],
+        },
+        {
+          "paths": ["/home/me/reason"],
+        },
+        {
+          "paths": ["/home/me/reason-react"],
+        },
+        {
+          "paths": ["/home/me/reffact"],
+        },
+        {
+          "paths": ["/home/me/sancho.dev"],
+        },
+        {
+          "paths": ["/home/me/server-reason-react"],
+        },
+        {
+          "paths": ["/home/me/server-reason-react-starter"],
+        },
+        {
+          "paths": ["/home/me/setup"],
+        },
+        {
+          "paths": ["/home/me/sirocco"],
+        },
+        {
+          "paths": ["/home/me/ssr-perf-server-reason-react"],
+        },
+        {
+          "paths": ["/home/me/styled-ppx"],
+        },
+        {
+          "paths": ["/home/me/tm-grammars"],
+        },
+        {
+          "paths": ["/home/me/utopia"],
+        },
+        {
+          "paths": ["/home/me/vite-plugin-melange"],
         },
       ],
     },
