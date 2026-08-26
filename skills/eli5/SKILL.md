@@ -1,6 +1,6 @@
 ---
 name: eli5
-description: Help the user understand the current topic visually with concise diagrams, code-shape sketches by creating a self-contained visual HTML explanation when the user says "ELI5", "explain X", "what is X", "how does this work", "walk me through this", or shows confusion. Use for concepts, codebases, architectures, and flows that benefit from a clear step-by-step presentation.
+description: Create a self-contained visual HTML explanation with concise diagrams and code-shape sketches. Use ONLY when the user explicitly asks to use the eli5 skill.
 ---
 
 - Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear
