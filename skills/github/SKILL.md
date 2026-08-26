@@ -11,7 +11,7 @@ agents repeatedly get wrong. Scripts run TS directly (node ≥ 23.6), no deps.
 ## Modes
 
 - **GitHub operations**: Use the optimized scripts and gotchas below for PR state, review threads, and GitHub Actions failures.
-- **Commit**: Mandatory before every `git commit`, unless the user says otherwise. Read [references/commit.md](references/commit.md) and follow it. It owns message style, confirmation, validation, selective staging, hooks, and final status checks.
+- **Commit**: Mandatory before every `git commit`, unless the user says otherwise. Read [references/commit.md](references/commit.md) and follow it. It owns message style, validation, selective staging, hooks, and final status checks.
 - **Merge conflicts**: Read [references/merge-conflicts.md](references/merge-conflicts.md) and follow it for unresolved merge, rebase, or cherry-pick conflicts. This mode uses Git directly and does not require a GitHub PR.
 
 ## Scripts

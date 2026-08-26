@@ -73,25 +73,18 @@ the commit without bypassing repository hooks.
    - Keep it concise: aim for under 72 characters.
    - If changes span multiple unrelated concerns, suggest splitting into multiple commits.
 
-7. **Present the message and ask for confirmation**:
+7. **Finalize the commit message**:
 
-   Show the user:
-   - The proposed commit message
-   - A brief summary of what is being committed (files changed, insertions, deletions)
-
-   Ask the user to confirm or adjust before committing.
-
-   Label this as an explicit **Confirmation gate** in every plan or summary.
-   If the user asked only for a message or plan, stop at this gate. You can show
-   the proposed post-confirmation commands, but never imply that they ran.
+   When the user asked to create a commit, use the drafted message and continue
+   without asking them to confirm it. If the user asked only for a message or
+   plan, provide that output and stop without committing.
 
 8. **Validate the final change**:
 
-   After the user's confirmation and after the final file edit, run every
-   required command identified in step 3. If any command fails, cannot run, or
-   remains ambiguous, stop without committing or pushing and report the exact
-   blocker. A failure that also exists on the base branch does not make the
-   current tree green.
+   After the final file edit, run every required command identified in step 3.
+   If any command fails, cannot run, or remains ambiguous, stop without
+   committing or pushing and report the exact blocker. A failure that also
+   exists on the base branch does not make the current tree green.
 
    After validation, inspect `git status` and the diff again. If validation
    generated or changed files, review those changes and rerun every affected
@@ -106,8 +99,6 @@ the commit without bypassing repository hooks.
 
 10. **Create the commit**:
 
-   After confirmation:
-
    ```bash
    git commit -m "<message>"
    ```
@@ -120,7 +111,8 @@ the commit without bypassing repository hooks.
 
 ## Rules
 
-- NEVER commit without showing the message to the user first and getting confirmation.
+- Do not pause for commit-message confirmation when the user asked to create a
+  commit. Report the message after the commit succeeds.
 - NEVER commit when a required validation command failed, could not run, or was
   not identified. Do not make exceptions for small or comment-only changes.
 - NEVER treat a pre-existing baseline failure as green.
