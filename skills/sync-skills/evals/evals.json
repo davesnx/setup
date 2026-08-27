@@ -1,0 +1,47 @@
+{
+  "skill_name": "sync-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I added a new skill on my Mac. Sync skills to nspawn, but leave my unrelated modified Zed settings alone.",
+      "expected_output": "Uses the local setup checkout, stages and commits only skills/, pushes normally, checks that nspawn is on the same branch with a clean checkout, and pulls with --ff-only.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm working in /home/me/setup inside nspawn and changed an OpenCode skill. Sync skills.",
+      "expected_output": "Uses nspawn mode, validates and commits only skills/, pushes normally, and does not SSH to another machine or pull after pushing.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Sync my local skills to nspawn. The remote setup checkout has modified files right now.",
+      "expected_output": "Commits and pushes valid local skill changes, then stops when the nspawn preflight shows a dirty checkout. It does not stash, reset, pull, or resolve the remote state.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Sync skills from my Mac. I already staged a change to mac/editors/zed/settings.json for later.",
+      "expected_output": "Stops before staging or committing because the index contains a path outside skills/. It does not unstage or commit the existing Zed change.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Please sync skills. My local main branch also has an earlier unpushed commit that changes install.sh.",
+      "expected_output": "Stops before pushing because origin/main..HEAD includes a non-skill path. It does not publish the earlier install.sh commit.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Sync skills from local. Nspawn is clean but checked out on a branch named experiment.",
+      "expected_output": "Stops after the remote preflight reports a branch other than main. It does not switch the remote branch or pull.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Sync skills from local. The final nspawn git pull --ff-only reports that the branches have diverged.",
+      "expected_output": "Reports the failed pull and stops. It does not merge, rebase, reset, stash, or otherwise repair nspawn.",
+      "files": []
+    }
+  ]
+}

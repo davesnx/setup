@@ -68,5 +68,10 @@
       "cmd--": "editor::ToggleBlockComments",
       "cmd-shift-i": "agent::ToggleFocus"
     }
+  },
+  {
+    "bindings": {
+      "cmd-,": "zed::OpenSettingsFile"
+    }
   }
 ]

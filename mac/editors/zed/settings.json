@@ -49,6 +49,15 @@
           "paths": ["/home/me/monorepo"],
         },
         {
+          "paths": ["/home/me/monorepos/A"],
+        },
+        {
+          "paths": ["/home/me/monorepos/B"],
+        },
+        {
+          "paths": ["/home/me/monorepos/C"],
+        },
+        {
           "paths": ["/home/me/monorepo/backend"],
         },
         {
