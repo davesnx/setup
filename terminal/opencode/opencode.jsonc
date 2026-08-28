@@ -3,11 +3,14 @@
   "share": "disabled",
   "autoupdate": "notify",
   "snapshot": true,
-  // Cheap model for titles/summaries/compaction; main model stays whatever you
-  // pick in the TUI (set "model" here if you want a fixed default).
+  // Keep routine work fast, and reserve Fable for complex delegated tasks.
+  "model": "openai/gpt-5.6-sol",
   "small_model": "openai/gpt-5.4-nano",
-  // OpenCode cannot pin Task subagents per role, so pstack roles inherit the
-  // session model. The instruction file adapts upstream pstack model guidance.
+  "agent": {
+    "general": {
+      "model": "anthropic/claude-fable-5",
+    },
+  },
   "instructions": ["pstack-models.md"],
   "experimental": {
     "disable_paste_summary": true,
