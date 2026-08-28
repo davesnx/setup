@@ -16,6 +16,7 @@
       "command": ["npx", "-y", "playwriter@latest"],
       "environment": {
         "PLAYWRITER_HOST": "127.0.0.1",
+        "PLAYWRITER_PORT": "25025",
       },
     },
   },

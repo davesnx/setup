@@ -235,3 +235,5 @@ itomate.yml
 
 # Opencode
 .opencode/*
+
+**/.claude/settings.local.json

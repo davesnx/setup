@@ -206,6 +206,9 @@
       "type": "remote",
       "enabled": true,
       "url": "https://mcp.linear.app/mcp",
+      "oauth": {
+        "callbackPort": 25123,
+      },
     },
   },
 }

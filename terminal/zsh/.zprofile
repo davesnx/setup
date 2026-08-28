@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-export DOTFILES_PATH=${DOTFILES_PATH:-$HOME/Code/github/setup}
+export DOTFILES_PATH="${DOTFILES_PATH:-${${:-$HOME/.zprofile}:A:h:h:h}}"
 
 # Language toolchain paths
 export PYTHON_PATH='/usr/local/opt/python'
@@ -8,12 +8,15 @@ export RUBY_PATH='/usr/local/opt/ruby'
 export GEM_HOME="$HOME/.gem"
 export BUN_INSTALL="$HOME/.bun"
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # PATH setup
 paths=(
   "$HOME/bin"
   "$HOME/.local/bin"
+  "$HOME/.npm/node_modules/bin"
   "$HOME/.deno/bin"
   "$HOME/.cargo/bin"
   "$BUN_INSTALL/bin"
