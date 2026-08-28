@@ -163,6 +163,7 @@
     "dock": "left",
   },
   "agent": {
+    "sidebar_side": "right",
     "dock": "right",
     "model_parameters": [],
   },
