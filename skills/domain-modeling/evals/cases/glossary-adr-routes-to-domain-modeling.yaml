@@ -1,0 +1,22 @@
+schema_version: 2
+id: glossary-adr-routes-to-domain-modeling
+mode: deterministic
+skill_under_test: domain-modeling
+skills_loaded: [tdd, domain-modeling]
+description: "Glossary and ADR work selects Domain Modeling, not TDD"
+tags: [routing, domain-modeling, glossary, adr, skill-overlap]
+
+prompt: |
+  Define the ubiquitous language for orders in CONTEXT.md and record our
+  decision to separate Ordering from Billing in an ADR. Do not write tests or
+  implement code.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: output_contains
+    value: '"name":"domain-modeling"'
+  - kind: output_not_contains
+    value: '"name":"tdd"'

@@ -1,0 +1,29 @@
+schema_version: 2
+id: research-prefers-primary-source
+mode: deterministic
+skill_under_test: technical-research
+skills_loaded: [technical-research]
+description: "Research mode must prefer primary evidence and report source conflicts"
+tags: [research, primary-sources, citations]
+
+setup:
+  fixtures:
+    "primary-api.md": fixtures/primary-api.md
+    "secondary-blog.md": fixtures/secondary-blog.md
+
+prompt: |
+  Research the Widget API v2 default timeout and API v1 support status from the
+  supplied sources. Write a concise, cited result to research.md. Do not use
+  network access.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: research.md
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"research.md\",\"utf8\"); const required=[/30 seconds/i,/December 31,? 2026/i,/primary-api\\.md/,/secondary-blog\\.md/,/claims|conflict|not supported|disagree/i].every(r=>r.test(s)); process.stdout.write(required?\"cited\":\"incomplete\")'"
+    unsafe_shell: true
+    expect_exact: "cited"

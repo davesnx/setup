@@ -1,0 +1,3 @@
+interface:
+  display_name: "Domain Modeling"
+  short_description: "Domain language, context maps, and ADRs"

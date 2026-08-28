@@ -3,7 +3,7 @@ id: simplify-prose-routes-to-unslop
 mode: deterministic
 skill_under_test: simplify
 skills_loaded: [simplify, unslop]
-description: "Simplify does not claim prose cleanup from Unslop"
+description: "With both skills available, prose cleanup routes only to Unslop"
 tags: [routing, prose, skill-overlap]
 
 setup:
@@ -13,8 +13,8 @@ setup:
     "expected.mjs": fixtures/sloppy.mjs
 
 prompt: |
-  Simplify the prose in sloppy.md and write the result to revised.md. Do not
-  edit source code.
+  Clean up the AI-generated prose in sloppy.md and write the result to
+  revised.md. Do not edit source code.
 
 budget:
   max_tokens: 3000
@@ -25,6 +25,8 @@ checks:
     path: revised.md
   - kind: output_contains
     value: '"name":"unslop"'
+  - kind: output_not_contains
+    value: '"name":"simplify"'
   - kind: shell
     cmd: "cmp -s app.mjs expected.mjs && printf unchanged"
     unsafe_shell: true

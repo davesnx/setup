@@ -1,0 +1,32 @@
+schema_version: 2
+id: adversarial-review-is-read-only
+mode: deterministic
+skill_under_test: code-review
+skills_loaded: [code-review]
+description: "Adversarial review synthesizes independent evidence and lead judgment without editing its target"
+tags: [adversarial, multi-model, synthesis, read-only]
+
+setup:
+  fixtures:
+    "diff.patch": fixtures/sql-injection.diff
+    "expected.patch": fixtures/sql-injection.diff
+
+prompt: |
+  Interrogate diff.patch with Code Review's Adversarial / Multi-model mode.
+  Write the final review to review.md. Do not edit diff.patch or expected.patch.
+
+budget:
+  max_tokens: 6000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: review.md
+  - kind: shell
+    cmd: "cmp -s diff.patch expected.patch && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const section=h=>(s.match(new RegExp(\"^## \"+h+\"\\\\s*\\\\n([\\\\s\\\\S]*?)(?=^## |(?![\\\\s\\\\S]))\",\"mi\"))||[])[1]||\"\"; const evidence=section(\"Reviewer Evidence\"); const map=section(\"Agreement Map\"); const intent=section(\"Intent\").trim().length>0; const hasEvidence=/(reviewer|model|lens)/i.test(evidence)&&/(evidence|finding|checked|trace|line)/i.test(evidence); const handlesAgreement=/(consensus|agree)/i.test(map)&&/(disagree|diverg|lone)/i.test(map); const judgment=/^## Act On\\s*$/mi.test(s)&&/^## Consider\\s*$/mi.test(s)&&/^## Dismissed\\s*$/mi.test(s); process.stdout.write(intent&&hasEvidence&&handlesAgreement&&judgment?\"complete\":\"incomplete\")'"
+    unsafe_shell: true
+    expect_exact: "complete"

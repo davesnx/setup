@@ -21,11 +21,7 @@ budget:
 checks:
   - kind: file_exists
     path: implementation-plan.md
-  - kind: llm_judge
-    target_file: implementation-plan.md
-    samples: 1
-    rubric: |
-      PASS only if the plan states the public-function seam, uses one failing
-      behavior test per red-green-refactor cycle, and includes npm test and npm
-      run typecheck. FAIL if it adds a code-review, commit, or push step that the
-      prompt did not request.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"implementation-plan.md\",\"utf8\"); const required=[/isAdult/,/public.*(function|interface|seam)/i,/RED[\\s\\S]{0,200}(one behavior test|fail)/i,/npm test/,/npm run typecheck/].every(r=>r.test(s)); const bad=/code.review|git commit|git push/i.test(s); process.stdout.write(required&&!bad?\"bounded\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "bounded"

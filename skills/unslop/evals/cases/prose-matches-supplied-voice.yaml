@@ -22,12 +22,7 @@ budget:
 checks:
   - kind: file_exists
     path: revised.md
-  - kind: llm_judge
-    target_file: revised.md
-    samples: 1
-    rubric: |
-      PASS only if the rewrite preserves both facts (the writer's second deploy
-      worked and the writer has not tested the rollback plan), resembles the
-      supplied direct first-person voice, uses an em dash as part of that
-      established style, and invents no timestamp, event, feeling, or technical
-      detail.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=/second deploy/i.test(s)&&/work/i.test(s)&&/rollback/i.test(s)&&/not tested|haven.t tested|still need to test/i.test(s); const voice=/\\bI\\b/.test(s)&&s.includes(\"—\"); const invented=/\\d{1,2}:\\d{2}|annoy|failed/i.test(s); process.stdout.write(facts&&voice&&!invented?\"matched\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "matched"

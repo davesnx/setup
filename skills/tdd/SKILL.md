@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Use only when the user explicitly asks for TDD, test-first implementation, red-green-refactor, integration tests, domain modeling, ubiquitous language, glossary or CONTEXT.md work, or an ADR. Do not load for a generic implementation request, spec, ticket, or bug fix.
+description: Use only when the user explicitly asks for TDD, test-first implementation, red-green-refactor, or integration tests as test-first work. Do not use for generic implementation, tests without a test-first request, bug fixes, or domain-modeling artifacts. If the user explicitly asks for both test-first work and domain modeling, load both skills.
 ---
 
 # TDD
@@ -9,15 +9,12 @@ description: Use only when the user explicitly asks for TDD, test-first implemen
 
 - **Red-green-refactor**: Build behavior test-first through agreed seams.
 - **Implement**: When the user explicitly asks to implement a spec or ticket with TDD, read [references/implement.md](references/implement.md), then deliver it through vertical TDD slices and validation.
-- **Domain modeling**: Sharpen domain language, test concepts with scenarios, maintain `CONTEXT.md`, and record qualifying ADRs. Read [references/domain-modeling.md](references/domain-modeling.md) before starting.
 
-Use both modes when test design exposes unclear domain concepts. Resolve the language and scenarios first, then name tests and interfaces with the settled vocabulary.
+When unclear domain language, boundaries, or a hard-to-reverse decision blocks test-first work, mention `domain-modeling` as an optional supporting skill instead of loading it. Load it only when the user also asks to resolve the domain model, language, context map, or decision record.
 
 ## Red-Green-Refactor
 
 TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle — consult them before and during the loop, not after.
-
-When exploring the codebase, check `CONTEXT-MAP.md` first. Read the mapped `CONTEXT.md` and ADRs for the area, or the root context when no map exists, so test names and interface vocabulary match the project's domain language.
 
 ## What a good test is
 

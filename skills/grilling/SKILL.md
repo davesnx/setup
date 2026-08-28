@@ -8,7 +8,7 @@ Interview the user relentlessly until you reach a shared understanding. Map this
 ## Modes
 
 - **Standard**: Use the interview workflow below.
-- **With docs**: When the user asks to "grill with docs", also load `tdd` in Domain modeling mode. Maintain its glossary during the interview and offer an ADR only when that mode's reversal, surprise, and trade-off conditions are all true. The interview workflow still controls question order and completion.
+- **With docs**: When the user asks to "grill with docs", also load `domain-modeling`. Maintain its glossary during the interview and offer an ADR only when its reversal, surprise, and trade-off conditions are all true. The interview workflow still controls question order and completion.
 
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
 

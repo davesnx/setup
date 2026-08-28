@@ -1,3 +1,3 @@
 interface:
   display_name: "TDD"
-  short_description: "Test-driven development and domain modeling"
+  short_description: "Explicit test-first development"

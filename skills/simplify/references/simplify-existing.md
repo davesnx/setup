@@ -1,7 +1,8 @@
 # Simplify existing code
 
-Use this path for an explicit cleanup, simplification, YAGNI, bloat, boilerplate,
-reuse, or over-engineering request.
+Use this path for an explicit code cleanup, simplification, AI-code cleanup,
+YAGNI, bloat, boilerplate, reuse, quality, efficiency, or
+over-engineering request.
 
 ## 1. Bound the scope
 
@@ -22,6 +23,11 @@ for an existing canonical helper before proposing reuse or extraction.
 Complete when each candidate change has a known behavior to preserve and an
 identified owner.
 
+For more than two small files, run three independent read-only reviews in one
+parallel batch for reuse, quality, and efficiency. Give each reviewer the exact
+scope, relevant diff, user focus, and required `file:line` evidence with a
+concrete fix. Apply the same lenses directly for a small change.
+
 ## 3. Find removable complexity
 
 Use these lenses:
@@ -33,15 +39,18 @@ Use these lenses:
 - New helpers that duplicate a canonical path.
 - Abstractions that can be replaced by a direct existing path.
 
-### Structure
+### Structure and quality
 
-- Dead code, unused values, unreachable branches, and stale compatibility paths.
+- Unused imports, values, parameters, dead code, unreachable branches, and stale
+  compatibility paths.
 - Pass-through wrappers, shallow modules, and abstractions with one use.
 - Configuration, extension points, and optional behavior that no requirement or
   caller uses.
 - Deep nesting that a guard clause, direct flow, or better state model removes.
 - Defensive checks, fallbacks, retries, or catches that are abnormal on a trusted
   path and hide defects.
+- `any`, casts, optional values, or ignored errors used to bypass a type or
+  invariant.
 
 ### Clarity
 
@@ -59,17 +68,25 @@ Use these lenses:
 - Caches, concurrency, or batching added without evidence that they solve a real
   constraint.
 
+Weight the review toward any user-supplied focus, such as errors, duplication,
+naming, memory, or performance. Report a correctness issue separately when it
+requires a behavior change.
+
 Validate each candidate against actual callers and repository conventions.
-Discard speculative abstractions, micro-optimizations, and changes that only
-move complexity elsewhere.
+Merge overlaps and rank significant duplication, structural confusion, unsafe
+type escapes, or material inefficiency as high; clear local readability,
+naming, nesting, dead-code, or consistency gains as medium; and optional style
+as low. Discard speculative abstractions, micro-optimizations, and changes that
+only move complexity elsewhere.
 
 Complete when every retained candidate names the code to remove or replace, the
 reason it is simpler, and the behavior it preserves.
 
 ## 4. Apply focused edits
 
-Edit by default. Apply clear behavior-preserving reductions. Apply optional
-style changes only when they are local and reduce code or cognitive load. Keep
+Edit by default. Before editing, give one compact summary grouped by file. Apply
+high and medium behavior-preserving reductions. Apply low findings only when
+they are local and reduce code or cognitive load. Do not add dependencies. Keep
 edits inside the selected scope unless the shared owner of a root cause lies
 outside it. Report an outside root cause and cross the boundary only after the
 user expands the scope.
@@ -83,6 +100,8 @@ behavior or public contracts.
 ## 5. Verify and report
 
 Run the repository checks required by the main skill. Report the files changed,
-the concepts or code removed, and the evidence that behavior stayed intact.
+the concepts, code, or slop removed, and the evidence that behavior stayed
+intact. Mention rejected or deferred candidates only when they explain an
+important tradeoff.
 
 Complete when checks pass and the summary contains only verified claims.

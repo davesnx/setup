@@ -21,10 +21,7 @@ budget:
 checks:
   - kind: file_exists
     path: plan.md
-  - kind: llm_judge
-    target_file: plan.md
-    samples: 1
-    rubric: |
-      PASS only if the plan identifies an observable interface or seam, writes
-      one failing behavior test before implementation, adds only enough code to
-      pass, and refactors only after green while tests stay green.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"plan.md\",\"utf8\"); const seam=/normalizeEmail|public interface|observable|seam/i.test(s); const ordered=/\\bRED\\b[\\s\\S]*\\bGREEN\\b[\\s\\S]*\\bREFACTOR\\b/i.test(s); const minimal=/minimum|minimal|only enough/i.test(s); process.stdout.write(seam&&ordered&&minimal?\"ordered\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "ordered"

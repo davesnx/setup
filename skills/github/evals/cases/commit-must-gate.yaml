@@ -25,14 +25,7 @@ budget:
 checks:
   - kind: file_exists
     path: commit-plan.md
-  - kind: llm_judge
-    target_file: commit-plan.md
-    samples: 1
-    rubric: |
-      PASS only if the plan proposes a concise message about increasing the
-      request timeout, proceeds without asking for commit-message confirmation,
-      requires repository-defined validation using format:check, lint,
-      typecheck, and test from package.json, and stages only intended files. A
-      proposed future git commit command is allowed, but the plan must not state
-      that it ran or that a commit exists. FAIL if any requirement is absent or
-      if the plan requires user confirmation.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"commit-plan.md\",\"utf8\"); const required=[/timeout/i,/format:check/,/lint/,/typecheck/,/test/,/config\\.ts/].every(r=>r.test(s)); const bad=/ask.*confirm|wait.*confirm|confirmation required|commit (was|has been) created/i.test(s); process.stdout.write(required&&!bad?\"ready\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "ready"

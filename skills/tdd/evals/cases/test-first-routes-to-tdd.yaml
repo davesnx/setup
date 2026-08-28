@@ -1,0 +1,22 @@
+schema_version: 2
+id: test-first-routes-to-tdd
+mode: deterministic
+skill_under_test: tdd
+skills_loaded: [tdd, domain-modeling]
+description: "Explicit test-first implementation selects TDD, not Domain Modeling"
+tags: [routing, tdd, test-first, skill-overlap]
+
+prompt: |
+  Implement a password strength checker test-first. Use one failing test, add
+  only enough code to pass it, then refactor before the next behavior. Do not
+  do domain modeling or write project documentation.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: output_contains
+    value: '"name":"tdd"'
+  - kind: output_not_contains
+    value: '"name":"domain-modeling"'

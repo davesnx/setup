@@ -125,4 +125,6 @@ Sentences that announce importance without naming the specific thing. Rewrite th
 - "The stakes are high"
 - "The consequences are real"
 
-If the source explains why something is important, state that reason directly. Otherwise preserve or flag the claim instead of cutting it or inventing specifics.
+If the source explains why something is important, state that reason directly.
+Otherwise remove the unsupported significance in a rewrite or flag it in a
+review. Do not invent specifics.

@@ -1,24 +1,17 @@
 ---
 name: unslop
-description: Remove AI-generated slop from prose or recently changed code. Use when drafting, editing, or reviewing writing, or when the user says "unslop", "deslop", "simplify", "clean up code", "simplify code", or asks for a reuse, quality, efficiency, or AI-code cleanup pass. Preserves meaning in prose and behavior in code.
+description: Edit or review prose to remove AI-generated writing patterns. Use only for writing, documentation, copy, reports, or messages when the user asks to unslop or deslop text, remove AI tone, or clean up prose. Do not use for source code.
 ---
 
 # Unslop
 
-## Choose a mode
-
-- **Prose**: Use when the target is writing, documentation, copy, a report, or a message.
-- **Code**: Use when the target is source code, a diff, recent changes, or a named code-quality focus.
-
-Infer the mode from the target. Ask once when the request contains neither prose nor code context.
-
-## Prose cleanup
-
-Edit text to remove AI patterns while preserving its claims and intended voice.
+Edit text to remove AI patterns while preserving its substance and intended
+voice.
 
 ## Editorial invariants
 
-- **Preserve every claim.** Keep each fact, name, number, date, quote, citation, ranking, qualification, and conclusion unless the user asks to change the substance.
+- **Preserve substance.** Keep each fact, name, number, date, quote, citation, ranking, qualification, and intended conclusion. Unsupported promotional evaluation and significance inflation are not protected substance when the user asks to unslop.
+- **Remove unsupported promotion.** Remove praise, sales framing, and claims of importance that the source does not support. Keep concrete facts and substantive opinions, but do not invent evidence or a factual explanation to replace the removed language.
 - **Do not invent details.** Never add facts, sources, statistics, quotes, anecdotes, or personal experiences. Mark a hypothetical as hypothetical.
 - **Match the writer.** A supplied writing sample or established document style takes priority over the default rules below. Preserve deliberate quirks when they do not obscure meaning.
 - **Respect the register.** Do not add opinions, first-person language, humor, or casual phrasing to reference, legal, scientific, or other neutral prose.
@@ -30,7 +23,7 @@ Edit text to remove AI patterns while preserving its claims and intended voice.
 1. Scan for the patterns below.
 2. Identify the target voice, register, audience, and output format.
 3. Rewrite the passage around its main points instead of replacing watched words one at a time.
-4. Compare the rewrite with the source. Restore any lost claim and remove every unsupported addition.
+4. Compare the rewrite with the source. Restore any lost fact, qualification, or intended conclusion. Remove every unsupported addition, promotional evaluation, and inflated significance claim.
 5. Self-audit with the quick checks, then score. Fix remaining tells.
 
 ## Match voice and register
@@ -41,7 +34,7 @@ Without a sample, match the context:
 
 - **Personal writing, essays, and opinion.** Preserve mixed feelings, humor, first person, asides, and uneven rhythm when they fit.
 - **Technical prose.** Keep established domain terms, symbols, commands, and concrete mechanisms. Do not replace precise terminology with casual synonyms.
-- **Scientific prose.** Use "we" for the authors' work when appropriate, retain necessary qualifications, and name or cite specific researchers instead of invoking unnamed experts.
+- **Scientific prose.** Use "we" for the authors' work when appropriate, retain necessary qualifications, and name or cite specific researchers when the source identifies them instead of invoking unnamed experts.
 - **Reference, legal, and factual prose.** Stay neutral. Clarity matters more than personality.
 - **Email, chat, and social posts.** Match the platform. Do not add Markdown to plain-text contexts or turn a short message into a document with headings.
 
@@ -49,7 +42,7 @@ Without a sample, match the context:
 
 Removing patterns is half the job. Sterile writing can be just as generic, but personality must come from the source or the requested voice.
 
-- **Keep opinions.** Preserve the writer's position instead of neutralizing it into a list of pros and cons.
+- **Keep substantive opinions.** Preserve the writer's position instead of neutralizing it into a list of pros and cons. Unsupported praise and importance claims remain removable.
 - **Vary rhythm.** Short sentences. Then longer ones that take their time. Mix it up.
 - **Keep complexity.** Preserve uncertainty, mixed feelings, and unresolved tension instead of forcing a clean verdict.
 - **Use "I" or "you" when the writer and context call for it.** First and second person are tools, not defaults.
@@ -60,13 +53,15 @@ Removing patterns is half the job. Sterile writing can be just as generic, but p
 
 ### Content
 
-1. **Significance inflation.** "pivotal moment", "testament to", "evolving landscape", "setting the stage for", "indelible mark", "deeply rooted". Remove empty framing, but preserve a sourced evaluation, reputation claim, or deliberate opinion.
+1. **Significance inflation.** "pivotal moment", "testament to", "evolving landscape", "setting the stage for", "indelible mark", "deeply rooted". Remove importance that the source facts do not support. Keep a sourced evaluation or reputation claim, and do not invent support.
 2. **Notability name-dropping.** Listing media outlets without context. Preserve the named outlets, but add what they said only when the source provides that context.
 3. **Superficial -ing phrases.** "highlighting...", "ensuring...", "reflecting...", "showcasing...", "fostering...". Delete empty interpretation or replace it with facts already present in the source.
-4. **Promotional language.** "nestled", "vibrant", "breathtaking", "groundbreaking", "renowned", "stunning", "must-visit". In neutral prose, remove sales framing without discarding a sourced reputation or evaluation. Preserve promotional tone when the genre and writer call for it.
-5. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source when the input provides one. Otherwise preserve the qualified claim or flag the missing source in review mode instead of inventing an authority.
-6. **Formulaic challenges.** "Despite challenges... continues to thrive." Use specific facts when the source provides them. Otherwise preserve the claim without the stock framing.
-7. **Vague declaratives.** "The reasons are structural", "The implications are significant", "The stakes are high". Replace an announcement with its specific meaning when the source supplies it. Otherwise preserve or flag the claim instead of inventing an explanation.
+4. **Promotional language.** "nestled", "vibrant", "breathtaking", "groundbreaking", "renowned", "stunning", "must-visit". Remove sales framing and unsupported praise. Keep concrete facts, sourced reputation, and evaluations supported by the source. Do not preserve unsupported promotion only because the genre uses it.
+5. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source when the input provides one. Otherwise keep the qualification on a substantive claim or flag the missing source in review mode. Remove unsupported promotion or significance, and do not invent an authority.
+6. **Formulaic challenges.** "Despite challenges... continues to thrive." Keep
+   specific challenge and outcome facts from the source. Remove unsupported
+   success framing instead of inventing evidence for it.
+7. **Vague declaratives.** "The reasons are structural", "The implications are significant", "The stakes are high". Replace an announcement with its specific meaning when the source supplies it. Otherwise remove empty significance in a rewrite or flag it in a review. Do not invent an explanation.
 8. **Lazy extremes.** "every", "always", "never", "everyone", "nobody" doing vague work. Keep a supported quantifier. If the source does not support it, flag the claim in review mode rather than silently changing it.
 
 ### Language
@@ -78,7 +73,7 @@ Removing patterns is half the job. Sterile writing can be just as generic, but p
 13. **Forced rule of three.** Use the natural number of items. Do not add or remove an item merely to produce or avoid a group of three.
 14. **Synonym cycling.** Protagonist, main character, central figure, hero all in one paragraph. Pick one, repeat it.
 15. **False ranges.** "from X to Y" where X and Y aren't on a meaningful scale. List topics directly.
-16. **False agency.** Inanimate things doing human work can hide who acted: "the decision emerges", "a complaint becomes a fix". Name the actor when the actor matters. Keep ordinary shorthand such as "the data shows" when it is clear and natural.
+16. **False agency.** Inanimate things doing human work can hide who acted: "the decision emerges", "a complaint becomes a fix". Name the actor when the source identifies them and the actor matters. Keep ordinary shorthand such as "the data shows" when it is clear and natural.
 
 ### Structure and drama
 
@@ -86,7 +81,7 @@ Removing patterns is half the job. Sterile writing can be just as generic, but p
 18. **Rhetorical setups.** "What if [reframe]?", "Here's what I mean:", "Think about it:", "And that's okay." Remove the setup, but preserve any conclusion or distinction it carries.
 19. **Throat-clearing openers.** "Here's the thing:", "The uncomfortable truth is", "Let me be clear", "It turns out". Any "here's what/this/that" construction is announcement before the point. Cut it and state the point. Full list in [references/phrases.md](references/phrases.md).
 20. **Meta-commentary.** "The rest of this essay explains...", "Let me walk you through...", "As we'll see...", "But that's another post". The writing should move, not announce its own structure.
-21. **Wh- sentence starters as a crutch.** "What makes this hard is..." becomes "The constraint is..." or, better, the specific constraint. Lead with the subject or the verb.
+21. **Wh- sentence starters as a crutch.** "What makes this hard is..." becomes "The constraint is..." or, when the source supplies it, the specific constraint. Lead with the subject or the verb.
 22. **Pull-quotes.** If a sentence sounds like it was written to be quoted, rewrite it.
 23. **Narrator-from-a-distance.** "People tend to..." can create a detached lecturer voice. In personal or instructional prose, use a closer perspective only when the source supports it. Do not change "nobody" to "you" or otherwise alter scope and agency.
 
@@ -111,7 +106,7 @@ Removing patterns is half the job. Sterile writing can be just as generic, but p
 34. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". "It is important to note that" gets deleted. "At its core", "At the end of the day", "When it comes to", "The reality is" get deleted too.
 35. **Emphasis crutches.** "Full stop.", "Let that sink in.", "Make no mistake", "This matters because". Remove empty emphasis, but retain any causal explanation or conclusion attached to it.
 36. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may".
-37. **Generic conclusions.** "The future looks bright." Prefer specific plans or facts already present in the source. Cut the sentence only when it adds no substantive claim.
+37. **Generic conclusions.** "The future looks bright." Prefer specific plans or facts already present in the source. Remove unsupported optimism while preserving a concrete intended conclusion.
 
 ### Jargon
 
@@ -120,7 +115,7 @@ Removing patterns is half the job. Sterile writing can be just as generic, but p
 
 ### Plain speech
 
-40. **Say the concrete thing.** Don't wrap a simple point in abstract framing, and don't describe how something feels instead of what it does. "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. Use a mechanism or number only when the source provides one: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". If a concrete restatement would require new facts, preserve the source claim or flag it for the writer.
+40. **Say the concrete thing.** Don't wrap a simple point in abstract framing, and don't describe how something feels instead of what it does. "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. Use a mechanism or number only when the source provides one: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". If a concrete restatement would require new facts, keep any substantive point and remove unsupported evaluation, or flag it in review mode.
 41. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two. Drop a clause only when it adds no claim.
 42. **Active voice.** Prefer it when the source identifies the actor: "the file is parsed by the loader" becomes "the loader parses the file". Do not invent an actor for "queries are validated." Passive is fine when the actor is unknown or genuinely doesn't matter.
 43. **Cut adverbs, or use a stronger verb.** "runs quickly" may become "is fast." Replace "significantly improves" with a measured delta only when the source provides one. Remove an adverb only when doing so preserves the claim. Frequent offenders: "really", "just", "literally", "genuinely", "honestly", "simply", "actually", "fundamentally", "crucially".
@@ -150,14 +145,16 @@ Do not flag one isolated feature as proof of AI writing. Preserve:
 Before delivering prose:
 
 - Any adverbs propping up weak verbs? Cut them or fix the verb.
-- Any passive voice without a reason? Find the actor, make them the subject.
+- Any passive voice without a reason? Use the actor as the subject when the
+  source identifies one.
 - Inanimate thing doing a human verb ("the decision emerges")? Name the actor when known and relevant.
 - Any "here's what/this/that" throat-clearing? Cut to the point.
 - Any formulaic "not X, it's Y" contrasts? State Y directly unless the distinction carries meaning.
 - Three consecutive sentences match length? Break one.
 - Every paragraph ends with a punchy one-liner? Vary it.
 - Repeated or formulaic em dashes? Rewrite them unless they belong to the writer's established style.
-- Vague declarative ("The implications are significant")? Name the specific implication.
+- Vague declarative ("The implications are significant")? Use the specific
+  implication from the source, or remove unsupported significance.
 - Meta-joiners ("The rest of this essay...")? Delete. Let the text move.
 - Sounds like a pull-quote? Rewrite it.
 
@@ -181,7 +178,7 @@ Below 35/50: revise. Keep the score internal unless the user asks for it.
 - **File.** Edit only the prose in scope. Preserve code blocks, frontmatter, data, links, and unrelated content, then report the file and the main changes.
 - **Embedded use.** When another task invokes this skill for a message, document, commit message, or pull request description, return only the final text.
 
-Before delivery, ask: "Did the rewrite add or remove any claim?" Treat an unsupported addition or a lost claim as an error.
+Before delivery, ask: "Did the rewrite lose a fact, name, number, qualification, or intended conclusion; add a fact; or retain unsupported promotion or significance?" Treat any such result as an error.
 
 ## References
 
@@ -189,76 +186,3 @@ Before delivery, ask: "Did the rewrite add or remove any claim?" Treat an unsupp
 - [references/structures.md](references/structures.md): binary contrasts, negative listing, false agency, narrator-from-a-distance, rhythm patterns.
 - [references/examples.md](references/examples.md): before/after transformations.
 - [UPSTREAM.md](UPSTREAM.md): source material, licenses, and adaptation notes.
-
-## Code cleanup
-
-Review the selected change scope for reuse, quality, efficiency, and AI-generated code patterns, then apply focused behavior-preserving fixes.
-
-### 1. Select the scope
-
-Use explicit files or a fixed point when the user provides them. Otherwise combine unstaged and staged changed files. If the worktree has no changes, compare the current branch with its merge base against the repository's base branch.
-
-Do not include unrelated files. If there is no code in scope, report that and stop.
-
-### 2. Read the code
-
-Read each selected file and the surrounding project conventions. Search for existing helpers before proposing a new extraction. A pattern is not redundant until its intended behavior and ownership are understood.
-
-### 3. Apply four lenses
-
-For more than two small files, launch three read-only reviewers in one parallel batch. Give each reviewer the exact file list, relevant diff, code paths or contents, user focus, and one lens below. Require `file:line` evidence and a concrete fix. For a trivial change, apply the same lenses directly.
-
-**Reuse**
-
-- Duplicated logic within or across changed files.
-- Copy-pasted patterns that should share one implementation.
-- New utilities that duplicate an existing canonical helper.
-- Helpers or abstractions that can be deleted in favor of a direct existing path.
-
-**Quality and AI-code slop**
-
-- Unused imports, variables, parameters, dead code, or unreachable branches.
-- Unnecessary comments that restate code or do not match local style.
-- Defensive checks, fallbacks, or `try`/`catch` blocks that are abnormal on trusted paths.
-- `any`, casts, optional values, or ignored errors used to bypass a type or invariant.
-- Deep nesting that should use early returns or a clearer model.
-- Poor names, broad abstractions, pass-through wrappers, and code inconsistent with its neighbors.
-
-**Efficiency**
-
-- Repeated computation, lookup, allocation, or copying with material cost.
-- Accidental quadratic work where a direct linear approach is clear.
-- Missed short-circuiting or unnecessary sequential work.
-- Intermediate state or variables that obscure rather than explain the flow.
-
-**Focus area**
-
-Weight the review toward any user-supplied focus, such as error handling, duplication, naming, memory, or performance. Do not ignore a clear correctness issue, but report it separately from cleanup work.
-
-### 4. Judge and deduplicate
-
-Validate every suggestion against repository conventions and actual call sites. Merge overlapping findings and rank them:
-
-1. **High**: Significant duplication, structural confusion, unsafe type escape, or material inefficiency.
-2. **Medium**: Clear readability, naming, nesting, dead-code, or local-consistency improvement.
-3. **Low**: Optional style or inlining preference.
-
-Reject speculative abstractions, micro-optimizations, and churn that only moves complexity around.
-
-### 5. Apply fixes
-
-Present one compact pre-edit summary grouped by file. Then apply High and Medium cleanup findings. Apply Low findings only when they are obvious, local, and reduce code. Keep edits inside the selected files.
-
-- Preserve behavior and public contracts.
-- Do not add dependencies.
-- Do not add an abstraction unless it removes demonstrated duplication or clarifies ownership.
-- Do not replace local style with a personal preference.
-- If review finds a bug that needs a behavior change, report it instead of folding it into cleanup unless the user also asked for bug fixes.
-
-### 6. Verify
-
-Run the repository-defined format, lint, typecheck, build, and relevant tests for the final files. If a check fails because of an unslop edit, fix that edit and rerun the affected checks. Do not hide failures or revert unrelated user work.
-
-### 7. Report
-
-Report the files changed, the slop removed, and the checks run. Keep the summary concise. Mention rejected or deferred findings only when they explain an important tradeoff.

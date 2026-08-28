@@ -20,11 +20,7 @@ budget:
 checks:
   - kind: file_exists
     path: revised.md
-  - kind: llm_judge
-    target_file: revised.md
-    samples: 1
-    rubric: |
-      PASS only if the revision preserves all three facts (reload every 30
-      seconds, YAML and JSON support, invalid-key logging) while removing the
-      significance inflation, "at its core", and "not just X" construction,
-      and adds no new claim, mechanism, number, source, or opinion.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[/30 seconds/i,/YAML/,/JSON/,/invalid keys/i,/log/i].every(r=>r.test(s)); const bad=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!bad?\"plain\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "plain"

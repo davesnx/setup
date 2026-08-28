@@ -1,0 +1,37 @@
+schema_version: 2
+id: improve-codebase-audit-keeps-source-read-only
+mode: deterministic
+skill_under_test: improve-codebase-architecture
+skills_loaded: [improve-codebase-architecture]
+description: "An audit may write its report and plans but must not edit source"
+tags: [audit, read-only, boundary]
+
+setup:
+  fixtures:
+    "retry-policy.mjs": fixtures/retry-policy.mjs
+    "retry-policy.expected.mjs": fixtures/retry-policy.expected.mjs
+
+prompt: |
+  Run a focused correctness audit of retry-policy.mjs. This is an evaluation
+  sandbox and the selected temporary output directory, so do not run commands or
+  open a browser. Write the self-contained review to review.html and the selected
+  implementation plan to plans/001-fix-retry-delay.md. Do not edit either .mjs
+  file.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: review.html
+  - kind: file_exists
+    path: plans/001-fix-retry-delay.md
+  - kind: shell
+    cmd: "cmp -s retry-policy.mjs retry-policy.expected.mjs && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
+  - kind: shell
+    cmd: "node -e 'const fs=require(\"fs\"); const html=fs.readFileSync(\"review.html\",\"utf8\"); const plan=fs.readFileSync(\"plans/001-fix-retry-delay.md\",\"utf8\"); const report=/<html/i.test(html)&&/retryDelayMs/.test(html); const bounded=/Current state/i.test(plan)&&/Scope/i.test(plan)&&/Done criteria/i.test(plan)&&/STOP conditions/i.test(plan); process.stdout.write(report&&bounded?\"complete\":\"incomplete\")'"
+    unsafe_shell: true
+    expect_exact: "complete"

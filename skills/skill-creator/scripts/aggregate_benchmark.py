@@ -38,6 +38,7 @@ import argparse
 import json
 import math
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -64,6 +65,20 @@ def calculate_stats(values: list[float]) -> dict:
     }
 
 
+PRIMARY_CONFIGS = ("with_skill", "new_skill")
+BASELINE_CONFIGS = ("old_skill", "without_skill")
+
+
+def ordered_configs(configs) -> list[str]:
+    """Put the treatment before its baseline and keep other names stable."""
+    names = list(configs)
+    priority = {
+        **{name: index for index, name in enumerate(PRIMARY_CONFIGS)},
+        **{name: 10 + index for index, name in enumerate(BASELINE_CONFIGS)},
+    }
+    return sorted(names, key=lambda name: (priority.get(name, 5), name))
+
+
 def load_run_results(benchmark_dir: Path) -> dict:
     """
     Load all run results from a benchmark directory.
@@ -85,10 +100,13 @@ def load_run_results(benchmark_dir: Path) -> dict:
 
     for eval_idx, eval_dir in enumerate(sorted(search_dir.glob("eval-*"))):
         metadata_path = eval_dir / "eval_metadata.json"
+        eval_name = eval_dir.name
         if metadata_path.exists():
             try:
                 with open(metadata_path) as mf:
-                    eval_id = json.load(mf).get("eval_id", eval_idx)
+                    metadata = json.load(mf)
+                    eval_id = metadata.get("eval_id", eval_idx)
+                    eval_name = metadata.get("eval_name", eval_name)
             except (json.JSONDecodeError, OSError):
                 eval_id = eval_idx
         else:
@@ -109,7 +127,11 @@ def load_run_results(benchmark_dir: Path) -> dict:
                 results[config] = []
 
             for run_dir in sorted(config_dir.glob("run-*")):
-                run_number = int(run_dir.name.split("-")[1])
+                try:
+                    run_number = int(run_dir.name.split("-")[1])
+                except (IndexError, ValueError):
+                    print(f"Warning: invalid run directory name: {run_dir}")
+                    continue
                 grading_file = run_dir / "grading.json"
 
                 if not grading_file.exists():
@@ -126,6 +148,7 @@ def load_run_results(benchmark_dir: Path) -> dict:
                 # Extract metrics
                 result = {
                     "eval_id": eval_id,
+                    "eval_name": eval_name,
                     "run_number": run_number,
                     "pass_rate": grading.get("summary", {}).get("pass_rate", 0.0),
                     "passed": grading.get("summary", {}).get("passed", 0),
@@ -180,7 +203,7 @@ def aggregate_results(results: dict) -> dict:
     Returns run_summary with stats for each configuration and delta.
     """
     run_summary = {}
-    configs = list(results.keys())
+    configs = ordered_configs(results)
 
     for config in configs:
         runs = results.get(config, [])
@@ -233,10 +256,11 @@ def generate_benchmark(benchmark_dir: Path, skill_name: str = "", skill_path: st
 
     # Build runs array for benchmark.json
     runs = []
-    for config in results:
+    for config in ordered_configs(results):
         for result in results[config]:
             runs.append({
                 "eval_id": result["eval_id"],
+                "eval_name": result["eval_name"],
                 "configuration": config,
                 "run_number": result["run_number"],
                 "result": {
@@ -260,6 +284,11 @@ def generate_benchmark(benchmark_dir: Path, skill_name: str = "", skill_path: st
         for r in config
     ))
 
+    run_counts = Counter(
+        (run["eval_id"], run["configuration"])
+        for run in runs
+    )
+
     benchmark = {
         "metadata": {
             "skill_name": skill_name or "<skill-name>",
@@ -268,7 +297,7 @@ def generate_benchmark(benchmark_dir: Path, skill_name: str = "", skill_path: st
             "analyzer_model": "<model-name>",
             "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "evals_run": eval_ids,
-            "runs_per_configuration": 3
+            "runs_per_configuration": max(run_counts.values(), default=0)
         },
         "runs": runs,
         "run_summary": run_summary,

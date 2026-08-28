@@ -1,0 +1,27 @@
+schema_version: 2
+id: howto-stays-action-focused
+mode: deterministic
+skill_under_test: technical-docs
+skills_loaded: [technical-docs]
+description: "How-to mode must turn mixed passive reference prose into a direct task guide"
+tags: [technical-docs, how-to, plain-language]
+
+setup:
+  fixtures:
+    "rough.md": fixtures/rough-howto.md
+
+prompt: |
+  Rewrite rough.md as a short how-to for changing the cache timeout. Write the
+  result to guide.md. Do not invent a command or value that the source omits.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: guide.md
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"guide.md\",\"utf8\"); const required=[/cache\\.json/,/timeout_ms/].every(r=>r.test(s)); const bad=/important to note|groundbreaking|\\benabled\\b|npm |yarn |pnpm |```(?:sh|bash)/i.test(s); process.stdout.write(required&&!bad?\"focused\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "focused"

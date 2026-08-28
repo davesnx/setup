@@ -164,7 +164,7 @@ See `references/schemas.md` for the full schema (including the `assertions` fiel
 
 This section is one continuous sequence — don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
-Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront — just create directories as you go.
+Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.). Each test case gets an `eval-<ID>/` directory. Each configuration contains numbered run directories, starting with `run-1/`. Do not create all of this upfront.
 
 ### Step 1: Spawn all runs (with-skill AND baseline) in the same turn
 
@@ -177,15 +177,15 @@ Execute this task:
 - Skill path: <path-to-skill>
 - Task: <eval prompt>
 - Input files: <eval files if any, or "none">
-- Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/
+- Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/run-1/outputs/
 - Outputs to save: <what the user cares about — e.g., "the .docx file", "the final CSV">
 ```
 
 **Baseline run** (same prompt, but the baseline depends on context):
-- **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/outputs/`.
-- **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
+- **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/run-1/outputs/`.
+- **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/run-1/outputs/`.
 
-Write an `eval_metadata.json` for each test case (assertions can be empty for now). Give each eval a descriptive name based on what it's testing — not just "eval-0". Use this name for the directory too. If this iteration uses new or modified eval prompts, create these files for each new eval directory — don't assume they carry over from previous iterations.
+Write `eval_metadata.json` in each `eval-<ID>/` directory (assertions can be empty for now). Give each eval a descriptive `eval_name`. Keep the numeric directory name stable so tools can sort and compare iterations. If this iteration uses new or modified eval prompts, create these files for each new eval directory; do not assume they carry over from previous iterations.
 
 ```json
 {
@@ -206,7 +206,7 @@ Update the `eval_metadata.json` files and `evals/evals.json` with the assertions
 
 ### Step 3: As runs complete, capture timing data
 
-When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` in the run directory:
+When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` beside that run's `outputs/` directory:
 
 ```json
 {

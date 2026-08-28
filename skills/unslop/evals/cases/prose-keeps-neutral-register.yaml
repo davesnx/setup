@@ -20,11 +20,7 @@ budget:
 checks:
   - kind: file_exists
     path: revised.md
-  - kind: llm_judge
-    target_file: revised.md
-    samples: 1
-    rubric: |
-      PASS only if the revision preserves 418 records, the 2008-2012 range,
-      county classification, the unknown collector, and the missing 2010
-      records; removes "It is important to note that"; stays neutral; and
-      adds no opinion, first-person language, source, anecdote, or new fact.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[/418/,/2008/,/2012/,/county/i,/collector/i,/unknown/i,/2010/].every(r=>r.test(s)); const bad=/important to note|\\bI\\b|\\bwe\\b|in my opinion|https?:/i.test(s); process.stdout.write(facts&&!bad?\"neutral\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "neutral"

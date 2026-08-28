@@ -1,0 +1,31 @@
+schema_version: 2
+id: production-interface-selects-architect
+mode: deterministic
+skill_under_test: architect
+skills_loaded: [architect, logic-prototype]
+description: "Production interface design selects Architect when both design skills are available"
+tags: [routing, interface, skill-overlap]
+
+setup:
+  fixtures: {}
+
+prompt: |
+  This is only a routing check. For a later task, I will ask you to design the
+  production contract for an order cancellation module, with caller usage,
+  exported types, signatures, module boundaries, and seams. Do not start the
+  design, inspect files, or launch design runners now. Write route.md naming the
+  owning skill and why an interactive HTML experiment is the wrong workflow.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: route.md
+  - kind: output_not_contains
+    value: '"name":"logic-prototype"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"route.md\",\"utf8\"); process.stdout.write(/architect/i.test(s)&&/production/i.test(s)&&/logic.prototype|interactive.*HTML/i.test(s)?\"architect\":\"wrong\")'"
+    unsafe_shell: true
+    expect_exact: "architect"

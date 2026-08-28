@@ -5,7 +5,7 @@ Implement a spec or ticket as a sequence of complete, test-driven slices.
 ## Process
 
 1. Read the full source artifact and linked context. State the requested outcome, scope, exclusions, dependencies, and completion criteria.
-2. Resolve ambiguity from the codebase first. Use TDD Domain modeling mode when terms, scenarios, or invariants are unclear. Ask the user only for decisions that evidence cannot settle.
+2. Resolve ambiguity from the codebase first. If terms, scenarios, invariants, or a qualifying decision remain unclear, mention `domain-modeling` as optional support. Load it only when the user also asks for that work. Ask the user only for decisions that evidence cannot settle.
 3. Identify the interfaces and seams that expose the requested behavior. Confirm the seams before writing tests.
 4. Order the work as vertical slices. Each slice delivers one observable behavior through Red-green-refactor mode.
 5. During each slice, run the single focused test and the smallest useful typecheck or build check. Do not wait until the end to discover structural errors.

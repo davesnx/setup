@@ -1,0 +1,27 @@
+schema_version: 2
+id: logic-prototype-is-drivable
+mode: deterministic
+skill_under_test: logic-prototype
+skills_loaded: [logic-prototype]
+description: "Logic Prototype must create a self-contained drivable state-model artifact"
+tags: [prototype, state-model, html]
+
+setup:
+  fixtures:
+    "question.md": fixtures/cancellation-model.md
+
+prompt: |
+  Build a throwaway logic prototype to answer question.md. Write the complete
+  artifact to prototype.html. Do not use external libraries or network assets.
+
+budget:
+  max_tokens: 10000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: prototype.html
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"prototype.html\",\"utf8\"); const required=[/cancel/i,/current state|current order|order state|id=.status/i,/<button/i,/pending/i,/paid/i,/shipped/i,/refund/i,/illegal|cannot|not allowed/i].every(r=>r.test(s)); const external=/(?:src|href)=.{0,2}https?:/i.test(s); process.stdout.write(required&&!external?\"drivable\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "drivable"

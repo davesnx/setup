@@ -1,0 +1,28 @@
+schema_version: 2
+id: x-post-rejects-engagement-bait
+mode: deterministic
+skill_under_test: x-writing
+skills_loaded: [x-writing]
+description: "X-post mode must replace engagement bait with specific audience value"
+tags: [x-post, anti-bait, current-algorithm]
+
+setup:
+  fixtures:
+    "draft.txt": fixtures/x-draft.txt
+
+prompt: |
+  Rewrite draft.txt as an X post for software engineers evaluating AI coding
+  tools. Write only the final post to post.md. Do not promise reach or invent
+  performance data.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: post.md
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"post.md\",\"utf8\"); const useful=/AI coding|coding tool/i.test(s)&&/engineer|code|review|test|workflow/i.test(s); const bad=/retweet|repost|share this|go viral|guaranteed reach|\\d+%/i.test(s); process.stdout.write(useful&&!bad?\"useful\":\"invalid\")'"
+    unsafe_shell: true
+    expect_exact: "useful"

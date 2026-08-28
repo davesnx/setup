@@ -1,0 +1,25 @@
+schema_version: 2
+id: x-writing-routes-x-writing-only
+mode: deterministic
+skill_under_test: x-writing
+skills_loaded: [technical-docs, technical-research, x-writing]
+description: "A technical release announcement for X routes to X writing only"
+tags: [routing, x-post, near-miss]
+
+prompt: |
+  Rewrite this verified release note as one X post for TypeScript developers:
+  "On Node 22 in our Linux CI benchmark, SDK v4 cuts cold start time from 240
+  ms to 130 ms." Keep the benchmark conditions explicit and avoid reach claims.
+  Do not turn it into README text or start new research.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: output_contains
+    value: '"name":"x-writing"'
+  - kind: output_not_contains
+    value: '"name":"technical-docs"'
+  - kind: output_not_contains
+    value: '"name":"technical-research"'

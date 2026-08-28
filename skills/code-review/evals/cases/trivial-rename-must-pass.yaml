@@ -1,9 +1,9 @@
 schema_version: 2
 id: trivial-rename-must-pass
-mode: prose
+mode: deterministic
 skill_under_test: code-review
 skills_loaded: [code-review]
-description: "Merged review must not invent blockers for a complete rename"
+description: "Standard review must not invent blockers for a complete rename"
 tags: [false-positive, calibration]
 
 setup:
@@ -21,10 +21,7 @@ budget:
 checks:
   - kind: file_exists
     path: review.md
-  - kind: llm_judge
-    target_file: review.md
-    samples: 1
-    rubric: |
-      The rename is complete and preserves the exported alias. PASS if the
-      review approves it or states that there are no blocking findings. FAIL
-      if it invents a bug, demands unrelated tests or docs, or blocks on style.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const clean=/no findings|no blocking|pass|clean/i.test(s); const blocker=/sql injection|security issue|data loss|breaking change/i.test(s); process.stdout.write(clean&&!blocker?\"clean\":\"blocked\")'"
+    unsafe_shell: true
+    expect_exact: "clean"

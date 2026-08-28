@@ -1,0 +1,36 @@
+schema_version: 2
+id: simplify-code-cleanup-routes-to-simplify
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify, unslop]
+description: "With both skills available, code cleanup routes only to Simplify"
+tags: [routing, code, skill-overlap, behavior-preservation]
+
+setup:
+  fixtures:
+    "sloppy.mjs": fixtures/sloppy.mjs
+
+prompt: |
+  Clean up the AI-generated code in sloppy.mjs for quality and efficiency. Its
+  trusted contract is number[]. Preserve observable behavior, edit sloppy.mjs,
+  and write a concise summary to cleanup.md.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: cleanup.md
+  - kind: output_contains
+    value: '"name":"simplify"'
+  - kind: output_not_contains
+    value: '"name":"unslop"'
+  - kind: shell
+    cmd: "node -e 'import(\"./sloppy.mjs\").then(m => console.log([m.firstPositive([-2, 0, 3, 4]), m.firstPositive([-2, 0])].join(\",\")))'"
+    unsafe_shell: true
+    expect_exact: "3,"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"sloppy.mjs\",\"utf8\"); const banned=[\"try {\",\"Array.isArray\",\"typeof value\",\"This function loops\"]; process.stdout.write(banned.every(x=>!s.includes(x))?\"clean\":\"sloppy\")'"
+    unsafe_shell: true
+    expect_exact: "clean"

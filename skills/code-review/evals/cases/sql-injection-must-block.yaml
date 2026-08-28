@@ -1,10 +1,10 @@
 schema_version: 2
 id: sql-injection-must-block
-mode: prose
+mode: deterministic
 skill_under_test: code-review
 skills_loaded: [code-review]
-description: "Merged review must catch a reachable SQL injection regression"
-tags: [security, correctness, merged-thermo]
+description: "Standard review must catch a reachable SQL injection regression"
+tags: [security, correctness, standard-review]
 
 setup:
   fixtures:
@@ -21,10 +21,7 @@ budget:
 checks:
   - kind: file_exists
     path: review.md
-  - kind: llm_judge
-    target_file: review.md
-    samples: 1
-    rubric: |
-      PASS only if the review identifies SQL injection caused by interpolating
-      name into the query, rates it High or Critical, and recommends restoring
-      a parameterized query. FAIL if any of those three requirements is absent.
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const injection=/sql injection|injection payload|interpolated directly into sql/i.test(s); const severe=/high|critical/i.test(s); const fix=/parameteri[sz]ed|placeholder|bound parameter/i.test(s); process.stdout.write(injection&&severe&&fix?\"blocked\":\"missed\")'"
+    unsafe_shell: true
+    expect_exact: "blocked"

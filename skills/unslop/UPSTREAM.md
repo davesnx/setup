@@ -1,6 +1,6 @@
 # Upstream sources
 
-This skill combines original code-cleanup guidance with prose-editing ideas adapted from the following projects. Sources were reviewed on 2026-08-22.
+This skill adapts prose-editing ideas from the following projects. Sources were reviewed on 2026-08-22.
 
 ## Humanizer
 

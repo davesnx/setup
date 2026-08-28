@@ -32,4 +32,4 @@ In addition to the general finding fields, include:
 - ADR conflicts or decisions that must be revisited
 - recommendation strength: Strong, Worth exploring, or Speculative
 
-Do not design the full replacement during the audit. Show the opportunity and evidence. Use `grilling`, `tdd` in Domain modeling mode, and the `architect` design-it-twice reference only after the user selects it.
+Do not design the full replacement during the audit. Show the opportunity and evidence. Use `grilling`, `domain-modeling`, and the `architect` design-it-twice reference only after the user selects it.

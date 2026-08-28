@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "case_id": "technical-research-routes-research-only",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "output_contains",
+      "passed": true,
+      "failed_check_id": "output_contains:\"name\":\"technical-research\"",
+      "expected": "\"name\":\"technical-research\"",
+      "actual": "present",
+      "diff_hint": "",
+      "transcript_span": {
+        "start_line": 3,
+        "end_line": 3,
+        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-28T15-16-23Z-21914/technical-research-routes-research-only/transcript.jsonl"
+      },
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_not_contains",
+      "passed": true,
+      "failed_check_id": "output_not_contains:\"name\":\"technical-docs\"",
+      "expected": "absence of \"name\":\"technical-docs\"",
+      "actual": "absent",
+      "diff_hint": "",
+      "transcript_span": null,
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_not_contains",
+      "passed": true,
+      "failed_check_id": "output_not_contains:\"name\":\"x-writing\"",
+      "expected": "absence of \"name\":\"x-writing\"",
+      "actual": "absent",
+      "diff_hint": "",
+      "transcript_span": null,
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.0",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.19.0",
+    "platform": "Darwin-arm64",
+    "skill_under_test": "technical-research",
+    "skill_bundle_sha": "7ed5b67d48e87e6522b96c64aedb3bb48f90c3ac6715674fc66cdded31edd22b",
+    "skill_sha": "773a9f7e231d46afd5c85d8e9a611a4f96e6d808507f76b8e7d1f8fe113825dc",
+    "fixture_sha": "8e822ebcc6b6739b22090dc94293478798f8b6ba4efd9618c5ba7cdab7bb171e",
+    "timestamp": "2026-08-28T15:17:24Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}

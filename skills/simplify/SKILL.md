@@ -1,6 +1,6 @@
 ---
 name: simplify
-description: Apply simplicity standards to all software engineering work. Use when writing, changing, fixing, refactoring, reviewing, or simplifying code, and when choosing APIs, architecture, dependencies, tests, errors, state models, or operational behavior. Produces the least complex clear solution that meets the full contract.
+description: Apply simplicity standards to all software engineering work. Use for every request to write, change, fix, refactor, review, simplify, or clean up code, including AI-generated code, reuse, quality, and efficiency work, and when choosing APIs, architecture, dependencies, tests, errors, state models, or operational behavior. Produces the least complex clear solution that meets the full contract.
 ---
 
 # Simplify
@@ -15,8 +15,9 @@ When another skill owns the process or edit boundary, Simplify supplies design
 rules while the owning skill controls sequence, checkpoints, edits, and output.
 
 - **Write or change code:** Use the workflow and ladder below.
-- **Simplify existing code:** Also read
+- **Simplify or clean up existing code:** Also read
   [references/simplify-existing.md](references/simplify-existing.md).
+- **Prose cleanup with no source code:** Use Unslop instead.
 - **Review-only work:** Apply these rules as a simplicity lens, preserve the
   read-only boundary, and leave the parent review workflow in control.
 - **Boundary, integration, persistence, input parsing, configuration, resource,

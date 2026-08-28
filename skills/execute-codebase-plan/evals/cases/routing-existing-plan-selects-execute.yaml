@@ -1,0 +1,32 @@
+schema_version: 2
+id: routing-existing-plan-selects-execute-codebase-plan
+mode: deterministic
+skill_under_test: execute-codebase-plan
+skills_loaded: [improve-codebase-architecture, execute-codebase-plan]
+description: "An existing plan execution request routes to the executor when both plan skills are available"
+tags: [routing, execute, skill-overlap]
+
+setup:
+  fixtures:
+    "plans/001-fix-retry-delay.md": fixtures/001-fix-retry-delay.md
+
+prompt: |
+  Implement the existing audit plan at plans/001-fix-retry-delay.md. Do not run
+  commands or edit source in this routing check. Write route.md with the owning
+  workflow and the first safety boundary it must enforce.
+
+budget:
+  max_tokens: 2500
+  max_seconds: 60
+
+checks:
+  - kind: file_exists
+    path: route.md
+  - kind: output_contains
+    value: '"name":"execute-codebase-plan"'
+  - kind: output_not_contains
+    value: '"name":"improve-codebase-architecture"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"route.md\",\"utf8\"); process.stdout.write(/execute-codebase-plan/.test(s)&&/main worktree/i.test(s)&&/isolated.*worktree/i.test(s)?\"executor\":\"wrong\")'"
+    unsafe_shell: true
+    expect_exact: "executor"

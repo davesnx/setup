@@ -1,0 +1,28 @@
+schema_version: 2
+id: state-model-selects-logic-prototype
+mode: deterministic
+skill_under_test: logic-prototype
+skills_loaded: [architect, logic-prototype]
+description: "A disposable state-model experiment selects Logic Prototype when both design skills are available"
+tags: [routing, state-model, skill-overlap]
+
+setup:
+  fixtures: {}
+
+prompt: |
+  Before choosing a production architecture, test whether a paid order can
+  still be cancelled with a full refund. Build a throwaway, self-contained,
+  drivable artifact named prototype.html with free-play controls and an illegal
+  transition scenario. Do not define a production module interface.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: prototype.html
+  - kind: output_contains
+    value: '"name":"logic-prototype"'
+  - kind: output_not_contains
+    value: '"name":"architect"'

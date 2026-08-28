@@ -28,7 +28,10 @@ The shell configuration exports `OPENCODE_CONFIG` when the selected
 
 OpenCode agents run `~/.config/opencode/eval-harness` directly when an eval
 harness task needs it. The harness is not loaded into interactive shell
-sessions.
+sessions. It stores generated state under
+`${XDG_STATE_HOME:-~/.local/state}/opencode/eval-harness` and uses the current
+OpenAI model unless `EVAL_MODEL`, `EVAL_SMOKE_MODEL`, or `EVAL_FULL_MODEL` is
+set.
 
 ## Keep private
 

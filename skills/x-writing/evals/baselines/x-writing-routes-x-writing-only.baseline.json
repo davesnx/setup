@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "case_id": "x-writing-routes-x-writing-only",
+  "passed": true,
+  "checks": [
+    {
+      "kind": "output_contains",
+      "passed": true,
+      "failed_check_id": "output_contains:\"name\":\"x-writing\"",
+      "expected": "\"name\":\"x-writing\"",
+      "actual": "present",
+      "diff_hint": "",
+      "transcript_span": {
+        "start_line": 2,
+        "end_line": 2,
+        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-28T15-19-25Z-1889/x-writing-routes-x-writing-only/transcript.jsonl"
+      },
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_not_contains",
+      "passed": true,
+      "failed_check_id": "output_not_contains:\"name\":\"technical-docs\"",
+      "expected": "absence of \"name\":\"technical-docs\"",
+      "actual": "absent",
+      "diff_hint": "",
+      "transcript_span": null,
+      "fix_proposal": null
+    },
+    {
+      "kind": "output_not_contains",
+      "passed": true,
+      "failed_check_id": "output_not_contains:\"name\":\"technical-research\"",
+      "expected": "absence of \"name\":\"technical-research\"",
+      "actual": "absent",
+      "diff_hint": "",
+      "transcript_span": null,
+      "fix_proposal": null
+    }
+  ],
+  "env_manifest": {
+    "schema_version": 2,
+    "opencode_version": "1.18.0",
+    "model_id": "openai/gpt-5.6-sol",
+    "node_version": "v22.19.0",
+    "platform": "Darwin-arm64",
+    "skill_under_test": "x-writing",
+    "skill_bundle_sha": "3226bbe32f5610ad92b3d8b64c8f0adf2ff6630adbb2e8b9a1877b0b765de3bf",
+    "skill_sha": "ba427f74e6526c0863cb6c9abe0634933204d11d93f1f0c116b7a825eda6ded4",
+    "fixture_sha": "ebcd50cda7802dbbab8689c4164b1a68d1a452c0bfab00cc0f5e71c47de15bfd",
+    "timestamp": "2026-08-28T15:19:27Z"
+  },
+  "last_seen_triggers": [
+    "baseline"
+  ]
+}
