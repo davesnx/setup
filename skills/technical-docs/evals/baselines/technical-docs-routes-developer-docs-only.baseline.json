@@ -13,18 +13,8 @@
       "transcript_span": {
         "start_line": 3,
         "end_line": 3,
-        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-28T15-14-35Z-24633/technical-docs-routes-developer-docs-only/transcript.jsonl"
+        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-31T20-35-13Z-19690/technical-docs-routes-developer-docs-only/transcript.jsonl"
       },
-      "fix_proposal": null
-    },
-    {
-      "kind": "output_not_contains",
-      "passed": true,
-      "failed_check_id": "output_not_contains:\"name\":\"technical-research\"",
-      "expected": "absence of \"name\":\"technical-research\"",
-      "actual": "absent",
-      "diff_hint": "",
-      "transcript_span": null,
       "fix_proposal": null
     },
     {
@@ -51,6 +41,6 @@
     "timestamp": "2026-08-28T15:15:24Z"
   },
   "last_seen_triggers": [
-    "baseline"
+    "accept"
   ]
 }
