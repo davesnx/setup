@@ -29,6 +29,7 @@ esac
 OPENCODE_SKILLS_ROOT="$root/skills" \
 EVAL_STATE_DIR="$state_dir" \
 EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
+BASH_ENV="$root/terminal/opencode/eval-harness-cleanup.bash" \
 ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-${OPENCODE_ANTHROPIC_API_KEY:-}}" \
 EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \
 EVAL_FULL_MODEL="${EVAL_FULL_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \

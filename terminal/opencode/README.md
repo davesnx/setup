@@ -31,7 +31,8 @@ harness task needs it. The harness is not loaded into interactive shell
 sessions. It stores generated state under
 `${XDG_STATE_HOME:-~/.local/state}/opencode/eval-harness` and uses the current
 OpenAI model unless `EVAL_MODEL`, `EVAL_SMOKE_MODEL`, or `EVAL_FULL_MODEL` is
-set.
+set. The wrapper removes generated sandboxes after each run. Pass `--debug` to
+keep a run's sandboxes for inspection.
 
 ## Keep private
 
