@@ -23,7 +23,7 @@
   // startup doesn't hit the registry; bump deliberately.
   "plugin": [
     "opencode-goal-plugin@0.4.0",
-    "cursor-oauth-opencode@0.1.8",
+    "cursor-oauth-opencode@0.22.1",
     "./plugins/opencode-notify/src/notify.ts",
     "@plannotator/opencode@latest",
   ],
@@ -50,7 +50,7 @@
           "temperature": true,
           "attachment": false,
           "tool_call": true,
-          "limit": { "context": 200000, "output": 64000 },
+          "limit": { "context": 200000, "input": 200000, "output": 64000 },
         },
         "composer-2.5": {
           "name": "Composer 2.5",
@@ -58,7 +58,23 @@
           "temperature": true,
           "attachment": false,
           "tool_call": true,
-          "limit": { "context": 200000, "output": 64000 },
+          "limit": { "context": 200000, "input": 200000, "output": 64000 },
+        },
+        "grok-4.6": {
+          "name": "Grok 4.6",
+          "reasoning": true,
+          "temperature": true,
+          "attachment": false,
+          "tool_call": true,
+          "limit": { "context": 256000, "input": 256000, "output": 64000 },
+        },
+        "grok-4.6-fast": {
+          "name": "Grok 4.6 Fast",
+          "reasoning": true,
+          "temperature": true,
+          "attachment": false,
+          "tool_call": true,
+          "limit": { "context": 256000, "input": 256000, "output": 64000 },
         },
       },
     },
