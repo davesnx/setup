@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Proxy xdg-open to a local Mac browser via an SSH-forwarded Unix socket.
+
+URL="$1"
+SOCKET="$HOME/.opener.sock"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  open "$URL"
+  exit 0
+fi
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [[ -S "$SOCKET" ]]; then
+    if ! printf '%s\n' "$URL" | nc -U "$SOCKET"; then
+      printf 'Error: browser tunnel failed; URL: %s\n' "$URL" >&2
+      exit 1
+    fi
+  else
+    printf 'Error: browser tunnel socket not found at %s; URL: %s\n' "$SOCKET" "$URL" >&2
+    exit 1
+  fi
+else
+  printf 'Unsupported OS for xdg-open proxy: %s\nURL: %s\n' "$OSTYPE" "$URL" >&2
+  exit 1
+fi

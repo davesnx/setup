@@ -63,6 +63,11 @@ export NODE_REPL_MODE='sloppy'
 
 export OPENCODE_ENABLE_EXA=1
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  export BROWSER="xdg-open"
+  export GH_BROWSER="xdg-open"
+fi
+
 # Load the selected OpenCode host profile when it is installed.
 if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
   export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"

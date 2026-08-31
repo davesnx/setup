@@ -1,6 +1,7 @@
 #! /usr/bin/env sh
 
-export DOTFILES_PATH="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
+DOTFILES_PATH="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
+export DOTFILES_PATH
 
 echo "👉 dotfiles path: '$DOTFILES_PATH'"
 
@@ -23,6 +24,26 @@ ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
 
 # Tmux
 ln -s -i "$DOTFILES_PATH/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+
+# SSH
+ssh_config_dir="$HOME/.ssh/config.d"
+ssh_opener_config="$ssh_config_dir/xdg-open.conf"
+mkdir -p "$ssh_config_dir"
+chmod 700 "$HOME/.ssh" "$ssh_config_dir"
+
+if [ -e "$ssh_opener_config" ] && [ ! -L "$ssh_opener_config" ]; then
+  echo "Cannot replace SSH config file: $ssh_opener_config" >&2
+  exit 73
+fi
+ln -sfn "$DOTFILES_PATH/ssh/xdg-open.conf" "$ssh_opener_config"
+
+ssh_config="$HOME/.ssh/config"
+if [ ! -e "$ssh_config" ]; then
+  (umask 077 && : >"$ssh_config")
+fi
+if ! grep -Eq '^[[:space:]]*Include[[:space:]]+(~/.ssh/)?config\.d/\*[[:space:]]*$' "$ssh_config"; then
+  printf '\nInclude config.d/*\n' >>"$ssh_config"
+fi
 
 if [ -f "$DOTFILES_PATH/local/gitconfig" ]; then
   ln -s -i "$DOTFILES_PATH/local/gitconfig" "$HOME/.gitconfig.local"
