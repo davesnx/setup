@@ -12,7 +12,7 @@ alias .....="cd ../../../../.."
 
 # One chars
 alias h="history 1"
-alias c="open $1 -a \"Cursor\""
+alias c="cursor --classic"
 alias z="open $1 -a \"Zed\""
 alias n="npm"
 alias y="yarn"
