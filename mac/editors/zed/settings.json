@@ -224,7 +224,7 @@
     "javascriptreact": ["*.jsx", "*.js"],
     "dotenv": [".env*"],
   },
-  "theme": "Asulito Dark",
+  "theme": "Fosk",
   "toolbar": {
     "quick_actions": false,
     "breadcrumbs": true,

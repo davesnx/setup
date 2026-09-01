@@ -38,8 +38,10 @@ ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application
 ln -sf "$setup_path/mac/editors/vscode/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"
 
 # Zed
+mkdir -p "$HOME/.config/zed/themes"
 ln -sf "$setup_path/mac/editors/zed/settings.json" "$HOME/.config/zed/settings.json"
 ln -sf "$setup_path/mac/editors/zed/keymap.json" "$HOME/.config/zed/keymap.json"
+ln -sf "$setup_path/mac/editors/zed/fosk.json" "$HOME/.config/zed/themes/fosk.json"
 
 # Ghostty
 ln -sf "$setup_path/mac/ghostty/config.conf" "$HOME/.config/ghostty/config"
