@@ -1,0 +1,62 @@
+[
+  {
+    "title": "GitHub Enterprise",
+    "category": "login",
+    "fields": [
+      {
+        "type": "password",
+        "label": "Password",
+        "sensitive": true,
+        "value": "enterprise-secret"
+      }
+    ]
+  },
+  {
+    "title": "GitHub",
+    "category": "login",
+    "fields": [
+      {
+        "type": "username",
+        "label": "Username",
+        "value": "fixture-user"
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "sensitive": true,
+        "value": "github-secret"
+      }
+    ]
+  },
+  {
+    "title": "No Password",
+    "category": "login",
+    "fields": [
+      {
+        "type": "username",
+        "label": "Username",
+        "value": "fixture-user"
+      }
+    ]
+  },
+  {
+    "title": "Duplicate",
+    "category": "login",
+    "fields": [
+      {
+        "type": "password",
+        "value": "first-duplicate-secret"
+      }
+    ]
+  },
+  {
+    "title": "Duplicate",
+    "category": "password",
+    "fields": [
+      {
+        "type": "password",
+        "value": "second-duplicate-secret"
+      }
+    ]
+  }
+]

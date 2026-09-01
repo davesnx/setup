@@ -38,9 +38,6 @@ alias hosts="\${EDITOR} /etc/hosts"
 
 alias quit="exit"
 
-# enpass
-alias enpass="enpass-cli --vault /Users/davesnx/Documents/Enpass/Vaults/primary --sort -pin"
-
 # Re-alias "export" to " export" to remove from history
 alias export=" export"
 

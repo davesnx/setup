@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ ${FAKE_ENPASS_FAILURE:-} == pin-mismatch ]]; then
+  printf 'could not read credentials from store: cipher: message authentication failed\n' >&2
+  exit 1
+fi
+
+command=""
+for argument in "$@"; do
+  case "$argument" in
+    list | show | dryrun)
+      command=$argument
+      break
+      ;;
+  esac
+done
+
+case "$command" in
+  list)
+    cat "$FAKE_ENPASS_FIXTURES/list.json"
+    ;;
+  show)
+    cat "$FAKE_ENPASS_FIXTURES/show.json"
+    ;;
+  dryrun)
+    ;;
+  *)
+    printf 'fake-enpass-cli: unsupported invocation\n' >&2
+    exit 1
+    ;;
+esac

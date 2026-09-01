@@ -10,6 +10,7 @@ brew "gcc"
 brew "git"
 brew "htop" # https://hisham.hm/htop/
 brew "jq"
+brew "enpass-cli"
 brew "make"
 brew "mysql"
 brew "fnm"

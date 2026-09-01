@@ -1,0 +1,30 @@
+[
+  {
+    "title": "GitHub Enterprise",
+    "category": "login"
+  },
+  {
+    "title": "API Token",
+    "category": "password"
+  },
+  {
+    "title": "GitHub",
+    "category": "login"
+  },
+  {
+    "title": "Read me",
+    "category": "note"
+  },
+  {
+    "title": "No Password",
+    "category": "login"
+  },
+  {
+    "title": "Duplicate",
+    "category": "login"
+  },
+  {
+    "title": "Duplicate",
+    "category": "password"
+  }
+]

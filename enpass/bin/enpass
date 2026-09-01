@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly EXIT_USAGE=64
+readonly EXIT_DATA=65
+readonly EXIT_NOT_FOUND=66
+readonly EXIT_UNAVAILABLE=69
+readonly EXIT_SOFTWARE=70
+readonly EXIT_CONFIG=78
+
+readonly upstream=${ENPASS_CLI_BIN:-enpass-cli}
+vault=${ENPASS_VAULT:-"$HOME/Documents/Enpass/Vaults/primary"}
+vault=${vault%/}
+readonly vault
+readonly keychain_service=${ENPASS_KEYCHAIN_SERVICE:-enpass-cli-primary}
+readonly runtime_dir=${TMPDIR:-/tmp}
+readonly vault_name=${vault##*/}
+
+pin=""
+
+usage() {
+  cat <<'EOF'
+Usage:
+  enpass list
+  enpass get TITLE
+
+Commands:
+  list       Print credential titles, one per line
+  get TITLE  Print the password for one exact, case-sensitive title
+EOF
+}
+
+fail() {
+  local code=$1
+  shift
+  printf 'enpass: %s\n' "$*" >&2
+  exit "$code"
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 ||
+    fail "$EXIT_UNAVAILABLE" "required command not found: $1"
+}
+
+load_pin() {
+  local value
+
+  if [[ -n ${ENP_PIN:-} ]]; then
+    printf '%s' "$ENP_PIN"
+    return
+  fi
+
+  if [[ $(uname -s) != Darwin ]]; then
+    printf 'enpass: ENP_PIN must be set outside macOS\n' >&2
+    return "$EXIT_CONFIG"
+  fi
+
+  if ! command -v security >/dev/null 2>&1; then
+    printf 'enpass: macOS security command not found\n' >&2
+    return "$EXIT_UNAVAILABLE"
+  fi
+
+  if ! value=$(security find-generic-password \
+    -a "$USER" \
+    -s "$keychain_service" \
+    -w 2>/dev/null); then
+    printf 'enpass: Keychain item "%s" was not found for account "%s"\n' \
+      "$keychain_service" "$USER" >&2
+    printf 'Run the Keychain setup command in enpass/README.md.\n' >&2
+    return "$EXIT_CONFIG"
+  fi
+
+  printf '%s' "$value"
+}
+
+prepare() {
+  require_command "$upstream"
+  require_command jq
+
+  if [[ ! -r "$vault/vault.enpassdb" ]]; then
+    fail "$EXIT_CONFIG" "vault database not found: $vault/vault.enpassdb"
+  fi
+  if [[ ! -r "$vault/vault.json" ]]; then
+    fail "$EXIT_CONFIG" "vault metadata not found: $vault/vault.json"
+  fi
+
+  pin="$(load_pin)" || exit $?
+}
+
+run_upstream() {
+  local -a args=(-vault "$vault" -pin -nonInteractive)
+
+  if [[ -n ${ENPASS_KEYFILE:-} ]]; then
+    args+=(-keyfile "$ENPASS_KEYFILE")
+  fi
+
+  ENP_PIN="$pin" "$upstream" "${args[@]}" "$@"
+}
+
+explain_upstream_failure() {
+  local output=$1
+
+  case "$output" in
+    *"message authentication failed"*)
+      printf '%s\n' \
+        'enpass: the Keychain PIN does not match the cached Enpass CLI unlock key' >&2
+      printf 'Delete %s/enpasscli-%s, then follow enpass/README.md.\n' \
+        "${runtime_dir%/}" "$vault_name" >&2
+      ;;
+    *"empty vault password"*)
+      printf '%s\n' \
+        'enpass: the Enpass CLI unlock cache is not initialized' \
+        'Run the unlock-cache setup command in enpass/README.md from an interactive terminal.' >&2
+      ;;
+    *"invalid password or unsupported database version"*)
+      printf '%s\n' \
+        'enpass: the vault could not be unlocked' \
+        'Recreate the unlock cache with the correct Enpass master password.' >&2
+      ;;
+    *)
+      printf 'enpass: enpass-cli could not read the vault\n' >&2
+      if [[ ${ENPASS_DEBUG:-} == 1 ]]; then
+        printf '%s\n' "$output" >&2
+      else
+        printf 'Set ENPASS_DEBUG=1 to include the upstream error.\n' >&2
+      fi
+      ;;
+  esac
+}
+
+read_entries() {
+  local output
+
+  if ! output=$(run_upstream -json list 2>&1); then
+    explain_upstream_failure "$output"
+    return "$EXIT_SOFTWARE"
+  fi
+
+  if ! jq -e 'type == "array"' >/dev/null 2>&1 <<<"$output"; then
+    printf 'enpass: enpass-cli returned invalid JSON\n' >&2
+    return "$EXIT_SOFTWARE"
+  fi
+
+  printf '%s\n' "$output"
+}
+
+list_titles() {
+  local entries
+  entries="$(read_entries)" || exit $?
+
+  jq -r '
+    [
+      .[]
+      | select(
+          ((.category // "") | ascii_downcase) as $category
+          | $category == "login" or $category == "password"
+        )
+      | .title
+    ]
+    | sort_by(ascii_downcase)
+    | .[]
+  ' <<<"$entries"
+}
+
+print_suggestions() {
+  local entries=$1
+  local title=$2
+  local suggestions
+
+  suggestions=$(jq -r --arg title "$title" '
+    ($title | ascii_downcase) as $query
+    | [
+        .[]
+        | select(
+            ((.category // "") | ascii_downcase) as $category
+            | $category == "login" or $category == "password"
+          )
+        | .title
+        | select((ascii_downcase) == $query)
+      ]
+    | unique
+    | .[]
+  ' <<<"$entries")
+
+  if [[ -z $suggestions ]]; then
+    suggestions=$(jq -r --arg title "$title" '
+      ($title | ascii_downcase) as $query
+      | [
+          .[]
+          | select(
+              ((.category // "") | ascii_downcase) as $category
+              | $category == "login" or $category == "password"
+            )
+          | .title
+          | select((ascii_downcase) | contains($query))
+        ]
+      | unique
+      | sort_by(ascii_downcase)
+      | .[:5]
+      | .[]
+    ' <<<"$entries")
+  fi
+
+  if [[ -n $suggestions ]]; then
+    printf 'Close matches:\n' >&2
+    while IFS= read -r suggestion; do
+      printf '  %s\n' "$suggestion" >&2
+    done <<<"$suggestions"
+  else
+    printf 'Run "enpass list" to see valid titles.\n' >&2
+  fi
+}
+
+get_password() {
+  local title=$1
+  local entries
+  local matches
+  local sensitive_entries
+  local password
+
+  entries="$(read_entries)" || exit $?
+  matches=$(jq -r --arg title "$title" '
+    [
+      .[]
+      | select(.title == $title)
+      | select(
+          ((.category // "") | ascii_downcase) as $category
+          | $category == "login" or $category == "password"
+        )
+    ]
+    | length
+  ' <<<"$entries")
+
+  if [[ $matches -eq 0 ]]; then
+    printf 'enpass: no credential has the exact title "%s"\n' "$title" >&2
+    print_suggestions "$entries" "$title"
+    exit "$EXIT_NOT_FOUND"
+  fi
+
+  if [[ $matches -gt 1 ]]; then
+    printf 'enpass: %s credentials have the exact title "%s"\n' \
+      "$matches" "$title" >&2
+    printf 'Rename the duplicate entries in Enpass before using "get".\n' >&2
+    exit "$EXIT_DATA"
+  fi
+
+  if ! sensitive_entries=$(run_upstream -json -detailed show "$title" 2>/dev/null); then
+    fail "$EXIT_SOFTWARE" "could not read the password for \"$title\""
+  fi
+
+  if ! password=$(jq -er --arg title "$title" '
+    (
+      [
+        .[]
+        | select(.title == $title)
+        | select(
+            ((.category // "") | ascii_downcase) as $category
+            | $category == "login" or $category == "password"
+          )
+      ][0].fields // []
+    )
+    | [
+        .[]
+        | select(.type == "password")
+        | (.value // empty)
+        | select(length > 0)
+      ][0] // empty
+  ' <<<"$sensitive_entries" 2>/dev/null); then
+    fail "$EXIT_DATA" "credential \"$title\" has no non-empty password field"
+  fi
+
+  printf '%s\n' "$password"
+}
+
+main() {
+  local command=${1:-}
+
+  case "$command" in
+    help | --help | -h)
+      usage
+      ;;
+    list)
+      if [[ $# -ne 1 ]]; then
+        usage >&2
+        exit "$EXIT_USAGE"
+      fi
+      prepare
+      list_titles
+      ;;
+    get)
+      shift
+      if [[ $# -eq 0 ]]; then
+        usage >&2
+        printf 'enpass: get requires an exact title\n' >&2
+        exit "$EXIT_USAGE"
+      fi
+      prepare
+      get_password "$*"
+      ;;
+    "")
+      usage >&2
+      exit "$EXIT_USAGE"
+      ;;
+    *)
+      usage >&2
+      printf 'enpass: unknown command: %s\n' "$command" >&2
+      exit "$EXIT_USAGE"
+      ;;
+  esac
+}
+
+main "$@"
