@@ -1,8 +1,5 @@
 #! /bin/zsh
 
-# DOTFILES_PATH is set in .zprofile, but fallback for non-login shells.
-export DOTFILES_PATH="${DOTFILES_PATH:-${${:-$HOME/.zshrc}:A:h:h:h}}"
-
 # (Instant prompt) Must be at the very top before any other output
 [[ -r "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh" ]] && source "$DOTFILES_PATH/terminal/zsh/instant-prompt.zsh"
 
@@ -70,7 +67,7 @@ fi
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
-fpath=(/${ZDOTDIR:-${DOTFILES_PATH}}/terminal/zsh/themes $fpath)
+fpath=("$DOTFILES_PATH/terminal/zsh/themes" $fpath)
 autoload -Uz promptinit && promptinit
 
 prompt davesnx

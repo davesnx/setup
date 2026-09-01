@@ -1,7 +1,5 @@
 #! /bin/zsh
 
-export DOTFILES_PATH="${DOTFILES_PATH:-${${:-$HOME/.zprofile}:A:h:h:h}}"
-
 # Language toolchain paths
 export PYTHON_PATH='/usr/local/opt/python'
 export RUBY_PATH='/usr/local/opt/ruby'

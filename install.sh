@@ -1,29 +1,29 @@
 #! /usr/bin/env sh
 
-DOTFILES_PATH="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
-export DOTFILES_PATH
+setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
 
-echo "👉 dotfiles path: '$DOTFILES_PATH'"
+echo "👉 dotfiles path: '$setup_path'"
 
 echo ""
 echo "Installing custom packages"
 echo ""
 
-sh "$DOTFILES_PATH/mac/install.sh"
+sh "$setup_path/mac/install.sh" "$setup_path"
 
 # Zsh
-ln -s -i "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
-ln -s -i "$DOTFILES_PATH/terminal/zsh/.zprofile" "$HOME/.zprofile"
-ln -s -i "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
-ln -s -i "$DOTFILES_PATH/terminal/zsh/.zlogin" "$HOME/.zlogin"
+ln -s -i "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
+ln -s -i "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"
+ln -s -i "$setup_path/terminal/zsh/.zprofile" "$HOME/.zprofile"
+ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
+ln -s -i "$setup_path/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
 # Git
-ln -s -i "$DOTFILES_PATH/git/.gitconfig" "$HOME/.gitconfig"
-ln -s -i "$DOTFILES_PATH/git/.gitignore_global" "$HOME/.gitignore_global"
-ln -s -i "$DOTFILES_PATH/git/.gitattributes" "$HOME/.gitattributes"
+ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
+ln -s -i "$setup_path/git/.gitignore_global" "$HOME/.gitignore_global"
+ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 
 # Tmux
-ln -s -i "$DOTFILES_PATH/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
 
 # SSH
 ssh_config_dir="$HOME/.ssh/config.d"
@@ -35,7 +35,7 @@ if [ -e "$ssh_opener_config" ] && [ ! -L "$ssh_opener_config" ]; then
   echo "Cannot replace SSH config file: $ssh_opener_config" >&2
   exit 73
 fi
-ln -sfn "$DOTFILES_PATH/ssh/xdg-open.conf" "$ssh_opener_config"
+ln -sfn "$setup_path/ssh/xdg-open.conf" "$ssh_opener_config"
 
 ssh_config="$HOME/.ssh/config"
 if [ ! -e "$ssh_config" ]; then
@@ -45,12 +45,14 @@ if ! grep -Eq '^[[:space:]]*Include[[:space:]]+(~/.ssh/)?config\.d/\*[[:space:]]
   printf '\nInclude config.d/*\n' >>"$ssh_config"
 fi
 
-if [ -f "$DOTFILES_PATH/local/gitconfig" ]; then
-  ln -s -i "$DOTFILES_PATH/local/gitconfig" "$HOME/.gitconfig.local"
+if [ -f "$setup_path/local/gitconfig" ]; then
+  ln -s -i "$setup_path/local/gitconfig" "$HOME/.gitconfig.local"
 fi
 
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"
 
-# Install zimfw
-curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+# Install zimfw without generating shell configuration.
+mkdir -p "$HOME/.zim"
+curl -fsSL -o "$HOME/.zim/zimfw.zsh" https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+zsh -c 'source "$ZIM_HOME/zimfw.zsh" init -q'
