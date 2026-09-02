@@ -15,8 +15,12 @@
       "enabled": true,
       "command": [
         "npx",
-        "chrome-devtools-mcp@1.2.0",
+        "-y",
+        "chrome-devtools-mcp@1.8.0",
         "--browser-url=http://127.0.0.1:9222",
+        "--no-usage-statistics",
+        "--no-performance-crux",
+        "--redact-network-headers",
       ],
     },
     "grafana": {
@@ -29,7 +33,7 @@
       "enabled": true,
       "command": ["npx", "-y", "playwriter@latest"],
       "environment": {
-        "PLAYWRITER_HOST": "http://127.0.0.1:19989",
+        "PLAYWRITER_DIRECT": "1",
       },
     },
   },

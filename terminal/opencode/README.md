@@ -24,6 +24,15 @@ The global `AGENTS.md` file is also linked to both
 The shell configuration exports `OPENCODE_CONFIG` when the selected
 `host.jsonc` link exists. Start a new shell after installation.
 
+## Browser tools
+
+The local profile starts Chrome DevTools MCP with a persistent Brave profile.
+Playwriter uses its standard local relay on `127.0.0.1:19988` and the Brave
+extension.
+
+The SSH profile connects Chrome DevTools and Playwriter directly to Chromium's
+CDP endpoint on `127.0.0.1:9222` inside the remote host.
+
 ## Eval harness
 
 OpenCode agents run `~/.config/opencode/eval-harness` directly when an eval
