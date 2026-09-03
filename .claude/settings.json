@@ -15,6 +15,7 @@
   "respectGitignore": true,
   "cleanupPeriodDays": 365,
   "preferredNotifChannel": "terminal_bell",
+  "teammateMode": "in-process",
   "attribution": {
     "commit": "",
     "pr": ""
