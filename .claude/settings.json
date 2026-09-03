@@ -19,6 +19,13 @@
     "commit": "",
     "pr": ""
   },
+  "env": {
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "ENABLE_TOOL_SEARCH": "true",
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+    "USE_BUILTIN_RIPGREP": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(git diff:*)",
