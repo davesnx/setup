@@ -54,6 +54,14 @@ mkdir -p "$HOME/.claude"
 ln -s -i "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 ln -s -i "$setup_path/terminal/claude/settings.local.json" "$HOME/.claude/settings.local.json"
 ln -s -i "$setup_path/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
+# Slash commands live in the repo; ~/.claude/commands must be a link to that
+# directory, not a real directory, or Claude Code would miss new commands.
+claude_commands="$HOME/.claude/commands"
+if [ -e "$claude_commands" ] && [ ! -L "$claude_commands" ]; then
+  echo "Cannot replace Claude Code commands directory: $claude_commands" >&2
+  exit 73
+fi
+ln -sfn "$setup_path/terminal/claude/commands" "$claude_commands"
 # Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
 # stand-in only where nothing is there yet.
 mkdir -p "$HOME/.claude/hooks"
