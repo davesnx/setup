@@ -65,6 +65,22 @@ link_path "$SKILLS_HOME" "$CLAUDE_HOME/skills" "$BACKUP_ROOT/claude-skills"
 
 link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc" "$BACKUP_ROOT/opencode/host.jsonc"
 
+# Claude Code keeps user-scope MCP servers in ~/.claude.json, so register the
+# Chrome DevTools server with the same browser endpoint the OpenCode profile uses.
+if command -v claude >/dev/null 2>&1; then
+  claude mcp remove -s user chrome-devtools >/dev/null 2>&1 || true
+  if [ "$PROFILE" = ssh ]; then
+    claude mcp add -s user chrome-devtools -- npx -y chrome-devtools-mcp@1.8.0 \
+      --browser-url=http://127.0.0.1:9222 \
+      --no-usage-statistics --no-performance-crux --redact-network-headers
+  else
+    claude mcp add -s user chrome-devtools -- npx -y chrome-devtools-mcp@1.8.0 \
+      "--executable-path=/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+      "--user-data-dir=$HOME/.cache/chrome-devtools-mcp/brave-profile" \
+      --no-usage-statistics --no-performance-crux --redact-network-headers
+  fi
+fi
+
 PLUGIN_HOME="$CONFIG_HOME/plugins/opencode-notify"
 if [ ! -e "$PLUGIN_HOME" ] && command -v git >/dev/null 2>&1; then
   mkdir -p "$CONFIG_HOME/plugins"
