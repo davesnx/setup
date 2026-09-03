@@ -4,13 +4,13 @@
     {
       "id": 1,
       "prompt": "I added a new skill on my Mac. Sync skills to nspawn, but leave my unrelated modified Zed settings alone.",
-      "expected_output": "Uses the local setup checkout, stages and commits only skills/, pushes normally, checks that nspawn is on the same branch with a clean checkout, and pulls with --ff-only.",
+      "expected_output": "Uses the local setup checkout, stages and commits only the skill directories (skills/ and terminal/opencode/skills/), pushes normally, checks that nspawn is on the same branch with a clean checkout, and pulls with --ff-only.",
       "files": []
     },
     {
       "id": 2,
       "prompt": "I'm working in /home/me/setup inside nspawn and changed an OpenCode skill. Sync skills.",
-      "expected_output": "Uses nspawn mode, validates and commits only skills/, pushes normally, and does not SSH to another machine or pull after pushing.",
+      "expected_output": "Uses nspawn mode, validates and commits only the skill directories, pushes normally, and does not SSH to another machine or pull after pushing.",
       "files": []
     },
     {
@@ -22,7 +22,7 @@
     {
       "id": 4,
       "prompt": "Sync skills from my Mac. I already staged a change to mac/editors/zed/settings.json for later.",
-      "expected_output": "Stops before staging or committing because the index contains a path outside skills/. It does not unstage or commit the existing Zed change.",
+      "expected_output": "Stops before staging or committing because the index contains a path outside the skill directories. It does not unstage or commit the existing Zed change.",
       "files": []
     },
     {

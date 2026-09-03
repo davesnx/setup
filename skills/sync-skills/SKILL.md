@@ -6,16 +6,17 @@ compatibility: Requires Git and an SSH host named nspawn. Uses /Users/davesnx/Co
 
 # Sync Skills
 
-Synchronize the repository-level `skills/` directory through Git. A sync
-request authorizes the required commit, push, SSH connection, and pull, but no
+Synchronize the skill directories through Git: `skills/` (shared by every
+harness) and `terminal/opencode/skills/` (OpenCode-only skills). Below, "the
+skill directories" means exactly those two paths. A sync request authorizes the required commit, push, SSH connection, and pull, but no
 other repository changes.
 
 ## Safety Rules
 
 - Load the `github` skill before the first commit and follow its commit checks.
-- Stage and commit only paths under `skills/`.
-- Leave unstaged changes outside `skills/` unchanged.
-- Stop if the index already contains a path outside `skills/`; do not unstage
+- Stage and commit only paths under the skill directories.
+- Leave unstaged changes outside the skill directories unchanged.
+- Stop if the index already contains a path outside the skill directories; do not unstage
   someone else's work to make the sync continue.
 - Stop on an unresolved conflict, failed check, failed push, dirty nspawn
   checkout, branch mismatch, or failed pull.
@@ -40,41 +41,43 @@ repository.
 ## 2. Inspect Before Staging
 
 Inspect `git status --short --branch`, the unstaged and staged diffs under
-`skills/`, the staged path list for the whole repository, and
+the skill directories, the staged path list for the whole repository, and
 `git log --oneline -10`.
 
 Stop if Git reports an unresolved conflict. Stop if any already-staged path is
-outside `skills/`. Unstaged non-skill changes are allowed because the sync does
-not stage them. Inspect every outgoing commit in `origin/main..HEAD` and stop if
-any of those commits contains a path outside `skills/`; a skills sync must not
+outside the skill directories. Unstaged non-skill changes are allowed because
+the sync does not stage them. Inspect every outgoing commit in
+`origin/main..HEAD` and stop if any of those commits contains a path outside the
+skill directories; a skills sync must not
 publish unrelated local commits.
 
 ## 3. Validate And Commit Skill Changes
 
-If `skills/` has changes:
+If the skill directories have changes:
 
-1. Stage only `skills/` with `git add -- skills`.
-2. Inspect the staged diff and confirm that every staged path is under
-   `skills/`.
+1. Stage only the skill directories with
+   `git add -- skills terminal/opencode/skills`.
+2. Inspect the staged diff and confirm that every staged path is under the
+   skill directories.
 3. Determine and run the repository-required format, lint, build, and relevant
    test commands for the staged files. Use check-only modes when available. If
-   a required formatter writes files, limit it to `skills/`, then inspect the
+   a required formatter writes files, limit it to the skill directories, then inspect the
    full worktree and staged diff again. Also run `opencode debug skill` when the `opencode` command is available, and
    `git diff --check --cached`.
 4. Commit with a concise message that describes the staged skill changes.
 5. Inspect the created commit's path list and confirm that every path is under
-   `skills/`. Inspect status after the commit and compare it with the pre-commit
+   the skill directories. Inspect status after the commit and compare it with the pre-commit
    status. If a hook added a non-skill path to the commit, changed unrelated
    files, or left required checks stale against the final tree, stop and report
    it.
 
-If `skills/` has no changes, do not create an empty commit. Continue so an
+If the skill directories have no changes, do not create an empty commit. Continue so an
 existing local commit can still be pushed and, in local mode, pulled by nspawn.
 
 ## 4. Push
 
 Recheck every commit in `origin/main..HEAD` and confirm that each changed path
-is under `skills/`. Then push the explicit non-force refspec
+is under the skill directories. Then push the explicit non-force refspec
 `HEAD:refs/heads/main` to `origin`. Do not add an upstream, change branches, or
 force the push without explicit user approval.
 
