@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eu
+
+exec /usr/bin/ssh \
+  -o BatchMode=yes \
+  -o ConnectTimeout=10 \
+  nspawn \
+  "tmux has-session -t claude-for-remote-control 2>/dev/null || exec tmux new-session -d -s claude-for-remote-control -c /home/me 'exec /home/me/.local/bin/claude --remote-control --permission-mode auto'"
