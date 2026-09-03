@@ -79,8 +79,6 @@
       "WebSearch"
     ],
     "deny": [
-      "Read(~/.ssh/**)",
-      "Read(~/.aws/**)",
       "Bash(rm -rf:*)",
       "Bash(rm -fr:*)",
       "Bash(shred:*)",
