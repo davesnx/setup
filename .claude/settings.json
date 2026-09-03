@@ -1,18 +1,5 @@
 {
   "model": "fable[1m]",
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "dcg"
-          }
-        ]
-      }
-    ]
-  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
