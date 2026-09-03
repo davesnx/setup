@@ -51,14 +51,14 @@ ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 
 # Claude Code
 mkdir -p "$HOME/.claude"
-ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
-ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
-ln -s -i "$setup_path/.claude/statusline.ts" "$HOME/.claude/statusline.ts"
+ln -s -i "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
+ln -s -i "$setup_path/terminal/claude/settings.local.json" "$HOME/.claude/settings.local.json"
+ln -s -i "$setup_path/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
 # Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
 # stand-in only where nothing is there yet.
 mkdir -p "$HOME/.claude/hooks"
 if [ ! -e "$HOME/.claude/hooks/dcg" ]; then
-  ln -s "$setup_path/.claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
+  ln -s "$setup_path/terminal/claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
 fi
 
 # Tmux
