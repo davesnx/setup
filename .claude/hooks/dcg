@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Stand-in for the Puppet-managed dcg wrapper on hosts that have no dcg.
+#
+# The shared settings.json registers "~/.claude/hooks/dcg" as the Bash
+# PreToolUse hook. On nspawn, Puppet owns that path and installs its own
+# wrapper; the installer leaves it alone. Elsewhere the installer links this
+# file there, so the same settings.json works on every machine: dcg's
+# self-heal only checks that a hook whose basename is "dcg" is registered.
+if command -v dcg >/dev/null 2>&1; then
+  exec dcg
+fi
+exit 0

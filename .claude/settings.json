@@ -86,5 +86,18 @@
       "Bash(*.ssh/id_*)",
       "Bash(*.aws/credentials*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/dcg"
+          }
+        ]
+      }
+    ]
   }
 }
