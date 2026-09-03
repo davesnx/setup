@@ -25,7 +25,11 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "ENABLE_TOOL_SEARCH": "true",
     "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
-    "USE_BUILTIN_RIPGREP": "1"
+    "USE_BUILTIN_RIPGREP": "1",
+    "CLAUDE_CODE_GLOB_NO_IGNORE": "false",
+    "BASH_MAX_TIMEOUT_MS": "1800000",
+    "BASH_MAX_OUTPUT_LENGTH": "60000",
+    "DISABLE_ERROR_REPORTING": "1"
   },
   "permissions": {
     "allow": [
@@ -61,6 +65,9 @@
       "Bash(grep:*)",
       "Bash(sed -n:*)",
       "Bash(command -v:*)",
+      "Bash(shellcheck:*)",
+      "Bash(jq:*)",
+      "Bash(npm run type-check)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:ocaml.org)",
