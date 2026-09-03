@@ -16,10 +16,6 @@ ln -s -i "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
 ln -s -i "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$setup_path/terminal/zsh/.zprofile" "$HOME/.zprofile"
 ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
-# .zlogin was removed from the repository; drop a stale link to it.
-if [ -L "$HOME/.zlogin" ] && [ ! -e "$HOME/.zlogin" ]; then
-  rm "$HOME/.zlogin"
-fi
 
 # Git
 ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
