@@ -6,4 +6,4 @@
 - Vendored: August 22, 2026
 - License: MIT
 
-`SKILL.md` is vendored unchanged from upstream.
+`SKILL.md` was vendored from upstream. Local changes (2026-09-03): section 2 and the launch step were rewritten for harness portability. The upstream text assumed Warp's `run_agents` tool and a fixed multi-vendor model roster; the local version derives diversity from angles and uses per-harness model selection only when available.

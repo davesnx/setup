@@ -1,7 +1,8 @@
 ---
 name: writing-shape
-description: "Writing, exploit: shape raw material into an article, paragraph by paragraph."
+description: "Shape a fixed pile of raw material (notes, transcripts, drafts) into an article, paragraph by paragraph, without adding new claims. Companion to blog-post and unslop."
 disable-model-invocation: true
+argument-hint: "<raw-material.md> [article path]"
 ---
 
 <what-to-do>

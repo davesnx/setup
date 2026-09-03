@@ -6,7 +6,7 @@ description: "GitHub and Git branch work: create validated commits, inspect PR s
 # GitHub
 
 Raw `gh` first when you know the command; the scripts replace only the flows
-agents repeatedly get wrong. Scripts run TS directly (node ≥ 23.6), no deps.
+agents repeatedly get wrong. Scripts run TS directly (node ≥ 22.18, or ≥ 23.6 on older lines), no deps.
 
 ## Modes
 
