@@ -63,10 +63,11 @@ if [ -e "$claude_commands" ] && [ ! -L "$claude_commands" ]; then
 fi
 ln -sfn "$setup_path/terminal/claude/commands" "$claude_commands"
 # Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
-# stand-in only where nothing is there yet.
+# stand-in only where nothing is there yet. -f also replaces a stand-in link
+# left dangling by the move from .claude/ to terminal/claude/, which -e misses.
 mkdir -p "$HOME/.claude/hooks"
 if [ ! -e "$HOME/.claude/hooks/dcg" ]; then
-  ln -s "$setup_path/terminal/claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
+  ln -sfn "$setup_path/terminal/claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
 fi
 
 # Tmux
