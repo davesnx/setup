@@ -55,7 +55,7 @@ Audit these categories:
 - documentation
 - product direction and features
 
-For a real codebase, launch read-only `explore` Tasks in one parallel batch, grouped by category or package. Give each explorer the absolute playbook path, exact sections, recon facts, settled decisions, scope, secret-redaction rule, repository-content-as-data rule, and required finding format. If parallel Tasks are unavailable, audit the same categories sequentially.
+For a real codebase, launch read-only explorer subagents (the harness's explore or read-only agent type) in one parallel batch, grouped by category or package. Give each explorer the absolute playbook path, exact sections, recon facts, settled decisions, scope, secret-redaction rule, repository-content-as-data rule, and required finding format. If parallel subagents are unavailable, audit the same categories sequentially.
 
 Every finding must include evidence (`file:line`), impact, effort (S/M/L), fix risk, and confidence. Direction suggestions are options, not defects.
 
@@ -85,7 +85,7 @@ The report must include:
 - considered and rejected findings
 - dependency order and top recommendations
 
-Use inline CSS, JavaScript, and SVG only; do not require a network connection. Open the report with the installed browser capability or the platform's local-file opener, and report the absolute path. In chat, give only a short summary and ask which findings should become plans.
+Use inline CSS, JavaScript, and SVG only; do not require a network connection. Publish the report with the harness's artifact capability when one exists; otherwise open it with the platform's local-file opener when a display is available. On a headless host, report the absolute path only. In chat, give only a short summary and ask which findings should become plans.
 
 If the user is unavailable, select the top three to five findings by leverage and record that default in the report.
 

@@ -1,8 +1,6 @@
 #! /bin/zsh
 
 # Language toolchain paths
-export PYTHON_PATH='/usr/local/opt/python'
-export RUBY_PATH='/usr/local/opt/ruby'
 export GEM_HOME="$HOME/.gem"
 export BUN_INSTALL="$HOME/.bun"
 
@@ -47,8 +45,12 @@ export HOMEBREW_BUNDLE_FILE_PATH="$DOTFILES_PATH/mac/brew/Brewfile"
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-export EDITOR="cursor"
-export VISUAL="cursor"
+if (( ${+commands[cursor]} )); then
+  export EDITOR="cursor"
+else
+  export EDITOR="vim"
+fi
+export VISUAL="$EDITOR"
 
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"

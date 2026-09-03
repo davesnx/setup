@@ -1,12 +1,13 @@
 ---
 name: eli5
 description: Create a self-contained visual HTML explanation with concise diagrams and code-shape sketches. Use ONLY when the user explicitly asks to use the eli5 skill.
+disable-model-invocation: true
+argument-hint: "[topic]"
 ---
 
 - Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear
 - Explain like I'm someone who knows nothing about this topic, using a HTML artifact with big pictures and few words
 - Show the core mental model
-- If
 
 ### Kinds of blocks or examples
 
@@ -122,7 +123,7 @@ function expandSkill(command: string): string {
 - For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file — a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then open it for the user:
 
 ```
-Bash(open path/to/show-me-{description}.html)
+open eli5-<topic>.html    # xdg-open on Linux; or publish it with the harness's artifact tool when one exists
 ```
 
 ## Build one HTML file
@@ -146,7 +147,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory "/absolute/path/to/outp
 
 Run the server in a way that does not block the remaining work. Record its process ID or use the harness process controls so it can be stopped later. Do not expose the server to the local network. Do not deploy the artifact unless the user asks.
 
-Open the exact page URL, for example `http://127.0.0.1:8000/topic-eli5.html`.
+Open the exact page URL, for example `http://127.0.0.1:8000/eli5-<topic>.html`.
 
 ## Return to the user
 

@@ -67,7 +67,9 @@ the commit without bypassing repository hooks.
 
 6. **Draft the commit message**:
 
-   - Write a single-line commit message (unless the repo uses multi-line messages).
+   - Write a single-line subject (unless the repo uses multi-line messages). Add
+     any trailer the harness requires (for example a `Co-Authored-By:` line)
+     with a second `-m`; a trailer does not make it a multi-line message.
    - Follow the exact style, casing, and verb tense of previous commits.
    - Focus on the purpose/effect of the changes, not a mechanical list of files.
    - Keep it concise: aim for under 72 characters.
@@ -100,7 +102,9 @@ the commit without bypassing repository hooks.
 10. **Create the commit**:
 
    ```bash
-   git commit -m "<message>"
+   git commit -m "<subject>"
+   # with a harness-required trailer:
+   git commit -m "<subject>" -m "<trailer>"
    ```
 
    Then verify:

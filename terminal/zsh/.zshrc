@@ -86,8 +86,8 @@ source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
 source "$DOTFILES_PATH/terminal/_aliases/git.sh"
 source "$DOTFILES_PATH/terminal/_aliases/func.sh"
 
-# Restore SSH identities after a restart without blocking shell startup.
-if ! ssh-add -l &> /dev/null; then
+# Restore SSH identities after a restart without blocking shell startup (macOS keychain).
+if [[ "$OSTYPE" == darwin* ]] && ! ssh-add -l &> /dev/null; then
   {
     ssh-add --apple-use-keychain ~/.ssh/id     &> /dev/null
     ssh-add --apple-use-keychain ~/.ssh/id_rsa &> /dev/null
@@ -150,7 +150,6 @@ if command -v fnm &>/dev/null; then
   export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
   export FNM_COREPACK_ENABLED="false"
   export FNM_RESOLVE_ENGINES="true"
-  export FNM_ARCH="arm64"
   zf_ln -s "$FNM_DIR/aliases/default" "$FNM_MULTISHELL_PATH"
   export PATH="$FNM_MULTISHELL_PATH/bin:$PATH"
   rehash

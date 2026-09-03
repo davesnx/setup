@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -eu
+
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <setup-path>" >&2
   exit 64
@@ -12,12 +14,63 @@ if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
   exit 66
 fi
 
-# Install brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+if [ "$(uname -s)" != Darwin ]; then
+  echo "This installer supports macOS only." >&2
+  exit 69
+fi
+
+if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
+  echo "HOME must name an existing directory." >&2
+  exit 69
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required." >&2
+  exit 69
+fi
+
+if [ ! -x /bin/bash ]; then
+  echo "/bin/bash is required." >&2
+  exit 69
+fi
+
+find_brew() {
+  brew_path=$(command -v brew 2>/dev/null || true)
+  case "$brew_path" in
+    /*)
+      if [ -x "$brew_path" ]; then
+        return 0
+      fi
+      ;;
+  esac
+
+  for brew_path in ${BREW_SEARCH_PATHS:-/opt/homebrew/bin/brew /usr/local/bin/brew}; do
+    if [ -x "$brew_path" ]; then
+      return 0
+    fi
+  done
+
+  brew_path=
+  return 1
+}
+
+if ! find_brew; then
+  homebrew_installer=$(mktemp "${TMPDIR:-/tmp}/homebrew-install.XXXXXX")
+  trap 'rm -f "$homebrew_installer"' EXIT HUP INT TERM
+  curl -fsSL -o "$homebrew_installer" https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+  /bin/bash "$homebrew_installer"
+  rm -f "$homebrew_installer"
+  trap - EXIT HUP INT TERM
+
+  if ! find_brew; then
+    echo "Homebrew installation completed, but brew was not found." >&2
+    exit 69
+  fi
+fi
 
 # All apps (This line is 2 times because there are dependencies between brew cask and brew)
-brew bundle --file="$setup_path/mac/brew/Brewfile"
-brew bundle --file="$setup_path/mac/brew/Brewfile"
+"$brew_path" bundle --file="$setup_path/mac/brew/Brewfile"
+"$brew_path" bundle --file="$setup_path/mac/brew/Brewfile"
 
 # GPG
 mkdir -p "$HOME/.gnupg"
@@ -25,9 +78,6 @@ ln -s -i "$setup_path/mac/gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
 
 # Remove bash last login
 touch "$HOME/.hushlogin"
-
-# Correct paths (so, we handle all with $PATH)
-sudo truncate -s 0 /etc/paths
 
 # VS Code
 ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
