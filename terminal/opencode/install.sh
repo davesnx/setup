@@ -59,6 +59,7 @@ for name in agents commands skills themes; do
 done
 
 link_path "$ROOT/AGENTS.md" "$AGENTS_HOME/AGENTS.md" "$BACKUP_ROOT/agents-AGENTS.md"
+link_path "$ROOT/AGENTS.md" "$CLAUDE_HOME/CLAUDE.md" "$BACKUP_ROOT/claude-CLAUDE.md"
 link_path "$SKILLS_HOME" "$AGENTS_HOME/skills" "$BACKUP_ROOT/agents-skills"
 link_path "$SKILLS_HOME" "$CLAUDE_HOME/skills" "$BACKUP_ROOT/claude-skills"
 

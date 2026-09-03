@@ -4,11 +4,6 @@ set -eu
 
 setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
 
-if [ "$(uname -s)" != Darwin ]; then
-  echo "This installer supports macOS only." >&2
-  exit 69
-fi
-
 if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
   echo "Invalid setup path: $setup_path" >&2
   exit 66
@@ -36,18 +31,18 @@ zsh_path=$(command -v zsh 2>/dev/null) || {
 
 echo "👉 dotfiles path: '$setup_path'"
 
-echo ""
-echo "Installing custom packages"
-echo ""
-
-sh "$setup_path/mac/install.sh" "$setup_path"
+if [ "$(uname -s)" = Darwin ]; then
+  echo ""
+  echo "Installing custom packages"
+  echo ""
+  sh "$setup_path/mac/install.sh" "$setup_path"
+fi
 
 # Zsh
 ln -s -i "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
 ln -s -i "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$setup_path/terminal/zsh/.zprofile" "$HOME/.zprofile"
 ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
-ln -s -i "$setup_path/terminal/zsh/.zlogin" "$HOME/.zlogin"
 
 # Git
 ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
@@ -59,10 +54,13 @@ mkdir -p "$HOME/.claude"
 ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
 ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
 ln -s -i "$setup_path/.claude/statusline.ts" "$HOME/.claude/statusline.ts"
-ln -s -i "$setup_path/skills" "$HOME/.claude/skills"
 
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+
+# htop
+mkdir -p "$HOME/.config/htop"
+ln -s -i "$setup_path/terminal/htop/htoprc" "$HOME/.config/htop/htoprc"
 
 # SSH
 ssh_config_dir="$HOME/.ssh/config.d"
@@ -90,6 +88,9 @@ fi
 
 # Change default terminal to ZSH
 chsh -s "$zsh_path"
+
+# OpenCode, Claude Code, and shared agent skills (profile auto-detected).
+sh "$setup_path/terminal/opencode/install.sh"
 
 # Install zimfw without generating shell configuration.
 mkdir -p "$HOME/.zim"
