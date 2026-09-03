@@ -89,13 +89,11 @@ Do not proceed until you have reproduced **and** minimised.
 
 Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
 
-Each hypothesis must be **falsifiable**: state the prediction it makes.
+Each hypothesis must be **falsifiable** — state the prediction it makes, or discard it as a vibe.
 
 > Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
 
-If you cannot state the prediction, the hypothesis is a vibe — discard or sharpen it.
-
-**Show the ranked list to the user before testing.** They often have domain knowledge that re-ranks instantly ("we just deployed a change to #3"), or know hypotheses they've already ruled out. Cheap checkpoint, big time saver. Don't block on it — proceed with your ranking if the user is AFK.
+**Show the ranked list to the user before testing.** They often have domain knowledge that re-ranks instantly ("we just deployed a change to #3"), or know hypotheses they've already ruled out. Don't block on it — proceed with your ranking if the user is AFK.
 
 ## Phase 4 — Instrument
 
@@ -107,7 +105,7 @@ Tool preference:
 2. **Targeted logs** at the boundaries that distinguish hypotheses.
 3. Never "log everything and grep".
 
-**Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
+**Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`, so cleanup at the end is a single grep.
 
 **Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
 
@@ -117,7 +115,7 @@ Write the regression test **before the fix** — but only if there is a **correc
 
 A correct seam is one where the test exercises the **real bug pattern** as it occurs at the call site. If the only available seam is too shallow (single-caller test when the bug needs multiple callers, unit test that can't replicate the chain that triggered the bug), a regression test there gives false confidence.
 
-**If no correct seam exists, that itself is the finding.** Note it. The codebase architecture is preventing the bug from being locked down. Flag this for the next phase.
+**If no correct seam exists, that itself is the finding**: the codebase architecture is preventing the bug from being locked down. Flag it for the next phase.
 
 If a correct seam exists:
 

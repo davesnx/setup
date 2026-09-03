@@ -11,6 +11,8 @@ Multiple isolated browser sessions with state persistence and concurrent browsin
 - [Session State Persistence](#session-state-persistence)
 - [Common Patterns](#common-patterns)
 - [Default Session](#default-session)
+- [Connecting to an Existing Chrome](#connecting-to-an-existing-chrome)
+- [SSH Server -> Local Browser (Reverse Tunnel)](#ssh-server---local-browser-reverse-tunnel)
 - [Session Cleanup](#session-cleanup)
 - [Best Practices](#best-practices)
 
@@ -144,6 +146,44 @@ agent-browser snapshot -i
 agent-browser close  # Closes default session
 ```
 
+## Connecting to an Existing Chrome
+
+```bash
+# Auto-discover running Chrome with remote debugging enabled
+agent-browser --auto-connect open https://example.com
+agent-browser --auto-connect snapshot
+
+# Or with explicit CDP port
+agent-browser --cdp 9222 snapshot
+```
+
+## SSH Server -> Local Browser (Reverse Tunnel)
+
+When the agent runs on a remote SSH server but you want to automate a browser on your local machine, use a reverse tunnel for the CDP port.
+
+Agent behavior for this scenario:
+
+- Always provide a **Local machine** section first with the exact commands the user must run locally.
+- Then provide a **Remote server** section with the commands to run over SSH.
+- Do not assume local commands can be executed from the remote server.
+
+```bash
+# Local machine: start Chrome with remote debugging
+google-chrome --remote-debugging-port=9222
+
+# Local machine: open SSH session with reverse tunnel
+ssh -R 9222:localhost:9222 user@your-server
+
+# Remote server: control local Chrome through the tunnel
+agent-browser --cdp 127.0.0.1:9222 open https://example.com
+agent-browser --cdp 127.0.0.1:9222 snapshot -i
+```
+
+Security notes:
+
+- Keep remote debugging bound to localhost only.
+- Use `127.0.0.1` explicitly on the server side to avoid exposing CDP on external interfaces.
+
 ## Session Cleanup
 
 ```bash
@@ -152,6 +192,12 @@ agent-browser --session auth close
 
 # List active sessions
 agent-browser session list
+```
+
+To auto-shutdown the daemon after a period of inactivity (useful for ephemeral/CI environments):
+
+```bash
+AGENT_BROWSER_IDLE_TIMEOUT_MS=60000 agent-browser open example.com
 ```
 
 ## Best Practices

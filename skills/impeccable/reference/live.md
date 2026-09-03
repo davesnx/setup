@@ -1,5 +1,7 @@
 Interactive live variant mode: select elements in the browser, pick a design action, and get AI-generated HTML+CSS variants hot-swapped via the dev server's HMR.
 
+For whole-file alternatives that the user flips through on localhost, use the variate skill instead.
+
 ## Prerequisites
 
 A running dev server with hot module replacement (Vite, Next.js, Bun, etc.), OR a static HTML file open in the browser.

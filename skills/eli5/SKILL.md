@@ -120,11 +120,7 @@ function expandSkill(command: string): string {
 }
 ```
 
-- For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file — a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then open it for the user:
-
-```
-open eli5-<topic>.html    # xdg-open on Linux; or publish it with the harness's artifact tool when one exists
-```
+- For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file — a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then share it with the user; see "Share it" below.
 
 ## Build one HTML file
 
@@ -137,9 +133,11 @@ The presentation must include:
 - Visible keyboard focus, semantic headings, real buttons, and useful accessible names.
 - No autoplay. Honor `prefers-reduced-motion` and keep the content usable without animation.
 
-## Serve it locally
+## Share it
 
-Serve the containing directory over HTTP instead of opening the file through `file://`. Reuse an existing local server when the project has one. Otherwise, start a loopback-only static server on an available port:
+When the harness offers an artifact publishing tool, load the `artifact-design` skill before publishing, and also load `artifact-diagramming` when the topic is diagram heavy. Publish the HTML file through that tool and skip local serving.
+
+Otherwise, serve the containing directory over HTTP instead of opening the file through `file://`. Reuse an existing local server when the project has one. Otherwise, start a loopback-only static server on an available port:
 
 ```sh
 python3 -m http.server 8000 --bind 127.0.0.1 --directory "/absolute/path/to/output-directory"
@@ -147,14 +145,17 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory "/absolute/path/to/outp
 
 Run the server in a way that does not block the remaining work. Record its process ID or use the harness process controls so it can be stopped later. Do not expose the server to the local network. Do not deploy the artifact unless the user asks.
 
-Open the exact page URL, for example `http://127.0.0.1:8000/eli5-<topic>.html`.
+Open the exact page URL, for example `http://127.0.0.1:8000/eli5-<topic>.html`:
+
+- On macOS, run `open` on the URL.
+- On Linux with a display (`$DISPLAY` or `$WAYLAND_DISPLAY` set), run `xdg-open` on the URL.
+- Otherwise, print the absolute path instead of opening it.
 
 ## Return to the user
 
 Do not paste the HTML into the response. Give the user:
 
-- The artifact path.
-- The local URL.
+- The published link, or the artifact path and local URL when serving it yourself.
 - One sentence about the journey the presentation teaches.
 - The two or three deeper paths offered on the final step.
 

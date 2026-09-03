@@ -23,17 +23,9 @@ Skip when the conversation is trivial, off-topic, or already covered by an exist
 
 ### 1. Locate the active transcript
 
-The parent finds its own transcript before fanning out. Stay inside the current workspace; never glob across other projects' transcripts, which reads private chats from unrelated work.
+The parent finds its own transcript before fanning out. Locate it with the per-host provider rules in [recall's history-providers reference](../recall/references/history-providers.md), and follow its rule to exclude subagent transcripts. Stay inside the current workspace; never glob across other projects' transcripts, which reads private chats from unrelated work.
 
-- **Claude Code:** `~/.claude/projects/<slug>/<session-id>.jsonl`, where `<slug>` is the absolute workspace path with every `/` replaced by `-` (leading slash included). Prefer the session in `CLAUDE_CODE_SESSION_ID` when the environment exposes it; otherwise take the most recently modified file. Subagent transcripts live under `<session-id>/subagents/` and are secondary sources.
-- **OpenCode:** `~/.local/share/opencode/opencode.db`. Query the `session` and `part` tables read-only for the current `directory`, as described in the `recall` skill's history providers reference.
-- **Other hosts:** use the host's session or history tool when one exists.
-
-```bash
-ls -t ~/.claude/projects/<slug>/*.jsonl 2>/dev/null | head -5
-```
-
-Confirm the candidate by checking that its first `user` record contains the conversation's opening prompt (the first line of a Claude Code transcript is metadata, not a message). If no transcript resolves, write a tight digest of the session and pass that instead.
+Confirm the candidate by checking that its first message contains the conversation's opening prompt. If no transcript resolves, write a tight digest of the session and pass that instead.
 
 ### 2. Spawn three reviewers in parallel
 

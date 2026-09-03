@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review local changes, branch diffs, commits, or pull requests for correctness, security, regressions, maintainability, repository standards, specification compliance, and blast radius. Use for "review", "code review", "review my changes", "review PR", "review since X", "thermo", "thermonuclear", "deep review", "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", "tear this apart", "blast radius", "what could this break", "review canvas", "visual PR review", "PR walkthrough", or "review and ship". Accepts an optional fixed point, PR number, or PR URL.
+description: Review local changes, branch diffs, commits, or pull requests for correctness, security, regressions, maintainability, standards, spec compliance, and blast radius. Use for "review", "code review", "review PR", "deep review", "adversarial review", "thermonuclear", "blast radius", or "review and ship". Accepts an optional fixed point, PR number, or PR URL.
 ---
 
 # Code Review

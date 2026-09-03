@@ -1,6 +1,6 @@
 ---
 name: github
-description: "GitHub and Git branch work: create validated commits, inspect PR state and review conversations, diagnose GitHub Actions failures, compose non-trivial gh commands, or resolve merge, rebase, and cherry-pick conflicts. Load before every `git commit`. Use for 'commit', 'write a commit message', 'commit changes', GitHub PR inspection, unresolved review threads, GitHub CI logs, 'fix merge conflicts', 'resolve conflicts', or a conflicted branch."
+description: "GitHub and Git work: validated commits, GitHub Actions CI failures, non-trivial gh commands, and merge/rebase/cherry-pick conflict resolution. Load before every `git commit`. Use for 'commit', 'write a commit message', 'commit changes', GitHub PR inspection, unresolved review threads, GitHub CI logs, 'fix merge conflicts', 'resolve conflicts', or a conflicted branch."
 ---
 
 # GitHub

@@ -13,10 +13,10 @@ gh pr view <pr> --json number,url,headRefName,headRefOid
 gh pr checks <pr> --json name,bucket,state,workflow,link
 ```
 
-Prefer the bundled inspector for GitHub Actions failures. It handles `gh` field drift, run extraction, job-log fallback, and concise snippets:
+Prefer the `github` skill's CI failure inspector for GitHub Actions failures. It handles `gh` field drift, run extraction, job-log fallback, and concise snippets:
 
 ```bash
-python3 "<path-to-loop-on-ci>/scripts/inspect_pr_checks.py" --repo "." --pr "<number-or-url>" --json
+"$(dirname "${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/loop-on-ci}")/github/scripts/ci-failures.ts" --pr "<number>" -R "<owner>/<repo>" --json
 ```
 
 Manual fallback:

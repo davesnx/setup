@@ -9,6 +9,7 @@ Login flows, session persistence, OAuth, 2FA, and authenticated browsing.
 - [Import Auth from Your Browser](#import-auth-from-your-browser)
 - [Persistent Profiles](#persistent-profiles)
 - [Session Persistence](#session-persistence)
+- [Auth Vault](#auth-vault)
 - [Basic Login Flow](#basic-login-flow)
 - [Saving Authentication State](#saving-authentication-state)
 - [Restoring Authentication](#restoring-authentication)
@@ -116,6 +117,26 @@ Encrypt state at rest:
 export AGENT_BROWSER_ENCRYPTION_KEY=$(openssl rand -hex 32)
 agent-browser --session-name secure open https://app.example.com
 ```
+
+## Auth Vault
+
+Store credentials encrypted and log in by name, so the agent never sees the password:
+
+```bash
+# Save credentials once (encrypted with AGENT_BROWSER_ENCRYPTION_KEY)
+# Recommended: pipe password via stdin to avoid shell history exposure
+echo "$PASSWORD" | agent-browser auth save github --url https://github.com/login --username user --password-stdin
+
+# Login using the saved profile
+agent-browser auth login github
+
+# List/show/delete profiles
+agent-browser auth list
+agent-browser auth show github
+agent-browser auth delete github
+```
+
+Auth vault operations (`auth login`, etc.) bypass the action policy, but the domain allowlist still applies.
 
 ## Basic Login Flow
 

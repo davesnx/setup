@@ -2,16 +2,11 @@
 name: variate
 description: >
   Puts real design variations of one project file on the user's own localhost,
-  behind a small card that flips them with the arrow keys, then keeps
-  listening for their verdict. Use when the user wants design variations,
-  alternatives, or directions to choose between; asks to try a different
-  hero, layout, palette, section, or page; wants to design something new and
-  compare a few takes; clicked the card (a vary, more, or done ask is
-  queued); or wants to continue or finish a variate session. It works in an
-  empty folder (serves a page, drafts four fresh designs) and in a real
-  project (varies one file in place), on any stack. Not for a single change
-  with one right answer, a refactor, or a non-visual edit: just edit the
-  file for those.
+  behind a small card that flips them with arrow keys, then keeps listening
+  for their verdict. Use to compare design directions or alternatives. Works
+  in an empty folder or a real project, on any stack. Not for a single change
+  with one right answer, a refactor, or a non-visual edit: just edit the file
+  for those.
 license: MIT
 compatibility: Requires Node.js 18+. Works with or without a dev server.
 metadata:
@@ -35,6 +30,9 @@ The user's own localhost is the canvas. You write real alternatives of one of
 their files; a small card at the bottom of their page lets them flip between
 them; the one they keep is the code. There is no studio, no preview server of
 ours, and no separate thing to keep in sync.
+
+To pick one element in the page and generate in-place alternatives instead of
+whole-file variants, use the impeccable skill's live mode.
 
 ## Critical floor
 

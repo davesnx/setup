@@ -7,3 +7,5 @@
 - License: MIT
 
 `SKILL.md`, `SKILL-MECHANICS.md`, and `agents/openai.yaml` are vendored from upstream.
+
+Local changes (2026-09-03): added one sentence pointing to the local `skill-creator` skill for the empirical draft, test, grade, and iterate loop on a skill.

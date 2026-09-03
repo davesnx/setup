@@ -16,19 +16,6 @@ The current open X algorithm source describes this flow:
 
 Treat these as architecture facts, not a formula for writing.
 
-## Draft or rewrite
-
-1. State one core message.
-2. Name the specific audience that has a reason to care.
-3. Give the reader concrete value: a fact, result, method, example, opinion with evidence, or useful question.
-4. Use terms the audience recognizes, but do not perform insider jargon for its own sake.
-5. Make the post understandable without requiring hidden context.
-6. Remove misleading claims, harassment, manipulation, and engagement bait that can produce blocks, mutes, reports, or "not interested" actions.
-7. Apply the X-writing rules and final review.
-8. Offer the final post and a short rationale. Do not promise reach.
-
-For a thread, give each post one job and make the first post state the value of continuing. Do not stretch one post into a thread only to create more impressions.
-
 ## Diagnose underperformance
 
 Use account analytics and the actual post before proposing a cause. Separate:
@@ -40,14 +27,6 @@ Use account analytics and the actual post before proposing a cause. Separate:
 - **Audience fit**: whether the post matches the interests of people who normally engage with the account.
 
 State what the data supports and what remains unknown. Do not reverse-engineer model weights from one post.
-
-## Output
-
-- Core message and audience
-- Main clarity or audience-fit issue
-- Rewritten post or thread
-- Factual rationale tied to the source architecture or supplied analytics
-- Unknowns and the next useful measurement
 
 ## Source
 

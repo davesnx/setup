@@ -1,6 +1,6 @@
 ---
 name: architect
-description: "Design production modules, interfaces, seams, types, signatures, and dependency structure before implementation. Use ONLY when the requested result is a production code shape or integration contract, such as /architect, 'architect this', 'design this module', 'improve this interface', or 'deepen this module'; do not use for throwaway HTML experiments that test state, transition, policy, scheduling, or algorithm behavior."
+description: "Design production modules, interfaces, seams, types, signatures, and dependency structure before implementation. Use ONLY when the requested result is a production code shape or integration contract, such as 'architect this' or 'design this module'. Do not use for throwaway HTML experiments that test state, transition, policy, scheduling, or algorithm behavior."
 ---
 
 # Architect
@@ -61,7 +61,8 @@ are new evidence and can trigger another Architect pass.
 
 If the human rejects the shape, treat that response as Phase A evidence,
 re-ground, and run Phase B again. For adversarial pressure before handoff, run
-Code Review in Adversarial mode on the synthesized sketch.
+an adversarial review of the synthesized sketch where the harness offers one
+(in OpenCode, the code-review skill's Adversarial mode).
 
 ## Outputs
 

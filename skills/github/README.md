@@ -97,7 +97,7 @@ report, and a SKILL.md tip that would 404 (`-f`/`-F` silently flips GET→POST).
 
 This setup vendors the scripts from
 [`AVGVSTVS96/better-github-skill`](https://github.com/AVGVSTVS96/better-github-skill)
-inside the `github` skill. They require authenticated `gh` and node ≥ 23.6.
+inside the `github` skill. They require authenticated `gh` and node ≥ 22.18 (or ≥ 23.6 on older lines).
 
 Scripts are plain executables; they work standalone without the skill harness:
 

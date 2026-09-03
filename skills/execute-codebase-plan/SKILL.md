@@ -1,6 +1,6 @@
 ---
 name: execute-codebase-plan
-description: Review, execute, reconcile, or publish an existing codebase audit plan. Use when the user points to an existing plan, plans directory, or audit backlog and explicitly asks to review the plan, implement it, check it against current code, reconcile its status or drift, or publish it as an issue. Source changes happen only in an isolated Git worktree. Never merge or push without explicit authorization, and never change the user's main worktree. Do not use this skill to discover improvements or create a new audit; use improve-codebase-architecture for that.
+description: Review, execute, reconcile, or publish an existing codebase audit plan. Use when the user points to an existing plan and asks to review, implement, reconcile, or publish it. Source edits happen only in an isolated worktree; never merge or push without authorization, and never touch the main worktree. Use improve-codebase-architecture instead to discover improvements or create a new audit.
 ---
 
 # Execute Codebase Plan

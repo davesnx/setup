@@ -58,6 +58,12 @@ to subagents and orchestrate them:
 - For OpenCode eval harness tasks, run `~/.config/opencode/eval-harness`
   directly. Do not load it into the user's interactive shell.
 
+## Hosts
+
+- When `systemd-detect-virt --container` returns `systemd-nspawn`, bind a
+  service to `0.0.0.0` on an unused port from `25000-25099`. Reach it at
+  `febox-uk.ahrefs.net:<port>` while the VPN is on.
+
 ## Code
 
 - Write comments only to explain why, never to restate what code does or to

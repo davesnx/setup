@@ -115,18 +115,14 @@ the commit without bypassing repository hooks.
 
 ## Rules
 
+- Follow the Green Build Gate in the repository's global agent rules
+  (`AGENTS.md`/`CLAUDE.md`) for validation, hook, and push-readiness
+  requirements.
 - Do not pause for commit-message confirmation when the user asked to create a
   commit. Report the message after the commit succeeds.
-- NEVER commit when a required validation command failed, could not run, or was
-  not identified. Do not make exceptions for small or comment-only changes.
-- NEVER treat a pre-existing baseline failure as green.
-- NEVER bypass hooks with `--no-verify`, `-n`, `core.hooksPath`, wrapper scripts,
-  hook-disabling environment variables, or equivalent mechanisms.
-- NEVER edit files after validation without rerunning the affected checks.
 - NEVER include files that look like secrets (.env, credentials, tokens).
 - NEVER amend existing commits unless the user explicitly asks.
-- NEVER push unless the user explicitly asks and every outgoing commit is based
-  on a final tree that passed the required checks.
+- NEVER push unless the user explicitly asks.
 - If there are no changes to commit, tell the user and stop.
 - If the diff is very large, summarize the key themes rather than listing every change.
 - Match the repository's commit style exactly. If commits use lowercase imperative ("add feature"), do that. If they use capitalized imperative ("Add feature"), do that. If they use conventional commits ("feat: add feature"), do that.

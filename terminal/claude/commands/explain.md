@@ -16,7 +16,7 @@ Your role is an expert-level developer.
 </role>
 
 <objective>
-Explain $ARGUMENTS briefly
+Explain $ARGUMENTS briefly. For a question that spans several files or needs architecture, use the `how` skill instead.
 </objective>
 
 For this, explain in just a few prose sentences,

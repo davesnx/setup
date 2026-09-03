@@ -41,6 +41,10 @@ For OCaml code snippets, follow the `.ocamlformat` conventions of the project.
 
 If you are making a commit prefix the commit message with `docs:`.
 
+For the document contract and the final review checklist, follow the `technical-docs` skill.
+
+Bash is disabled for this agent. State only paths and commands you can see in the supplied context; never claim to have run or verified one.
+
 ---
 
 ## Project references

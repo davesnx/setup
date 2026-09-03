@@ -104,6 +104,9 @@ success statement.
 
 ## Rules
 
+The Code section of the global agent rules applies here and is not repeated
+below.
+
 - Correctness, safety, and the ability to diagnose failures outrank brevity.
 - Keep one-use behavior direct until a real second use, owner, or implementation
   proves that an interface, factory, option, or wrapper earns its cost.
@@ -118,7 +121,5 @@ success statement.
   nearest boundary.
 - Use concrete names and one term per concept. Improve new and private names
   automatically. Rename a public API only when the user asks for the migration.
-- Write comments only when they explain why: an invariant, tradeoff, surprising
-  rule, safety reason, known ceiling, or upgrade condition.
 - Use plain, coherent language in names and comments. Prefer a concrete purpose,
   fact, or instruction over abstract jargon.

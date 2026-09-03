@@ -1,6 +1,6 @@
 ---
 name: recall
-description: "Reconstruct recent working context from OpenCode, Cursor, or other available chat history, live repository state, and shared records such as issues, prior fixes, and incidents. Use when the user says 'recall my work on X', 'find our conversation about X', 'catch me up', 'remind me what we discussed', 'what did we decide', 'what was I working on', 'where did I leave off', 'pick up where we left off', 'continue my work on X', 'resume work on X', 'what happened with X', or asks to search or summarize recent work or past conversations."
+description: "Reconstruct recent working context from chat history, repository state, and shared records like issues and incidents. Use for 'recall my work on X', 'catch me up', 'where did I leave off', 'what did we decide', 'resume work on X', or to summarise past conversations."
 ---
 
 # Recall

@@ -1,6 +1,6 @@
 ---
 name: extract-design-system
-description: Extract design primitives from a public website and generate starter token files for your project.
+description: Extract design tokens (colors, fonts, spacing, radius, shadows) from a public website URL using the extract-design-system CLI and write starter token files for a new project. For repeated patterns inside your own local codebase, use the impeccable skill's extract mode instead.
 ---
 
 # Extract Design System

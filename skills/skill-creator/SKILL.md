@@ -136,7 +136,7 @@ Output: feat(auth): implement JWT-based authentication
 
 ### Writing Style
 
-Try to explain to the model why things are important in lieu of heavy-handed musty MUSTs. Use theory of mind and try to make the skill general and not super-narrow to specific examples. Start by writing a draft and then look at it with fresh eyes and improve it.
+Try to explain to the model why things are important in lieu of heavy-handed musty MUSTs. Use theory of mind and try to make the skill general and not super-narrow to specific examples. Start by writing a draft and then look at it with fresh eyes and improve it. For how to shape the description and body — context pointers, the information hierarchy, leading words, pruning — read the `writing-for-agents` skill.
 
 ### Test Cases
 

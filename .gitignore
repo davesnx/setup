@@ -22,6 +22,9 @@ __pycache__/
 /terminal/opencode/package-lock.json
 /terminal/opencode/host.jsonc
 /terminal/opencode/.opencode/
+# The @plannotator/opencode plugin writes these empty command stubs on install
+# and handles the commands itself, so they are not hand-authored content.
+/terminal/opencode/commands/plannotator-*.md
 
 # Machine-specific overrides
 /local/*

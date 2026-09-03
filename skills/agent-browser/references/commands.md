@@ -15,6 +15,8 @@ agent-browser close           # Close browser (aliases: quit, exit)
 agent-browser connect 9222    # Connect to browser via CDP port
 ```
 
+Local `file://` URLs (PDFs, HTML) need the `--allow-file-access` flag: `agent-browser --allow-file-access open file:///path/to/document.pdf`.
+
 ## Snapshot (page analysis)
 
 ```bash
@@ -44,9 +46,12 @@ agent-browser uncheck @e1         # Uncheck checkbox
 agent-browser select @e1 "value"  # Select dropdown option
 agent-browser select @e1 "a" "b"  # Select multiple options
 agent-browser scroll down 500     # Scroll page (default: down 300px)
+agent-browser scroll down 500 --selector "div.content"  # Scroll within a specific container
 agent-browser scrollintoview @e1  # Scroll element into view (alias: scrollinto)
 agent-browser drag @e1 @e2        # Drag and drop
 agent-browser upload @e1 file.pdf # Upload files
+agent-browser keyboard type "text"         # Type at current focus (no selector)
+agent-browser keyboard inserttext "text"   # Insert without key events
 ```
 
 ## Get Information
@@ -78,8 +83,26 @@ agent-browser is checked @e1      # Check if checked
 agent-browser screenshot          # Save to temporary directory
 agent-browser screenshot path.png # Save to specific path
 agent-browser screenshot --full   # Full page
+agent-browser screenshot --annotate   # Annotated screenshot with numbered element labels (vision mode)
+agent-browser screenshot --screenshot-dir ./shots  # Save to custom directory
+agent-browser screenshot --screenshot-format jpeg --screenshot-quality 80
 agent-browser pdf output.pdf      # Save as PDF
 ```
+
+### Annotated Screenshots (Vision Mode)
+
+`--annotate` overlays numbered labels on interactive elements; each label `[N]` maps to ref `@eN`. It also caches refs, so you can interact immediately without a separate snapshot:
+
+```bash
+agent-browser screenshot --annotate
+# Output includes the image path and a legend:
+#   [1] @e1 button "Submit"
+#   [2] @e2 link "Home"
+#   [3] @e3 textbox "Email"
+agent-browser click @e2              # Click using ref from annotated screenshot
+```
+
+Use it when the page has unlabeled icon buttons, when you need to verify visual layout or styling, when canvas/chart elements are present (invisible to text snapshots), or when you need spatial reasoning about element positions.
 
 ## Video Recording
 
@@ -99,7 +122,43 @@ agent-browser wait --text "Success"        # Wait for text (or -t)
 agent-browser wait --url "**/dashboard"    # Wait for URL pattern (or -u)
 agent-browser wait --load networkidle      # Wait for network idle (or -l)
 agent-browser wait --fn "window.ready"     # Wait for JS condition (or -f)
+agent-browser wait "#spinner" --state hidden  # Wait for element to disappear
+agent-browser wait --fn "!document.body.innerText.includes('Loading...')"  # Wait for text to disappear
 ```
+
+The default command timeout is 25 seconds, overridable with `AGENT_BROWSER_DEFAULT_TIMEOUT` (milliseconds). For slow pages, prefer an explicit wait (`--load networkidle`, a selector, or a URL pattern) over a fixed `wait <ms>` or the default timeout.
+
+## Downloads
+
+```bash
+agent-browser download @e1 ./file.pdf          # Click element to trigger download
+agent-browser wait --download ./output.zip     # Wait for any download to complete
+agent-browser --download-path ./downloads open <url>  # Set default download directory
+```
+
+## Clipboard
+
+```bash
+agent-browser clipboard read                      # Read text from clipboard
+agent-browser clipboard write "Hello, World!"     # Write text to clipboard
+agent-browser clipboard copy                      # Copy current selection
+agent-browser clipboard paste                     # Paste from clipboard
+```
+
+## Diffing
+
+Compare page states to verify an action had the intended effect.
+
+```bash
+agent-browser diff snapshot                          # Compare current vs last snapshot
+agent-browser diff snapshot --baseline before.txt    # Compare current vs saved file
+agent-browser diff screenshot --baseline before.png  # Visual pixel diff
+agent-browser diff url <url1> <url2>                 # Compare two pages
+agent-browser diff url <url1> <url2> --wait-until networkidle  # Custom wait strategy
+agent-browser diff url <url1> <url2> --selector "#main"  # Scope to element
+```
+
+Typical workflow: take a `snapshot` as baseline, perform an action, then run `diff snapshot` (it auto-compares against the last snapshot taken in the session). `diff snapshot` output uses `+`/`-` like `git diff`; `diff screenshot` produces a diff image with changed pixels highlighted in red, plus a mismatch percentage.
 
 ## Mouse Control
 
@@ -139,6 +198,8 @@ agent-browser set credentials user pass       # HTTP basic auth (alias: auth)
 agent-browser set media dark                  # Emulate color scheme
 agent-browser set media light reduced-motion  # Light mode + reduced motion
 ```
+
+The `scale` parameter (3rd argument to `set viewport`) sets `window.devicePixelRatio` without changing CSS layout, so screenshots stay at the logical viewport size but render at higher DPI. `set media dark` only affects commands run later in the same session; for dark mode across the whole session including the first page, use `--color-scheme dark` at launch or `AGENT_BROWSER_COLOR_SCHEME=dark`.
 
 ## Cookies and Storage
 
@@ -209,6 +270,14 @@ Array.from(links).map(a => a.href);
 EOF
 ```
 
+Shell quoting can corrupt complex expressions before they reach agent-browser: nested double quotes, `!` (history expansion), backticks, and `$()` all cause problems. `--stdin` and `-b` bypass shell interpretation entirely.
+
+Rules of thumb:
+
+- Single-line, no nested quotes -> regular `eval 'expression'` with single quotes is fine.
+- Nested quotes, arrow functions, template literals, or multiline -> use `eval --stdin <<'EVALEOF'`.
+- Programmatic or generated scripts -> use `eval -b` with base64.
+
 ## State Management
 
 ```bash
@@ -224,12 +293,19 @@ agent-browser --json ...              # JSON output for parsing
 agent-browser --headed ...            # Show browser window (not headless)
 agent-browser --full ...              # Full page screenshot (-f)
 agent-browser --cdp <port> ...        # Connect via Chrome DevTools Protocol
+agent-browser --auto-connect ...      # Auto-discover a running Chrome with remote debugging enabled
+agent-browser --engine <name> ...     # Browser engine: chrome (default) or lightpanda
 agent-browser -p <provider> ...       # Cloud browser provider (--provider)
 agent-browser --proxy <url> ...       # Use proxy server
 agent-browser --proxy-bypass <hosts>  # Hosts to bypass proxy
 agent-browser --headers <json> ...    # HTTP headers scoped to URL's origin
 agent-browser --executable-path <p>   # Custom browser executable
 agent-browser --extension <path> ...  # Load browser extension (repeatable)
+agent-browser --allow-file-access     # Allow file:// URLs
+agent-browser --download-path <dir>   # Default download directory
+agent-browser --color-scheme <mode>   # Persistent dark/light mode for all pages and new tabs
+agent-browser --config <path> ...     # Custom config file path
+agent-browser --content-boundaries    # Wrap page-sourced output in untrusted-content markers (see SKILL.md Security)
 agent-browser --ignore-https-errors   # Ignore SSL certificate errors
 agent-browser --help                  # Show help (-h)
 agent-browser --version               # Show version (-V)
@@ -263,4 +339,52 @@ AGENT_BROWSER_EXTENSIONS="/ext1,/ext2"       # Comma-separated extension paths
 AGENT_BROWSER_PROVIDER="browserbase"         # Cloud browser provider
 AGENT_BROWSER_STREAM_PORT="9223"             # WebSocket streaming port
 AGENT_BROWSER_HOME="/path/to/agent-browser"  # Custom install location
+AGENT_BROWSER_HEADED="1"                     # Enable headed mode
+AGENT_BROWSER_COLOR_SCHEME="dark"            # Persistent dark/light mode
+AGENT_BROWSER_ENGINE="lightpanda"            # Browser engine: chrome (default) or lightpanda
+AGENT_BROWSER_DEFAULT_TIMEOUT="25000"        # Default command timeout, in milliseconds
+AGENT_BROWSER_IDLE_TIMEOUT_MS="60000"        # Auto-shutdown daemon after inactivity
+AGENT_BROWSER_CONFIG="/path/config.json"     # Custom config file path
+AGENT_BROWSER_ENCRYPTION_KEY="..."           # Encrypt saved state/auth vault at rest
+AGENT_BROWSER_ALLOWED_DOMAINS="a.com,*.a.com" # Domain allowlist (see SKILL.md Security)
+AGENT_BROWSER_ACTION_POLICY="./policy.json"  # Action policy file (see SKILL.md Security)
+AGENT_BROWSER_MAX_OUTPUT="50000"             # Max output size before truncation (see SKILL.md Security)
+AGENT_BROWSER_CONTENT_BOUNDARIES="1"         # Wrap page content in untrusted markers (see SKILL.md Security)
 ```
+
+## Configuration File
+
+Create `agent-browser.json` in the project root for persistent settings:
+
+```json
+{
+  "headed": true,
+  "proxy": "http://localhost:8080",
+  "profile": "./browser-data"
+}
+```
+
+Priority (lowest to highest): `~/.agent-browser/config.json` < `./agent-browser.json` < env vars < CLI flags. Use `--config <path>` or `AGENT_BROWSER_CONFIG` for a custom config file (exits with error if missing/invalid). CLI options map to camelCase keys (e.g., `--executable-path` -> `"executablePath"`). Boolean flags accept `true`/`false` (e.g., `--headed false` overrides config). Extensions from user and project configs are merged, not replaced.
+
+## Browser Engine Selection
+
+Use `--engine` to choose a local browser engine. The default is `chrome`.
+
+```bash
+# Use Lightpanda (fast headless browser, requires separate install)
+agent-browser --engine lightpanda open example.com
+
+# Via environment variable
+export AGENT_BROWSER_ENGINE=lightpanda
+agent-browser open example.com
+
+# With custom binary path
+agent-browser --engine lightpanda --executable-path /path/to/lightpanda open example.com
+```
+
+Supported engines:
+
+- `chrome` (default) -- Chrome/Chromium via CDP
+- `lightpanda` -- Lightpanda headless browser via CDP (10x faster, 10x less memory than Chrome)
+
+Lightpanda does not support `--extension`, `--profile`, `--state`, or `--allow-file-access`. Install from https://lightpanda.io/docs/open-source/installation.

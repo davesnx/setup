@@ -1,6 +1,6 @@
 ---
 name: supabase-postgres-best-practices
-description: "Postgres best practices maintained by Supabase, for Postgres running anywhere. Load this skill BEFORE writing or changing anything that lives in a Postgres database: creating or altering tables and columns (including choosing column types), schema design, migrations and declarative schema files, RLS policies and the tests that verify them, indexes, triggers, database functions, queues and scheduled jobs (pg_cron, pgmq), vector/semantic search (pgvector), and restoring dumps (pg_restore) or importing data. Also load it when diagnosing slow queries, high CPU, timeouts, EXPLAIN plans, connection exhaustion, locking, bloat, or rows visible to the wrong user or tenant. This is not just a performance guide — schema, migration, security, and SQL authoring tasks need these rules too, even for a one-column change or a single query."
+description: "Postgres best practices (schema design, migrations, RLS, indexes, functions, pgvector, pg_cron) for any Postgres database. Load before writing or changing anything in a Postgres schema or query, or when diagnosing slow queries, locking, or connection issues."
 license: MIT
 metadata:
   author: supabase

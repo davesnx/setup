@@ -38,6 +38,11 @@ refactored behavior. Keep unrelated old code unchanged.
   the same capability. Create a new one only when reuse would mix ownership.
 - Remove modules that only forward calls, rename another API, or mirror storage
   without hiding useful complexity.
+- Reuse the codebase's canonical helper instead of writing a near-duplicate.
+- Prefer removing a branch, helper, mode, or layer over rearranging it when a
+  structural simplification is available.
+- Parallelize independent work only when it also makes the orchestration
+  clearer, not by default.
 - Keep deterministic rules independent of I/O, frameworks, mutable global
   state, ambient time, and randomness. Pass required capabilities explicitly.
 - Export the supported public surface and keep implementation details private.
@@ -56,6 +61,10 @@ refactored behavior. Keep unrelated old code unchanged.
 - Resolve absence before calling code that requires a value. Keep mutable state
   local, intentional, and hidden behind a precise interface. Avoid mutable global
   state.
+- Question unnecessary `any`, `unknown`, casts, and optional fields that hide
+  the real invariant.
+- Make related state updates atomic when a partial update would leave an
+  unsafe or confusing state.
 
 ## Failures
 

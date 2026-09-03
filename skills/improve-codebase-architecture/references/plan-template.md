@@ -2,6 +2,8 @@
 
 Every plan is written for an executor model that has **zero context**: it has not seen the advisor session, the audit, the other plans, or any prior conversation. It may be a smaller/cheaper model. Assume it is competent at following explicit instructions and weak at filling gaps, recovering from ambiguity, or knowing when to stop.
 
+This template defines the plan schema that `execute-codebase-plan`'s `references/closing-the-loop.md` reads; change the two files together.
+
 Three properties make a plan executable by a weaker model:
 
 1. **Self-contained context** — everything needed is in the file: paths, code excerpts, conventions, commands.

@@ -16,7 +16,9 @@ and initial plan authoring.
    - the path and content hash of each existing untracked, non-ignored file
 3. Read the full plan and its index. Extract the planned-at commit, dependencies,
    in-scope and out-of-scope files, current-state excerpts, steps, verification
-   commands, done criteria, and STOP conditions.
+   commands, done criteria, and STOP conditions. This plan schema is defined by
+   improve-codebase-architecture's `references/plan-template.md`; change the two
+   files together.
 4. Confirm the planned-at commit exists. Check each dependency against the index
    and current code, not only its status label.
 5. Run the plan's drift check as a read-only command. Compare its current-state

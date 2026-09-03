@@ -1,6 +1,6 @@
 ---
 name: x-writing
-description: Write, edit, or analyze posts and threads for X, including audience fit, supplied analytics, and verified recommendation-system constraints. Use when the requested output or diagnosis concerns X content. Treat algorithm details as constraints and never promise reach. Do not use for developer documentation, which belongs to technical-docs, or for independent evidence gathering and cited technical findings.
+description: Write, edit, or analyze posts and threads for X, including audience fit, supplied analytics, and verified recommendation-system constraints. Use for X-content requests and diagnosis. Treat algorithm details as constraints and never promise reach. Do not use for developer documentation, which belongs to technical-docs, or for independent evidence gathering and cited technical findings.
 metadata:
   algorithm-source: "https://github.com/xai-org/x-algorithm"
 ---
@@ -15,7 +15,7 @@ Write useful X posts for a specific audience. Do not claim that a phrase, format
 2. Name the audience that has a reason to care.
 3. Give concrete value through a fact, result, method, example, supported opinion, or useful question.
 4. Make the post understandable without hidden context.
-5. Remove filler, vague hype, harassment, manipulation, and engagement bait.
+5. Use the `unslop` skill to remove filler and vague hype. Separately remove harassment, manipulation, and engagement bait.
 6. Keep technical terms exact, but remove jargon used only to signal status.
 7. Return the requested post or thread without a reach promise.
 

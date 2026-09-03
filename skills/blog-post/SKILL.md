@@ -38,6 +38,7 @@ The user will provide one of the following:
 | **A title or topic only** | Run the Full Interview (all sections) |
 | **An outline or rough draft** | Run a Focused Interview (skip what's already clear) |
 | **A complete blog post** | Run a Review Interview (targeted questions to improve it) |
+| **A fixed pile of raw material (notes, transcripts, drafts) that must not gain new claims** | Use the `writing-shape` skill instead |
 
 Identify the appropriate interview path and begin. Do not waste a turn announcing routine process.
 
@@ -317,30 +318,9 @@ Write:
 
 ### Run an Unslop Pass
 
-Treat these patterns as evidence, not proof. Preserve deliberate quirks when they belong to the author's voice, and protect quotations, code, commands, proper names, links, and technical terms.
+Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written.
 
-- Cut throat-clearing such as "Here's the thing", "It turns out", "Let me be clear", and "It's worth noting that". State the point.
-- Remove significance inflation such as "pivotal", "groundbreaking", "a testament to", and abstract uses of "landscape" unless the author substantiates the evaluation.
-- Replace vague attribution such as "experts believe" with a named source when one exists. Otherwise flag the missing source; do not invent one.
-- Rewrite formulaic reveals such as "It's not X, it's Y" when the contrast only manufactures drama. Keep it when X and Y are a real distinction.
-- Avoid invented concept labels, forced groups of three, false ranges, synonym cycling, and repeated metaphors.
-- Remove meta-commentary such as "The rest of this post explains" and "As we'll see". Let the post move.
-- Prefer plain words: "use" over "utilize", "help" over "facilitate", and "explain" over "unpack" when those words preserve the meaning.
-- Remove unsupported intensifiers and filler. Do not silently weaken supported quantities such as "always", "never", or "significantly"; verify or flag them.
-- Limit formulaic em dashes, colons, bold lead-ins, one-line paragraphs, and punchy fragments. Match the author's established punctuation and rhythm instead of imposing a ban.
-- Preserve complexity. Do not turn uncertainty, mixed results, or unresolved tension into a tidy verdict.
-
-Before delivery, compare the revision with the source and ask internally: **Did this edit add or remove any claim?** Restore lost claims and delete unsupported additions.
-
-Quick audit:
-
-- Are weak verbs leaning on adverbs?
-- Is passive voice hiding a known actor?
-- Does a vague sentence announce significance instead of naming the consequence?
-- Do three consecutive sentences or paragraphs share the same rhythm?
-- Does every section preview, explain, and recap the same point?
-- Could a paragraph disappear without losing a fact, example, condition, or consequence?
-- Does the prose sound like the supplied writing sample rather than a generic expert?
+Before delivery, compare the revision with the source and ask internally: did this edit add or remove any claim? Restore lost claims and delete unsupported additions.
 
 ---
 
@@ -464,4 +444,4 @@ Identify where the reader would have questions. Add examples, anticipate objecti
 
 ## Source Note
 
-The staged co-authoring and fresh-reader testing workflow adapts Anthropic's `doc-coauthoring` skill. The prose cleanup guidance is a compact subset of the local `unslop` skill; use that skill for a deeper standalone cleanup or its full pattern catalog.
+The staged co-authoring and fresh-reader testing workflow adapts Anthropic's `doc-coauthoring` skill. Prose cleanup delegates to the local `unslop` skill rather than embedding a subset of it.

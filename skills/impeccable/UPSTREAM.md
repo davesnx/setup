@@ -17,3 +17,11 @@ Review upstream changes before applying them. Preserve the integrated greenfield
 guidance, the corrected accessibility and color guidance, and the third-party
 notices. After an update, run `opencode debug skill` and validate all relative
 Markdown links.
+
+## Local Changes
+
+Local changes (2026-09-03): added one sentence near the top of `reference/live.md`
+pointing to the variate skill for whole-file alternatives the user flips through
+on localhost, and one sentence near the top of `reference/extract.md` pointing to
+the extract-design-system skill for pulling tokens from an external public
+website.

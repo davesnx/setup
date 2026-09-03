@@ -1,6 +1,6 @@
 ---
 name: technical-docs
-description: Write, edit, or review developer documentation such as READMEs, RFCs, tutorials, how-to guides, reference pages, explanations, PR descriptions, runbooks, and architecture docs. Use when the requested result is developer-facing documentation, including documentation based on supplied facts. Do not use for open-ended evidence gathering or source conflict analysis, or for X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings.
+description: Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, PR descriptions, runbooks, and architecture docs, including docs from supplied facts. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings.
 metadata:
   source: "https://github.com/cursor/plugins/blob/main/pstack/skills/technical-writing/SKILL.md"
 ---
@@ -47,6 +47,10 @@ Lead with purpose and the shortest verified path to first use. Add prerequisites
 ### RFC or architecture document
 
 State the problem, constraints, goals, non-goals, proposed design, alternatives, risks, rollout, and unresolved questions. Separate current facts from proposed behavior. Record the decision and its consequences.
+
+### Product requirements document
+
+State the problem, the affected users, and measurable success criteria. Write user stories as "As a [user], I want to [action], so that [benefit]," each with acceptance criteria that define done. List functional requirements and explicit non-goals. For an AI-powered feature, add an AI system requirements subsection: the model and tool needs, the evaluation strategy, and how the system handles failure. Close with risks and a phased rollout.
 
 ### PR description
 
