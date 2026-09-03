@@ -16,7 +16,7 @@ gh pr checks <pr> --json name,bucket,state,workflow,link
 Prefer the bundled inspector for GitHub Actions failures. It handles `gh` field drift, run extraction, job-log fallback, and concise snippets:
 
 ```bash
-python "<path-to-loop-on-ci>/scripts/inspect_pr_checks.py" --repo "." --pr "<number-or-url>" --json
+python3 "<path-to-loop-on-ci>/scripts/inspect_pr_checks.py" --repo "." --pr "<number-or-url>" --json
 ```
 
 Manual fallback:

@@ -2,6 +2,7 @@
 name: plannotator-annotate
 description: Open Plannotator's annotation UI for a markdown file, plain-text config file (.yaml, .json, .toml, .ini, .csv, .log, …), HTML file, URL, or folder and then respond to the returned annotations.
 disable-model-invocation: true
+argument-hint: "<path-or-url>"
 ---
 
 # Plannotator Annotate

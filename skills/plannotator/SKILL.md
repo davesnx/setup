@@ -154,7 +154,7 @@ plannotator uninstall [--purge] [--yes] [--dry-run]
 plannotator improve-context
 ```
 
-- `setup-goal` opens the interview or facts-acceptance UI for /goal workflows; it is driven by the `plannotator-setup-goal` skill and takes a bundle JSON (`-` reads stdin). Do not hand-build bundles.
+- `setup-goal` opens the interview or facts-acceptance UI for /goal workflows; it is driven by the OpenCode `/goal` plugin workflow and takes a bundle JSON (`-` reads stdin). Do not hand-build bundles.
 - `uninstall` removes Plannotator-installed components (`--purge` also deletes local data; `--yes` is required without a TTY; `--dry-run` previews).
 - `improve-context` and `install-runtime` are internal integration commands (hook plumbing and managed runtime install). Never run `improve-context` directly; `plannotator install-runtime agent-terminal` exists for reinstalling the optional annotate-terminal runtime and is normally run by the installer.
 - Additional host-internal subcommands (the `opencode-*` and `copilot-plan` family) are invoked by their plugins, not by you.

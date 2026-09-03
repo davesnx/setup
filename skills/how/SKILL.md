@@ -42,11 +42,7 @@ Decompose the question into 2-4 parallel exploration angles. Each angle should c
 
 The right decomposition depends on the question — use your judgment. For narrow questions, 2 explorers is fine. For broad subsystems, use up to 4.
 
-Spawn all explorers in a single message:
-
-- `subagent_type`: `generalPurpose`
-- `model`: `gpt-5.4`
-- `readonly`: `true`
+Spawn all explorers in a single message, using the harness's read-only exploration subagent type (`Explore` in Claude Code, `explore` in OpenCode). Do not pass a model; explorers inherit the session model.
 
 Each explorer gets the same base prompt from `references/explorer-prompt.md`, plus a specific exploration angle telling it which slice to focus on. Each explorer should:
 - Start broad: Glob for relevant directories, Grep for key types/interfaces/class names
@@ -61,29 +57,17 @@ Then proceed to Step 3.
 
 ### Step 2b — Direct Explain (simple questions)
 
-Spawn a single Task subagent that explores and explains in one pass:
-
-- `subagent_type`: `generalPurpose`
-- `model`: `claude-opus-4.6`
-- `readonly`: `true`
-
-This agent does its own exploration (Glob, Grep, Read) and writes the explanation directly. Read `references/explainer-prompt.md` for the communication style and output format — the agent follows the same structure, it just doesn't have explorer findings as input.
+Explore and explain yourself in one pass; no subagent is needed. Do the exploration (Glob, Grep, Read) and write the explanation directly. Read `references/explainer-prompt.md` for the communication style and output format — follow the same structure, you just don't have explorer findings as input.
 
 Proceed to Step 4.
 
 ### Step 3 — Synthesize (complex questions only)
 
-Once all explorers have returned, spawn a single Task subagent to synthesize their findings into one coherent explanation:
-
-- `subagent_type`: `generalPurpose`
-- `model`: `claude-opus-4.6`
-- `readonly`: `true`
-
-The explainer gets all explorers' findings and writes the human-facing explanation (see output format below). Read `references/explainer-prompt.md` for the full prompt template. The explainer reconciles overlapping findings, resolves contradictions, and weaves the separate slices into a unified picture.
+Once all explorers have returned, synthesize their findings yourself into one coherent explanation. Do not hand synthesis to another subagent; it would lose the conversation context and the user's actual question. Use `references/explainer-prompt.md` as your own template (see output format below). Reconcile overlapping findings, resolve contradictions, and weave the separate slices into a unified picture.
 
 ### Step 4 — Present
 
-Take the explainer's output and present it to the user. You may lightly edit for clarity or add context from the conversation, but don't substantially rewrite — the explainer agent's communication is the product.
+Present the explanation to the user, adding context from the conversation where it helps. The explanation is the product; keep it self-contained.
 
 ### Output Format
 
@@ -111,16 +95,13 @@ Run the full explain flow above (Steps 1-4). You need to understand the architec
 
 After the explanation is complete, spawn architectural critics. Launch all in a single message:
 
-| Subagent | Model |
-|----------|-------|
-| Critic A | `claude-opus-4.6` |
-| Critic B | `composer-2` |
-| Critic C | `gpt-5.4` |
+| Subagent | Lens |
+|----------|------|
+| Critic A | correctness: invariants, failure modes, data races, error paths |
+| Critic B | maintainability: coupling, change cost, testability |
+| Critic C | contrarian: argue the current design is right, then find what would actually break it |
 
-For each critic:
-- `subagent_type`: `generalPurpose`
-- `model`: the model from the table. These are starting suggestions — escalate to a higher reasoning tier of the same model family when the architecture warrants deeper analysis.
-- `readonly`: `true`
+Use the harness's general-purpose subagent type and tell each critic not to edit files. Do not pass a model; diversity comes from the lens and independent context, not from model families. Give each critic a different lens so the findings do not collapse into one voice.
 
 Read `references/critic-prompt.md` for the prompt template. Each critic gets:
 1. The explanation from Step 1 (so they don't waste time re-exploring)

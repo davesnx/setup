@@ -1,6 +1,8 @@
 ---
 name: autoresearch
 description: Set up and run a bounded, measured experiment loop for an optimization target. Use when asked to start autoresearch, optimize a metric, or run experiments.
+disable-model-invocation: true
+argument-hint: "<metric or target> [constraints]"
 ---
 
 # Autoresearch
