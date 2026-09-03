@@ -71,11 +71,11 @@
     },
   },
   "command": {
-    "autoresearch": {
+    "research": {
       "description": "Run web research with citations",
       "agent": "general",
       "subtask": true,
-      "template": "Use the `autoresearch` skill to research: $ARGUMENTS\n\nRequirements:\n- Start with 4-8 focused search queries.\n- Use websearch for discovery and webfetch for source verification.\n- Prefer primary and official sources.\n- Cross-check claims across independent sources.\n- Return output with sections: Objective, Findings, Conflicts/Uncertainty, Sources, Next questions.\n- In Sources include title + URL and a one-line relevance note.\n- If evidence is weak, say so explicitly.",
+      "template": "$ARGUMENTS\n\nRequirements:\n- Start with 4-8 focused search queries.\n- Use websearch for discovery and webfetch for source verification.\n- Prefer primary and official sources.\n- Cross-check claims across independent sources.\n- Return output with sections: Objective, Findings, Conflicts/Uncertainty, Sources, Next questions.\n- In Sources include title + URL and a one-line relevance note.\n- If evidence is weak, say so explicitly.",
     },
     "goal": {
       "description": "Set a session-scoped goal and auto-continue until complete.",
@@ -85,6 +85,11 @@
     "variate": {
       "description": "Create and compare visual design variations",
       "template": "Load the `variate` skill and follow it for this request: $ARGUMENTS",
+      "agent": "build",
+    },
+    "autoresearch": {
+      "description": "Run a bounded, measured experiment loop for an optimization target",
+      "template": "Load the `autoresearch` skill and follow it for this request: $ARGUMENTS",
       "agent": "build",
     },
   },
