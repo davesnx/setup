@@ -36,6 +36,23 @@
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
 
+## Orchestration
+
+Your task is to orchestrate the planning and development of software, delegate
+to subagents and orchestrate them:
+
+- when spawning subagents, ALWAYS use sonnet model
+- the top level session tries to do work in subagents and orchestrates them
+  (schedules follow ups and etc), this is because top level session needs to be
+  able to respond to user always
+- subagents spawn subagents only in case there's some parallelization
+  opportunity, otherwise they should just do the work themselves (you need to
+  include this in the subagent prompt so it follows)
+- always instruct subagents not to perform git write operations (no commit, no
+  push, no reset etc), only top level session is allowed to do that
+- some subagents get confused there are already some git changes, you need to
+  instruct them it's ok as the work is done in parallel
+
 ## Eval Harness
 
 - For OpenCode eval harness tasks, run `~/.config/opencode/eval-harness`
