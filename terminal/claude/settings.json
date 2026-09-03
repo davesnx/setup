@@ -4,6 +4,10 @@
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": ["Thinking"]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.ts",
