@@ -1,11 +1,11 @@
 ---
 name: council
-description: Run a model-diverse subagent council to investigate the same problem from multiple perspectives, compare findings, and produce a final recommendation. Use this skill whenever the user asks for a council, second opinions, multiple agents/models to evaluate one question, parallel investigation, red-team/blue-team comparison, or help deciding between competing technical approaches.
+description: Run a subagent council to investigate the same problem from multiple perspectives (and multiple models when the harness allows), compare findings, and produce a final recommendation. Use this skill whenever the user asks for a council, second opinions, multiple agents/models to evaluate one question, parallel investigation, red-team/blue-team comparison, or help deciding between competing technical approaches.
 ---
 
 # Council
 
-Use this skill to coordinate multiple subagents investigating the same question, with different models first and different assigned perspectives second, then synthesize their reports into one recommendation.
+Use this skill to coordinate multiple subagents investigating the same question, with deliberately different assigned perspectives (and different models when the harness allows), then synthesize their reports into one recommendation.
 
 This skill is best for judgment-heavy tasks: architecture tradeoffs, risky bug fixes, code review red-teaming, rollout decisions, incident analysis, and “is this alternative worth pursuing?” questions.
 
@@ -24,32 +24,23 @@ If the user’s request is ambiguous, ask only the minimum clarification needed.
 
 ### 2. Choose council members
 
-Prioritize model diversity. A council should not default to three agents on the same model with different angles; use that only when the available launch configuration cannot provide multiple useful models, or when the user explicitly asks for one model. If model diversity is unavailable, say so briefly before falling back to perspective-only diversity.
+Diversity comes from independent context and deliberately different angles. Some harnesses also let you pick a different model per child; when that is available and the user has not asked for one model, spread the members across the strongest available models. When it is not (Claude Code's `Agent` tool offers only Anthropic models; OpenCode's subagents inherit the session model), say so in one sentence and run every member on the session model. Never invent model IDs.
 
-Preferred default roster for a three-member council:
+Default roster for a three-member council:
 
-- Opus 4.7 or the strongest available Claude/Opus reasoning model: architecture, correctness, and edge-case analysis.
-- GPT 5.5 or the strongest available GPT/Codex model: implementation-grounded review, feasibility, and test strategy.
-- An open-source model such as Kimi 2.6, GLM 5.1, or the strongest available OSS/local model: contrarian critique, hidden assumptions, and alternative framing.
+- architect/correctness reviewer: architecture, invariants, edge cases;
+- implementation/testability reviewer: feasibility, test strategy, migration and rollout cost;
+- contrarian reviewer: hidden assumptions, alternative framing, “argue against the obvious solution”.
 
-If one of these exact models is unavailable in the active harness, use the closest available model from that family and note the substitution. If no open-source model is available, use a third distinct frontier model if possible; otherwise use the strongest remaining model with a deliberately adversarial or specialist angle.
+Swap in a security, performance, or product-risk angle when the question calls for it. Do not make the angles redundant; never ask every member for general architecture review.
 
-Assign both a model and an angle to each member. Avoid making the angles redundant with the models; for example, do not ask all members to do general architecture review. Useful angle combinations include:
-
-- architect/correctness reviewer;
-- implementation/testability reviewer;
-- red-team, security, performance, or product-risk reviewer;
-- contrarian “argue against the obvious solution” reviewer.
-
-When different children need different models, launch them in separate `run_agents` calls because model selection is run-wide. If the requested model resolves differently than expected, treat the resolved launch settings as authoritative and continue unless they make the task infeasible.
-
-When using non-default harnesses, choose valid model IDs for that harness. For example, Claude Code may expose `claude-opus-4-7`, Codex may expose `gpt-5.5`, and open-source models depend on the currently configured local or remote provider. Do not invent unsupported model IDs; if a desired model is not available, select the closest supported substitute and preserve the intended angle diversity.
+Launch all members in one message so they run in parallel.
 
 For read-only investigations, keep all children in the same checkout and explicitly tell them not to edit files. For implementation or prototyping councils, give each local child its own git worktree and branch so they cannot collide.
 
 ### 3. Brief before launching
 
-For explicit orchestration requests, briefly tell the user which council members you plan to launch and what each will investigate, then wait for approval before calling `run_agents`.
+For explicit orchestration requests, briefly tell the user which council members you plan to launch and what each will investigate, then launch. Wait for approval first only when the council may edit files, or when the user asked to be consulted before launches.
 
 The shared brief should include:
 

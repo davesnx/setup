@@ -54,11 +54,10 @@ for name in opencode.jsonc tui.json AGENTS.md pstack-models.md package.json eval
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 
-for name in agents commands themes; do
+for name in agents commands skills themes; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 
-link_path "$SKILLS_HOME" "$CONFIG_HOME/skills" "$BACKUP_ROOT/opencode/skills"
 link_path "$ROOT/AGENTS.md" "$AGENTS_HOME/AGENTS.md" "$BACKUP_ROOT/agents-AGENTS.md"
 link_path "$ROOT/AGENTS.md" "$CLAUDE_HOME/CLAUDE.md" "$BACKUP_ROOT/claude-CLAUDE.md"
 link_path "$SKILLS_HOME" "$AGENTS_HOME/skills" "$BACKUP_ROOT/agents-skills"

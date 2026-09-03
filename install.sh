@@ -1,6 +1,33 @@
 #! /usr/bin/env sh
 
+set -eu
+
 setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
+
+if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
+  echo "Invalid setup path: $setup_path" >&2
+  exit 66
+fi
+
+if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
+  echo "HOME must name an existing directory." >&2
+  exit 69
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required." >&2
+  exit 69
+fi
+
+if [ ! -x /bin/bash ]; then
+  echo "/bin/bash is required." >&2
+  exit 69
+fi
+
+zsh_path=$(command -v zsh 2>/dev/null) || {
+  echo "zsh is required." >&2
+  exit 69
+}
 
 echo "👉 dotfiles path: '$setup_path'"
 
@@ -21,6 +48,12 @@ ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
 ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$setup_path/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
+
+# Claude Code
+mkdir -p "$HOME/.claude"
+ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
+ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
+ln -s -i "$setup_path/.claude/statusline.ts" "$HOME/.claude/statusline.ts"
 
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
@@ -54,12 +87,17 @@ if [ -f "$setup_path/local/gitconfig" ]; then
 fi
 
 # Change default terminal to ZSH
-chsh -s "$(command -v zsh)"
+chsh -s "$zsh_path"
 
 # OpenCode, Claude Code, and shared agent skills (profile auto-detected).
 sh "$setup_path/terminal/opencode/install.sh"
 
 # Install zimfw without generating shell configuration.
 mkdir -p "$HOME/.zim"
-curl -fsSL -o "$HOME/.zim/zimfw.zsh" https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-zsh -c 'source "$ZIM_HOME/zimfw.zsh" init -q'
+zimfw_download=$(mktemp "$HOME/.zim/zimfw.zsh.XXXXXX")
+trap 'rm -f "$zimfw_download"' EXIT HUP INT TERM
+curl -fsSL -o "$zimfw_download" https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+"$zsh_path" -n "$zimfw_download"
+mv "$zimfw_download" "$HOME/.zim/zimfw.zsh"
+trap - EXIT HUP INT TERM
+"$zsh_path" -c "source \"\$ZIM_HOME/zimfw.zsh\" init -q"
