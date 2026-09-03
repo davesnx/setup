@@ -1,6 +1,6 @@
 ---
 name: technical-docs
-description: Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, PR descriptions, runbooks, and architecture docs, including docs from supplied facts. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings.
+description: "Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, PR descriptions, runbooks, and architecture docs, including docs from supplied facts. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings."
 metadata:
   source: "https://github.com/cursor/plugins/blob/main/pstack/skills/technical-writing/SKILL.md"
 ---
