@@ -7,7 +7,7 @@
   "small_model": "openai/gpt-5.4-nano",
   "agent": {
     "general": {
-      "model": "anthropic/claude-fable-5",
+      "model": "anthropic/claude-fable-5-1",
     },
   },
   "instructions": ["pstack-models.md"],
