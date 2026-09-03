@@ -3,8 +3,11 @@
 ## Communication
 
 - Always use ASD-STE100 Simplified Technical English.
+- Please remove all mannered prose.
 - Do not use jargon. Write clearly, simply, and concisely, as one person
   speaking to another.
+- Use lists when requested or when they improve clarity. Use plain prose when
+  minimal formatting is requested or the exchange is personal or emotional.
 
 ## Question Reasoning
 
