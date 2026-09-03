@@ -18,8 +18,9 @@ directory to `~/.config/opencode/skills`, `~/.agents/skills`, and
 same source. Existing files move to a timestamped directory under
 `~/.local/state/setup/backups`.
 
-The global `AGENTS.md` file is also linked to both
-`~/.config/opencode/AGENTS.md` and `~/.agents/AGENTS.md`.
+The global `AGENTS.md` file is also linked to `~/.config/opencode/AGENTS.md`,
+`~/.agents/AGENTS.md`, and `~/.claude/CLAUDE.md`, so Claude Code reads the same
+rules.
 
 The shell configuration exports `OPENCODE_CONFIG` when the selected
 `host.jsonc` link exists. Start a new shell after installation.

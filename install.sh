@@ -4,18 +4,22 @@ setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
 
 echo "👉 dotfiles path: '$setup_path'"
 
-echo ""
-echo "Installing custom packages"
-echo ""
-
-sh "$setup_path/mac/install.sh" "$setup_path"
+if [ "$(uname -s)" = Darwin ]; then
+  echo ""
+  echo "Installing custom packages"
+  echo ""
+  sh "$setup_path/mac/install.sh" "$setup_path"
+fi
 
 # Zsh
 ln -s -i "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
 ln -s -i "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"
 ln -s -i "$setup_path/terminal/zsh/.zprofile" "$HOME/.zprofile"
 ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
-ln -s -i "$setup_path/terminal/zsh/.zlogin" "$HOME/.zlogin"
+# .zlogin was removed from the repository; drop a stale link to it.
+if [ -L "$HOME/.zlogin" ] && [ ! -e "$HOME/.zlogin" ]; then
+  rm "$HOME/.zlogin"
+fi
 
 # Git
 ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
@@ -24,6 +28,10 @@ ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+
+# htop
+mkdir -p "$HOME/.config/htop"
+ln -s -i "$setup_path/terminal/htop/htoprc" "$HOME/.config/htop/htoprc"
 
 # SSH
 ssh_config_dir="$HOME/.ssh/config.d"
@@ -51,6 +59,9 @@ fi
 
 # Change default terminal to ZSH
 chsh -s "$(command -v zsh)"
+
+# OpenCode, Claude Code, and shared agent skills (profile auto-detected).
+sh "$setup_path/terminal/opencode/install.sh"
 
 # Install zimfw without generating shell configuration.
 mkdir -p "$HOME/.zim"

@@ -13,7 +13,10 @@ if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
 fi
 
 # Install brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # All apps (This line is 2 times because there are dependencies between brew cask and brew)
 brew bundle --file="$setup_path/mac/brew/Brewfile"

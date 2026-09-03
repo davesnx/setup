@@ -13,7 +13,7 @@ alias .....="cd ../../../../.."
 # One chars
 alias h="history 1"
 alias c="cursor --classic"
-alias z="open $1 -a \"Zed\""
+alias z="open -a Zed"
 alias n="npm"
 alias y="yarn"
 alias p="pnpm"
@@ -28,8 +28,9 @@ alias jj="__zoxide_zi"
 
 alias oc="/opt/homebrew/bin/opencode"
 alias occ="/opt/homebrew/bin/opencode --continue"
-alias claude="command claude rc --spawn same-dir --permission-mode auto"
-alias ccc="command claude --continue"
+alias _claude="command claude"
+alias claude="command claude --remote-control --permission-mode auto"
+alias ccc="command claude --continue --remote-control --permission-mode auto"
 
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
