@@ -19,6 +19,7 @@
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "includeCoAuthoredBy": false,
+  "respectGitignore": true,
   "attribution": {
     "commit": "",
     "pr": ""
