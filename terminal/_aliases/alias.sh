@@ -28,7 +28,8 @@ alias jj="__zoxide_zi"
 
 alias oc="/opt/homebrew/bin/opencode"
 alias occ="/opt/homebrew/bin/opencode --continue"
-alias ccc="claude --continue"
+alias claude="command claude rc --spawn same-dir --permission-mode auto"
+alias ccc="command claude --continue"
 
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
