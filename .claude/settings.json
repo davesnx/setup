@@ -1,5 +1,7 @@
 {
   "model": "fable[1m]",
+  "effortLevel": "xhigh",
+  "autoUpdatesChannel": "latest",
   "hooks": {
     "PreToolUse": [
       {
