@@ -12,6 +12,7 @@
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "includeCoAuthoredBy": false,
+  "remoteControlAtStartup": true,
   "respectGitignore": false,
   "cleanupPeriodDays": 365,
   "preferredNotifChannel": "terminal_bell",
