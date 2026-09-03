@@ -1,6 +1,7 @@
 {
   "model": "fable[1m]",
   "effortLevel": "xhigh",
+  "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "latest",
   "hooks": {
     "PreToolUse": [
@@ -16,6 +17,11 @@
     ]
   },
   "tui": "fullscreen",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.ts",
+    "padding": 0
+  },
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "includeCoAuthoredBy": false,

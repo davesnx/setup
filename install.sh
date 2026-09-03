@@ -26,6 +26,7 @@ ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 mkdir -p "$HOME/.claude"
 ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
 ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
+ln -s -i "$setup_path/.claude/statusline.ts" "$HOME/.claude/statusline.ts"
 ln -s -i "$setup_path/skills" "$HOME/.claude/skills"
 
 # Tmux
