@@ -22,6 +22,12 @@ ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$setup_path/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 
+# Claude Code
+mkdir -p "$HOME/.claude"
+ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
+ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
+ln -s -i "$setup_path/skills" "$HOME/.claude/skills"
+
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
 
