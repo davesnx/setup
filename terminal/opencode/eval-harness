@@ -26,7 +26,10 @@ case "$command_name" in
 		;;
 esac
 
-OPENCODE_SKILLS_ROOT="$root/skills" \
+# install.sh puts node modules under the OpenCode config dir, but eval-bin/yq
+# resolves from its own real path inside the repo, so tell node where they are.
+NODE_PATH="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/node_modules${NODE_PATH:+:$NODE_PATH}" \
+OPENCODE_SKILLS_ROOT="${OPENCODE_SKILLS_ROOT:-$root/skills}" \
 EVAL_STATE_DIR="$state_dir" \
 EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
 BASH_ENV="$root/terminal/opencode/eval-harness-cleanup.bash" \
