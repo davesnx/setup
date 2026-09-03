@@ -12,7 +12,7 @@ alias .....="cd ../../../../.."
 
 # One chars
 alias h="history 1"
-alias c="open $1 -a \"Cursor\""
+alias c="cursor --classic"
 alias z="open $1 -a \"Zed\""
 alias n="npm"
 alias y="yarn"
@@ -28,7 +28,8 @@ alias jj="__zoxide_zi"
 
 alias oc="/opt/homebrew/bin/opencode"
 alias occ="/opt/homebrew/bin/opencode --continue"
-alias ccc="claude --continue"
+alias claude="command claude rc --spawn same-dir --permission-mode auto"
+alias ccc="command claude --continue"
 
 # Edit setup
 alias cfg="\${EDITOR} \${DOTFILES_PATH}"
@@ -37,9 +38,6 @@ alias cfg="\${EDITOR} \${DOTFILES_PATH}"
 alias hosts="\${EDITOR} /etc/hosts"
 
 alias quit="exit"
-
-# enpass
-alias enpass="enpass-cli --vault /Users/davesnx/Documents/Enpass/Vaults/primary --sort -pin"
 
 # Re-alias "export" to " export" to remove from history
 alias export=" export"

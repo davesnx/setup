@@ -2,7 +2,7 @@ schema_version: 2
 id: x-writing-routes-x-writing-only
 mode: deterministic
 skill_under_test: x-writing
-skills_loaded: [technical-docs, technical-research, x-writing]
+skills_loaded: [technical-docs, x-writing]
 description: "A technical release announcement for X routes to X writing only"
 tags: [routing, x-post, near-miss]
 
@@ -21,5 +21,3 @@ checks:
     value: '"name":"x-writing"'
   - kind: output_not_contains
     value: '"name":"technical-docs"'
-  - kind: output_not_contains
-    value: '"name":"technical-research"'

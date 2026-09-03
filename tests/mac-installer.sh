@@ -104,7 +104,12 @@ done
 exec /bin/ln "$@"
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln"
+cat >"$test_bin/launchctl" <<'EOF'
+#!/bin/sh
+printf 'launchctl:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 

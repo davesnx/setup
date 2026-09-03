@@ -17,6 +17,7 @@
 /terminal/opencode/*.lock
 /terminal/opencode/package-lock.json
 /terminal/opencode/host.jsonc
+/terminal/opencode/.opencode/
 
 # Machine-specific overrides
 /local/*

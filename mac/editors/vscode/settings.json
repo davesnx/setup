@@ -2,7 +2,7 @@
   "update.mode": "default",
   /* Window */
   "window.zoomLevel": 2,
-  "workbench.colorTheme": "Fosk (development)",
+  "workbench.colorTheme": "Fosk",
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",

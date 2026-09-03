@@ -13,7 +13,7 @@
       "transcript_span": {
         "start_line": 2,
         "end_line": 2,
-        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-28T15-19-25Z-1889/x-writing-routes-x-writing-only/transcript.jsonl"
+        "transcript_path": "/Users/davesnx/.local/state/opencode/eval-harness/runs/2026-08-31T20-36-22Z-17588/x-writing-routes-x-writing-only/transcript.jsonl"
       },
       "fix_proposal": null
     },
@@ -22,16 +22,6 @@
       "passed": true,
       "failed_check_id": "output_not_contains:\"name\":\"technical-docs\"",
       "expected": "absence of \"name\":\"technical-docs\"",
-      "actual": "absent",
-      "diff_hint": "",
-      "transcript_span": null,
-      "fix_proposal": null
-    },
-    {
-      "kind": "output_not_contains",
-      "passed": true,
-      "failed_check_id": "output_not_contains:\"name\":\"technical-research\"",
-      "expected": "absence of \"name\":\"technical-research\"",
       "actual": "absent",
       "diff_hint": "",
       "transcript_span": null,
@@ -51,6 +41,6 @@
     "timestamp": "2026-08-28T15:19:27Z"
   },
   "last_seen_triggers": [
-    "baseline"
+    "accept"
   ]
 }

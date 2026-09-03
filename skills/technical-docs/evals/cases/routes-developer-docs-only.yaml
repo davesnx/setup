@@ -2,7 +2,7 @@ schema_version: 2
 id: technical-docs-routes-developer-docs-only
 mode: deterministic
 skill_under_test: technical-docs
-skills_loaded: [technical-docs, technical-research, x-writing]
+skills_loaded: [technical-docs, x-writing]
 description: "Supplied, settled facts route to developer documentation only"
 tags: [routing, developer-docs, near-miss]
 
@@ -19,7 +19,5 @@ budget:
 checks:
   - kind: output_contains
     value: '"name":"technical-docs"'
-  - kind: output_not_contains
-    value: '"name":"technical-research"'
   - kind: output_not_contains
     value: '"name":"x-writing"'

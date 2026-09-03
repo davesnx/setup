@@ -2,18 +2,18 @@
 
 # Required parameters:
 # @raycast.schemaVersion 1
-# @raycast.title Open Chrome Agent
+# @raycast.title Open Brave Agent
 # @raycast.mode compact
 
 # Optional parameters:
 # @raycast.packageName Browser
-# @raycast.description Open Chrome with localhost CDP enabled for SSH agent control.
+# @raycast.description Open Brave with localhost CDP enabled for SSH agent control.
 
 set -euo pipefail
 
 PORT="${CHROME_AGENT_PORT:-9222}"
 PROFILE_DIR="${CHROME_AGENT_PROFILE:-$HOME/.chrome-agent-profile}"
-CHROME_APP="${CHROME_AGENT_APP:-Google Chrome}"
+CHROME_APP="${CHROME_AGENT_APP:-Brave Browser}"
 VERSION_URL="http://127.0.0.1:${PORT}/json/version"
 APP_URL="${CHROME_AGENT_AHREFS_APP_URL:-http://localhost:8888}"
 MONOREPO_DIR="${CHROME_AGENT_MONOREPO:-$HOME/Code/git.ahrefs.com/monorepo}"

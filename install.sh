@@ -54,8 +54,35 @@ ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$setup_path/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
 
+# Claude Code
+mkdir -p "$HOME/.claude"
+ln -s -i "$setup_path/.claude/settings.json" "$HOME/.claude/settings.json"
+ln -s -i "$setup_path/.claude/settings.local.json" "$HOME/.claude/settings.local.json"
+ln -s -i "$setup_path/.claude/statusline.ts" "$HOME/.claude/statusline.ts"
+ln -s -i "$setup_path/skills" "$HOME/.claude/skills"
+
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+
+# SSH
+ssh_config_dir="$HOME/.ssh/config.d"
+ssh_opener_config="$ssh_config_dir/xdg-open.conf"
+mkdir -p "$ssh_config_dir"
+chmod 700 "$HOME/.ssh" "$ssh_config_dir"
+
+if [ -e "$ssh_opener_config" ] && [ ! -L "$ssh_opener_config" ]; then
+  echo "Cannot replace SSH config file: $ssh_opener_config" >&2
+  exit 73
+fi
+ln -sfn "$setup_path/ssh/xdg-open.conf" "$ssh_opener_config"
+
+ssh_config="$HOME/.ssh/config"
+if [ ! -e "$ssh_config" ]; then
+  (umask 077 && : >"$ssh_config")
+fi
+if ! grep -Eq '^[[:space:]]*Include[[:space:]]+(~/.ssh/)?config\.d/\*[[:space:]]*$' "$ssh_config"; then
+  printf '\nInclude config.d/*\n' >>"$ssh_config"
+fi
 
 if [ -f "$setup_path/local/gitconfig" ]; then
   ln -s -i "$setup_path/local/gitconfig" "$HOME/.gitconfig.local"

@@ -6,18 +6,19 @@
       "enabled": true,
       "command": [
         "npx",
-        "chrome-devtools-mcp@1.2.0",
-        "--browser-url=http://127.0.0.1:9222",
+        "-y",
+        "chrome-devtools-mcp@1.8.0",
+        "--executable-path=/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+        "--user-data-dir=/Users/davesnx/.cache/chrome-devtools-mcp/brave-profile",
+        "--no-usage-statistics",
+        "--no-performance-crux",
+        "--redact-network-headers",
       ],
     },
     "playwriter": {
       "type": "local",
       "enabled": true,
       "command": ["npx", "-y", "playwriter@latest"],
-      "environment": {
-        "PLAYWRITER_HOST": "127.0.0.1",
-        "PLAYWRITER_PORT": "25025",
-      },
     },
   },
 }

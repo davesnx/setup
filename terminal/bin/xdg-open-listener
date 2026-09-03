@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -u
+
+socket="$HOME/.opener.sock"
+listener_pid=""
+
+cleanup() {
+  if [[ -n "$listener_pid" ]]; then
+    kill "$listener_pid" 2>/dev/null || true
+    wait "$listener_pid" 2>/dev/null || true
+  fi
+  [[ ! -S "$socket" ]] || rm -f "$socket"
+}
+
+trap cleanup EXIT
+trap 'exit 0' HUP INT TERM
+
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  printf 'xdg-open-listener requires macOS\n' >&2
+  exit 1
+fi
+
+umask 077
+rm -f "$socket"
+exec 3< <(/usr/bin/nc -lkU "$socket")
+listener_pid=$!
+
+while IFS= read -r -u 3 url; do
+  case "$url" in
+  http://* | https://*)
+    if ! /usr/bin/open "$url"; then
+      printf 'Could not open browser URL\n' >&2
+    fi
+    ;;
+  *)
+    printf 'Rejected non-HTTP browser URL\n' >&2
+    ;;
+  esac
+done

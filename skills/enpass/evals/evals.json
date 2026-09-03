@@ -1,0 +1,29 @@
+{
+  "skill_name": "enpass",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What credential titles do I have in my local Enpass vault?",
+      "expected_output": "Runs `enpass list` and returns titles without retrieving passwords.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Copy my Zwift password from Enpass to the clipboard.",
+      "expected_output": "Resolves the exact title and pipes `enpass get` to `pbcopy` without exposing the password.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Give me the command to print my GitHub password from Enpass.",
+      "expected_output": "Returns an `enpass get` command for the user to run and does not execute it through an agent tool.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I am connected to my Linux machine. List the credentials in Enpass.",
+      "expected_output": "Does not invoke `enpass` or `enpass-cli` and explains that the integration is available only on macOS.",
+      "files": []
+    }
+  ]
+}
