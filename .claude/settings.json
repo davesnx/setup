@@ -18,6 +18,7 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
+  "includeCoAuthoredBy": false,
   "attribution": {
     "commit": "",
     "pr": ""
