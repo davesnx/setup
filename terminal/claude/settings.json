@@ -12,7 +12,7 @@
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "includeCoAuthoredBy": false,
-  "respectGitignore": true,
+  "respectGitignore": false,
   "cleanupPeriodDays": 365,
   "preferredNotifChannel": "terminal_bell",
   "teammateMode": "in-process",
@@ -26,12 +26,12 @@
     "ENABLE_TOOL_SEARCH": "true",
     "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
     "USE_BUILTIN_RIPGREP": "1",
-    "CLAUDE_CODE_GLOB_NO_IGNORE": "false",
     "BASH_MAX_TIMEOUT_MS": "1800000",
     "BASH_MAX_OUTPUT_LENGTH": "60000",
     "DISABLE_ERROR_REPORTING": "1"
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Bash(git diff:*)",
       "Bash(git status:*)",
@@ -77,8 +77,6 @@
     "deny": [
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
       "Bash(rm -rf:*)",
       "Bash(rm -fr:*)",
       "Bash(shred:*)",
