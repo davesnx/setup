@@ -30,7 +30,7 @@ Read:
 - PR title, body, state, checks, reviews, and unresolved discussion when a PR exists
 - linked issues, design docs, migrations, rollout notes, and test evidence when they explain intent
 
-Use `github/scripts/pr-snapshot.ts` and `pr-threads.ts` when available. Otherwise use `git` and `gh` directly.
+Use `pr-snapshot.ts` and `pr-threads.ts` from the `github` skill's `scripts/` directory (`${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/github}/scripts/`, not the current directory) when available. Otherwise use `git` and `gh` directly.
 
 Understand the actual code changes, not only filenames and commit messages.
 

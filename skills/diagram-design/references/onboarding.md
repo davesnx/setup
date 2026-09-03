@@ -4,6 +4,8 @@
 
 Takes about 60 seconds.
 
+**Persistence rule.** When the skill lives in a shared or version-controlled directory (installed under `~/.claude/skills`, `~/.agents/skills`, `~/.config/opencode/skills`, or any Git checkout), do not write to `style-guide.md` inside the skill. Save the extracted tokens as a named profile in `~/.diagram-design/profiles/<slug>.md` and write a project marker `.diagram-design` containing `profile: <slug>` (see [`profiles.md`](profiles.md)). Every later generation reads the profile directly. Only a private, untracked copy of the skill may take the in-place `style-guide.md` path described below.
+
 Three source methods are supported. Jump to the relevant section:
 
 - [§ URL](#url) — fetch a live website
@@ -155,7 +157,7 @@ The receipt is required when the user says “match this site,” “use their b
 
 Before overwriting a still-pristine guide, create the recoverable `default` snapshot if it does not exist, following [`profiles.md`](profiles.md). Retain the pre-diff body for that snapshot; never snapshot newly customized tokens as `default`.
 
-Write the new tokens to `style-guide.md`. Suggest running the `/regenerate-examples` flow (if it exists) or rebuilding one example to verify the new skin reads cleanly.
+Write the new tokens to `style-guide.md` (private copies only; shared installs save a profile and a project marker instead, per the persistence rule above). Suggest running the `/regenerate-examples` flow (if it exists) or rebuilding one example to verify the new skin reads cleanly.
 
 After onboarding, the user should:
 

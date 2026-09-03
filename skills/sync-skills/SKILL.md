@@ -62,7 +62,7 @@ If the skill directories have changes:
 3. Determine and run the repository-required format, lint, build, and relevant
    test commands for the staged files. Use check-only modes when available. If
    a required formatter writes files, limit it to the skill directories, then inspect the
-   full worktree and staged diff again. Also run `opencode debug skill` and
+   full worktree and staged diff again. Also run `opencode debug skill` when the `opencode` command is available, and
    `git diff --check --cached`.
 4. Commit with a concise message that describes the staged skill changes.
 5. Inspect the created commit's path list and confirm that every path is under

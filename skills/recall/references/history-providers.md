@@ -69,6 +69,12 @@ Cursor transcripts live at `~/.cursor/projects/<slug>/agent-transcripts/<uuid>/<
 
 Order transcript directories by real modification time, not UUID. Search for the topic first, then read only matching conversations and relevant regions. Each line is one message. Cite the transcript UUID.
 
+## Claude Code
+
+Claude Code stores transcripts at `~/.claude/projects/<slug>/<session-id>.jsonl`. Build `<slug>` from the absolute workspace path by replacing every `/` with `-` (the leading slash included, so `/home/me/setup` becomes `-home-me-setup`). Subagent transcripts live under `~/.claude/projects/<slug>/<session-id>/subagents/`; exclude them.
+
+Each line is one JSON record. Only rows whose `type` is `user` or `assistant` carry conversation content, in `message.content` (a string or an array of `{type: "text", text}` blocks); other rows are metadata. Order sessions by file modification time. Search for the topic first with `grep -l`, then read only matching sessions and relevant regions. Exclude the active session (`CLAUDE_CODE_SESSION_ID` when set). Cite the session ID.
+
 ## Other Hosts
 
 Use a host-provided session search or history tool when available. Apply the same workspace, time-window, active-session, candidate-first, and citation rules. Do not infer a storage path for an unknown host.

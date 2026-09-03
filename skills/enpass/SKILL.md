@@ -1,6 +1,6 @@
 ---
 name: enpass
-description: Use on macOS when the user asks to list local Enpass credential titles, retrieve or copy an Enpass password, or provide an Enpass secret to a command. Uses the safe local `enpass` wrapper and prevents broad substring matches or password exposure in agent output. Never invokes Enpass binaries on Linux.
+description: Use when the user asks to list local Enpass credential titles, retrieve or copy an Enpass password, or provide an Enpass secret to a command. Uses the safe local `enpass` wrapper and prevents broad substring matches or password exposure in agent output. Works on macOS via the keychain and on Linux only when `ENP_PIN` is set; never calls `enpass-cli` directly.
 ---
 
 # Enpass
@@ -10,9 +10,11 @@ wrapper limits access to credential titles and exact-title password lookup.
 
 ## Platform Check
 
-Confirm the operating system before running a command. On Linux, do not invoke
-`enpass` or `enpass-cli`. Stop and explain that this skill's local Enpass
-integration is available only on macOS.
+Confirm the operating system before running a command. On macOS the wrapper
+reads the PIN from the keychain. On Linux it needs `ENP_PIN` in the
+environment; if it is unset, stop and tell the user to export it in their own
+shell. Never set it yourself, never ask for its value, and never call
+`enpass-cli` directly on any platform.
 
 ## Safety
 
@@ -40,7 +42,8 @@ operations. If several titles look plausible, ask the user which one they mean.
 To put a password on the user's clipboard without exposing it to the agent:
 
 ```sh
-enpass get "Exact Title" | pbcopy
+enpass get "Exact Title" | pbcopy      # macOS
+enpass get "Exact Title" | wl-copy     # Linux Wayland; use `xclip -selection clipboard` on X11
 ```
 
 To provide a password to one authorized command, retrieve and consume it in the
