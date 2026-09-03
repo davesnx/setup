@@ -3,19 +3,6 @@
   "effortLevel": "xhigh",
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "latest",
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "dcg"
-          }
-        ]
-      }
-    ]
-  },
   "tui": "fullscreen",
   "statusLine": {
     "type": "command",
