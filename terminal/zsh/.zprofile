@@ -73,3 +73,6 @@ fi
 if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
   export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
 fi
+
+# OrbStack adds its CLI tools and completions from this file when installed.
+[[ -r "$HOME/.orbstack/shell/init.zsh" ]] && source "$HOME/.orbstack/shell/init.zsh"
