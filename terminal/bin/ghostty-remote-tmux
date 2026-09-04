@@ -27,16 +27,17 @@ on_exit() {
 }
 
 on_err() {
-  local line=$1
-  local status=$?
+  local status=$? line=$1
   log "ERROR: command failed: ${BASH_COMMAND} (line $line, exit $status)"
   printf '%s\n' "ghostty-remote-tmux: unexpected error (see $log_file)"
   exit "$status"
 }
 
 # Closing the Ghostty window sends SIGHUP; record it so the log explains why
-# the ssh status line below never appears.
+# the ssh status line below never appears. The hangup arrives more than once
+# (pty close, then the login(1) session leader exiting), so ignore repeats.
 on_hup() {
+  trap '' HUP
   log "terminal closed while ssh was running (SIGHUP)"
   exit 129
 }

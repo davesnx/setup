@@ -40,8 +40,7 @@ on_exit() {
 }
 
 on_err() {
-  local line=$1
-  local status=$?
+  local status=$? line=$1
   log "ERROR: command failed: ${BASH_COMMAND} (line $line, exit $status)"
   printf '%s\n' "nspawn: unexpected error (see $log_file)"
   exit "$status"
