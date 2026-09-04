@@ -70,4 +70,23 @@ references such as `{env:OPENCODE_ANTHROPIC_API_KEY}` at run time.
 The shell wraps global lifecycle commands for the `skills` CLI. Commands such
 as `npx skills add`, `update`, `remove`, and `list` always use global scope.
 The CLI writes global skills to `~/.agents/skills`, which resolves to this
-repository's `skills/` directory.
+repository's `skills/` directory. It records the source and folder hash of each
+installed skill in `~/.agents/.skill-lock.json`, which `install.sh` links to
+`skills/.skill-lock.json`. Commit the lock file together with the skills it
+describes, so both machines share one record of what is installed.
+
+Before the first `install.sh` run on a machine that already has its own lock
+file, merge its entries into the tracked file. Otherwise the installer moves the
+old file to the backup directory and its entries are lost:
+
+```sh
+jq -s '.[1] * .[0]' skills/.skill-lock.json ~/.agents/.skill-lock.json > skills/.skill-lock.json.new
+mv skills/.skill-lock.json.new skills/.skill-lock.json
+```
+
+Each vendored skill has an `UPSTREAM.md` that records the source path, the
+revision, and any local edits. The `plannotator*` skills come from the
+Plannotator installer (`curl -fsSL https://plannotator.ai/install.sh | bash`).
+It writes the core skills directly into `skills/` and installs the extra skills
+with `npx skills add`. After an update, run `git diff -- skills`, re-apply the
+local edits listed in each `UPSTREAM.md`, update the revision there, and commit.

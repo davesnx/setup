@@ -62,6 +62,7 @@ link_path "$ROOT/AGENTS.md" "$AGENTS_HOME/AGENTS.md" "$BACKUP_ROOT/agents-AGENTS
 link_path "$ROOT/AGENTS.md" "$CLAUDE_HOME/CLAUDE.md" "$BACKUP_ROOT/claude-CLAUDE.md"
 link_path "$SKILLS_HOME" "$AGENTS_HOME/skills" "$BACKUP_ROOT/agents-skills"
 link_path "$SKILLS_HOME" "$CLAUDE_HOME/skills" "$BACKUP_ROOT/claude-skills"
+link_path "$SKILLS_HOME/.skill-lock.json" "$AGENTS_HOME/.skill-lock.json" "$BACKUP_ROOT/agents-skill-lock.json"
 
 link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc" "$BACKUP_ROOT/opencode/host.jsonc"
 
