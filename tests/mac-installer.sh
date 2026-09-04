@@ -118,7 +118,14 @@ if [ "$1" = clone ]; then
 fi
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git"
+# Stubbed because the real npm would clone the github: dependency through the
+# fake git stub above and fail; whether npm is even on the base PATH differs per host.
+cat >"$test_bin/npm" <<'EOF'
+#!/bin/sh
+printf 'npm:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 
