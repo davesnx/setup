@@ -8,9 +8,6 @@ setopt HIST_IGNORE_ALL_DUPS # Remove older command from the history if a duplica
 setopt HIST_REDUCE_BLANKS # Remove superfluous blanks before recording entry.
 setopt hist_ignore_space # ignore commands that start with space
 setopt HIST_IGNORE_DUPS # Don't record an entry that was just recorded again.
-HISTFILE=~/.zhistory
-export HISTSIZE='32768'
-SAVEHIST=$HISTSIZE
 bindkey -e # Set editor default keymap to emacs (`-e`) or vi (`-v`)
 
 setopt nonomatch
@@ -39,6 +36,12 @@ if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
 fi
 
 source ${ZIM_HOME}/init.zsh
+
+# The zim environment module sets HISTSIZE and SAVEHIST, so these must come
+# after init.zsh to take effect.
+HISTFILE=~/.zhistory
+export HISTSIZE='32768'
+SAVEHIST=$HISTSIZE
 
 export LESS_TERMCAP_md=${yellow}
 export MANPAGER='less -X'
