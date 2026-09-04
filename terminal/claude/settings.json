@@ -17,7 +17,7 @@
   "agentPushNotifEnabled": true,
   "includeCoAuthoredBy": false,
   "remoteControlAtStartup": true,
-  "respectGitignore": false,
+  "respectGitignore": true,
   "cleanupPeriodDays": 365,
   "preferredNotifChannel": "terminal_bell",
   "teammateMode": "in-process",
