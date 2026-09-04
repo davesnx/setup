@@ -29,6 +29,11 @@ zsh_path=$(command -v zsh 2>/dev/null) || {
   exit 69
 }
 
+if ! command -v git >/dev/null 2>&1; then
+  echo "git is required." >&2
+  exit 69
+fi
+
 echo "👉 dotfiles path: '$setup_path'"
 
 if [ "$(uname -s)" = Darwin ]; then
@@ -72,6 +77,10 @@ fi
 
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
+# The config loads this status line plugin at startup and errors without it.
+if [ ! -d "$HOME/.tmux/plugins/tmux-nova" ]; then
+  git clone --depth 1 https://github.com/o0th/tmux-nova.git "$HOME/.tmux/plugins/tmux-nova"
+fi
 
 # htop
 mkdir -p "$HOME/.config/htop"
