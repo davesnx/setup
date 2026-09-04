@@ -109,7 +109,16 @@ cat >"$test_bin/launchctl" <<'EOF'
 printf 'launchctl:%s\n' "$*" >>"$COMMAND_LOG"
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl"
+cat >"$test_bin/git" <<'EOF'
+#!/bin/sh
+printf 'git:%s\n' "$*" >>"$COMMAND_LOG"
+if [ "$1" = clone ]; then
+  for destination in "$@"; do :; done
+  mkdir -p "$destination"
+fi
+EOF
+
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 
@@ -245,7 +254,19 @@ expect_exit 0 /bin/sh "$root/install.sh"
 [ -L "$HOME/.zshenv" ]
 grep -q '^chsh:' "$command_log"
 grep -q '^zsh:' "$command_log"
+[ -L "$HOME/.tmux.conf" ]
+grep -q '^git:clone .* https://github.com/o0th/tmux-nova.git ' "$command_log"
+[ -d "$HOME/.tmux/plugins/tmux-nova" ]
 printf 'PASS: successful Mac phase reaches root phases\n'
+
+prepare_home
+install_brew_stub
+mkdir -p "$HOME/.tmux/plugins/tmux-nova"
+expect_exit 0 /bin/sh "$root/install.sh"
+if grep -q 'tmux-nova' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: installed tmux-nova plugin is not cloned again\n'
 
 prepare_home
 install_brew_stub
