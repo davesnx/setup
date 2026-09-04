@@ -1,0 +1,107 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ "$#" -ne 2 ]; then
+  echo "Usage: ghostty-remote-tmux <host> <session>" >&2
+  exit 64
+fi
+
+host=$1
+session=$2
+
+log_dir="$HOME/Library/Logs/ghostty-remote"
+log_file="$log_dir/$host.log"
+err_file=""
+
+mkdir -p "$log_dir"
+
+log() {
+  printf '%s [ssh %s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$$" "$1" >>"$log_file"
+}
+
+on_exit() {
+  local ec=$?
+  [ -n "$err_file" ] && rm -f "$err_file" 2>/dev/null
+  log "exit status=$ec"
+}
+
+on_err() {
+  local line=$1
+  local status=$?
+  log "ERROR: command failed: ${BASH_COMMAND} (line $line, exit $status)"
+  printf '%s\n' "ghostty-remote-tmux: unexpected error (see $log_file)"
+  exit "$status"
+}
+
+# Closing the Ghostty window sends SIGHUP; record it so the log explains why
+# the ssh status line below never appears.
+on_hup() {
+  log "terminal closed while ssh was running (SIGHUP)"
+  exit 129
+}
+
+trap on_exit EXIT
+trap 'on_err $LINENO' ERR
+trap on_hup HUP
+
+rotate_log() {
+  if [ -f "$log_file" ]; then
+    size=$(wc -c <"$log_file" 2>/dev/null | tr -d '[:space:]')
+    if [ -n "$size" ] && [ "$size" -gt 1048576 ]; then
+      mv -f "$log_file" "$log_file.1"
+    fi
+  fi
+}
+
+rotate_log
+log "start host=$host session=$session args=$*"
+
+# ssh -G resolves the config without connecting, so a typo'd host still
+# reports something useful instead of aborting this diagnostic step.
+ssh_config=$(ssh -G "$host" 2>/dev/null || true)
+resolved_hostname=$(printf '%s\n' "$ssh_config" | awk '$1=="hostname"{print $2; exit}')
+resolved_port=$(printf '%s\n' "$ssh_config" | awk '$1=="port"{print $2; exit}')
+resolved_user=$(printf '%s\n' "$ssh_config" | awk '$1=="user"{print $2; exit}')
+log "resolved hostname=${resolved_hostname:-?} port=${resolved_port:-?} user=${resolved_user:-?}"
+
+err_file=$(mktemp "${TMPDIR:-/tmp}/ghostty-remote-tmux.XXXXXX")
+
+start_ts=$(date +%s)
+# ssh is the direct subject of the if-condition so its non-zero exit does
+# not trip set -e or the ERR trap; we report its status ourselves below.
+if ssh -t "$host" tmux new-session -A -s "$session" 2>"$err_file"; then
+  status=0
+else
+  status=$?
+fi
+end_ts=$(date +%s)
+duration=$((end_ts - start_ts))
+log "ssh exit status=$status duration=${duration}s"
+
+err_content=$(cat "$err_file" 2>/dev/null || true)
+if [ -n "$err_content" ]; then
+  log "ssh stderr: $err_content"
+  printf '%s\n' "$err_content"
+fi
+
+if [ "$status" -ne 0 ]; then
+  case "$status" in
+    255)
+      message="SSH could not connect to or authenticate with $host. Check that the VPN is on."
+      ;;
+    127)
+      message="Command not found: tmux may be missing on $host, or ssh is missing locally."
+      ;;
+    *)
+      message="The remote tmux command on $host exited with status $status."
+      ;;
+  esac
+
+  log "$message"
+  printf '%s\n' "$message"
+  printf 'Log: %s\n' "$log_file"
+  printf 'Press any key to close.\n'
+  read -rsn1 _ 2>/dev/null || true
+  exit "$status"
+fi

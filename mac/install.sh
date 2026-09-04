@@ -101,6 +101,7 @@ opener_bin="$HOME/.local/bin/xdg-open-listener"
 opener_agent="$HOME/Library/LaunchAgents/com.davesnx.xdg-open.plist"
 claude_remote_bin="$HOME/.local/bin/ensure-claude-remote-control"
 claude_remote_agent="$HOME/Library/LaunchAgents/com.davesnx.claude-remote-control.plist"
+ghostty_remote_bin="$HOME/.local/bin/ghostty-remote-tmux"
 mkdir -p "$HOME/.local/bin" "$HOME/Library/LaunchAgents"
 
 if [ -e "$opener_bin" ] && [ ! -L "$opener_bin" ]; then
@@ -119,11 +120,16 @@ if [ -e "$claude_remote_agent" ] && [ ! -L "$claude_remote_agent" ]; then
   echo "Cannot replace LaunchAgent: $claude_remote_agent" >&2
   exit 73
 fi
+if [ -e "$ghostty_remote_bin" ] && [ ! -L "$ghostty_remote_bin" ]; then
+  echo "Cannot replace ghostty-remote-tmux executable: $ghostty_remote_bin" >&2
+  exit 73
+fi
 
 ln -sfn "$setup_path/terminal/bin/xdg-open-listener" "$opener_bin"
 ln -sfn "$setup_path/mac/launch-agents/com.davesnx.xdg-open.plist" "$opener_agent"
 ln -sfn "$setup_path/terminal/bin/ensure-claude-remote-control" "$claude_remote_bin"
 ln -sfn "$setup_path/mac/launch-agents/com.davesnx.claude-remote-control.plist" "$claude_remote_agent"
+ln -sfn "$setup_path/terminal/bin/ghostty-remote-tmux" "$ghostty_remote_bin"
 
 launch_domain="gui/$(id -u)"
 launchctl bootout "$launch_domain/com.davesnx.xdg-open" 2>/dev/null || true

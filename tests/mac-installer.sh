@@ -223,6 +223,20 @@ expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
 printf 'PASS: installer finds Apple Silicon Brew\n'
 
 prepare_home
+install_brew_stub
+expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+[ -L "$HOME/.local/bin/ghostty-remote-tmux" ]
+[ "$(readlink "$HOME/.local/bin/ghostty-remote-tmux")" = "$root/terminal/bin/ghostty-remote-tmux" ]
+printf 'PASS: installer links ghostty-remote-tmux\n'
+
+prepare_home
+install_brew_stub
+mkdir -p "$HOME/.local/bin"
+: >"$HOME/.local/bin/ghostty-remote-tmux"
+expect_exit 73 /bin/sh "$root/mac/install.sh" "$root"
+printf 'PASS: installer refuses to replace a non-symlink ghostty-remote-tmux\n'
+
+prepare_home
 INSTALL_BREW=0
 export INSTALL_BREW
 expect_exit 69 /bin/sh "$root/mac/install.sh" "$root"
