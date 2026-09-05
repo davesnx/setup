@@ -15,8 +15,9 @@ sh terminal/bin/eval-harness/install.sh
 
 The root setup installer also runs this installer. Dependencies go into this
 directory's ignored `node_modules/`, not the OpenCode config directory. The
-installer links `~/.local/bin/eval-harness` to the runner. The shell configuration
-already includes `~/.local/bin` in `PATH`.
+installer uses `npm ci` with the committed lockfile, then links
+`~/.local/bin/eval-harness` to the runner. The shell configuration already
+includes `~/.local/bin` in `PATH`.
 
 Existing setup-owned links at `~/.config/opencode/eval-harness` and
 `~/.config/opencode/patch-eval-harness` are retargeted. `XDG_CONFIG_HOME` is

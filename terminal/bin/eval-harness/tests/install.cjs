@@ -36,7 +36,7 @@ process.exit(Number(process.env.NPM_EXIT || 0))
   assert.equal(install({ NPM_EXIT: '1' }).status, 1)
   assert.equal(fs.existsSync(command), false)
   assert.equal(install().status, 0)
-  assert.deepEqual(JSON.parse(fs.readFileSync(record, 'utf8')), ['install', '--prefix', root, '--no-audit', '--no-fund'])
+  assert.deepEqual(JSON.parse(fs.readFileSync(record, 'utf8')), ['ci', '--prefix', root, '--no-audit', '--no-fund'])
   assert.equal(fs.readlinkSync(command), path.join(root, 'eval-harness'))
   assert.equal(fs.existsSync(config), false, 'fresh install must not create OpenCode config')
 

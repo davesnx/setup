@@ -28,7 +28,6 @@ __pycache__/
 
 # Eval harness dependencies
 /terminal/bin/eval-harness/node_modules/
-/terminal/bin/eval-harness/package-lock.json
 
 # Local plans
 /plans/

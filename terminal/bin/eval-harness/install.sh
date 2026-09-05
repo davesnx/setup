@@ -12,7 +12,7 @@ if [ -e "$BIN_HOME/eval-harness" ] && [ ! -L "$BIN_HOME/eval-harness" ]; then
   exit 73
 fi
 
-npm install --prefix "$ROOT" --no-audit --no-fund
+npm ci --prefix "$ROOT" --no-audit --no-fund
 
 mkdir -p "$BIN_HOME"
 ln -sfn "$ROOT/eval-harness" "$BIN_HOME/eval-harness"
