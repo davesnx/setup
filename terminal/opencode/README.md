@@ -27,6 +27,21 @@ rules.
 The shell configuration exports `OPENCODE_CONFIG` when the selected
 `host.jsonc` link exists. Start a new shell after installation.
 
+## Model selection
+
+OpenCode uses Astra for the main session and the `general` subagent, as configured
+in `opencode.jsonc`. `instructions.md` contains OpenCode-only guidance and is
+loaded through that config's `instructions` field. It is not shared with Claude.
+`AGENTS.md` keeps the shared engineering rules without a model requirement.
+
+`../claude/settings.json` keeps Fable 5.1 for Claude's main work. Its
+`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` settings
+select Sonnet for subagents, teammates, and workflow agents, including those with
+their own model overrides. The force setting requires Claude Code 2.1.257 or
+later. The Sonnet alias follows the version selected by the provider.
+
+Restart OpenCode and Claude Code after changing these settings.
+
 ## Browser tools
 
 The local profile starts Chrome DevTools MCP with a persistent Brave profile.

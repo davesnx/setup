@@ -50,9 +50,14 @@ link_path() {
   ln -s "$source_path" "$target_path"
 }
 
-for name in opencode.jsonc tui.json AGENTS.md pstack-models.md package.json; do
+for name in opencode.jsonc tui.json AGENTS.md instructions.md package.json; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
+
+if [ -L "$CONFIG_HOME/pstack-models.md" ] &&
+  [ "$(readlink "$CONFIG_HOME/pstack-models.md")" = "$ROOT/pstack-models.md" ]; then
+  rm "$CONFIG_HOME/pstack-models.md"
+fi
 
 for name in agents skills themes; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"

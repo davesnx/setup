@@ -10,7 +10,7 @@
       "model": "openai/gpt-6-astra",
     },
   },
-  "instructions": ["pstack-models.md"],
+  "instructions": ["instructions.md"],
   "experimental": {
     "disable_paste_summary": true,
   },

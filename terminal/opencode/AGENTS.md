@@ -44,7 +44,6 @@
 Your task is to orchestrate the planning and development of software, delegate
 to subagents and orchestrate them:
 
-- when spawning subagents, ALWAYS use sonnet model
 - the top level session tries to do work in subagents and orchestrates them
   (schedules follow ups and etc), this is because top level session needs to be
   able to respond to user always
