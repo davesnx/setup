@@ -42,6 +42,23 @@ later. The Sonnet alias follows the version selected by the provider.
 
 Restart OpenCode and Claude Code after changing these settings.
 
+## Skill access
+
+OpenCode recognizes `name`, `description`, `license`, `compatibility`, and
+`metadata` in skill frontmatter. It ignores `disable-model-invocation`.
+Use `permission.skill` in `opencode.jsonc`, or
+`agent.<name>.permission.skill`, to control access:
+
+- `allow`: list the skill and allow loading it.
+- `ask`: keep it listed, but require approval before loading its body.
+- `deny`: hide it and reject calls through the skill tool.
+
+These settings control the skill tool, not direct file reads. `ask` does not
+reduce catalogue context, and `deny` is not a manual-only mode. A dedicated
+command or agent is needed if a workflow must stay available by explicit request
+while hidden from the normal agent. No catalogue-wide restrictions are applied
+by this setup yet.
+
 ## Plan agent
 
 [`agents/plan.md`](agents/plan.md) overrides the built-in Plan agent using

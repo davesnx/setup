@@ -5,7 +5,8 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 # Debug
 
-A discipline for hard bugs. Skip phases only when explicitly justified.
+A diagnosis loop scaled to the uncertainty. Read enough code, tests, and logs to
+identify the reported behavior and the smallest useful check.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
@@ -17,9 +18,9 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 
 ## Phase 1 — Build a feedback loop
 
-**This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
-
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+Build a check that distinguishes the reported failure from correct behavior.
+Initial code inspection and provisional hypotheses help choose that check; they
+are not proof of the cause. Prefer an existing focused test over a new harness.
 
 ### Ways to construct one — try them in roughly this order
 
@@ -34,7 +35,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
 10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
 
-Build the right feedback loop, and the bug is 90% fixed.
+Run the check before changing the implementation when the environment permits it.
 
 ### Tighten the loop
 
@@ -52,18 +53,22 @@ The goal is not a clean repro but a **higher reproduction rate**. Loop the trigg
 
 ### When you genuinely cannot build a loop
 
-Stop and say so explicitly. List what you tried. Ask the user for: (a) access to whatever environment reproduces it, (b) a redacted captured artifact (HAR file, log dump, core dump, screen recording with timestamps), or (c) permission to add temporary production instrumentation. Do **not** proceed to hypothesise without a loop.
+State what you tried and what prevents reproduction. Continue useful source or
+log analysis, but label its conclusions as provisional. Ask for missing access,
+a redacted artifact, or instrumentation approval only when it blocks the next
+useful check. Do not claim a verified fix without evidence from the failing path.
 
 ### Completion criterion — a tight loop that goes red
 
-Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** — a script path, a test invocation, a curl — that you have **already run at least once** (show the invocation and its output, redacted), and that is:
+Runtime reproduction is established when you can name a command you have run
+(show its output, redacted) that is:
 
 - [ ] **Red-capable** — it drives the actual bug code path and asserts the **user's exact symptom**, so it can go red on this bug and green once fixed. Not "runs without erroring" — it must be able to _catch this specific bug_.
 - [ ] **Deterministic** — same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
 - [ ] **Fast** — seconds, not minutes.
 - [ ] **Agent-runnable** — you can run it unattended; a human in the loop only via `scripts/hitl-loop.template.sh`.
 
-If you catch yourself reading code to build a theory before this command exists, **stop — jumping straight to a hypothesis is the exact failure this skill prevents.** No red-capable command, no Phase 2.
+Until then, keep investigation findings separate from reproduction evidence.
 
 ## Phase 2 — Reproduce + minimise
 
@@ -81,19 +86,22 @@ Once it's red, shrink the repro to the **smallest scenario that still goes red**
 
 Why bother: a minimal repro shrinks the hypothesis space in Phase 3 (fewer moving parts left to suspect) and becomes the clean regression test in Phase 5.
 
-Done when **every remaining element is load-bearing** — removing any one of them makes the loop go green.
-
-Do not proceed until you have reproduced **and** minimised.
+Stop reducing the reproduction when it isolates a testable cause. Do not spend
+time removing every input from an already decisive test. If reproduction is
+unavailable, retain that limitation when proceeding with source analysis.
 
 ## Phase 3 — Hypothesise
 
-Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+Start with the cause best supported by the evidence. When several causes remain
+plausible, rank them and choose a check that distinguishes them. One clear cause
+does not require invented alternatives.
 
 Each hypothesis must be **falsifiable** — state the prediction it makes, or discard it as a vibe.
 
 > Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
 
-**Show the ranked list to the user before testing.** They often have domain knowledge that re-ranks instantly ("we just deployed a change to #3"), or know hypotheses they've already ruled out. Don't block on it — proceed with your ranking if the user is AFK.
+Share competing explanations when the user's context could change the next
+check. Otherwise proceed with the focused test and report what it establishes.
 
 ## Phase 4 — Instrument
 

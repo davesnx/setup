@@ -1,0 +1,23 @@
+schema_version: 2
+id: narrow-question-stays-direct
+mode: deterministic
+skill_under_test: how
+skills_loaded: [how, simplify]
+description: "A narrow code question uses normal inspection without extra workflows"
+setup:
+  fixtures:
+    key.mjs: fixtures/key.mjs
+prompt: |
+  Why does key() in key.mjs call trim() before lowercasing? Read the code and
+  write a short answer to answer.md. Do not edit key.mjs.
+checks:
+  - kind: file_exists
+    path: answer.md
+  - kind: output_not_contains
+    value: '"name":"how"'
+  - kind: output_not_contains
+    value: '"name":"simplify"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"answer.md\",\"utf8\"); if(!/trim/i.test(s)||!/space|whitespace/i.test(s)) process.exit(1); console.log(\"focused\")'"
+    unsafe_shell: true
+    expect_exact: focused

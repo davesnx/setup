@@ -1,0 +1,26 @@
+schema_version: 2
+id: inspect-before-reproduction
+mode: deterministic
+skill_under_test: debug
+skills_loaded: [debug]
+description: "Static investigation can proceed before a reproduction without claiming verification"
+setup:
+  fixtures:
+    ids.mjs: fixtures/ids.mjs
+prompt: |
+  Use Debug. Users report that numeric ID 0 disappears after usableIds() runs.
+  Production access is unavailable. Read ids.mjs, but do not run commands or
+  edit source. Write diagnosis.md with the likely cause and the smallest next
+  check. Clearly separate source evidence from runtime verification. Start the
+  file with this exact status line: Runtime verification: NOT RUN
+checks:
+  - kind: file_exists
+    path: diagnosis.md
+  - kind: output_contains
+    value: '"name":"debug"'
+  - kind: output_not_contains
+    value: '"tool":"bash"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"diagnosis.md\",\"utf8\"); if(!/Boolean/.test(s)||!/falsy|false/i.test(s)||!s.startsWith(\"Runtime verification: NOT RUN\")) process.exit(1); console.log(\"bounded\")'"
+    unsafe_shell: true
+    expect_exact: bounded

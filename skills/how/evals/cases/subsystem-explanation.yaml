@@ -1,0 +1,24 @@
+schema_version: 2
+id: subsystem-explanation
+mode: deterministic
+skill_under_test: how
+skills_loaded: [how]
+description: "An explicit How request explains the real cross-module flow"
+setup:
+  fixtures:
+    key.mjs: fixtures/key.mjs
+    policy.mjs: fixtures/policy.mjs
+    pipeline.mjs: fixtures/pipeline.mjs
+prompt: |
+  Use How to explain the flow through pipeline.mjs, key.mjs, and policy.mjs.
+  Explain how names are transformed and rejected. Write at most 250 words to
+  answer.md. Do not edit the source or delegate this small task.
+checks:
+  - kind: file_exists
+    path: answer.md
+  - kind: output_contains
+    value: '"name":"how"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"answer.md\",\"utf8\"); if(![\"pipeline.mjs\",\"key.mjs\",\"policy.mjs\"].every(x=>s.includes(x))||!/trim/i.test(s)||!/empty/i.test(s)||!s.includes(\"_\")) process.exit(1); console.log(\"traced\")'"
+    unsafe_shell: true
+    expect_exact: traced

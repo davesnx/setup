@@ -23,10 +23,10 @@ for an existing canonical helper before proposing reuse or extraction.
 Complete when each candidate change has a known behavior to preserve and an
 identified owner.
 
-For more than two small files, run three independent read-only reviews in one
-parallel batch for reuse, quality, and efficiency. Give each reviewer the exact
-scope, relevant diff, user focus, and required `file:line` evidence with a
-concrete fix. Apply the same lenses directly for a small change.
+Apply the review concerns below directly for a bounded change. Use independent
+read-only reviewers when separate parts or risks justify parallel work, not
+because a file-count threshold was crossed. Give each reviewer a distinct
+question, exact scope, and required `file:line` evidence.
 
 ## 3. Find removable complexity
 

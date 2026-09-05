@@ -2,7 +2,7 @@ schema_version: 2
 id: simplify-review-only-does-not-edit
 mode: deterministic
 skill_under_test: simplify
-skills_loaded: [simplify, code-review]
+skills_loaded: [simplify]
 description: "The simplicity lens respects an explicit review-only boundary"
 tags: [review, read-only, scope]
 
@@ -12,7 +12,7 @@ setup:
     "expected.mjs": fixtures/bloated.mjs
 
 prompt: |
-  Review bloated.mjs for avoidable complexity. Do not edit source files. Write
+  Use Simplify to review bloated.mjs for avoidable complexity. Do not edit source files. Write
   concise, evidence-based findings to review.md.
 
 budget:
@@ -24,8 +24,6 @@ checks:
     path: review.md
   - kind: output_contains
     value: '"name":"simplify"'
-  - kind: output_contains
-    value: '"name":"code-review"'
   - kind: shell
     cmd: "cmp -s bloated.mjs expected.mjs && printf unchanged"
     unsafe_shell: true

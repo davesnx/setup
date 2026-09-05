@@ -69,6 +69,11 @@ to subagents and orchestrate them:
 
 ## Code
 
+- Read the affected code, callers, and tests before changing behavior or making
+  claims about it.
+- Prefer existing code and the smallest change that preserves the required
+  behavior, safety, and compatibility. Add abstractions only for a demonstrated
+  need.
 - Write comments only to explain why, never to restate what code does or to
   delimit sections.
 - Fix root causes. Do not silence findings with casts, lint suppressions, or

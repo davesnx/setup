@@ -4,6 +4,13 @@ The skill-specific branch of [`writing-for-agents`](SKILL.md): what changes when
 
 ## Invocation
 
+The `disable-model-invocation` behavior below is specific to hosts that support
+it, such as Claude Code. OpenCode ignores that frontmatter field. In OpenCode,
+`permission.skill` (globally or per agent) controls loading: `ask` keeps the skill
+visible and requires approval; `deny` hides it and blocks the skill tool. Neither
+is an exact manual-only mode, and neither prevents direct reads of the file.
+Check the host before choosing the mechanism.
+
 Two choices, trading the two loads:
 
 - A **model-invoked** skill keeps a `description`, so the agent can fire it autonomously, and other skills can reach it. You can still type its name: model-invocation always _includes_ user reach; a description only ever adds agent discovery, never removes the human's. The description is the skill's top-level context pointer, forced to stay loaded at all times: permanent context load in exchange for discoverability. A model-invoked skill whose content is all reference is also one home for shared reference: another skill can invoke it, so reference needed by several skills lives in one place. Mechanics: omit `disable-model-invocation`, and write a model-facing description carrying the trigger branches (the pointer-writing rules in `SKILL.md` apply in full).
