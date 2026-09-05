@@ -91,7 +91,8 @@ function evaluate(data, expression) {
 }
 
 function print(result, options) {
-  const iterates = options.expression.trim().endsWith("[]") || options.expression.trim().endsWith("[]?")
+  const iterates = !options.expression.includes("//") &&
+    (options.expression.trim().endsWith("[]") || options.expression.trim().endsWith("[]?"))
   if (iterates && Array.isArray(result)) {
     for (const item of result) print(item, { ...options, expression: "." })
     return

@@ -56,11 +56,6 @@ to subagents and orchestrate them:
 - some subagents get confused there are already some git changes, you need to
   instruct them it's ok as the work is done in parallel
 
-## Eval Harness
-
-- For OpenCode eval harness tasks, run `~/.config/opencode/eval-harness`
-  directly. Do not load it into the user's interactive shell.
-
 ## Hosts
 
 - When `systemd-detect-virt --container` returns `systemd-nspawn`, bind a

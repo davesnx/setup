@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+script_path=${BASH_SOURCE[0]}
+while [[ -L "$script_path" ]]; do
+	directory=$(dirname "$script_path")
+	script_path=$(readlink "$script_path") || exit 1
+	[[ "$script_path" == /* ]] || script_path="$directory/$script_path"
+done
+package_root=$(CDPATH='' cd "$(dirname "$script_path")" && pwd -P) || exit 1
+root=$(CDPATH='' cd "$package_root/../../.." && pwd -P) || exit 1
+harness_root="$package_root/node_modules/@nano-step/eval-harness/scripts/eval"
+command_name="${1:-run}"
+usage() {
+  printf 'Usage: eval-harness <command> [options]\n\nCommands: run, baseline, accept, status, trend, promote, cleanup\nCleanup:  eval-harness cleanup --run=<run-id>\n\nUse <command> --help for command options.\n'
+}
+case "$command_name" in
+  help|--help|-h) usage; exit 0 ;;
+esac
+
+if [[ ! -d "$harness_root" ]]; then
+	printf 'eval-harness is not installed. Run ./terminal/bin/eval-harness/install.sh first.\n' >&2
+	exit 1
+fi
+
+opencode_bin=''
+if [[ "$command_name" != cleanup ]]; then
+  opencode_bin="$(command -v opencode)" || exit 1
+fi
+state_dir="${EVAL_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/opencode/eval-harness}"
+extra_skills_root="${OPENCODE_SKILLS_EXTRA_ROOT:-}"
+if [[ -z "${OPENCODE_SKILLS_ROOT:-}" && -z "${OPENCODE_SKILLS_EXTRA_ROOT+x}" ]]; then
+  extra_skills_root="$root/terminal/opencode/skills"
+fi
+
+case "$command_name" in
+	run|baseline|accept|status|trend|promote|cleanup)
+		[[ $# -eq 0 ]] || shift
+		;;
+	*)
+		usage >&2
+		exit 2
+		;;
+esac
+
+OPENCODE_SKILLS_ROOT="${OPENCODE_SKILLS_ROOT:-$root/skills}" \
+OPENCODE_SKILLS_EXTRA_ROOT="$extra_skills_root" \
+EVAL_STATE_DIR="$state_dir" \
+EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
+ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-${OPENCODE_ANTHROPIC_API_KEY:-}}" \
+EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \
+EVAL_FULL_MODEL="${EVAL_FULL_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \
+OPENCODE_REAL_BIN="$opencode_bin" \
+PATH="$package_root/shims:$PATH" \
+bash "$harness_root/$command_name.sh" "$command_name" "$@"

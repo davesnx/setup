@@ -38,13 +38,10 @@ CDP endpoint on `127.0.0.1:9222` inside the remote host.
 
 ## Eval harness
 
-OpenCode agents run `~/.config/opencode/eval-harness` directly when an eval
-harness task needs it. The harness is not loaded into interactive shell
-sessions. It stores generated state under
-`${XDG_STATE_HOME:-~/.local/state}/opencode/eval-harness` and uses the current
-OpenAI model unless `EVAL_MODEL`, `EVAL_SMOKE_MODEL`, or `EVAL_FULL_MODEL` is
-set. The wrapper removes generated sandboxes after each run. Pass `--debug` to
-keep a run's sandboxes for inspection.
+The command, dependencies, patches, shims, tests, and installer live in
+[`terminal/bin/eval-harness`](../bin/eval-harness/README.md). Run
+`sh terminal/bin/eval-harness/install.sh` from the repository root to install it.
+The OpenCode installer no longer installs the harness.
 
 ## Keep private
 

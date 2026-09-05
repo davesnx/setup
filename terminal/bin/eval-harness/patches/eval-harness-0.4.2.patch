@@ -1,0 +1,1067 @@
+diff --git a/README.md b/README.md
+index 3ed0879..c1ba811 100644
+--- a/README.md
++++ b/README.md
+@@ -98,7 +98,7 @@ scripts/eval/
+ - **6-field FAIL schema**: `failed_check_id`, `expected`, `actual`, `diff_hint`, `transcript_span`, `env_delta`.
+ - **4-class attribution**: `SKILL_CHANGED`, `FIXTURE_STALE`, `MODEL_CHANGED`, `UNKNOWN_DRIFT`. Tagged `flaky:true` when 3-sample stability check finds samples diverged.
+ - **2-tier execution mode**: `--mode=smoke` (cheap haiku, 1 LLM-judge sample) by default. `--mode=full` (configured model, 3 samples). `--mode=2tier` runs smoke, re-runs only failed cases with full.
+-- **Dollar cost per case**: `pricing.json` curated rates for haiku-3-5, sonnet-4-6, opus-4-7. `summary.total_cost_usd` per run. Staleness gate (default 60 days).
++- **Measurements per case**: OpenCode step events supply token counts, cache counts, elapsed time, and estimated cost. Stability attempts are included. Unknown cost remains null, including aggregate totals. Old usage records use the pricing table.
+ - **Per-(case,trigger) lockfile**: `flock(1)` serializes concurrent invocations on the same skill+case+trigger.
+ - **Per-repo opt-in registry**: required for 43-repo workspaces. Manual trigger always runs; automated triggers (pre-push / sync-publish / stop-hook) skip non-enabled repos.
+ - **Project-config layer**: `.opencode/eval-harness.yaml` walked up from cwd. Env vars win when explicitly set.
+@@ -107,7 +107,7 @@ scripts/eval/
+ - **Warn-only by default** for 7 days. Promote with `eval-harness promote`.
+ - **Two-stage `accept`**: default updates fixtures only; `--bless-env` required to update env-manifest (with confirmation).
+ - **Heuristic auto-fix proposals** (v0.4.0): every FAILED check on a safe kind carries a `.fix_proposal` with `instruction` + `patch_snippet`. Never auto-applies — proposes only.
+-- **Cost ceiling**: `EVAL_BUDGET_USD=2.00` hard daily cap. Tokens-based capture.
++- **Time limit**: `EVAL_MAX_SECONDS` limits each attempt. `EVAL_BUDGET_USD` is not enforced and is not a spending cap.
+ - **One-command rerun** in every FAIL output.
+
+ ---
+@@ -309,7 +309,7 @@ Default path: `~/.config/opencode/eval-harness/registry.yaml`. Override with `$E
+ 4. **LLM judge requires `ANTHROPIC_API_KEY`.** Without one, `llm_judge` checks return `verdict: null` with `reason: judge_unavailable` — this is by design (we never fabricate a verdict). Set the key to use prose-output evaluation.
+ 5. **Deterministic mode only** (T=0, k=1). Stochastic `pass@k` deferred to v0.5+.
+ 6. **Auto-fix proposes, never applies.** v0.4.0 attaches `fix_proposal` to FAILED checks but `auto_apply: false`. Application logic is v0.5.0+.
+-7. **Cost is captured, not gated.** Per-case + per-run dollar amounts surface in `results.json`, but only `EVAL_BUDGET_USD` (daily token cap) hard-stops execution. Cost-regression gating is v0.5.0+.
++7. **Cost is captured, not gated.** Per-case and per-run estimates surface in `results.json`. `EVAL_BUDGET_USD` does not stop execution. Use `EVAL_MAX_SECONDS` to bound each attempt.
+
+ ## Authoring a case (5 min)
+
+@@ -438,7 +438,7 @@ The version that's actually safe to recommend for CI/CD gating.
+ ### v0.7.0 — Scale
+
+ - Anthropic API rate-limit handling + exponential backoff
+-- Per-run cost cap (`EVAL_BUDGET_USD` currently daily-only)
++- Enforced per-run and daily cost caps (`EVAL_BUDGET_USD` is currently not enforced)
+ - Judge response caching by `(rubric_hash + artifact_hash)` — don't re-burn tokens on identical artifacts
+ - Stochastic `pass@k` mode (T>0, multiple samples)
+ - `MCP_FLAKE` + `HARNESS_BUG` attribution classes
+diff --git a/package.json b/package.json
+index 4d8f491..0316f6f 100644
+--- a/package.json
++++ b/package.json
+@@ -34,6 +34,6 @@
+     "node": ">=18"
+   },
+   "scripts": {
+-    "test": "bash scripts/eval/tests/regression_inject.sh"
++    "test": "bash scripts/eval/tests/regression_inject.sh && bash scripts/eval/tests/transcript_contract.sh && bash scripts/eval/tests/cleanup.sh"
+   }
+ }
+diff --git a/scripts/eval/accept.sh b/scripts/eval/accept.sh
+index 48aca06..d138fb6 100755
+--- a/scripts/eval/accept.sh
++++ b/scripts/eval/accept.sh
+@@ -49,7 +49,7 @@ if [[ -z "$SKILL" ]] || [[ -z "$CASE_ID" ]]; then
+ fi
+
+ source "$SCRIPT_DIR/lib/skills_root.sh"
+-SKILLS_ROOT="$(resolve_skills_root)"
++SKILLS_ROOT="$(resolve_skills_root "$SKILL")" || exit 13
+ BASELINE_PATH="$SKILLS_ROOT/$SKILL/evals/baselines/$CASE_ID.baseline.json"
+
+ LATEST_RUN_DIR="$(ls -dt "${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}/runs"/* 2>/dev/null | head -1)"
+@@ -63,6 +63,10 @@ if [[ -z "$NEW_CASE" ]]; then
+   echo "[eval-harness] accept: case '$CASE_ID' not in latest run" >&2
+   exit 2
+ fi
++if jq -e 'any(.checks[]; .error == true) or .stability.harness_error == true' <<<"$NEW_CASE" >/dev/null; then
++  echo '[eval-harness] accept: cannot accept a runner or scorer error' >&2
++  exit 13
++fi
+
+ if [[ "$BLESS_ENV" == "1" ]] && [[ "$YES" != "1" ]]; then
+   echo ""
+diff --git a/scripts/eval/baseline.sh b/scripts/eval/baseline.sh
+index eeceb37..9349e62 100755
+--- a/scripts/eval/baseline.sh
++++ b/scripts/eval/baseline.sh
+@@ -45,8 +45,12 @@ if [[ -z "$SKILL" ]]; then
+ fi
+
+ # Run the suite first, capture results
+-RUN_OUT_RAW="$("$SCRIPT_DIR/run.sh" --skill="$SKILL" ${CASE_ID:+--case=$CASE_ID} --trigger=baseline 2>&1 || true)"
++run_code=0
++RUN_OUT_RAW="$("$SCRIPT_DIR/run.sh" --skill="$SKILL" ${CASE_ID:+--case=$CASE_ID} --trigger=baseline 2>&1)" || run_code=$?
+ echo "$RUN_OUT_RAW"
++if [[ "$run_code" != 0 && "$run_code" != 12 ]]; then
++  exit "$run_code"
++fi
+
+ LATEST_RUN_DIR="$(ls -dt "${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}/runs"/* 2>/dev/null | head -1)"
+ if [[ -z "$LATEST_RUN_DIR" ]] || [[ ! -f "$LATEST_RUN_DIR/results.json" ]]; then
+@@ -61,7 +65,7 @@ if ! preflight_check; then
+   exit 13
+ fi
+
+-SKILLS_ROOT="$(resolve_skills_root)"
++SKILLS_ROOT="$(resolve_skills_root "$SKILL")" || exit 13
+ BASELINES_DIR="$SKILLS_ROOT/$SKILL/evals/baselines"
+ mkdir -p "$BASELINES_DIR"
+
+diff --git a/scripts/eval/cleanup.sh b/scripts/eval/cleanup.sh
+new file mode 100644
+index 0000000..203bb4b
+--- /dev/null
++++ b/scripts/eval/cleanup.sh
+@@ -0,0 +1,93 @@
++#!/usr/bin/env bash
++
++cleanup_run_path() {
++  local state=$1 id=$2
++  if [[ ! $id =~ ^[[:alnum:]][[:alnum:]_.-]*$ ]]; then
++    printf 'cleanup: invalid run ID: %s\n' "$id" >&2
++    return 2
++  fi
++  if [[ ! -d "$state" || -L "$state/runs" || -L "$state/runs/$id" || ! -d "$state/runs/$id" ]]; then
++    printf 'cleanup: run missing or unsafe: %s\n' "$id" >&2
++    return 1
++  fi
++  state=$(CDPATH='' cd -- "$state" && pwd -P) || return
++  printf '%s/runs/%s\n' "$state" "$id"
++}
++
++cleanup_sandboxes() {
++  local run=$1 target parent
++  local targets=()
++  for target in "$run"/*/sandbox "$run"/*/stability/sample-*/sandbox; do
++    [[ -e "$target" || -L "$target" ]] || continue
++    parent=$target
++    while [[ "$parent" != "$run" ]]; do
++      if [[ -L "$parent" ]]; then
++        printf 'cleanup: symlink rejected: %s\n' "$parent" >&2
++        return 1
++      fi
++      parent=${parent%/*}
++    done
++    if [[ ! -d "$target" ]]; then
++      printf 'cleanup: not a sandbox directory: %s\n' "$target" >&2
++      return 1
++    fi
++    targets+=("$target")
++  done
++  # Check every path before deleting any of them.
++  if (( ${#targets[@]} > 0 )); then
++    rm -rf -- "${targets[@]}"
++  fi
++}
++
++cleanup_on_exit() {
++  local code=$? state=$1 id=$2 debug=$3 run
++  trap - EXIT
++  if run=$(cleanup_run_path "$state" "$id"); then
++    if [[ $debug == 0 ]]; then
++      cleanup_sandboxes "$run" || printf '[eval-harness] warning: cleanup failed for %s\n' "$id" >&2
++    fi
++    if [[ ! -L "$run/.finished" && ! -L "$run/.active" ]]; then
++      printf '%s\n' "$code" > "$run/.finished" || printf 'cleanup: could not mark run finished\n' >&2
++      rm -f -- "$run/.active" || printf 'cleanup: could not remove activity marker\n' >&2
++    else
++      printf 'cleanup: unsafe run marker; leaving it unchanged\n' >&2
++    fi
++  fi
++  exit "$code"
++}
++
++if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
++  set -euo pipefail
++  run_id=''
++  for argument in "$@"; do
++    case "$argument" in
++      cleanup) ;;
++      --run=*)
++        [[ -z "$run_id" ]] || { printf 'cleanup: specify one run ID\n' >&2; exit 2; }
++        run_id=${argument#*=} ;;
++      --help|-h)
++        printf 'Usage: eval-harness cleanup --run=<run-id>\n\nRemove sandbox directories from one finished run.\nReports, transcripts, workdirs, and other runs are kept.\n'
++        exit 0 ;;
++      *) printf 'cleanup: unknown argument: %s\n' "$argument" >&2; exit 2 ;;
++    esac
++  done
++  [[ -n "$run_id" ]] || { printf 'cleanup: --run=<run-id> is required\n' >&2; exit 2; }
++  state=${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}
++  run=$(cleanup_run_path "$state" "$run_id")
++  if [[ -e "$run/.active" || -L "$run/.active" ]]; then
++    printf 'cleanup: run is active or was interrupted: %s\n' "$run_id" >&2
++    exit 1
++  fi
++  if [[ -L "$run/.finished" || -L "$run/results.json" ]]; then
++    printf 'cleanup: unsafe completion record\n' >&2
++    exit 1
++  fi
++  # Runs made before activity markers were added have only results.json.
++  if [[ ! -f "$run/.finished" ]] && ! jq -e --arg id "$run_id" \
++      '.run_id == $id and (.cases | type) == "array"' "$run/results.json" >/dev/null 2>&1; then
++    printf 'cleanup: cannot verify that run finished: %s\n' "$run_id" >&2
++    exit 1
++  fi
++  cleanup_sandboxes "$run"
++  printf '[eval-harness] cleanup: sandboxes removed for %s\n' "$run_id"
++fi
+diff --git a/scripts/eval/hooks/sync-publish.sh b/scripts/eval/hooks/sync-publish.sh
+index b9d5a2e..793d7f9 100755
+--- a/scripts/eval/hooks/sync-publish.sh
++++ b/scripts/eval/hooks/sync-publish.sh
+@@ -19,7 +19,7 @@ fi
+
+ # Opt-in gate: only run if skill has evals.required: true in skill.yaml
+ source "$(dirname "${BASH_SOURCE[0]}")/../lib/skills_root.sh"
+-SKILLS_ROOT="$(resolve_skills_root)"
++SKILLS_ROOT="$(resolve_skills_root "$SKILL")" || exit 13
+ SKILL_META="$SKILLS_ROOT/$SKILL/skill.yaml"
+
+ if [[ -f "$SKILL_META" ]]; then
+diff --git a/scripts/eval/lib/diff.sh b/scripts/eval/lib/diff.sh
+index d20e2d9..3ec3068 100755
+--- a/scripts/eval/lib/diff.sh
++++ b/scripts/eval/lib/diff.sh
+@@ -44,12 +44,20 @@ build_case_result() {
+
+   local model_id
+   model_id="$(jq -r '.model_id // "unknown"' "$manifest_file" 2>/dev/null || echo unknown)"
+-  local toks
+-  toks="$(tokens_from_transcript "$transcript")"
+-  local in_t="${toks% *}"
+-  local out_t="${toks#* }"
++  local metrics
++  local transcripts=("$transcript") sample
++  for sample in "$run_dir"/stability/sample-*/transcript.jsonl; do
++    [[ -f "$sample" ]] && transcripts+=("$sample")
++  done
++  if ! metrics="$(transcript_metrics "${transcripts[@]}" 2>/dev/null)"; then
++    metrics='{"format":"invalid","tokens":null,"cost":{"usd":null,"source":null},"elapsed_ms":null}'
++  fi
+   local cost_json
+-  cost_json="$(compute_cost_usd "$model_id" "${in_t:-0}" "${out_t:-0}")"
++  cost_json="$(jq -c '.cost' <<<"$metrics")"
++  if [[ "$(jq -r '.format' <<<"$metrics")" == "legacy" ]] &&
++      jq -e '.tokens.input != null and .tokens.output != null' <<<"$metrics" >/dev/null; then
++    cost_json="$(compute_cost_usd "$model_id" "$(jq '.tokens.input' <<<"$metrics")" "$(jq '.tokens.output' <<<"$metrics")")"
++  fi
+
+   local stability_json='{"samples":1,"byte_identical":true,"hashes":[],"performed":false}'
+   if [[ -f "$stability_file" ]]; then
+@@ -74,6 +82,7 @@ build_case_result() {
+     --slurpfile manifest "$manifest_file" \
+     --arg rerun "$rerun_cmd" \
+     --argjson cost "$cost_json" \
++    --argjson metrics "$metrics" \
+     --argjson stability "$stability_json" \
+     '{
+       case_id: $case_id,
+@@ -84,7 +93,8 @@ build_case_result() {
+       attribution: $attribution,
+       stability: $stability,
+       env_manifest: ($manifest[0] // {}),
+-      cost: $cost,
++       cost: $cost,
++       metrics: $metrics,
+       rerun: $rerun
+     }'
+ }
+@@ -110,7 +120,9 @@ build_run_summary() {
+   fi
+
+   local total_cost_usd
+-  total_cost_usd="$(echo "$results_json" | jq '[.[].cost.usd // 0] | add // 0')"
++  total_cost_usd="$(echo "$results_json" | jq '
++    if length == 0 or any(.[]; .cost.usd == null) then null else [.[].cost.usd] | add end
++  ')"
+
+   jq -n \
+     --arg run_id "$run_id" \
+diff --git a/scripts/eval/lib/manifest.sh b/scripts/eval/lib/manifest.sh
+index d336fb7..2980408 100755
+--- a/scripts/eval/lib/manifest.sh
++++ b/scripts/eval/lib/manifest.sh
+@@ -15,7 +15,7 @@ capture_manifest() {
+   local skill="$1"
+   local out="$2"
+   local skills_root
+-  skills_root="$(resolve_skills_root)"
++  skills_root="$(resolve_skills_root "$skill")"
+   local skill_dir="$skills_root/$skill"
+
+   local opencode_version
+@@ -33,9 +33,12 @@ capture_manifest() {
+   # This catches cross-skill regressions where editing skill B silently affects skill A.
+   local skill_bundle_sha
+   if [[ -d "$skills_root" ]]; then
+-    skill_bundle_sha="$(cd "$skills_root" && find . -type f \( -name "*.md" -o -name "*.sh" -o -name "*.yaml" -o -name "*.json" \) -print0 \
++    skill_bundle_sha="$(for root in "$(resolve_skills_root)" "${OPENCODE_SKILLS_EXTRA_ROOT:-}"; do
++      [[ -d "$root" ]] || continue
++      (cd "$root" && find . -type f \( -name "*.md" -o -name "*.sh" -o -name "*.yaml" -o -name "*.json" \) -print0 \
+       | sort -z \
+-      | xargs -0 sha256sum 2>/dev/null \
++      | xargs -0 sha256sum)
++      done \
+       | sha256sum \
+       | cut -d' ' -f1)"
+   else
+diff --git a/scripts/eval/lib/pricing.sh b/scripts/eval/lib/pricing.sh
+index 35874ea..5d23e14 100755
+--- a/scripts/eval/lib/pricing.sh
++++ b/scripts/eval/lib/pricing.sh
+@@ -2,6 +2,7 @@
+ set -euo pipefail
+
+ _PRICING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++source "$_PRICING_DIR/transcript.sh"
+
+ resolve_pricing_file() {
+   if [[ -n "${EVAL_PRICING_FILE:-}" ]]; then
+@@ -86,13 +87,13 @@ compute_cost_usd() {
+
+ tokens_from_transcript() {
+   local transcript="$1"
+-  if [[ ! -s "$transcript" ]]; then
+-    echo "0 0"; return 0
+-  fi
+-  local in_t out_t
+-  in_t="$(jq -s '[.[] | .. | objects | .usage? | .input_tokens? // .prompt_tokens? // empty] | add // 0' "$transcript" 2>/dev/null || echo 0)"
+-  out_t="$(jq -s '[.[] | .. | objects | .usage? | .output_tokens? // .completion_tokens? // empty] | add // 0' "$transcript" 2>/dev/null || echo 0)"
+-  echo "$in_t $out_t"
++  transcript_metrics "$transcript" | jq -r '
++    (if .format == "opencode" then
++      [.tokens.input, .tokens.cache_read, .tokens.cache_write] |
++      if any(.[]; . == null) then null else add end
++    else .tokens.input end) as $input |
++    "\($input) \(.tokens.output)"
++  '
+ }
+
+ export -f resolve_pricing_file pricing_staleness_check compute_cost_usd tokens_from_transcript
+diff --git a/scripts/eval/lib/score.sh b/scripts/eval/lib/score.sh
+index f03cd09..e818382 100755
+--- a/scripts/eval/lib/score.sh
++++ b/scripts/eval/lib/score.sh
+@@ -9,6 +9,7 @@ _SCORE_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ source "$_SCORE_LIB_DIR/yq-shim.sh"
+ source "$_SCORE_LIB_DIR/llm_judge.sh"
+ source "$_SCORE_LIB_DIR/autofix.sh"
++source "$_SCORE_LIB_DIR/transcript.sh"
+
+ # Usage: run_check <check_yaml_path> <workdir> <transcript_jsonl>
+ # Returns a single check-result JSON to stdout. Exit 0 always; pass/fail in JSON.
+@@ -318,8 +319,26 @@ score_output_not_contains() {
+ # Reads case_yaml's .checks[], runs each, aggregates into out_json.
+ run_all_checks() {
+   local case_file="$1"; local workdir="$2"; local transcript="$3"; local out="$4"
++  local problem
++  problem="$(transcript_error "$transcript")"
++  if [[ "${EVAL_SPAWN_EXIT_CODE:-0}" != 0 ]]; then
++    problem="opencode exited ${EVAL_SPAWN_EXIT_CODE}"
++  fi
++  if [[ -n "$problem" ]]; then
++    jq -n --arg reason "$problem" '{
++      passed:false,total:1,pass_count:0,fail_count:1,
++      checks:[{kind:"harness_error",passed:false,error:true,
++        failed_check_id:"invalid_transcript",expected:"a completed OpenCode run",
++        actual:$reason,diff_hint:"Inspect transcript.jsonl and transcript.jsonl.err"}]
++    }' > "$out"
++    return
++  fi
+
+   local n_checks; n_checks="$(yq -r '.checks | length' "$case_file")"
++  if [[ "$n_checks" == 0 ]]; then
++    printf 'Case has no checks: %s\n' "$case_file" >&2
++    return 13
++  fi
+   local results=()
+
+   local i=0
+diff --git a/scripts/eval/lib/skills_root.sh b/scripts/eval/lib/skills_root.sh
+index f9c40d3..13d599a 100644
+--- a/scripts/eval/lib/skills_root.sh
++++ b/scripts/eval/lib/skills_root.sh
+@@ -13,6 +13,17 @@
+ set -euo pipefail
+
+ resolve_skills_root() {
++  if [[ -n "${1:-}" ]]; then
++    local root
++    for root in "$(resolve_skills_root)" "${OPENCODE_SKILLS_EXTRA_ROOT:-}"; do
++      if [[ -n "$root" && -d "$root/$1" ]]; then
++        printf '%s\n' "$root"
++        return 0
++      fi
++    done
++    printf 'Skill not found: %s\n' "$1" >&2
++    return 1
++  fi
+   # 1. Explicit env var wins.
+   if [[ -n "${OPENCODE_SKILLS_ROOT:-}" ]]; then
+     printf '%s\n' "$OPENCODE_SKILLS_ROOT"
+diff --git a/scripts/eval/lib/spawn.sh b/scripts/eval/lib/spawn.sh
+index 150daa0..13c3243 100755
+--- a/scripts/eval/lib/spawn.sh
++++ b/scripts/eval/lib/spawn.sh
+@@ -13,6 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ if ! declare -F resolve_skills_root >/dev/null; then
+   source "$SCRIPT_DIR/skills_root.sh"
+ fi
++source "$SCRIPT_DIR/pricing.sh"
+
+ # Usage: spawn_opencode <prompt> <workdir> <sandbox_dir> <transcript_out> [skills_to_load...]
+ # - prompt: the user message string
+@@ -49,11 +50,9 @@ spawn_opencode() {
+   done
+
+   local real_skills_root
+-  real_skills_root="$(resolve_skills_root)"
+   for skill in "${skills_to_load[@]}"; do
+-    if [[ -d "$real_skills_root/$skill" ]]; then
+-      cp -R "$real_skills_root/$skill" "$sandbox/opencode/skills/$skill"
+-    fi
++    real_skills_root="$(resolve_skills_root "$skill")" || { echo 13; return; }
++    cp -R "$real_skills_root/$skill" "$sandbox/opencode/skills/$skill" || { echo 13; return; }
+   done
+
+   local max_seconds="${EVAL_MAX_SECONDS:-180}"
+@@ -82,13 +81,9 @@ spawn_opencode() {
+ # Sums prompt_tokens + completion_tokens from opencode --format json events.
+ # Per Settled #17: tokens-based capture, not opencode's broken dollar telemetry.
+ token_total() {
+-  local transcript="$1"
+-  if [[ ! -s "$transcript" ]]; then echo 0; return 0; fi
+-  jq -s '
+-    [.[] | .. | objects | select(.usage?) | .usage |
+-     ((.input_tokens // .prompt_tokens // 0) + (.output_tokens // .completion_tokens // 0))]
+-    | add // 0
+-  ' "$transcript" 2>/dev/null || echo 0
++  tokens_from_transcript "$1" | jq -R '
++    split(" ") | map(fromjson) | if any(.[]; . == null) then null else add end
++  '
+ }
+
+ export -f spawn_opencode token_total
+diff --git a/scripts/eval/lib/transcript.sh b/scripts/eval/lib/transcript.sh
+new file mode 100644
+index 0000000..9879ea1
+--- /dev/null
++++ b/scripts/eval/lib/transcript.sh
+@@ -0,0 +1,67 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++transcript_error() {
++  if [[ ! -s "$1" ]]; then
++    printf '%s\n' 'empty transcript'
++    return
++  fi
++  jq -Rrs '
++    split("\n") | map(select(test("\\S")) | fromjson) |
++    if length == 0 then "empty transcript"
++    elif any(.[]; type != "object") then "invalid event"
++    elif any(.[]; (.type | type) != "string") then "invalid event"
++    elif any(.[]; .type == "error") then "model error"
++    elif .[-1].type != "step_finish" or .[-1].part.reason != "stop"
++      then "incomplete transcript"
++    else "" end
++  ' "$1" 2>/dev/null || printf '%s\n' 'malformed JSONL'
++}
++
++transcript_metrics() {
++  jq -s '
++    def sum_known:
++      if length == 0 or any(.[]; type != "number" or . < 0) then null else add end;
++    [.[] | select(.type == "step_finish")] as $steps |
++    [.[] | select(.type == "step_start") | .timestamp | numbers] as $starts |
++    [$steps[] | .timestamp | numbers] as $ends |
++    if ($steps | length) > 0 then
++      {
++        format: "opencode",
++        steps: ($steps | length),
++        tokens: {
++          input: ([$steps[].part.tokens.input] | sum_known),
++          output: ([$steps[].part.tokens.output] | sum_known),
++          reasoning: ([$steps[].part.tokens.reasoning] | sum_known),
++          cache_read: ([$steps[].part.tokens.cache.read] | sum_known),
++          cache_write: ([$steps[].part.tokens.cache.write] | sum_known)
++        },
++        cost: {usd: ([$steps[].part.cost] | sum_known), source: "opencode_estimate"},
++        elapsed_ms: (if ($starts | length) > 0 and ($ends | length) > 0
++          then ($ends | max) - ($starts | min) else null end)
++      }
++    else
++      [.[] | .usage? | objects] as $usage |
++      {
++        format: (if ($usage | length) > 0 then "legacy" else "unknown" end),
++        steps: 0,
++        tokens: {
++          input: ([$usage[] | .input_tokens // .prompt_tokens] | sum_known),
++          output: ([$usage[] | .output_tokens // .completion_tokens] | sum_known),
++          reasoning: null, cache_read: null, cache_write: null
++        },
++        cost: {usd: null, source: null}, elapsed_ms: null
++      }
++    end
++  ' "$@"
++}
++
++export -f transcript_error transcript_metrics
++
++if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
++  case "${1:-}" in
++    validate) shift; transcript_error "$@" ;;
++    measure) shift; transcript_metrics "$@" ;;
++    *) printf 'usage: transcript.sh {validate|measure} <transcript>\n' >&2; exit 2 ;;
++  esac
++fi
+diff --git a/scripts/eval/run.sh b/scripts/eval/run.sh
+index 478b388..bd7d82a 100755
+--- a/scripts/eval/run.sh
++++ b/scripts/eval/run.sh
+@@ -28,6 +28,7 @@ source "$LIB/score.sh"
+ source "$LIB/diff.sh"
+ source "$LIB/stability.sh"
+ source "$LIB/pricing.sh"
++source "$RUN_SCRIPT_DIR/cleanup.sh"
+
+ VERSION="0.4.2"
+
+@@ -59,7 +60,8 @@ Options:
+ Environment:
+   OPENCODE_SKILLS_ROOT     Override skills root. If unset: walks up from cwd
+                            for .opencode/skills/, else \$HOME/.config/opencode/skills
+-  EVAL_BUDGET_USD          Daily hard cap (default: 2.00)
++  OPENCODE_SKILLS_EXTRA_ROOT  Optional additional skills directory
++  EVAL_BUDGET_USD          Reserved setting; no dollar cap is enforced
+   EVAL_MAX_SECONDS         Per-case timeout (default: 180)
+   EVAL_MODEL               Override model (default: anthropic/claude-haiku-3-5)
+   EVAL_BYPASS              Set to 1 to skip evals (logged to history.ndjson)
+@@ -168,7 +170,7 @@ if ! preflight_check; then
+   exit 13
+ fi
+
+-SKILLS_ROOT="$(resolve_skills_root)"
++SKILLS_ROOT="$(resolve_skills_root "$SKILL")" || exit 13
+ SKILL_DIR="$SKILLS_ROOT/$SKILL"
+ EVALS_DIR="$SKILL_DIR/evals"
+ CASES_DIR="$EVALS_DIR/cases"
+@@ -177,22 +179,37 @@ FIXTURES_DIR="$EVALS_DIR/fixtures"
+
+ if [[ ! -d "$CASES_DIR" ]]; then
+   echo "[eval-harness] no evals found for skill '$SKILL' at $CASES_DIR" >&2
+-  exit 0
++  exit 13
+ fi
+
+ RUN_ID="$(date -u +%Y-%m-%dT%H-%M-%SZ)-$RANDOM"
+ RUN_DIR="$STATE_DIR/runs/$RUN_ID"
+-mkdir -p "$RUN_DIR"
++mkdir "$RUN_DIR"
++: > "$RUN_DIR/.active"
++trap 'cleanup_on_exit "$STATE_DIR" "$RUN_ID" "$DEBUG"' EXIT
+
+ if [[ -n "$CASE_ID" ]]; then
+   CASE_FILES=("$CASES_DIR/$CASE_ID.yaml")
++  if [[ ! -f "${CASE_FILES[0]}" ]]; then
++    CASE_FILES=()
++    for candidate in "$CASES_DIR"/*.yaml; do
++      [[ -f "$candidate" ]] || continue
++      if [[ "$(yq -r '.id' "$candidate")" == "$CASE_ID" ]]; then
++        CASE_FILES+=("$candidate")
++      fi
++    done
++    if [[ ${#CASE_FILES[@]} -ne 1 ]]; then
++      echo "[eval-harness] case ID missing or ambiguous: $CASE_ID" >&2
++      exit 13
++    fi
++  fi
+ else
+   mapfile -t CASE_FILES < <(find "$CASES_DIR" -maxdepth 1 -type f -name "*.yaml" | sort)
+ fi
+
+ if [[ ${#CASE_FILES[@]} -eq 0 ]]; then
+   echo "[eval-harness] no case files matched for skill=$SKILL case=$CASE_ID" >&2
+-  exit 0
++  exit 13
+ fi
+
+ echo "[eval-harness] v$VERSION trigger=$TRIGGER skill=$SKILL cases=${#CASE_FILES[@]}"
+@@ -209,7 +226,7 @@ case "$PRICING_STATUS" in
+     fi
+     ;;
+   MISSING|INVALID)
+-    echo "[eval-harness] note: pricing data $PRICING_STATUS — cost data will be null" >&2
++    echo "[eval-harness] note: pricing data $PRICING_STATUS — legacy price estimates unavailable; OpenCode cost events are still used" >&2
+     ;;
+ esac
+
+@@ -219,7 +236,7 @@ for case_file in "${CASE_FILES[@]}"; do
+   i=$((i+1))
+   if [[ ! -f "$case_file" ]]; then
+     echo "[eval-harness] case file missing: $case_file" >&2
+-    continue
++    exit 13
+   fi
+
+   cid="$(yq -r '.id' "$case_file")"
+@@ -283,12 +300,13 @@ for case_file in "${CASE_FILES[@]}"; do
+       fi
+     else
+       echo "[eval-harness] case $cid: fixture source missing: $src_path" >&2
++      fixture_error=1
+     fi
+   done < <(yq -o=json '.setup.fixtures // {}' "$case_file" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+
+   if [[ "$fixture_error" == "1" ]]; then
+     echo "[eval-harness] case $cid: fixture errors — skipping case" >&2
+-    continue
++    exit 13
+   fi
+
+   export EVAL_FIXTURE_DIR="$FIXTURES_DIR"
+@@ -305,7 +323,7 @@ for case_file in "${CASE_FILES[@]}"; do
+     if ! flock -w "$lock_timeout" -x 9; then
+       echo "[eval-harness] lock timeout (${lock_timeout}s) on $SKILL:$cid:$TRIGGER — another run holds it" >&2
+       exec 9>&-
+-      continue
++      exit 13
+     fi
+   else
+     mkdir_lock="${lock_file}.d"
+@@ -314,7 +332,7 @@ for case_file in "${CASE_FILES[@]}"; do
+       if [[ "$waited" -ge "$lock_timeout" ]]; then
+         echo "[eval-harness] mkdir-lock timeout (${lock_timeout}s) on $SKILL:$cid:$TRIGGER" >&2
+         exec 9>&-
+-        continue 2
++        exit 13
+       fi
+       sleep 1
+       waited=$((waited+1))
+@@ -372,7 +390,7 @@ for case_file in "${CASE_FILES[@]}"; do
+         }]
+       }' > "$per_case_dir/checks.json"
+   else
+-    run_all_checks "$case_file" "$workdir" "$transcript" "$per_case_dir/checks.json"
++    EVAL_SPAWN_EXIT_CODE="$exit_code" run_all_checks "$case_file" "$workdir" "$transcript" "$per_case_dir/checks.json"
+   fi
+
+   primary_passed="$(jq -r '.passed' "$per_case_dir/checks.json" 2>/dev/null || echo false)"
+@@ -380,6 +398,7 @@ for case_file in "${CASE_FILES[@]}"; do
+   if [[ "$STABILITY_SAMPLES" -gt 1 && "$primary_passed" == "false" ]]; then
+     echo "[eval-harness] case $cid FAILed — running $((STABILITY_SAMPLES - 1)) stability sample(s)" >&2
+     hashes=("$(jq -S '.checks // []' "$per_case_dir/checks.json" 2>/dev/null | sha256sum | cut -d' ' -f1)")
++    sample_error=false
+     s=2
+     while [[ "$s" -le "$STABILITY_SAMPLES" ]]; do
+       sample_dir="$per_case_dir/stability/sample-$s"
+@@ -389,11 +408,15 @@ for case_file in "${CASE_FILES[@]}"; do
+       cp -R "$workdir" "$sample_workdir"
+       sample_transcript="$sample_dir/transcript.jsonl"
+       if command -v opencode >/dev/null 2>&1; then
+-        spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}" >/dev/null
++        sample_exit="$(spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}")"
+       else
+         : > "$sample_transcript"
++        sample_exit=13
++      fi
++      EVAL_SPAWN_EXIT_CODE="$sample_exit" run_all_checks "$case_file" "$sample_workdir" "$sample_transcript" "$sample_dir/checks.json"
++      if jq -e 'any(.checks[]; .error == true)' "$sample_dir/checks.json" >/dev/null; then
++        sample_error=true
+       fi
+-      run_all_checks "$case_file" "$sample_workdir" "$sample_transcript" "$sample_dir/checks.json"
+       hashes+=("$(jq -S '.checks // []' "$sample_dir/checks.json" 2>/dev/null | sha256sum | cut -d' ' -f1)")
+       s=$((s+1))
+     done
+@@ -406,8 +429,9 @@ for case_file in "${CASE_FILES[@]}"; do
+     stability_json="$(jq -n \
+       --argjson samples "$STABILITY_SAMPLES" \
+       --argjson identical "$identical" \
++      --argjson sample_error "$sample_error" \
+       --argjson hashes "$hashes_json" \
+-      '{samples:$samples, byte_identical:$identical, hashes:$hashes, performed:true}')"
++      '{samples:$samples, byte_identical:$identical, hashes:$hashes, performed:true, harness_error:$sample_error}')"
+     if [[ "$identical" == "false" ]]; then
+       echo "[eval-harness] case $cid is FLAKY (samples diverged) — attribution will be tagged" >&2
+     fi
+@@ -447,6 +471,10 @@ jq -c --arg event run \
+   "$RUN_DIR/results.json" >> "$HISTORY_LOG"
+
+ verdict="$(jq -r '.verdict' "$RUN_DIR/results.json")"
++if jq -e 'any(.cases[].checks[]; .error == true) or any(.cases[]; .stability.harness_error == true)' "$RUN_DIR/results.json" >/dev/null; then
++  echo "[eval-harness] ERROR: invalid run or scorer failure; see $RUN_DIR/results.json" >&2
++  exit 13
++fi
+ pass="$(jq -r '.summary.pass' "$RUN_DIR/results.json")"
+ total="$(jq -r '.summary.total' "$RUN_DIR/results.json")"
+ regressions="$(jq -r '.regressions | join(", ")' "$RUN_DIR/results.json")"
+diff --git a/scripts/eval/tests/case_model_override.sh b/scripts/eval/tests/case_model_override.sh
+index 0a46d3f..b29359a 100755
+--- a/scripts/eval/tests/case_model_override.sh
++++ b/scripts/eval/tests/case_model_override.sh
+@@ -33,6 +33,7 @@ cat > "$STUB_BIN/opencode" <<'STUB'
+ #!/usr/bin/env bash
+ if [[ "${1:-}" == "--version" ]]; then echo "1.15.10-stub"; exit 0; fi
+ echo "stub-model-record: model=${EVAL_CASE_MODEL:-NOT_SET}" > "$WORK_RECORD/observed-model.txt"
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/cleanup.sh b/scripts/eval/tests/cleanup.sh
+new file mode 100644
+index 0000000..cc409bd
+--- /dev/null
++++ b/scripts/eval/tests/cleanup.sh
+@@ -0,0 +1,87 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++script=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)/cleanup.sh
++work=$(mktemp -d)
++trap 'rm -rf "$work"' EXIT
++
++make_run() {
++  local state=$1 id=$2
++  mkdir -p "$state/runs/$id/case/sandbox" "$state/runs/$id/case/stability/sample-2/sandbox" \
++    "$state/runs/$id/case/workdir/sandbox"
++  printf 'transcript\n' > "$state/runs/$id/case/transcript.jsonl"
++  printf 'fixture\n' > "$state/runs/$id/case/workdir/input.txt"
++}
++
++for mode in normal debug failure; do
++  state="$work/$mode state"
++  make_run "$state" run
++  expected=12
++  debug=0
++  [[ "$mode" != debug ]] || { expected=0; debug=1; }
++  [[ "$mode" != failure ]] || expected=13
++  code=0
++  bash -c '
++    set -euo pipefail
++    source "$1"
++    STATE_DIR=$2 RUN_ID=run DEBUG=$3
++    : > "$STATE_DIR/runs/run/.active"
++    trap '\''cleanup_on_exit "$STATE_DIR" "$RUN_ID" "$DEBUG"'\'' EXIT
++    exit "$4"
++  ' _ "$script" "$state" "$debug" "$expected" || code=$?
++  [[ "$code" == "$expected" ]]
++  [[ ! -e "$state/runs/run/.active" && -f "$state/runs/run/.finished" ]]
++  [[ -f "$state/runs/run/case/transcript.jsonl" && -d "$state/runs/run/case/workdir/sandbox" ]]
++  if [[ "$debug" == 1 ]]; then
++    [[ -d "$state/runs/run/case/sandbox" ]]
++    EVAL_STATE_DIR="$state" bash "$script" cleanup --run=run >/dev/null
++  fi
++  [[ ! -e "$state/runs/run/case/sandbox" && ! -e "$state/runs/run/case/stability/sample-2/sandbox" ]]
++done
++
++state="$work/manual"
++make_run "$state" complete
++make_run "$state" sibling
++printf '{"run_id":"complete","cases":[]}' > "$state/runs/complete/results.json"
++EVAL_STATE_DIR="$state" bash "$script" cleanup --run=complete >/dev/null
++EVAL_STATE_DIR="$state" bash "$script" cleanup --run=complete >/dev/null
++[[ -d "$state/runs/sibling/case/sandbox" && -f "$state/runs/complete/results.json" ]]
++
++for id in sibling ../outside /absolute . hidden/child; do
++  if EVAL_STATE_DIR="$state" bash "$script" cleanup "--run=$id" >/dev/null 2>&1; then
++    printf 'Accepted unsafe or unverified run: %s\n' "$id" >&2; exit 1
++  fi
++done
++make_run "$state" active
++printf '{"run_id":"active","cases":[]}' > "$state/runs/active/results.json"
++: > "$state/runs/active/.active"
++if EVAL_STATE_DIR="$state" bash "$script" cleanup --run=active >/dev/null 2>&1; then exit 1; fi
++[[ -d "$state/runs/active/case/sandbox" ]]
++
++mkdir -p "$work/outside/sandbox"
++printf 'keep\n' > "$work/outside/sandbox/keep"
++for component in case stability sample sandbox run runs; do
++  state="$work/link-$component"
++  make_run "$state" target
++  : > "$state/runs/target/.finished"
++  case "$component" in
++    case) ln -s "$work/outside" "$state/runs/target/linked-case" ;;
++    stability) mkdir -p "$work/outside/sample-1/sandbox" "$state/runs/target/linked-case";
++      ln -s "$work/outside" "$state/runs/target/linked-case/stability" ;;
++    sample) ln -s "$work/outside" "$state/runs/target/case/stability/sample-link" ;;
++    sandbox) mkdir "$state/runs/target/linked-case";
++      ln -s "$work/outside/sandbox" "$state/runs/target/linked-case/sandbox" ;;
++    run) mv "$state/runs/target" "$state/moved"; ln -s "$state/moved" "$state/runs/target" ;;
++    runs) mv "$state/runs" "$state/moved"; ln -s "$state/moved" "$state/runs" ;;
++  esac
++  if EVAL_STATE_DIR="$state" bash "$script" cleanup --run=target >/dev/null 2>&1; then
++    printf 'Accepted symlink: %s\n' "$component" >&2; exit 1
++  fi
++  [[ -f "$work/outside/sandbox/keep" && -d "$state/runs/target/case/sandbox" ]]
++done
++
++bash "$script" --help >/dev/null
++for argument in '' --all --run=../bad; do
++  if EVAL_STATE_DIR="$work" bash "$script" "$argument" >/dev/null 2>&1; then exit 1; fi
++done
++printf 'PASS: automatic and manual cleanup preserve status, reports, workdirs, and active runs\n'
+diff --git a/scripts/eval/tests/fixture_path_traversal.sh b/scripts/eval/tests/fixture_path_traversal.sh
+index e5b555a..3b1c5f6 100755
+--- a/scripts/eval/tests/fixture_path_traversal.sh
++++ b/scripts/eval/tests/fixture_path_traversal.sh
+@@ -71,6 +71,7 @@ mkdir -p "$STUB_BIN"
+ cat > "$STUB_BIN/opencode" <<'STUB'
+ #!/usr/bin/env bash
+ if [[ "${1:-}" == "--version" ]]; then echo "1.15.10-stub"; exit 0; fi
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/lock_concurrency.sh b/scripts/eval/tests/lock_concurrency.sh
+index cc6f5e7..27b1698 100755
+--- a/scripts/eval/tests/lock_concurrency.sh
++++ b/scripts/eval/tests/lock_concurrency.sh
+@@ -29,6 +29,7 @@ while [[ $# -gt 0 ]]; do
+ done
+ sleep 2
+ echo "{\"event\":\"done\",\"pid\":$$,\"ts\":$(date +%s)}" >> "$cwd/concurrent-marker.log"
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/project_config.sh b/scripts/eval/tests/project_config.sh
+index cc1ec81..b8c3aa5 100755
+--- a/scripts/eval/tests/project_config.sh
++++ b/scripts/eval/tests/project_config.sh
+@@ -32,7 +32,7 @@ fi
+ apply_project_config
+
+ [[ "$EVAL_MODEL" == "anthropic/claude-from-project" ]] || { echo "FAIL: EVAL_MODEL='$EVAL_MODEL'" >&2; exit 1; }
+-[[ "$EVAL_BUDGET_USD" == "5.0" || "$EVAL_BUDGET_USD" == "5.00" ]] || { echo "FAIL: EVAL_BUDGET_USD='$EVAL_BUDGET_USD'" >&2; exit 1; }
++[[ "$EVAL_BUDGET_USD" == "5" || "$EVAL_BUDGET_USD" == "5.0" || "$EVAL_BUDGET_USD" == "5.00" ]] || { echo "FAIL: EVAL_BUDGET_USD='$EVAL_BUDGET_USD'" >&2; exit 1; }
+ [[ "$EVAL_MAX_SECONDS" == "99" ]] || { echo "FAIL: EVAL_MAX_SECONDS='$EVAL_MAX_SECONDS'" >&2; exit 1; }
+ [[ "$EVAL_LLM_JUDGE_MODEL" == "anthropic/claude-opus-4-7" ]] || { echo "FAIL: EVAL_LLM_JUDGE_MODEL='$EVAL_LLM_JUDGE_MODEL'" >&2; exit 1; }
+
+@@ -40,7 +40,7 @@ export EVAL_MODEL="explicit-env-wins"
+ unset EVAL_BUDGET_USD EVAL_MAX_SECONDS EVAL_LLM_JUDGE_MODEL
+ apply_project_config
+ [[ "$EVAL_MODEL" == "explicit-env-wins" ]] || { echo "FAIL: env-var precedence broken; got '$EVAL_MODEL'" >&2; exit 1; }
+-[[ "$EVAL_BUDGET_USD" == "5.0" || "$EVAL_BUDGET_USD" == "5.00" ]] || { echo "FAIL: BUDGET should fill from config when unset, got '$EVAL_BUDGET_USD'" >&2; exit 1; }
++[[ "$EVAL_BUDGET_USD" == "5" || "$EVAL_BUDGET_USD" == "5.0" || "$EVAL_BUDGET_USD" == "5.00" ]] || { echo "FAIL: BUDGET should fill from config when unset, got '$EVAL_BUDGET_USD'" >&2; exit 1; }
+
+ echo "PASS: project-config layer resolved + applied with correct precedence"
+ exit 0
+diff --git a/scripts/eval/tests/regression_inject.sh b/scripts/eval/tests/regression_inject.sh
+index 254c268..5d6df58 100755
+--- a/scripts/eval/tests/regression_inject.sh
++++ b/scripts/eval/tests/regression_inject.sh
+@@ -95,7 +95,7 @@ case "$mode" in
+     ;;
+ esac
+
+-echo "{\"event\":\"stub_complete\",\"mode\":\"$mode\"}"
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/stability_inline.sh b/scripts/eval/tests/stability_inline.sh
+index 3fb3383..d2f0e1c 100755
+--- a/scripts/eval/tests/stability_inline.sh
++++ b/scripts/eval/tests/stability_inline.sh
+@@ -23,6 +23,7 @@ while [[ $# -gt 0 ]]; do
+   case "$1" in --dir) cwd="$2"; shift 2 ;; --dir=*) cwd="${1#*=}"; shift ;; *) shift ;; esac
+ done
+ cd "$cwd"
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/transcript_contract.sh b/scripts/eval/tests/transcript_contract.sh
+new file mode 100644
+index 0000000..514688c
+--- /dev/null
++++ b/scripts/eval/tests/transcript_contract.sh
+@@ -0,0 +1,124 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++ROOT=$(CDPATH='' cd "$(dirname "$0")/../../.." && pwd)
++source "$ROOT/scripts/eval/lib/transcript.sh"
++WORK=$(mktemp -d)
++trap 'rm -rf "$WORK"' EXIT
++
++cat > "$WORK/good" <<'JSONL'
++{"type":"step_start","timestamp":1000}
++{"type":"step_finish","timestamp":2000,"part":{"reason":"tool-calls","tokens":{"input":3,"output":10,"reasoning":2,"cache":{"read":0,"write":100}},"cost":0.125}}
++{"type":"step_start","timestamp":2100}
++{"type":"text","part":{"text":"answer"}}
++{"type":"step_finish","timestamp":3000,"part":{"reason":"stop","tokens":{"input":1,"output":20,"reasoning":3,"cache":{"read":100,"write":0}},"cost":0.25}}
++JSONL
++transcript_metrics "$WORK/good" | jq -e '
++  .steps == 2 and .tokens == {input:4,output:30,reasoning:5,cache_read:100,cache_write:100}
++  and .cost.usd == 0.375 and .elapsed_ms == 2000
++' >/dev/null
++[[ -z "$(transcript_error "$WORK/good")" ]]
++transcript_metrics "$WORK/good" "$WORK/good" | jq -e '.tokens.input == 8 and .cost.usd == 0.75' >/dev/null
++
++jq -c 'if .type == "step_finish" then del(.part.cost) else . end' "$WORK/good" > "$WORK/unknown-cost"
++transcript_metrics "$WORK/unknown-cost" | jq -e '.cost.usd == null' >/dev/null
++jq -c 'if .type == "step_finish" then .part.cost = 0 else . end' "$WORK/good" > "$WORK/zero-cost"
++transcript_metrics "$WORK/zero-cost" | jq -e '.cost.usd == 0' >/dev/null
++transcript_metrics "$WORK/good" "$WORK/unknown-cost" | jq -e '.cost.usd == null' >/dev/null
++
++cp "$WORK/good" "$WORK/error"
++printf '%s\n' '{"type":"error","error":{"message":"failed after useful output"}}' >> "$WORK/error"
++cp "$WORK/good" "$WORK/incomplete"
++printf '%s\n' '{"type":"step_start","timestamp":4000}' >> "$WORK/incomplete"
++printf '%s\n' '{"type":"tool_use","part":{"state":{"output":"answer"}}}' > "$WORK/tool-only"
++printf '%s\n' 'not JSON' > "$WORK/malformed"
++printf '%s\n' 'null' > "$WORK/scalar"
++printf ' \n' > "$WORK/blank"
++: > "$WORK/empty"
++for name in error incomplete tool-only malformed scalar blank empty; do
++  [[ -n "$(transcript_error "$WORK/$name")" ]] || { printf 'Accepted %s\n' "$name" >&2; exit 1; }
++done
++if transcript_metrics "$WORK/malformed" >/dev/null 2>&1; then
++  printf 'Malformed metrics were accepted\n' >&2; exit 1
++fi
++
++mkdir -p "$WORK/bin" "$WORK/primary/shared" "$WORK/extra/private/evals/cases"
++cat > "$WORK/bin/opencode" <<'SH'
++#!/usr/bin/env bash
++if [[ "${1:-}" == --version ]]; then printf '1.18.27-test\n'; exit; fi
++[[ -d "$OPENCODE_CONFIG_DIR/skills/shared" && -d "$OPENCODE_CONFIG_DIR/skills/private" ]] || exit 99
++cat "$TRACE_FILE"
++if [[ "${TRACE_FAIL_SAMPLES:-0}" == 1 && "$PWD" == */stability/* ]]; then exit 7; fi
++exit "${TRACE_EXIT:-0}"
++SH
++chmod +x "$WORK/bin/opencode"
++cat > "$WORK/extra/private/evals/cases/one.yaml" <<'YAML'
++id: one
++skills_loaded: [shared, private]
++prompt: test
++checks:
++  - kind: output_contains
++    value: answer
++YAML
++export PATH="$WORK/bin:$PATH" OPENCODE_SKILLS_ROOT="$WORK/primary" OPENCODE_SKILLS_EXTRA_ROOT="$WORK/extra"
++export EVAL_SKIP_AUTH_CHECK=1 EVAL_MAX_SECONDS=5 EVAL_AUTOFIX=0
++for name in good error incomplete tool-only malformed scalar blank empty unknown-cost zero-cost; do
++  export TRACE_FILE="$WORK/$name" EVAL_STATE_DIR="$WORK/state-$name"
++  code=0
++  bash "$ROOT/scripts/eval/run.sh" --skill=private --case=one > "$WORK/$name.log" 2>&1 || code=$?
++  expected=13
++  case "$name" in good|unknown-cost|zero-cost) expected=0 ;; esac
++  [[ "$code" == "$expected" ]] || { cat "$WORK/$name.log" >&2; exit 1; }
++done
++for name in unknown-cost zero-cost; do
++  expected=null
++  [[ "$name" != zero-cost ]] || expected=0
++  jq -e --argjson expected "$expected" '.summary.total_cost_usd == $expected' "$WORK/state-$name"/runs/*/results.json >/dev/null
++done
++jq -e '.cases[0].metrics.tokens.cache_read == 100 and .summary.total_cost_usd == 0.375' "$WORK/state-good"/runs/*/results.json >/dev/null
++
++export TRACE_FILE="$WORK/good" TRACE_EXIT=7 EVAL_STATE_DIR="$WORK/state-exit"
++code=0
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=one > "$WORK/exit.log" 2>&1 || code=$?
++[[ "$code" == 13 ]] || { cat "$WORK/exit.log" >&2; exit 1; }
++unset TRACE_EXIT
++export TRACE_FILE="$WORK/error" EVAL_STATE_DIR="$WORK/state-error"
++for command in baseline accept; do
++  code=0
++  bash "$ROOT/scripts/eval/$command.sh" --skill=private --case=one > "$WORK/$command.log" 2>&1 || code=$?
++  [[ "$code" == 13 ]] || { cat "$WORK/$command.log" >&2; exit 1; }
++  [[ ! -f "$WORK/extra/private/evals/baselines/one.baseline.json" ]]
++done
++code=0
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=one --mode=2tier > "$WORK/two-tier-error.log" 2>&1 || code=$?
++[[ "$code" == 13 ]]
++
++cat > "$WORK/extra/private/evals/cases/retry.yaml" <<'YAML'
++id: retry
++skills_loaded: [shared, private]
++prompt: test
++checks:
++  - kind: file_exists
++    path: not-created
++YAML
++export TRACE_FILE="$WORK/good" EVAL_STATE_DIR="$WORK/state-retry"
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=retry --stability-samples=3 > "$WORK/retry.log" 2>&1
++jq -e '.cases[0].metrics.steps == 6 and .summary.total_cost_usd == 1.125' "$WORK/state-retry"/runs/*/results.json >/dev/null
++export TRACE_FAIL_SAMPLES=1 EVAL_STATE_DIR="$WORK/state-retry-error"
++code=0
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=retry --stability-samples=2 > "$WORK/retry-error.log" 2>&1 || code=$?
++[[ "$code" == 13 ]] || { cat "$WORK/retry-error.log" >&2; exit 1; }
++unset TRACE_FAIL_SAMPLES
++printf 'id: logical-id\nprompt: test\nchecks: []\n' > "$WORK/extra/private/evals/cases/physical.yaml"
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=logical-id --dry-run >/dev/null
++
++for argument in --skill=absent --case=absent; do
++  code=0
++  bash "$ROOT/scripts/eval/run.sh" --skill=private "$argument" --dry-run >/dev/null 2>&1 || code=$?
++  [[ "$code" == 13 ]]
++done
++printf '\nsetup:\n  fixtures:\n    missing.txt: missing.txt\n' >> "$WORK/extra/private/evals/cases/one.yaml"
++code=0
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=one >/dev/null 2>&1 || code=$?
++[[ "$code" == 13 ]]
++printf 'PASS: transcript validity, runner exits, two skill roots, and measurements\n'
+diff --git a/scripts/eval/tests/twotier_aggregation.sh b/scripts/eval/tests/twotier_aggregation.sh
+index e1e5d73..b492355 100755
+--- a/scripts/eval/tests/twotier_aggregation.sh
++++ b/scripts/eval/tests/twotier_aggregation.sh
+@@ -43,6 +43,7 @@ mkdir -p "$STUB_BIN"
+ cat > "$STUB_BIN/opencode" <<'STUB'
+ #!/usr/bin/env bash
+ if [[ "${1:-}" == "--version" ]]; then echo "1.15.10-stub"; exit 0; fi
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/tests/twotier_mode.sh b/scripts/eval/tests/twotier_mode.sh
+index 3c36ea4..5239bae 100755
+--- a/scripts/eval/tests/twotier_mode.sh
++++ b/scripts/eval/tests/twotier_mode.sh
+@@ -26,7 +26,7 @@ cd "$cwd"
+ export PATH="$cwd:$PATH"
+ export NANO_BRAIN_SHIM_STORE="$cwd/nano-brain-store.json"
+ npx nano-brain write -c k --content "Postgres choice" --tags "decision,architecture" >/dev/null
+-echo "{}"
++echo '{"type":"step_finish","part":{"reason":"stop"}}'
+ exit 0
+ STUB
+ chmod +x "$STUB_BIN/opencode"
+diff --git a/scripts/eval/twotier.sh b/scripts/eval/twotier.sh
+index 1cd91c8..0d0fef4 100755
+--- a/scripts/eval/twotier.sh
++++ b/scripts/eval/twotier.sh
+@@ -57,13 +57,16 @@ echo "[twotier] === SMOKE pass ==="
+ SMOKE_BEFORE="$(ls -1d "$STATE_DIR/runs"/* 2>/dev/null | wc -l | tr -d ' ' || echo 0)"
+ EVAL_MODE=smoke bash "$RUN_BIN" "${ARGS[@]}" --mode=smoke || smoke_rc=$?
+ smoke_rc="${smoke_rc:-0}"
++if [[ "$smoke_rc" != 0 && "$smoke_rc" != 12 ]]; then
++  exit "$smoke_rc"
++fi
+
+ SMOKE_RUN="$(ls -dt "$STATE_DIR/runs"/* 2>/dev/null | head -1 || true)"
+ SMOKE_AFTER="$(ls -1d "$STATE_DIR/runs"/* 2>/dev/null | wc -l | tr -d ' ' || echo 0)"
+
+ if [[ "$SMOKE_AFTER" -le "$SMOKE_BEFORE" ]] || [[ -z "$SMOKE_RUN" || ! -f "$SMOKE_RUN/results.json" ]]; then
+   echo "[twotier] smoke produced no new results — bailing with smoke exit code $smoke_rc" >&2
+-  exit "${smoke_rc:-13}"
++  exit 13
+ fi
+
+ smoke_verdict="$(jq -r '.verdict' "$SMOKE_RUN/results.json")"
+@@ -88,7 +91,11 @@ FULL_CASE_RESULTS=()
+ IFS=',' read -ra cases_arr <<<"$failed_cases"
+ for c in "${cases_arr[@]}"; do
+   echo "[twotier]   escalating case=$c"
+-  EVAL_MODE=full bash "$RUN_BIN" --skill="$SKILL" --case="$c" --mode=full --trigger=2tier-escalation || true
++  full_rc=0
++  EVAL_MODE=full bash "$RUN_BIN" --skill="$SKILL" --case="$c" --mode=full --trigger=2tier-escalation || full_rc=$?
++  if [[ "$full_rc" != 0 && "$full_rc" != 12 ]]; then
++    exit "$full_rc"
++  fi
+   full_run="$(ls -dt "$STATE_DIR/runs"/* 2>/dev/null | head -1)"
+   if [[ -z "$full_run" || ! -f "$full_run/results.json" ]]; then
+     echo "[twotier]   case $c: full pass produced no results" >&2
+@@ -150,6 +157,8 @@ jq -n \
+       full_escalated: ($full_cases | length),
+       full_pass: $pass,
+       full_fail: $fail,
++      total_cost_usd: ([$smoke_results.summary.total_cost_usd, $full_cases[].cost.usd] |
++        if any(.[]; . == null) then null else add end),
+       regression_count: ($regressions | length)
+     },
+     regressions: $regressions,

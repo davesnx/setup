@@ -26,6 +26,10 @@ __pycache__/
 # and handles the commands itself, so they are not hand-authored content.
 /terminal/opencode/commands/plannotator-*.md
 
+# Eval harness dependencies
+/terminal/bin/eval-harness/node_modules/
+/terminal/bin/eval-harness/package-lock.json
+
 # Machine-specific overrides
 /local/*
 !/local/README.md

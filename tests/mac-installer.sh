@@ -173,6 +173,18 @@ expect_exit 66 /bin/sh "$root/mac/install.sh" "$work/missing"
 printf 'PASS: invalid setup path stops before commands\n'
 
 prepare_home
+minimal_bin="$work/no-npm-bin"
+mkdir -p "$minimal_bin"
+for name in dirname curl zsh git; do
+  ln -s "$(command -v "$name")" "$minimal_bin/$name"
+done
+: > "$command_log"
+expect_exit 69 env PATH="$minimal_bin" /bin/sh "$root/install.sh"
+grep -q 'npm is required' "$work/stderr"
+[ ! -s "$command_log" ]
+printf 'PASS: missing npm stops the root installer before mutation\n'
+
+prepare_home
 FAKE_UNAME=Linux
 export FAKE_UNAME
 expect_exit 69 /bin/sh "$root/mac/install.sh" "$root"

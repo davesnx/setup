@@ -34,6 +34,11 @@ if ! command -v git >/dev/null 2>&1; then
   exit 69
 fi
 
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is required to install the eval harness." >&2
+  exit 69
+fi
+
 echo "👉 dotfiles path: '$setup_path'"
 
 if [ "$(uname -s)" = Darwin ]; then
@@ -115,6 +120,8 @@ chsh -s "$zsh_path"
 
 # OpenCode, Claude Code, and shared agent skills (profile auto-detected).
 sh "$setup_path/terminal/opencode/install.sh"
+
+sh "$setup_path/terminal/bin/eval-harness/install.sh"
 
 # Install zimfw without generating shell configuration.
 mkdir -p "$HOME/.zim"

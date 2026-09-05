@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script=${BASH_SOURCE[0]}
+while [[ -L "$script" ]]; do
+  directory=$(dirname "$script")
+  script=$(readlink "$script")
+  [[ "$script" == /* ]] || script="$directory/$script"
+done
+root=$(CDPATH='' cd "$(dirname "$script")" && pwd)
+package="${1:-$root/node_modules/@nano-step/eval-harness}"
+patch="$root/patches/eval-harness-0.4.2.patch"
+
+# An enclosing checkout makes git apply skip these package-relative paths.
+GIT_CEILING_DIRECTORIES=$(CDPATH='' cd "$package/.." && pwd -P)
+export GIT_CEILING_DIRECTORIES
+
+if [[ "$(node -p 'require(process.argv[1]).version' "$package/package.json")" != 0.4.2 ]]; then
+  printf 'The eval-harness patch requires version 0.4.2.\n' >&2
+  exit 1
+fi
+if git -C "$package" apply --reverse --check "$patch" 2>/dev/null; then
+  exit 0
+fi
+git -C "$package" apply --check "$patch"
+git -C "$package" apply "$patch"

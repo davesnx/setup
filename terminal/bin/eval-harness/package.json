@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "bash ./patch-eval-harness",
+    "test": "sh tests/yq-shim.sh && bash tests/eval-harness-cleanup.sh && node tests/eval-harness-patch.cjs && node tests/eval-harness-paths.cjs && node tests/install.cjs",
+    "test:upstream": "PATH=\"$PWD/shims:$PATH\" npm --prefix node_modules/@nano-step/eval-harness test"
+  },
+  "dependencies": {
+    "@nano-step/eval-harness": "github:nano-step/eval-harness#0bb8c8017d54d57765b3761967ccd92ef353b007",
+    "yaml": "^2.9.0"
+  }
+}
