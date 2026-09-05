@@ -21,6 +21,6 @@ checks:
   - kind: file_exists
     path: revised.md
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\"); const facts=[/30 seconds/i,/YAML/,/JSON/,/invalid keys/i,/log/i].every(r=>r.test(s)); const bad=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!bad?\"plain\":\"invalid\")'"
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"revised.md\",\"utf8\").replace(/\\s+/g,\" \"); const facts=[/30 seconds/i,/YAML/,/JSON/,/invalid keys/i,/log/i].every(r=>r.test(s)); const bad=/important to note|groundbreaking|pivotal|At its core|not just|transformative/i.test(s); process.stdout.write(facts&&!bad?\"plain\":\"invalid\")'"
     unsafe_shell: true
     expect_exact: "plain"

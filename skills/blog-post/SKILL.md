@@ -91,6 +91,8 @@ Understand how the post should be organized.
 
 Understand how it should sound.
 
+When the repository has a `VOICE.md` at its root (sancho.dev does), read it whole before asking. It answers these questions, and its Title, Opener, Closer and Words sections override the generic guidance later in this skill. Ask only what it leaves open.
+
 - How would you describe your writing voice? (casual, technical, conversational, authoritative, witty)
 - Any blog posts (yours or others) that match the tone you're going for?
 - What should this NOT sound like? (academic, corporate, preachy, clickbaity)
@@ -318,7 +320,7 @@ Write:
 
 ### Run an Unslop Pass
 
-Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written.
+Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written. When a `VOICE.md` exists, pass it as the writing sample, and when the author is David, run unslop's `references/author-patterns.md` as part of the pass.
 
 Before delivery, compare the revision with the source and ask internally: did this edit add or remove any claim? Restore lost claims and delete unsupported additions.
 

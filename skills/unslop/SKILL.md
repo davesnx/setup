@@ -20,10 +20,10 @@ voice.
 
 ## Prose process
 
-1. Scan for the patterns below.
+1. Scan for the patterns below. When the text is David's own prose (a sancho.dev post, a doc, a README, a message he wrote), also scan for [references/author-patterns.md](references/author-patterns.md): the grammar he carries over from Spanish, the quirks that stay, and the ordered pass that fixes the rest.
 2. Identify the target voice, register, audience, and output format.
 3. Rewrite the passage around its main points instead of replacing watched words one at a time.
-4. Compare the rewrite with the source. Restore any lost fact, qualification, or intended conclusion. Remove every unsupported addition, promotional evaluation, and inflated significance claim.
+4. Compare the rewrite with the source. Preserve the speaker and viewpoint: first-person prose stays first-person unless the user asks to change it. Restore any lost fact, qualification, or intended conclusion. Remove every unsupported addition, promotional evaluation, and inflated significance claim.
 5. Self-audit with the quick checks, then score. Fix remaining tells.
 
 ## Match voice and register
@@ -185,4 +185,5 @@ Before delivery, ask: "Did the rewrite lose a fact, name, number, qualification,
 - [references/phrases.md](references/phrases.md): throat-clearing openers, emphasis crutches, business jargon table, adverb guidance, meta-commentary, vague declaratives.
 - [references/structures.md](references/structures.md): binary contrasts, negative listing, false agency, narrator-from-a-distance, rhythm patterns.
 - [references/examples.md](references/examples.md): before/after transformations.
+- [references/author-patterns.md](references/author-patterns.md): David's own prose. Spanish carryovers, protected quirks, and the eight-step editing pass read from sancho.dev PR #753.
 - [UPSTREAM.md](UPSTREAM.md): source material, licenses, and adaptation notes.
