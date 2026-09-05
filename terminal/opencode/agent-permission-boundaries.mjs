@@ -1,3 +1,13 @@
+/*
+ * Custom OpenCode startup plugin, not a built-in feature. Plannotator grants
+ * Plan access to all Markdown files, and Writer's catch-all Bash "ask" rule
+ * overrides global hard denies. This plugin runs after Plannotator to restore
+ * those permission boundaries.
+ *
+ * This workaround adds maintenance. Prefer fixing the conflicting configuration
+ * and removing the plugin. Deleting it alone would restore the broader access.
+ */
+
 function rules(value) {
   if (typeof value === "string") return { "*": value }
   return value
