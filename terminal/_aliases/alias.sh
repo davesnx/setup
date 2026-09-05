@@ -28,6 +28,7 @@ alias jj="__zoxide_zi"
 
 alias oc="/opt/homebrew/bin/opencode"
 alias occ="/opt/homebrew/bin/opencode --continue"
+alias cla="command claude"
 alias ccc="command claude --continue"
 
 # Edit setup
