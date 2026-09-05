@@ -91,7 +91,7 @@ Understand how the post should be organized.
 
 Understand how it should sound.
 
-When the repository has a `VOICE.md` at its root (sancho.dev does), read it whole before asking. It answers these questions, and its Title, Opener, Closer and Words sections override the generic guidance later in this skill. Ask only what it leaves open.
+When the repository has a `VOICE.md` at its root, read it whole before asking. It answers these questions, and its Title, Opener, Closer and Words sections override the generic guidance later in this skill. Ask only what it leaves open.
 
 - How would you describe your writing voice? (casual, technical, conversational, authoritative, witty)
 - Any blog posts (yours or others) that match the tone you're going for?

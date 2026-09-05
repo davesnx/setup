@@ -3,7 +3,7 @@ id: prose-matches-supplied-voice
 mode: prose
 skill_under_test: unslop
 skills_loaded: [unslop]
-description: "A supplied voice sample must override generic punctuation preferences"
+description: "Explicit voice and punctuation requirements override generic editing preferences"
 tags: [prose, voice-preservation]
 
 setup:
@@ -11,9 +11,9 @@ setup:
     "voice.md": fixtures/voice-sample.md
 
 prompt: |
-  Use voice.md as my writing sample. Rewrite these sentences in my voice and
-  write only the result to revised.md: "My second deploy worked. I still have
-  not tested my rollback plan."
+  Use voice.md as my writing sample. Keep my first-person viewpoint and use
+  an em dash to connect these thoughts. Write only the result to revised.md:
+  "My second deploy worked. I still have not tested my rollback plan."
 
 budget:
   max_tokens: 3000

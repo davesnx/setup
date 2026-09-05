@@ -3,7 +3,7 @@ id: narrow-question-stays-direct
 mode: deterministic
 skill_under_test: how
 skills_loaded: [how, simplify]
-description: "A narrow code question uses normal inspection without extra workflows"
+description: "A narrow code question avoids delegation and unrelated cleanup workflows"
 setup:
   fixtures:
     key.mjs: fixtures/key.mjs
@@ -14,7 +14,7 @@ checks:
   - kind: file_exists
     path: answer.md
   - kind: output_not_contains
-    value: '"name":"how"'
+    value: '"tool":"task"'
   - kind: output_not_contains
     value: '"name":"simplify"'
   - kind: shell

@@ -1,6 +1,6 @@
 ---
 name: how
-description: "Explain a subsystem or cross-cutting flow across multiple modules, or critique its architecture when asked. Use for substantial architectural explanations or an explicit request to use How. Answer single-symbol lookups and narrow why/where questions directly without loading this skill."
+description: Explain or research how something works in this codebase by exploring code and producing a clear architectural explanation. Use for "how does X work", "research X", "trace X", or "where is X used" when X refers to the current codebase. Optionally critique the architecture for issues.
 ---
 
 # How

@@ -13,22 +13,22 @@ voice.
 - **Preserve substance.** Keep each fact, name, number, date, quote, citation, ranking, qualification, and intended conclusion. Unsupported promotional evaluation and significance inflation are not protected substance when the user asks to unslop.
 - **Remove unsupported promotion.** Remove praise, sales framing, and claims of importance that the source does not support. Keep concrete facts and substantive opinions, but do not invent evidence or a factual explanation to replace the removed language.
 - **Do not invent details.** Never add facts, sources, statistics, quotes, anecdotes, or personal experiences. Mark a hypothetical as hypothetical.
-- **Match the writer.** A supplied writing sample or established document style takes priority over the default rules below. Preserve deliberate quirks when they do not obscure meaning.
+- **Match the writer.** A supplied writing sample or established document style takes priority over the default rules below. Preserve the speaker and ownership: keep I/my, we/our, or you/your when the source uses them, unless the user asks to change the viewpoint. Shortening a sentence does not justify turning a personal account into an impersonal summary. Preserve deliberate quirks when they do not obscure meaning.
 - **Respect the register.** Do not add opinions, first-person language, humor, or casual phrasing to reference, legal, scientific, or other neutral prose.
 - **Protect literal text.** Do not rewrite quotations, proper names, code, commands, link targets, data, or examples that discuss a watched phrase unless the user asks.
 - **Treat patterns as evidence, not proof.** Fix a pattern when it is repeated, formulaic, or wrong for the context. Do not flatten a human choice merely because it appears in this catalog.
 
 ## Prose process
 
-1. Scan for the patterns below. When the text is David's own prose (a sancho.dev post, a doc, a README, a message he wrote), also scan for [references/author-patterns.md](references/author-patterns.md): the grammar he carries over from Spanish, the quirks that stay, and the ordered pass that fixes the rest.
+1. Scan for the patterns below.
 2. Identify the target voice, register, audience, and output format.
 3. Rewrite the passage around its main points instead of replacing watched words one at a time.
-4. Compare the rewrite with the source. Preserve the speaker and viewpoint: first-person prose stays first-person unless the user asks to change it. Restore any lost fact, qualification, or intended conclusion. Remove every unsupported addition, promotional evaluation, and inflated significance claim.
+4. Compare the rewrite with the source. Restore any lost fact, qualification, or intended conclusion. Remove every unsupported addition, promotional evaluation, and inflated significance claim.
 5. Self-audit with the quick checks, then score. Fix remaining tells.
 
 ## Match voice and register
 
-When the user supplies a writing sample, first note its sentence length, vocabulary, paragraph openings, punctuation, repeated phrases, transitions, and level of formality. Match those habits. The sample overrides generic preferences such as the em-dash rule.
+When the user supplies a writing sample, first note its viewpoint, sentence length, vocabulary, paragraph openings, punctuation, repeated phrases, transitions, and level of formality. Match those habits. The sample overrides generic preferences such as the em-dash rule.
 
 Without a sample, match the context:
 
