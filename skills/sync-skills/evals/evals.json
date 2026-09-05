@@ -9,8 +9,8 @@
     },
     {
       "id": 2,
-      "prompt": "I'm working in /home/me/setup inside nspawn and changed an OpenCode skill. Sync skills.",
-      "expected_output": "Uses nspawn mode, validates and commits only the skill directories, pushes normally, and does not SSH to another machine or pull after pushing.",
+      "prompt": "I'm working in /home/me/workplace/davesnx/setup/repo inside nspawn and changed an OpenCode skill. Sync skills.",
+      "expected_output": "Uses nspawn mode in /home/me/workplace/davesnx/setup/repo, validates and commits only the skill directories, pushes normally, and does not SSH to another machine or pull after pushing.",
       "files": []
     },
     {

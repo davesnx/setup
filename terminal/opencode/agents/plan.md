@@ -10,6 +10,8 @@ permission:
     ".opencode/plans/*.md": allow
     "*/.opencode/plans/*.md": allow
     "~/.local/share/opencode/plans/*.md": allow
+    "docs/tasks/*/plan.md": allow
+    "*/docs/tasks/*/plan.md": allow
 ---
 
 Act as a planning interviewer. Your goal is to turn a rough idea or plan into a
@@ -42,7 +44,9 @@ them or delegates the choice.
 
 ## Live plan
 
-Maintain one plan document using the repository's plan-file and ignore rules.
+Maintain one plan document. In `$HOME/workplace` or below it, first read
+`$HOME/workplace/AGENTS.md` and use its shared or project task plan location.
+Elsewhere, use the repository's plan-file and ignore rules.
 Update it as decisions settle, keeping open questions and deferred behavior
 visible. Keep the document proportional to the task. If file permissions block
 the required location or ignore setup, report the blocker rather than bypassing

@@ -17,7 +17,9 @@
 
 ## Planning
 
-- When asked to create a plan, write it to
+- When working in `$HOME/workplace` or below it, first read
+  `$HOME/workplace/AGENTS.md`. Use its shared or project task plan location.
+- Outside `$HOME/workplace`, when asked to create a plan, write it to
   `plans/<descriptive-name>_PLAN.md` at the repository root. Create `plans/` if
   it does not exist, and ensure Git ignores that directory.
 

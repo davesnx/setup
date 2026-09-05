@@ -13,6 +13,8 @@ test("Plan keeps only its declared edit paths", () => {
           edit: {
             "*": "deny",
             "plans/*_PLAN.md": "allow",
+            "docs/tasks/*/plan.md": "allow",
+            "*/docs/tasks/*/plan.md": "allow",
             "*.md": "allow",
           },
         },
@@ -25,6 +27,8 @@ test("Plan keeps only its declared edit paths", () => {
   assert.deepEqual(config.agent.plan.permission.edit, {
     "*": "deny",
     "plans/*_PLAN.md": "allow",
+    "docs/tasks/*/plan.md": "allow",
+    "*/docs/tasks/*/plan.md": "allow",
   })
 })
 

@@ -1,7 +1,7 @@
 ---
 name: sync-skills
 description: Sync shared agent skills between the local Mac and nspawn through the setup Git repository. Use when the user says "sync skills", "push skills", "send skills to nspawn", "update nspawn skills", or asks to synchronize OpenCode, Claude, Codex, or Agent Skills across these machines. On local, commit and push skill changes, then pull them on nspawn. On nspawn, commit and push skill changes only.
-compatibility: Requires Git and an SSH host named nspawn. Uses /Users/davesnx/Code/github/setup on local and /home/me/setup on nspawn.
+compatibility: Requires Git and an SSH host named nspawn. Uses /Users/davesnx/Code/github/setup on local and /home/me/workplace/davesnx/setup/repo on nspawn.
 ---
 
 # Sync Skills
@@ -30,7 +30,7 @@ other repository changes.
 Run `uname -s` and select exactly one mode:
 
 - `Darwin`: local mode. Use `/Users/davesnx/Code/github/setup`.
-- `Linux` with `HOME=/home/me`: nspawn mode. Use `/home/me/setup`.
+- `Linux` with `HOME=/home/me`: nspawn mode. Use `/home/me/workplace/davesnx/setup/repo`.
 - Any other result: stop and ask which mode applies.
 
 Verify that the selected directory is a Git worktree for the setup repository.
@@ -90,7 +90,7 @@ Skip this section in nspawn mode.
 In local mode, first inspect nspawn without modifying it:
 
 ```sh
-ssh nspawn 'cd "$HOME/setup" && git branch --show-current && git status --porcelain=v1'
+ssh nspawn 'cd "$HOME/workplace/davesnx/setup/repo" && git branch --show-current && git status --porcelain=v1'
 ```
 
 Compare the remote branch with the branch that was pushed. Stop if they differ.
@@ -101,7 +101,7 @@ When the branch is `main` and the checkout is clean, run one remote command that
 repeats both checks immediately before the pull:
 
 ```sh
-ssh nspawn 'cd "$HOME/setup" && test "$(git branch --show-current)" = main && test -z "$(git status --porcelain=v1)" && git pull --ff-only origin main'
+ssh nspawn 'cd "$HOME/workplace/davesnx/setup/repo" && test "$(git branch --show-current)" = main && test -z "$(git status --porcelain=v1)" && git pull --ff-only origin main'
 ```
 
 If the pull fails for any reason, stop. Do not try to repair the remote
