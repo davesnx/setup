@@ -15,6 +15,12 @@
   you answer. Confirm that the selected answer or approach best fits the
   available evidence and the user's goal.
 
+## Planning
+
+- When asked to create a plan, write it to
+  `plans/<descriptive-name>_PLAN.md` at the repository root. Create `plans/` if
+  it does not exist, and ensure Git ignores that directory.
+
 ## Green Build Gate
 
 - Keep the repository green. After the final source edit and before committing,

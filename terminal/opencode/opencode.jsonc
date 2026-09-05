@@ -21,7 +21,8 @@
     "opencode-goal-plugin@0.9.0",
     "cursor-oauth-opencode@0.22.1",
     "./plugins/opencode-notify/src/notify.ts",
-    "@plannotator/opencode@latest",
+    ["@plannotator/opencode@latest", { "workflow": "user-managed" }],
+    "./agent-permission-boundaries.mjs",
   ],
   "provider": {
     "openai": {
@@ -105,6 +106,7 @@
   // Posture: allow by default, deny the genuinely destructive
   "permission": {
     "*": "allow",
+    "submit_plan": "deny",
     "external_directory": {
       "*": "allow",
       "/tmp/**": "allow",

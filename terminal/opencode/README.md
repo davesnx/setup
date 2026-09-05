@@ -42,6 +42,45 @@ later. The Sonnet alias follows the version selected by the provider.
 
 Restart OpenCode and Claude Code after changing these settings.
 
+## Plan agent
+
+[`agents/plan.md`](agents/plan.md) overrides the built-in Plan agent using
+[OpenCode's Markdown agent configuration](https://opencode.ai/docs/agents/#markdown).
+The installer already links this directory into `~/.config/opencode/agents`.
+Plan keeps the configured model and researches facts before asking you to decide
+constraints and trade-offs. Clear tasks use a short draft rather than a forced
+interview.
+
+Plan maintains one live document with accepted constraints, assumptions,
+exclusions, ownership, acceptance checks, and stop conditions. Later decisions
+can remain deferred. It requests approval before handing implementation to
+Build and does not start implementation itself. Interviews use short rounds of
+at most three questions, each with a recommendation and reason.
+
+Quit and restart OpenCode after changing the agent. Select **Plan** with Tab.
+Use `opencode debug agent plan` to inspect the loaded prompt and permissions.
+
+Plannotator uses its `user-managed` workflow: only Plan can call `submit_plan`.
+The final local permission plugin keeps Plan's declared edit paths from being
+expanded by other plugins. This repository ignores `/plans/` for its plan files.
+
+## Writer agent
+
+[`agents/writer.md`](agents/writer.md) replaces the Docs agent with a general
+writing partner for documentation, articles, emails, and other prose. It
+reads project instructions and `VOICE.md` when present, and uses the writing
+skill that matches the task. It completes only the requested writing stage.
+
+Writer can edit prose files directly. Shell commands and edits to other file
+types require approval. Publishing, sending, committing, and pushing each need
+explicit authorization.
+
+The local permission plugin reapplies global hard Bash denies after Writer's
+approval default, so dangerous commands do not become approval prompts.
+
+Quit and restart OpenCode, then select **Writer** with Tab. Use
+`opencode debug agent writer` to inspect the loaded prompt and permissions.
+
 ## Browser tools
 
 The local profile starts Chrome DevTools MCP with a persistent Brave profile.
