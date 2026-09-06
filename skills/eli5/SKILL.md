@@ -1,13 +1,20 @@
 ---
 name: eli5
-description: Create a self-contained visual HTML explanation with concise diagrams and code-shape sketches. Use ONLY when the user explicitly asks to use the eli5 skill.
+description: Give a short visual explanation in chat by default. Create one self-contained HTML file only when the user explicitly requests HTML, a presentation, or an interactive explanation. Use ONLY when the user explicitly asks to use the eli5 skill.
 disable-model-invocation: true
 argument-hint: "[topic]"
 ---
 
 - Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear
-- Explain like I'm someone who knows nothing about this topic, using a HTML artifact with big pictures and few words
+- Explain like I'm someone who knows nothing about this topic, using clear visuals and few words
 - Show the core mental model
+
+## Choose the output format
+
+Use exactly one format:
+
+- **Chat (default):** Give the short visual explanation directly in chat, using the blocks below. Do not create a file or run the HTML steps.
+- **HTML (only on explicit request):** If the user requests HTML, a presentation, or an interactive explanation, follow "HTML output" below to create and share one self-contained HTML file.
 
 ### Kinds of blocks or examples
 
@@ -120,9 +127,11 @@ function expandSkill(command: string): string {
 }
 ```
 
-- For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file — a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then share it with the user; see "Share it" below.
+## HTML output (only when selected above)
 
-## Build one HTML file
+For the requested HTML output, choose a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then share it with the user; see "Share it" below.
+
+### Build one HTML file
 
 Create `eli5-<topic>.html` in the current workspace unless the user gives a path. Use a safe, short, lowercase topic name.
 
@@ -133,7 +142,7 @@ The presentation must include:
 - Visible keyboard focus, semantic headings, real buttons, and useful accessible names.
 - No autoplay. Honor `prefers-reduced-motion` and keep the content usable without animation.
 
-## Share it
+### Share it
 
 When the harness offers an artifact publishing tool, load the `artifact-design` skill before publishing, and also load `artifact-diagramming` when the topic is diagram heavy. Publish the HTML file through that tool and skip local serving.
 
@@ -151,7 +160,7 @@ Open the exact page URL, for example `http://127.0.0.1:8000/eli5-<topic>.html`:
 - On Linux with a display (`$DISPLAY` or `$WAYLAND_DISPLAY` set), run `xdg-open` on the URL.
 - Otherwise, print the absolute path instead of opening it.
 
-## Return to the user
+### Return to the user
 
 Do not paste the HTML into the response. Give the user:
 
