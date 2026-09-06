@@ -82,18 +82,20 @@ The final local permission plugin keeps Plan's declared edit paths from being
 expanded by other plugins. Edits are denied by default.
 
 In `~/workplace` or below it, agents first read `~/workplace/AGENTS.md`.
-Project plans use `<project-home>/docs/tasks/<task>/plan.md`, outside the
-checkout. Shared tasks use `~/workplace/docs/tasks/<task>/plan.md`. Outside
-workplace, plans use `plans/<descriptive-name>_PLAN.md` at the repository root,
-with `plans/` ignored by Git. This repository already ignores `/plans/`.
+Project plans use `<project-root>/.workplace/plans/<task>_PLAN.md`. Shared tasks
+use `~/workplace/plans/<task>_PLAN.md`. Outside workplace, plans use
+`plans/<descriptive-name>_PLAN.md` at the repository root, with `plans/` ignored
+by Git. This repository already ignores `/plans/`.
 
-Plan also permits `docs/tasks/*/plan.md` and `*/docs/tasks/*/plan.md`, not all
-Markdown files. OpenCode checks paths relative to the checkout, or to `/` when
-started outside Git. Its `*` matches `/`, so these patterns cover project homes,
-reference checkouts, and task worktrees. They permit the same task-plan path
-convention outside workplace too; they are not a workplace-only filesystem
-sandbox. The plugin test checks that these rules survive and the blanket
-`*.md` allow is removed. Report blocked paths rather than granting broader edits.
+Plan permits `plans/*_PLAN.md` and `*/plans/*_PLAN.md`. It also retains the
+legacy permissions `docs/tasks/*/plan.md` and `*/docs/tasks/*/plan.md`, not all
+Markdown files. Those legacy paths are not the current workplace plan location.
+OpenCode checks paths relative to the checkout, or to `/` when started outside
+Git. Its `*` matches `/`, so these rules can match paths across project homes,
+checkouts, and task worktrees. The rules are not a workplace-only filesystem
+sandbox. The plugin test checks that the declared rules survive and the blanket
+`*.md` allow is removed. This documentation change does not change permissions.
+Report blocked paths rather than granting broader edits.
 
 ## Writer agent
 

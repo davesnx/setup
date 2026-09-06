@@ -237,3 +237,5 @@ itomate.yml
 .opencode/*
 
 **/.claude/settings.local.json
+
+**/.workplace/**

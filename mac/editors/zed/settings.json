@@ -16,52 +16,52 @@
           "paths": ["/home/me/error-messages"],
         },
         {
-          "paths": ["/home/me/html_of_jsx"],
+          "paths": ["/home/me/workplace/davesnx/html_of_jsx"],
         },
         {
           "paths": ["/home/me/httpz"],
         },
         {
-          "paths": ["/home/me/workplace/melange/repo"],
+          "paths": ["/home/me/workplace/melange"],
         },
         {
-          "paths": ["/home/me/workplace/melange/deps/melange-fest"],
+          "paths": ["/home/me/workplace/melange/.workplace/deps/melange-fest"],
         },
         {
-          "paths": ["/home/me/workplace/melange/deps/melange-opam-template"],
+          "paths": ["/home/me/workplace/melange/.workplace/deps/melange-opam-template"],
         },
         {
-          "paths": ["/home/me/workplace/melange/deps/melange-re.github.io"],
+          "paths": ["/home/me/workplace/melange/.workplace/deps/melange-re.github.io"],
         },
         {
-          "paths": ["/home/me/workplace/melange/deps/melange-str"],
+          "paths": ["/home/me/workplace/melange/.workplace/deps/melange-str"],
         },
         {
           "paths": ["/home/me/melange-testing-library"],
         },
         {
-          "paths": ["/home/me/workplace/melange/deps/melange-vite"],
+          "paths": ["/home/me/workplace/melange/.workplace/deps/melange-vite"],
         },
         {
-          "paths": ["/home/me/workplace/mlx/repo"],
+          "paths": ["/home/me/workplace/mlx"],
         },
         {
-          "paths": ["/home/me/workplace/monorepo/repo"],
+          "paths": ["/home/me/workplace/monorepo"],
         },
         {
-          "paths": ["/home/me/monorepos/A"],
+          "paths": ["/home/me/workplace/monorepo/.workplace/worktrees/A"],
         },
         {
-          "paths": ["/home/me/monorepos/B"],
+          "paths": ["/home/me/workplace/monorepo/.workplace/worktrees/B"],
         },
         {
-          "paths": ["/home/me/monorepos/C"],
+          "paths": ["/home/me/workplace/monorepo/.workplace/worktrees/C"],
         },
         {
-          "paths": ["/home/me/workplace/monorepo/repo/backend"],
+          "paths": ["/home/me/workplace/monorepo/backend"],
         },
         {
-          "paths": ["/home/me/mosaic"],
+          "paths": ["/home/me/workplace/invariant-hq/mosaic"],
         },
         {
           "paths": ["/home/me/ocaml"],
@@ -76,22 +76,22 @@
           "paths": ["/home/me/ocaml-use-state"],
         },
         {
-          "paths": ["/home/me/workplace/mlx/deps/ocamlformat-mlx"],
+          "paths": ["/home/me/workplace/mlx/.workplace/deps/ocamlformat-mlx"],
         },
         {
-          "paths": ["/home/me/ochre"],
+          "paths": ["/home/me/workplace/davesnx/ochre"],
         },
         {
           "paths": ["/home/me/ocre"],
         },
         {
-          "paths": ["/home/me/odoc"],
+          "paths": ["/home/me/workplace/ocaml/odoc"],
         },
         {
           "paths": ["/home/me/opencode"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/parseff/repo"],
+          "paths": ["/home/me/workplace/davesnx/parseff"],
         },
         {
           "paths": ["/home/me/parsing-1b-rows"],
@@ -106,7 +106,7 @@
           "paths": ["/home/me/ppx_let"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/query-json/repo"],
+          "paths": ["/home/me/workplace/davesnx/query-json"],
         },
         {
           "paths": ["/home/me/quickjs.ml"],
@@ -115,43 +115,43 @@
           "paths": ["/home/me/react-implemented-with-ocaml-effects"],
         },
         {
-          "paths": ["/home/me/react-rules-of-hooks-ppx"],
+          "paths": ["/home/me/workplace/ml-in-barcelona/react-rules-of-hooks-ppx"],
         },
         {
-          "paths": ["/home/me/workplace/reasonml/reason/repo"],
+          "paths": ["/home/me/workplace/reasonml/reason"],
         },
         {
-          "paths": ["/home/me/workplace/reasonml/reason-react/repo"],
+          "paths": ["/home/me/workplace/reasonml/reason-react"],
         },
         {
           "paths": ["/home/me/reffact"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/sancho.dev/repo"],
+          "paths": ["/home/me/workplace/davesnx/sancho.dev"],
         },
         {
-          "paths": ["/home/me/workplace/ml-in-barcelona/server-reason-react/repo"],
+          "paths": ["/home/me/workplace/ml-in-barcelona/server-reason-react"],
         },
         {
           "paths": ["/home/me/server-reason-react-starter"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/setup/repo"],
+          "paths": ["/home/me/workplace/davesnx/setup"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/sirocco/repo"],
+          "paths": ["/home/me/workplace/davesnx/sirocco"],
         },
         {
           "paths": ["/home/me/ssr-perf-server-reason-react"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/styled-ppx/repo"],
+          "paths": ["/home/me/workplace/davesnx/styled-ppx"],
         },
         {
-          "paths": ["/home/me/tm-grammars"],
+          "paths": ["/home/me/workplace/davesnx/tm-grammars"],
         },
         {
-          "paths": ["/home/me/workplace/davesnx/utopia/repo"],
+          "paths": ["/home/me/workplace/davesnx/utopia"],
         },
         {
           "paths": ["/home/me/vite-plugin-melange"],
