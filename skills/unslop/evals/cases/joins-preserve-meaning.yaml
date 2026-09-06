@@ -1,0 +1,43 @@
+schema_version: 2
+id: joins-preserve-meaning
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Sentence edits retain causal uncertainty, negation, scope, and frequency"
+tags: [prose, meaning-preservation]
+
+prompt: |
+  Unslop this passage. Make it read as connected prose rather than disconnected
+  notes. Write only the revised passage to revised.md:
+
+  We enabled the cache on Tuesday. The next build took 28 seconds. The earlier
+  build took 40 seconds. We have not checked whether the cache caused the change.
+  The cache may help repeated local builds. It does not always help clean builds.
+  Our report excludes records from 2010.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const s = require('fs').readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const facts = /Tuesday/.test(s) && /28 seconds/.test(s) && /40 seconds/.test(s);
+      const unknownCause = /(?:not|haven.t|unknown|unclear|unconfirmed)[^.]*\b(?:cache|caus|responsib|whether)/i.test(s);
+      const qualified = /\b(?:may|might|could)\b[^.]*\brepeated local builds\b/i.test(s);
+      const frequency = /(?:not always|doesn.t always|not consistently|doesn.t consistently)[^.]*clean builds|clean builds[^.]*(?:not always|doesn.t always|not consistently)/i.test(s);
+      const excluded = /exclud[^.]*2010|(?:not include|doesn.t include|omits)[^.]*2010|2010[^.]*(?:excluded|omitted)/i.test(s);
+      const reversedExclusion = /(?:does not|doesn.t|never) (?:excludes?|omits?)\b[^.!?]*2010|2010[^.!?]*(?:not|never) (?:excluded|omitted)|\breport includes\b[^.!?]*2010/i.test(s);
+      // A caveat in another clause does not qualify a definite causal claim.
+      const definiteCause = s.split(/[.!?;,]+|\b(?:but|however)\b/i).some(clause => {
+        const uncertain = /^\s*(?:we (?:have not|haven.t) (?:yet )?(?:checked|confirmed|established)|we (?:do not|don.t) know|(?:it is )?(?:unknown|unclear))\b/i.test(clause);
+        return !uncertain && /\bcache (?:definitely )?(?:caused|reduced|cut|made|sped up)\b|\b(?:because of|due to|thanks to) (?:the )?cache\b/i.test(clause);
+      });
+      process.stdout.write(facts && unknownCause && qualified && frequency && excluded && !reversedExclusion && !definiteCause ? 'preserved' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: preserved

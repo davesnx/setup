@@ -1,0 +1,69 @@
+schema_version: 2
+id: author-patterns-preserve-meaning
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Author-pattern editing fixes agreement without quotas or loss of uncertainty"
+tags: [prose, author-patterns, voice-preservation, meaning]
+
+prompt: |
+  Edit this short troubleshooting note by David Sancho. Use unslop and
+  explicitly read its references/author-patterns.md before editing. Write
+  only the revised note to revised.md. The two standalone reactions are
+  protected text: keep their wording and punctuation.
+
+  Since the cache is local (it may help while the network is down), I may
+  keep it for offline work.
+
+  The fallback are optional; it may help, but I have not tested it without
+  a network.
+
+  Aside, I kept the old log because support asked for it.
+
+  The log opens!
+
+  Aside, I put the spare key in the drawer so my teammate can find it.
+
+  The spare key works!
+
+budget:
+  max_tokens: 3500
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("revised.md", "utf8").replace(/\s+/g, " ");
+      const agreement = /\bfallback (?:is|remains) optional\b|\boptional fallback\b/i.test(s) && !/\bfallback are\b/i.test(s);
+      const cache = s.split(/\b(?:the )?fallback\b/i)[0];
+      const local = /\bcache (?:is|remains) local\b/i.test(cache);
+      const causal = /\b(?:since|because) (?:the cache|it) (?:is|remains) local\b|\blocal\b[^!?]*\b(?:so|therefore|for that reason)\b/i.test(cache);
+      const tentative = /\b(?:may|might|could) (?:help|assist|be useful)\b[^.!?]*(?:network is down|offline|without (?:a |the )?network)\b/i.test(cache);
+      process.stdout.write(agreement && local && causal && tentative ? "grammar-without-flattening" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "grammar-without-flattening"
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("revised.md", "utf8").replace(/\s+/g, " ");
+      const asides = s.match(/\bAside,/g) || [];
+      const reasons = [/\blog\b/i, /\bsupport\b/i, /\bkey\b/i, /\bdrawer\b/i, /\bteammate\b/i].every(r => r.test(s));
+      const reactions = ["The log opens!", "The spare key works!"].every(t => s.includes(t));
+      process.stdout.write(asides.length === 2 && reasons && reactions ? "voice-preserved" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "voice-preserved"
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("revised.md", "utf8").replace(/\s+/g, " ");
+      const cache = s.split(/\b(?:the )?fallback\b/i)[0];
+      const choice = /\bI (?:may|might|could) (?:still )?keep\b[^.!?]*\boffline work\b/i.test(cache);
+      const fallback = s.slice(s.search(/\bfallback\b/i)).split(/\bAside,/i)[0];
+      const tentative = /\b(?:may|might|could) (?:still )?(?:help|assist|be useful)\b/i.test(fallback);
+      const untested = /(?:not (?:yet )?tested|haven.t (?:yet )?tested|untested|still (?:need|have) to test)[^.!?]*(?:network|offline)/i.test(s);
+      process.stdout.write(choice && tentative && untested ? "uncertainty-preserved" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "uncertainty-preserved"

@@ -1,0 +1,44 @@
+schema_version: 2
+id: collection-resumes-after-draft
+mode: prose
+skill_under_test: blog-post
+skills_loaded: [blog-post]
+description: "A one-off draft request does not turn later collected notes into automatic edits"
+tags: [prose, collection]
+
+setup:
+  fixtures:
+    "draft.md": fixtures/collected-draft.md
+
+prompt: |
+  Continue this blog collaboration. Earlier conversation:
+  User: I want to collect notes for a post. Suggest angles as I go.
+  User: I tried a local cache. My first build took 40 seconds.
+  User: Draft that bit now, skip the interview, and put it in draft.md.
+  Assistant: Wrote the two sentences now in draft.md.
+
+  Latest user message: Another note: Friday's build took 28 seconds.
+
+  Respond to the latest message. For this test, put your chat reply in
+  reply.md. Existing draft.md is available if the workflow calls for an edit.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: reply.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const draft = fs.readFileSync('draft.md', 'utf8');
+      const reply = fs.readFileSync('reply.md', 'utf8').trim();
+      const unchanged = draft.trim() === 'I tried a local cache. My first build took 40 seconds.';
+      const brief = reply.length > 0 && reply.split(/\s+/).length <= 100;
+      const noDraft = !/^#{1,6} /m.test(reply) && !/I tried a local cache\. My first build/i.test(reply);
+      process.stdout.write(unchanged && brief && noDraft ? 'collected' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: collected

@@ -1,0 +1,48 @@
+schema_version: 2
+id: selected-angle-is-not-evidence
+mode: prose
+skill_under_test: blog-post
+skills_loaded: [blog-post]
+description: "An approved angle supplies neither facts nor an ending; write the supported part"
+tags: [prose, evidence, partial-draft]
+
+prompt: |
+  Earlier in our collaboration you suggested the angle "How our migration
+  halved build times" and I replied "yes, that angle". Now draft the post.
+  Skip the interview, outline approval, and reader test for this partial draft.
+  Audience: developers who know what a build is. Voice: plain first person.
+  These are all the facts I have supplied: "I changed the build configuration
+  on Tuesday. I have not run the comparison yet."
+  Write the supported prose to draft.md and outstanding questions to gaps.md.
+  No external research for this draft.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: draft.md
+  - kind: file_exists
+    path: gaps.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const draft = fs.readFileSync('draft.md', 'utf8');
+      const gaps = fs.readFileSync('gaps.md', 'utf8');
+      const facts = /\bI\b/.test(draft) && /build\s+configuration/i.test(draft) && /Tuesday/.test(draft) && /(?:not|haven.t)\s+(?:yet\s+)?run\s+(?:a |the )?comparison|yet to run\s+(?:a |the )?comparison/i.test(draft);
+      // Exclude explicitly unverified quoted proposals, not their surrounding claims.
+      const claims = draft.replace(/\b((?:proposed|suggested)\s+(?:angle|title),?\s*)(?:"[^"\n]+"|\u201c[^\u201d\n]+\u201d)(?=,?\s+(?:is\s+unverified\b|depends\s+on\s+(?:a|an)\s+(?:result|outcome)\s+(?:I|we)\s+have\s+not\s+(?:yet\s+)?(?:measured|verified)\b))/gi, '$1');
+      // Scope these exceptions to a clause so a separate claim still fails.
+      const unsupported = claims.split(/[.!?;,]+|\n\s*\n|\b(?:but|however)\b/i).some(part => {
+        const clause = part.replace(/\s+/g, ' ');
+        const boundary = /^\s*(?:so )?(?:(?:I|we) (?:also )?|it is )?(?:(?:cannot|can.t) (?:yet )?(?:say|claim|confirm)|(?:do not|don.t) know (?:yet )?(?:whether|if)|(?:unknown|unclear) (?:whether|if))\b/i.test(clause);
+        const claim = clause.replace(/^\s*(?:I|we) (?:have not|haven.t|did not|didn.t) migrated\b/i, '');
+        return !boundary && /halv|50\s*(?:%|percent)|twice as fast|2x|migration|migrated|faster|speedup/i.test(claim);
+      });
+      const separate = !/\[Q:|TODO|TBD/.test(draft) && /comparison|measur|timing|benchmark/i.test(gaps);
+      process.stdout.write(facts && !unsupported && separate ? 'supported-part' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: supported-part

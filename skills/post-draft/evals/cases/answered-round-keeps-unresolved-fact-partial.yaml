@@ -1,0 +1,75 @@
+schema_version: 2
+id: answered-round-keeps-unresolved-fact-partial
+mode: prose
+skill_under_test: post-draft
+skills_loaded: [post-draft]
+description: "Write a confirmed answer without forcing a shape or completing an unsupported result"
+tags: [prose, partial-draft, voice-preservation, evidence]
+
+setup:
+  fixtures:
+    "VOICE.md": fixtures/VOICE.md
+    "src/content/posts/cache-notebook.md": fixtures/partial-cache.md
+
+prompt: |
+  Continue src/content/posts/cache-notebook.md with post-draft and the local
+  VOICE.md. The previous interview round asked why I kept the cache. My
+  confirmed answer is: I kept it because offline preview lets me read pages
+  on the train. That is a convenience choice, not a measured speed result.
+
+  The other gap is still blocked: bench-results.txt was never captured and
+  I cannot provide a cold-start measurement now. This sandbox contains all
+  available evidence; do not use the web or another repository. Continue
+  from this answered round. The existing headings and the unrelated maintenance
+  note are protected text.
+
+budget:
+  max_tokens: 4500
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: src/content/posts/cache-notebook.md
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("src/content/posts/cache-notebook.md", "utf8");
+      const opening = s.split(/^# Why keep the cache\?\s*$/m)[1]?.split(/^## /m)[0] || "";
+      const prose = opening.replace(/\[Q:[^\]]*\]/g, "");
+      const answered = /\b(?:I|my)\b/i.test(prose) && /offline|without (?:a )?network/i.test(prose) && /preview|read/i.test(prose) && /\btrain\b/i.test(prose);
+      const stillAsked = /\[Q:[^\]]*why[^\]]*(?:keep|kept)[^\]]*cache/i.test(opening);
+      process.stdout.write(answered && !stillAsked ? "written" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "written"
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("src/content/posts/cache-notebook.md", "utf8");
+      const skills = s.match(/<!--\s*SKILLS\b([\s\S]*?)-->/)?.[1] || "";
+      const partial = /^state:\s*partial\s*$/m.test(skills);
+      const next = /^next:.*(?:bench|cold.start|measur|result|evidence)/im.test(skills);
+      const question = /\[Q:[^\]]*(?:cold.start|bench-results|measur)[^\]]*\]/i.test(s);
+      process.stdout.write(partial && next && question ? "partial" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "partial"
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("src/content/posts/cache-notebook.md", "utf8");
+      const headings = s.match(/^#{1,6} .+$/gm) || [];
+      const expected = ["# Why keep the cache?", "## What is still unknown?", "## Maintenance note"];
+      const note = "The backup key is in the blue drawer. This note does not concern cache performance.";
+      const sameStructure = JSON.stringify(headings) === JSON.stringify(expected);
+      const unchanged = s.split("## Maintenance note")[1]?.trim() === note;
+      process.stdout.write(sameStructure && unchanged ? "preserved" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "preserved"
+  - kind: shell
+    cmd: |
+      node -e '
+      const s = require("fs").readFileSync("src/content/posts/cache-notebook.md", "utf8").replace(/<!--[\s\S]*?-->/g, "").replace(/\[Q:[^\]]*\]/g, "");
+      const result = /\b\d+(?:\.\d+)?\s*(?:ms|milliseconds?|seconds?|%|x\b)|\b(?:twice|ten times) (?:as )?fast/i.test(s);
+      const verdict = /(?:^|[.!?]\s+)(?:the |my )?(?:cache|benchmark|results?)\s+(?:proved|confirmed|showed|demonstrated|reduced|eliminated)\b|(?:^|[.!?]\s+)(?:in conclusion|the lesson is|this proves)\b/im.test(s);
+      process.stdout.write(!result && !verdict ? "no-invented-result" : "invalid");'
+    unsafe_shell: true
+    expect_exact: "no-invented-result"

@@ -1,6 +1,6 @@
 ---
 name: blog-post
-description: "Use when the user wants to write, co-author, improve, or review a blog post or article. Trigger on a title, topic, outline, rough draft, complete post, 'write a post about,' 'improve this post,' 'blog draft,' or 'editorial feedback.' Uses an interview-first, section-by-section workflow with an unslop pass and fresh-reader testing."
+description: "Use when the user wants to collect blog notes, write, co-author, improve, or review a blog post or article. Trigger on a title, topic, outline, rough draft, complete post, 'write a post about,' 'improve this post,' 'blog draft,' or 'editorial feedback.' Supports notes-only collection or interview-first, section-by-section drafting with an unslop pass and fresh-reader testing."
 ---
 
 # Blog Post
@@ -9,12 +9,12 @@ You are an expert blog editor and writer. Help the author produce a post that is
 
 ## Core Philosophy
 
-1. **Interview before editing.** Always gather context through questions before producing output.
+1. **Interview before editing.** Gather missing context before drafting; use collection mode when the author only wants to add notes.
 2. **The author's voice matters.** You enhance their voice, you don't replace it.
 3. **Engagement comes from substance.** Clickbait hooks without real content fail. Real insights presented clearly win.
 4. **Simplicity is not dumbing down.** It's removing everything that doesn't serve the reader.
 5. **Correctness is non-negotiable.** Never let a compelling narrative override factual accuracy.
-6. **Preserve claims.** Keep every fact, name, number, date, quote, citation, qualification, and conclusion unless the author asks to change the substance.
+6. **Preserve claims.** Keep every fact, name, number, date, quote, citation, qualification, and conclusion unless the author asks to change the substance. This applies to titles, headings, transitions, and endings too: a sequence of events does not establish a cause, and a possible result is not a confirmed one.
 7. **Do not invent details.** Never add sources, statistics, anecdotes, quotes, or personal experiences. Mark hypotheticals as hypothetical.
 
 ---
@@ -29,6 +29,12 @@ Guide the author through three stages:
 
 The author can skip or compress a stage. If they prefer freeform collaboration, follow their lead rather than enforcing the process.
 
+### Collection Mode
+
+When the author asks to collect notes or think aloud without drafting, accumulate their material and corrections across messages. Reply briefly with useful optional questions or angles; do not repeat the full notes, create an outline, or edit the draft. Leave this mode when they ask to draft, arrange, or revise material. A one-off drafting request does not make later notes an edit request; resume collection unless they ask for ongoing updates. This mode is optional, not a prerequisite for drafting.
+
+Keep supplied material, verified research, suggested ideas, and open questions distinct in both collection and drafting. Choosing an angle or approving an outline selects a direction, not evidence for its proposed events, motives, numbers, or causes. Confirm those details with the author or verify them from sources before treating them as facts.
+
 ### Step 1: Receive Input
 
 The user will provide one of the following:
@@ -38,7 +44,7 @@ The user will provide one of the following:
 | **A title or topic only** | Run the Full Interview (all sections) |
 | **An outline or rough draft** | Run a Focused Interview (skip what's already clear) |
 | **A complete blog post** | Run a Review Interview (targeted questions to improve it) |
-| **A fixed pile of raw material (notes, transcripts, drafts) that must not gain new claims** | Use the `writing-shape` skill instead |
+| **A request to arrange a fixed pile of raw material without new claims** | Use the `writing-shape` skill instead |
 
 Identify the appropriate interview path and begin. Do not waste a turn announcing routine process.
 
@@ -91,7 +97,7 @@ Understand how the post should be organized.
 
 Understand how it should sound.
 
-When the repository has a `VOICE.md` at its root, read it whole before asking. It answers these questions, and its Title, Opener, Closer and Words sections override the generic guidance later in this skill. Ask only what it leaves open.
+When the repository has a `VOICE.md` at its root, read it before asking. Follow its current guidance and use its examples in context, not as mandatory structures or quotas. It overrides the generic style guidance later in this skill. Ask only what it leaves open.
 
 - How would you describe your writing voice? (casual, technical, conversational, authoritative, witty)
 - Any blog posts (yours or others) that match the tone you're going for?
@@ -128,11 +134,13 @@ Start with the section that has the most uncertainty or carries the central argu
 For substantial new posts or major rewrites, use this loop for each section. Compress it for straightforward sections and light edits.
 
 1. **Clarify:** Ask 3-7 specific questions about the section's purpose, required claims, evidence, examples, and boundaries.
-2. **Brainstorm:** Offer 5-15 possible points, examples, objections, or arrangements. Recover useful context that may have been forgotten and include angles the author has not considered.
+2. **Brainstorm:** Offer 5-15 possible points, examples, objections, or arrangements. Label proposals that still need evidence or author confirmation. Recover useful context that may have been forgotten and include angles the author has not considered.
 3. **Curate:** Ask what to keep, remove, or combine. Accept numbered choices or freeform feedback. Brief reasons help reveal the author's priorities for later sections.
 4. **Check gaps:** Ask whether the curated material misses anything the section must accomplish.
 5. **Draft:** Replace only that section's placeholder or existing text. Do not reprint or rewrite unrelated sections.
 6. **Refine:** Apply targeted edits from the author's feedback. Learn from their changes and carry those preferences into later sections.
+
+If the available evidence supports only part of the requested draft, write that part and list missing material separately from publishable prose. Keep existing unresolved markers visible in a working file. Do not supply an unsupported explanation or takeaway to make the post seem complete; identify it as a partial draft.
 
 When drafting the first section, ask the author to describe desired changes rather than silently editing the file themselves when practical. Feedback such as "cut the second paragraph; it repeats the example" teaches more than a replacement with no explanation. If they do edit directly, compare their version with yours and learn from the differences.
 
@@ -433,7 +441,7 @@ Identify where the reader would have questions. Add examples, anticipate objecti
 
 ## Rules
 
-- NEVER write or rewrite without interviewing first (unless the user explicitly says "skip the interview").
+- Interview before drafting unless the author skips it. A request for one stage, such as reader testing, uses that stage without restarting the interview.
 - NEVER invent facts, statistics, quotes, or sources. If the post needs data you don't have, flag it and ask the user to provide it.
 - NEVER use filler phrases: "In today's fast-paced world", "It goes without saying", "At the end of the day", "It's worth noting that".
 - NEVER add fluff to hit a word count. A tight 800-word post beats a padded 2000-word post.
@@ -447,3 +455,5 @@ Identify where the reader would have questions. Add examples, anticipate objecti
 ## Source Note
 
 The staged co-authoring and fresh-reader testing workflow adapts Anthropic's `doc-coauthoring` skill. Prose cleanup delegates to the local `unslop` skill rather than embedding a subset of it.
+
+Collection controls, separation of suggestions from evidence, and partial-draft safeguards draw on ideas from [kdy1's `write-blog-post`](https://github.com/kdy1/kdy1-scripts/blob/f9079364d84a9d3e1eaa1c8b8c9dbc60ee4e46de/skills/write-blog-post/SKILL.md), expressed here for this research-capable workflow.
