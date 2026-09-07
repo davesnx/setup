@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-root=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
+bin=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' HUP TERM
-transfer="$root/terminal/bin/ssh-transfer"
+transfer="$bin/ssh-transfer"
 real_rsync=$(command -v rsync) || {
   printf 'Tests require real rsync 3 or newer.\n' >&2
   exit 1

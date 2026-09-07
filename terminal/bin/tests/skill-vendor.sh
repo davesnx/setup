@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-root=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
+bin=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' HUP TERM
-vendor="$root/terminal/bin/skill-vendor"
+vendor="$bin/skill-vendor"
 
 export GIT_CONFIG_GLOBAL="$work/gitconfig" GIT_CONFIG_NOSYSTEM=1
 git config --file "$GIT_CONFIG_GLOBAL" user.name test

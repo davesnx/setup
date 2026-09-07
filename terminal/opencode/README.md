@@ -111,9 +111,9 @@ for explicit use.
 Run the automated checks from the repository root:
 
 ```sh
-python3 -m unittest discover -s tests -p test_auto_improve_claude.py -v
+python3 -m unittest discover -s terminal/claude/tests -p 'test_*.py' -v
 node --test terminal/opencode/tests/*.test.mjs
-sh tests/mac-installer.sh
+sh mac/tests/install.sh
 ```
 
 ## Plan agent

@@ -86,10 +86,10 @@ From the setup repository root, run:
 
 ```sh
 bash -n terminal/bin/ssh-transfer
-bash -n tests/ssh-transfer.sh
-shellcheck terminal/bin/ssh-transfer tests/ssh-transfer.sh
-shfmt -d -i 2 -ci terminal/bin/ssh-transfer tests/ssh-transfer.sh
-bash tests/ssh-transfer.sh
+bash -n terminal/bin/tests/ssh-transfer.sh
+shellcheck terminal/bin/ssh-transfer terminal/bin/tests/ssh-transfer.sh
+shfmt -d -i 2 -ci terminal/bin/ssh-transfer terminal/bin/tests/ssh-transfer.sh
+bash terminal/bin/tests/ssh-transfer.sh
 ```
 
 The tests require rsync 3 or newer. They use temporary files and a local test
