@@ -32,6 +32,7 @@ __pycache__/
 # Machine-specific overrides
 /local/*
 !/local/README.md
+!/local/main.sh
 
 # Claude Code machine-local settings (the global ignore only matches .claude/ paths)
 /terminal/claude/settings.local.json

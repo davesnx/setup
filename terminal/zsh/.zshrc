@@ -217,7 +217,4 @@ zsh-defer source $HOME/.local/share/dune/env/env.zsh
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # Load machine-specific values last so they can override shared defaults.
-for local_config in "$DOTFILES_PATH"/local/*.zsh(N); do
-  source "$local_config"
-done
-unset local_config
+source "$DOTFILES_PATH/local/main.sh"
