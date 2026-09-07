@@ -123,9 +123,8 @@ server is registered.
   Agent" (`mac/raycast/raycast-open-chrome-agent.sh`) starts Brave with its
   own profile and CDP on `127.0.0.1:9222`.
 - nspawn: install the CLI with `npm install -g @playwright/cli@latest`.
-  `ssh/nspawn.conf` reverse-forwards port 9222 from the Mac, so the same
-  endpoint works there. Reconnect SSH once after `ssh/install.sh` adds the
-  forward.
+  `ssh/config.conf` reverse-forwards port 9222 from the Mac, so the same
+  endpoint works there.
 
 The skill attaches with `playwright-cli attach --cdp=http://127.0.0.1:9222`.
 Claude Code's `settings.json` lists `playwright-cli *` in the sandbox's
