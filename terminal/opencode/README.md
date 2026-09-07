@@ -15,10 +15,11 @@ The script links the tracked OpenCode files into `~/.config/opencode`. Shared
 skills live in the repository-level `skills/` directory, linked to
 `~/.agents/skills` and `~/.claude/skills`; OpenCode, Claude Code, Codex, and the
 `skills` CLI all read those two locations. Skills that exist only for OpenCode
-(currently `simplify` and `code-review`, because Claude Code ships its own
-`/simplify` and `/code-review`) live in `terminal/opencode/skills/`, linked to
-`~/.config/opencode/skills`, which only OpenCode reads. Existing files move to a
-timestamped directory under `~/.local/state/setup/backups`.
+(currently `simplify`, `code-review`, and the `code-standards` skill they share,
+because Claude Code ships its own `/simplify` and `/code-review`) live in
+`terminal/opencode/skills/`, linked to `~/.config/opencode/skills`, which only
+OpenCode reads. Existing files move to a timestamped directory under
+`~/.local/state/setup/backups`.
 
 The global `AGENTS.md` file is also linked to `~/.config/opencode/AGENTS.md`,
 `~/.agents/AGENTS.md`, and `~/.claude/CLAUDE.md`, so Claude Code reads the same

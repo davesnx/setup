@@ -2,7 +2,7 @@
 
 Review implementation quality, structural simplicity, abstraction boundaries, and long-term codebase health. Working code is not sufficient when the change creates avoidable complexity.
 
-The shared quality bar — pass-through wrappers, casts that hide invariants, reuse of canonical helpers, and structural simplification over rearrangement — is defined in [Simplify's standards](../../simplify/references/standards.md). Apply it here; this file adds only the checks specific to reviewing a diff.
+The shared quality bar — pass-through wrappers, casts that hide invariants, reuse of canonical helpers, and structural simplification over rearrangement — is defined in the `code-standards` skill. Load it and apply it here; this file adds only the checks specific to reviewing a diff.
 
 ## Review-Specific Checks
 
