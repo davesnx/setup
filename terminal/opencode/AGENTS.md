@@ -101,6 +101,11 @@ to subagents and orchestrate them:
 - Get the data shape and core types right before writing logic. Trace the
   access patterns, and ask what happens when another actor changes shared
   state. A late structure change is a rewrite.
+- Make commands, lifecycle steps, and processing loops idempotent: retries and
+  restarts must reach the intended state without duplicate effects. Reconcile
+  partial prior work before continuing.
+- Test repeated runs and recovery after failure at each state-changing step.
+  Verify that both reach the same intended state.
 - Remove dead weight first, then build what every later step needs, such as
   checks, tests, and shared types, then features. Land each increment as one
   coherent change.

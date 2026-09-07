@@ -50,7 +50,7 @@ link_path() {
   ln -s "$source_path" "$target_path"
 }
 
-for name in opencode.jsonc tui.json AGENTS.md instructions.md package.json agent-permission-boundaries.mjs; do
+for name in opencode.jsonc tui.json AGENTS.md instructions.md package.json agent-permission-boundaries.mjs auto-improve.mjs; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name" "$BACKUP_ROOT/opencode/$name"
 done
 
