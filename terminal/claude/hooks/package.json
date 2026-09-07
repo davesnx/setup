@@ -1,0 +1,21 @@
+{
+  "name": "claude-hooks",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "test": "node --test auto-improve.test.ts",
+    "typecheck": "tsc --noEmit --strict --types node --target ESNext --module NodeNext --erasableSyntaxOnly auto-improve.ts auto-improve.test.ts",
+    "format:check": "prettier --check auto-improve.ts auto-improve.test.ts package.json README.md"
+  },
+  "dependencies": {
+    "koffi": "2.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
+  }
+}

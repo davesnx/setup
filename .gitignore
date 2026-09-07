@@ -35,3 +35,4 @@ __pycache__/
 
 # Claude Code machine-local settings (the global ignore only matches .claude/ paths)
 /terminal/claude/settings.local.json
+/terminal/claude/hooks/node_modules/
