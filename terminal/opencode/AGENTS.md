@@ -74,6 +74,12 @@ to subagents and orchestrate them:
 
 - Read the affected code, callers, and tests before changing behavior or making
   claims about it.
+- Get the data shape and core types right before writing logic. Trace the
+  access patterns, and ask what happens when another actor changes shared
+  state. A late structure change is a rewrite.
+- Remove dead weight first, then build what every later step needs, such as
+  checks, tests, and shared types, then features. Land each increment as one
+  coherent change.
 - Prefer existing code and the smallest change that preserves the required
   behavior, safety, and compatibility. Add abstractions only for a demonstrated
   need.
