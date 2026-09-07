@@ -1,4 +1,5 @@
 tap "jonahsnider/tap"
+tap "oven-sh/bun"
 
 brew "sqlite"
 brew "openssl"
@@ -46,6 +47,8 @@ brew "opencode"
 brew "playwright-cli" # https://github.com/microsoft/playwright-cli
 brew "hyperfine"
 brew "mycli"
+brew "bun" # Runs terminal/claude/statusline.ts
+brew "ngrep" # Used by the sniff alias
 
 cask "firefox"
 cask "google-chrome"

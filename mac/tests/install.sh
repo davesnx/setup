@@ -128,7 +128,22 @@ if [ "${FAIL_NPM:-0}" -eq 1 ]; then
 fi
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm"
+cat >"$test_bin/trash" <<'EOF'
+#!/bin/sh
+printf 'trash:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+cat >"$test_bin/diff-so-fancy" <<'EOF'
+#!/bin/sh
+printf 'diff-so-fancy:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+cat >"$test_bin/bun" <<'EOF'
+#!/bin/sh
+printf 'bun:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 
