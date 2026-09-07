@@ -67,7 +67,7 @@
 	},
 	{
 		"name": "febox1: ocamlformat-mlx",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/mlx/.workplace/deps/ocamlformat-mlx",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/mlx/ocamlformat-mlx",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -156,8 +156,17 @@
 		"enabled": true
 	},
 	{
-		"name": "febox1: mlx",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/mlx",
+		"name": "febox1: ocaml-mlx/mlx",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ocaml-mlx/mlx",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
+		"name": "febox1: ocaml-mlx/skills",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ocaml-mlx/skills",
 		"paths": [],
 		"tags": [
 			"personal"

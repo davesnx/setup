@@ -1,4 +1,3 @@
-tap "buo/cask-upgrade"
 tap "jonahsnider/tap"
 
 brew "sqlite"
@@ -87,6 +86,5 @@ cask "xnapper" # https://apps.apple.com/app/xnapper/id1544743990
 cask "jonahsnider/tap/audio-priority-bar" # https://github.com/tobi/AudioPriorityBar
 
 # Quicklook
-cask "qlcolorcode"
+cask "syntax-highlight"
 cask "qlmarkdown"
-cask "quicklook-json"
