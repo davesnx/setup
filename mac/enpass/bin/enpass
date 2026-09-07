@@ -67,7 +67,7 @@ load_pin() {
     -w 2>/dev/null); then
     printf 'enpass: Keychain item "%s" was not found for account "%s"\n' \
       "$keychain_service" "$USER" >&2
-    printf 'Run the Keychain setup command in enpass/README.md.\n' >&2
+    printf 'Run the Keychain setup command in mac/enpass/README.md.\n' >&2
     return "$EXIT_CONFIG"
   fi
 
@@ -105,13 +105,13 @@ explain_upstream_failure() {
     *"message authentication failed"*)
       printf '%s\n' \
         'enpass: the Keychain PIN does not match the cached Enpass CLI unlock key' >&2
-      printf 'Delete %s/enpasscli-%s, then follow enpass/README.md.\n' \
+      printf 'Delete %s/enpasscli-%s, then follow mac/enpass/README.md.\n' \
         "${runtime_dir%/}" "$vault_name" >&2
       ;;
     *"empty vault password"*)
       printf '%s\n' \
         'enpass: the Enpass CLI unlock cache is not initialized' \
-        'Run the unlock-cache setup command in enpass/README.md from an interactive terminal.' >&2
+        'Run the unlock-cache setup command in mac/enpass/README.md from an interactive terminal.' >&2
       ;;
     *"invalid password or unsupported database version"*)
       printf '%s\n' \

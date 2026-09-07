@@ -40,7 +40,7 @@ ENP_PIN="$(security find-generic-password \
 
 The CLI PIN and Enpass master password are not stored in this repository.
 
-Start a new shell so `enpass/bin` is on `PATH`.
+Start a new shell so `mac/enpass/bin` is on `PATH`.
 
 ## Use the CLI
 
@@ -79,5 +79,5 @@ enpass get "GitHub" | pbcopy
 The tests use a fake vault adapter and contain no real credentials:
 
 ```sh
-bats enpass/test/enpass.bats
+bats mac/enpass/test/enpass.bats
 ```
