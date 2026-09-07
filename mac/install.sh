@@ -34,6 +34,8 @@ if [ ! -x /bin/bash ]; then
   exit 69
 fi
 
+. "$setup_path/link.sh"
+
 find_brew() {
   brew_path=$(command -v brew 2>/dev/null || true)
   case "$brew_path" in
@@ -73,40 +75,28 @@ fi
 "$brew_path" bundle --file="$setup_path/mac/brew/Brewfile"
 
 # GPG
-mkdir -p "$HOME/.gnupg"
-ln -s -i "$setup_path/mac/gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+link_path "$setup_path/mac/gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
 
 # Remove bash last login
 touch "$HOME/.hushlogin"
 
-# VS Code
-ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
-ln -sf "$setup_path/mac/editors/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
-
-# Cursor
-mkdir -p "$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager"
-ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
-ln -sf "$setup_path/mac/editors/vscode/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"
-ln -sf "$setup_path/mac/editors/vscode/projects.json" "$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager/projects.json"
+# VS Code and Cursor share one settings and keybindings pair.
+vscode="$setup_path/mac/editors/vscode"
+link_path "$vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+link_path "$vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+link_path "$vscode/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
+link_path "$vscode/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"
+link_path "$vscode/projects.json" "$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager/projects.json"
 
 # Zed
-mkdir -p "$HOME/.config/zed/themes"
-ln -sf "$setup_path/mac/editors/zed/settings.json" "$HOME/.config/zed/settings.json"
-ln -sf "$setup_path/mac/editors/zed/keymap.json" "$HOME/.config/zed/keymap.json"
-ln -sf "$setup_path/mac/editors/zed/fosk.json" "$HOME/.config/zed/themes/fosk.json"
+link_path "$setup_path/mac/editors/zed/settings.json" "$HOME/.config/zed/settings.json"
+link_path "$setup_path/mac/editors/zed/keymap.json" "$HOME/.config/zed/keymap.json"
+link_path "$setup_path/mac/editors/zed/fosk.json" "$HOME/.config/zed/themes/fosk.json"
 
 # Ghostty
-ln -sf "$setup_path/mac/ghostty/config.conf" "$HOME/.config/ghostty/config"
+link_path "$setup_path/mac/ghostty/config.conf" "$HOME/.config/ghostty/config"
 
 # Raycast opens remote tmux sessions through this link.
-ghostty_remote_bin="$HOME/.local/bin/ghostty-remote-tmux"
-mkdir -p "$HOME/.local/bin"
-
-if [ -e "$ghostty_remote_bin" ] && [ ! -L "$ghostty_remote_bin" ]; then
-  echo "Cannot replace ghostty-remote-tmux executable: $ghostty_remote_bin" >&2
-  exit 73
-fi
-
-ln -sfn "$setup_path/terminal/bin/ghostty-remote-tmux" "$ghostty_remote_bin"
+link_path_guarded "$setup_path/terminal/bin/ghostty-remote-tmux" "$HOME/.local/bin/ghostty-remote-tmux"
 
 sh "$setup_path/mac/daemons/install.sh"

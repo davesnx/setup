@@ -27,3 +27,18 @@ link_path() {
   mkdir -p "$(dirname "$2")"
   ln -s "$1" "$2"
 }
+
+# For a path another tool may own: a regular file or directory there stops the
+# installer with status 73, an old link is replaced, and nothing is moved.
+link_path_guarded() {
+  if [ ! -e "$1" ]; then
+    printf 'Missing setup source: %s\n' "$1" >&2
+    exit 1
+  fi
+  if [ -e "$2" ] && [ ! -L "$2" ]; then
+    printf 'Cannot replace %s: it is not a link\n' "$2" >&2
+    exit 73
+  fi
+  mkdir -p "$(dirname "$2")"
+  ln -sfn "$1" "$2"
+}

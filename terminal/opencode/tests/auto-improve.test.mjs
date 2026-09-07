@@ -1,9 +1,11 @@
 import assert from "node:assert/strict"
+import { execFileSync, spawnSync } from "node:child_process"
 import { createHash } from "node:crypto"
-import { mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises"
+import { mkdtemp, mkdir, readFile, readdir, readlink, rm, stat, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import test from "node:test"
+import { fileURLToPath } from "node:url"
 
 import autoImprove from "../auto-improve.mjs"
 
@@ -369,7 +371,27 @@ test("installer links the plugin file and the configuration leaves it off", asyn
   const config = await readFile(new URL("../opencode.jsonc", import.meta.url), "utf8")
   const plugins = config.match(/"plugin": \[([\s\S]*?)\n  \]/)[1]
   assert.doesNotMatch(plugins, /auto-improve\.mjs/)
-  const installer = await readFile(new URL("../install.sh", import.meta.url), "utf8")
-  assert.match(installer, /for name in [^\n]* auto-improve\.mjs; do\n  link_path "\$ROOT\/\$name" "\$CONFIG_HOME\/\$name"/)
-  assert.ok((await stat(new URL("../auto-improve.mjs", import.meta.url))).isFile())
+
+  // Run the real installer in a scratch home. The PATH holds only sh and the
+  // tools link.sh needs, so the git clone and npm install steps stay skipped.
+  const home = await mkdtemp(join(tmpdir(), "opencode-install-"))
+  try {
+    const bin = join(home, "bin")
+    await mkdir(bin)
+    for (const name of ["sh", "mkdir", "ln", "readlink", "mv", "rm", "dirname", "date"]) {
+      await symlink(execFileSync("sh", ["-c", `command -v ${name}`], { encoding: "utf8" }).trim(), join(bin, name))
+    }
+    const env = { HOME: home, PATH: bin, XDG_CONFIG_HOME: join(home, ".config"), SETUP_BACKUP_ROOT: join(home, "backups") }
+    const installer = fileURLToPath(new URL("../install.sh", import.meta.url))
+    for (let run = 0; run < 2; run++) {
+      const result = spawnSync("sh", [installer, "ssh"], { env, encoding: "utf8" })
+      assert.equal(result.status, 0, result.stderr)
+    }
+    const plugin = fileURLToPath(new URL("../auto-improve.mjs", import.meta.url))
+    assert.equal(await readlink(join(home, ".config/opencode/auto-improve.mjs")), plugin)
+    assert.ok((await stat(plugin)).isFile())
+    await assert.rejects(stat(join(home, "backups")), "a rerun must not back anything up")
+  } finally {
+    await rm(home, { recursive: true, force: true })
+  }
 })

@@ -5,7 +5,8 @@ Personal machine setup: dotfiles, installers, and agent configuration.
 ## Layout
 
 - `install.sh`: preflight checks, then one call per folder installer.
-- `link.sh`: shared helper (`link_path SOURCE TARGET`) used by every installer.
+- `link.sh`: the `link_path` and `link_path_guarded` helpers that the
+  installers source.
 - `agents/`: shared agent rules and skills (`AGENTS.md`, `skills/`), linked
   into `~/.agents`.
 - `git/`: Git configuration (`.gitconfig`, `.gitignore_global`,

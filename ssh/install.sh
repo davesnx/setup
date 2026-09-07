@@ -3,18 +3,14 @@
 set -eu
 
 setup_path=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
+. "$setup_path/link.sh"
 
 ssh_config_dir="$HOME/.ssh/config.d"
 ssh_nspawn_config="$ssh_config_dir/nspawn.conf"
 mkdir -p "$ssh_config_dir"
 chmod 700 "$HOME/.ssh" "$ssh_config_dir"
 
-# This path may be owned by a third party, so refuse rather than replace it.
-if [ -e "$ssh_nspawn_config" ] && [ ! -L "$ssh_nspawn_config" ]; then
-  echo "Cannot replace SSH config file: $ssh_nspawn_config" >&2
-  exit 73
-fi
-ln -sfn "$setup_path/ssh/nspawn.conf" "$ssh_nspawn_config"
+link_path_guarded "$setup_path/ssh/nspawn.conf" "$ssh_nspawn_config"
 
 # The same snippet was linked as xdg-open.conf before it grew the CDP forward.
 old_link="$ssh_config_dir/xdg-open.conf"

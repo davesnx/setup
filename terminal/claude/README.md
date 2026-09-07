@@ -6,12 +6,7 @@ Claude Code settings, hooks, and status line.
 
 ```sh
 ./terminal/claude/install.sh
-./terminal/claude/install.sh local
-./terminal/claude/install.sh ssh
 ```
-
-The profile argument is optional. Without it, the script picks `ssh` when
-`SSH_CONNECTION` is set, otherwise `local`.
 
 The script links:
 

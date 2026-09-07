@@ -3,17 +3,6 @@
 set -eu
 
 setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-
-PROFILE=${1:-}
-
-if [ -z "$PROFILE" ]; then
-  if [ -n "${SSH_CONNECTION:-}" ]; then
-    PROFILE=ssh
-  else
-    PROFILE=local
-  fi
-fi
-
 . "$setup_path/link.sh"
 
 link_path "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
