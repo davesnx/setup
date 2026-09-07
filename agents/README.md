@@ -26,8 +26,9 @@ OpenCode also has its own skills, used only by that harness. See
 
 The shared [`auto-improve` skill](skills/auto-improve/SKILL.md) reviews the
 current session for useful changes to skills, hooks, scripts, and agent rules.
-It proposes changes and waits for your approval. The reminders do not change
-tool permissions or provide a read-only sandbox.
+It proposes changes and waits for your approval. Claude's reminder does not
+change tool permissions. OpenCode restricts its separate review session's tools;
+it does not change the source session's permissions or isolate the filesystem.
 
 Both integrations allow one automatic review per session, even when no proposal
 is useful. This avoids repeated approval requests without trying to interpret
@@ -40,13 +41,19 @@ your answer in a hook. You can request another review manually.
   The continuation Stop is allowed to finish. Requires Python 3 on macOS or
   Linux and Claude Code 2.1.196 or later for prompt IDs. Verified on Claude
   Code 2.1.263.
-- OpenCode: the plugin is off by default. OpenCode has no forked subagent, so
-  the review would run inline in the conversation. When listed in
-  `opencode.jsonc`, it counts three completed normal user turns at
-  `session.idle`, then appends a synthetic reminder to the next normal user
-  input. The current task comes first. It does not post a separate prompt,
-  which could interrupt an active goal or race with new input. Verified on
-  OpenCode 1.18.27 with plugin SDK 1.18.25.
+- OpenCode: the enabled plugin counts three completed normal user turns at
+  `session.idle`, then forks the history into an independent review session.
+  The source can continue while the review runs. No review prompt, tool call,
+  or result is added to the source context. A notification points to proposals
+  under `Auto-improve: <source title>` in `/sessions`. The plugin stays silent
+  when there are no proposals. Verified on OpenCode 1.18.27 with SDK 1.18.25.
+
+OpenCode's hidden reviewer allows only reads, file searches, and the shared
+skill. Global, source-agent, and source-session restrictions remain in force;
+access that needs approval is denied during the automatic review. The reviewer
+cannot apply changes. Request approved changes in a normal session. See the
+[OpenCode reference](../terminal/opencode/README.md#automatic-improvement-reviews)
+for costs, disabling instructions, and the isolated live test.
 
 `terminal/claude/install.sh` links Claude's hook without replacing the existing
 `~/.claude/hooks/dcg` file. The OpenCode installer links `auto-improve.mjs`.
@@ -57,17 +64,22 @@ in separate `claude/` and `opencode/` directories. It stores hashed identifiers
 and review state, not prompt or transcript text. Issued markers survive
 restarts and resumes. OpenCode's completion count before issuance is in memory
 and starts again after a server restart. A new session gets a new allowance.
+OpenCode stores the copied history and proposals in its normal session storage,
+separate from these private marker files. Review execution and notification
+tracking do not resume after a restart; a completed review remains readable.
 
-The integrations save the issued marker before delivering a reminder. If the
-process stops in that gap, the review can be skipped rather than repeated.
+The integrations save the issued marker before requesting a review. If the
+process stops or setup fails after that claim, the review is skipped rather
+than repeated. New source input during OpenCode's setup also cancels launch;
+it does not cancel a review that has already started.
 State or API failures skip the review and produce a diagnostic. They do not
 block the user's task. A failed or cancelled turn is not a completed OpenCode
 turn; Claude counts a prompt only when its normal Stop hook runs.
 
 To disable Claude's reminders, remove only the auto-improve entries from
 `UserPromptSubmit` and `Stop` in `terminal/claude/settings.json`. Leave other
-hooks intact. To enable the OpenCode plugin, add `./auto-improve.mjs` to the
-plugin list in `terminal/opencode/opencode.jsonc`. The skill remains available
+hooks intact. To disable OpenCode's automatic reviews, remove `./auto-improve.mjs`
+from the plugin list in `terminal/opencode/opencode.jsonc`. The skill remains available
 for explicit use.
 
 Run the automated checks from the repository root:

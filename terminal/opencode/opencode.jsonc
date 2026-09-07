@@ -22,6 +22,7 @@
     "cursor-oauth-opencode@0.22.1",
     "./plugins/opencode-notify/src/notify.ts",
     ["@plannotator/opencode@latest", { "workflow": "user-managed" }],
+    "./auto-improve.mjs",
     "./agent-permission-boundaries.mjs",
   ],
   "provider": {
