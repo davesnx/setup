@@ -83,11 +83,8 @@ setopt promptsubst # allow substitution in PS1
 # GPG
 export GPG_TTY=/dev/tty
 
-# register all aliases
-source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
-source "$DOTFILES_PATH/terminal/_aliases/fp.sh"
-source "$DOTFILES_PATH/terminal/_aliases/git.sh"
-source "$DOTFILES_PATH/terminal/_aliases/func.sh"
+source "$DOTFILES_PATH/terminal/_aliases/main.sh"
+source "$DOTFILES_PATH/agents/main.sh"
 
 # Restore SSH identities after a restart without blocking shell startup (macOS keychain).
 if [[ "$OSTYPE" == darwin* ]] && ! ssh-add -l &> /dev/null; then
@@ -120,8 +117,7 @@ zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # match upper from lower case
 
-# Load forgit
-zsh-defer source "$DOTFILES_PATH/git/forgit.zsh"
+source "$DOTFILES_PATH/git/main.sh"
 
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"

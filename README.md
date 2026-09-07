@@ -10,8 +10,8 @@ Personal machine setup: dotfiles, installers, and agent configuration.
   into `~/.agents`.
 - `git/`: Git configuration (`.gitconfig`, `.gitignore_global`,
   `.gitattributes`).
-- `local/`: machine-specific overrides. Only `main.sh` and `README.md` are
-  tracked.
+- `local/`: machine-specific overrides. Only `install.sh`, `main.sh`, and
+  `README.md` are tracked.
 - `mac/`: macOS-only setup (Homebrew, editors, Ghostty), with `daemons/`
   (launchd agents), `enpass/` (the Enpass CLI wrapper), and `tests/` (the
   installer test suite).
@@ -25,11 +25,15 @@ Personal machine setup: dotfiles, installers, and agent configuration.
 
 - `<folder>/install.sh` runs install-time steps for that folder only. Root
   `install.sh` calls each one with no arguments.
-- `<folder>/main.sh` runs shell-start steps for that folder. `.zshrc` sources
-  it. Only `local/main.sh` exists.
+- `<folder>/main.sh` is zsh, sourced at every shell start, never executed.
+  `.zprofile` sources the ones that set environment and PATH: `mac`,
+  `terminal/bin`, `mac/enpass`, `terminal/opencode`. `.zshrc` sources the ones
+  that define aliases and functions: `terminal/_aliases`, `agents`, `git`,
+  `local`. `terminal/core/main.sh` is the bash library that the `terminal/bin`
+  scripts source; the shell does not load it.
 - An installer owns every link inside its destination directory. Removing a
   folder then removes its links with it.
 - Root `install.sh` calls installers in this order: mac (Darwin only), git,
-  ssh, terminal/zsh, terminal/tmux, terminal/htop, agents, terminal/claude,
-  terminal/opencode, terminal/bin/eval-harness. Agents runs before its two
-  consumers because `link_path` requires an existing source.
+  local, ssh, terminal/zsh, terminal/tmux, terminal/htop, agents,
+  terminal/claude, terminal/opencode, terminal/bin/eval-harness. Agents runs
+  before its two consumers because `link_path` requires an existing source.

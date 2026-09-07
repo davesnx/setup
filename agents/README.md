@@ -80,8 +80,9 @@ sh mac/tests/install.sh
 
 ## Install skills
 
-The shell wraps global lifecycle commands for the `skills` CLI. Commands such
-as `npx skills add`, `update`, `remove`, and `list` always use global scope.
+`agents/main.sh`, sourced by `.zshrc`, wraps global lifecycle commands for
+the `skills` CLI. Commands such as `npx skills add`, `update`, `remove`, and
+`list` always use global scope.
 The CLI writes global skills to `~/.agents/skills`, which resolves to this
 repository's `agents/skills/` directory. It records the source and folder hash of each
 installed skill in `~/.agents/.skill-lock.json`, which `agents/install.sh` links to
