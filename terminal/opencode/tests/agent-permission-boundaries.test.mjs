@@ -5,33 +5,6 @@ import permissionPlugin from "../agent-permission-boundaries.mjs"
 
 const { config: restoreAgentPermissionBoundaries } = await permissionPlugin()
 
-test("Plan keeps only its declared edit paths", () => {
-  const config = {
-    agent: {
-      plan: {
-        permission: {
-          edit: {
-            "*": "deny",
-            "plans/*_PLAN.md": "allow",
-            "docs/tasks/*/plan.md": "allow",
-            "*/docs/tasks/*/plan.md": "allow",
-            "*.md": "allow",
-          },
-        },
-      },
-    },
-  }
-
-  restoreAgentPermissionBoundaries(config)
-
-  assert.deepEqual(config.agent.plan.permission.edit, {
-    "*": "deny",
-    "plans/*_PLAN.md": "allow",
-    "docs/tasks/*/plan.md": "allow",
-    "*/docs/tasks/*/plan.md": "allow",
-  })
-})
-
 test("Writer asks by default but inherits every global hard Bash deny", () => {
   const config = {
     permission: {

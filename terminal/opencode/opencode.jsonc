@@ -21,7 +21,7 @@
     "opencode-goal-plugin@0.9.0",
     "cursor-oauth-opencode@0.22.1",
     "./plugins/opencode-notify/src/notify.ts",
-    ["@plannotator/opencode@latest", { "workflow": "user-managed" }],
+    ["@plannotator/opencode@0.27.12", { "workflow": "user-managed" }],
     "./agent-permission-boundaries.mjs",
   ],
   "provider": {
