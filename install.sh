@@ -1,7 +1,5 @@
 #! /usr/bin/env sh
 
-set -eu
-
 setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
 
 if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
@@ -14,35 +12,18 @@ if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
   exit 69
 fi
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl is required." >&2
-  exit 69
-fi
+. "$setup_path/prelude.sh"
 
+need curl
 if [ ! -x /bin/bash ]; then
   echo "/bin/bash is required." >&2
   exit 69
 fi
-
-if ! command -v zsh >/dev/null 2>&1; then
-  echo "zsh is required." >&2
-  exit 69
-fi
-
-if ! command -v git >/dev/null 2>&1; then
-  echo "git is required." >&2
-  exit 69
-fi
-
-if ! command -v npm >/dev/null 2>&1; then
-  echo "npm is required to install the eval harness." >&2
-  exit 69
-fi
+need zsh
+need git
+need npm
 
 echo "👉 dotfiles path: '$setup_path'"
-
-# One backup directory per run for every folder installer.
-. "$setup_path/link.sh"
 
 if [ "$(uname -s)" = Darwin ]; then
   echo ""

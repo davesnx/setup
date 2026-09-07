@@ -1,14 +1,10 @@
 #!/bin/sh
 
-set -eu
-
 setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-. "$setup_path/link.sh"
+. "$setup_path/prelude.sh"
 
-zsh_path=$(command -v zsh 2>/dev/null) || {
-  echo "zsh is required." >&2
-  exit 69
-}
+need zsh
+zsh_path=$(command -v zsh)
 
 link_path "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
 link_path "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"

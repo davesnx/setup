@@ -1,9 +1,7 @@
 #!/bin/sh
 
-set -eu
-
 setup_path=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
-. "$setup_path/link.sh"
+. "$setup_path/prelude.sh"
 
 ssh_config_dir="$HOME/.ssh/config.d"
 ssh_nspawn_config="$ssh_config_dir/nspawn.conf"

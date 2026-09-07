@@ -1,9 +1,7 @@
 #!/bin/sh
 
-set -eu
-
 setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-. "$setup_path/link.sh"
+. "$setup_path/prelude.sh"
 
 link_path "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 link_path "$setup_path/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"

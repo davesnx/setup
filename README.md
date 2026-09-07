@@ -5,8 +5,9 @@ Personal machine setup: dotfiles, installers, and agent configuration.
 ## Layout
 
 - `install.sh`: preflight checks, then one call per folder installer.
-- `link.sh`: the `link_path` and `link_path_guarded` helpers that the
-  installers source.
+- `prelude.sh`: sourced first by every installer. It sets `-eu`, one backup
+  directory per run, and the `need`, `link_path`, and `link_path_guarded`
+  helpers.
 - `agents/`: shared agent rules and skills (`AGENTS.md`, `skills/`), linked
   into `~/.agents`.
 - `git/`: Git configuration (`.gitconfig`, `.gitignore_global`,
@@ -24,7 +25,8 @@ Personal machine setup: dotfiles, installers, and agent configuration.
 
 ## Conventions
 
-- `<folder>/install.sh` runs install-time steps for that folder only. Root
+- `<folder>/install.sh` runs install-time steps for that folder only. It
+  computes `setup_path`, sources `prelude.sh`, then does its work. Root
   `install.sh` calls each one with no arguments.
 - `<folder>/main.sh` is zsh, sourced at every shell start, never executed.
   `.zprofile` sources the ones that set environment and PATH: `mac`,

@@ -175,7 +175,7 @@ printf 'PASS: invalid setup path stops before commands\n'
 prepare_home
 minimal_bin="$work/no-npm-bin"
 mkdir -p "$minimal_bin"
-for name in dirname curl zsh git; do
+for name in dirname date curl zsh git; do
   ln -s "$(command -v "$name")" "$minimal_bin/$name"
 done
 : > "$command_log"
@@ -203,6 +203,7 @@ preflight_bin="$work/preflight-bin"
 rm -rf "$preflight_bin"
 mkdir -p "$preflight_bin"
 cp "$test_bin/uname" "$preflight_bin/uname"
+ln -s "$(command -v date)" "$preflight_bin/date"
 expect_exit 69 /usr/bin/env PATH="$preflight_bin" /bin/sh "$root/mac/install.sh" "$root"
 [ ! -e "$HOME/.hushlogin" ]
 printf 'PASS: missing curl stops before mutation\n'

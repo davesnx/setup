@@ -1,9 +1,7 @@
 #!/bin/sh
 
-set -eu
-
 setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-. "$setup_path/link.sh"
+. "$setup_path/prelude.sh"
 
 opener_agent="$HOME/Library/LaunchAgents/com.davesnx.xdg-open.plist"
 claude_remote_agent="$HOME/Library/LaunchAgents/com.davesnx.claude-remote-control.plist"

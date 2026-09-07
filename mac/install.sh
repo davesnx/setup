@@ -1,7 +1,5 @@
 #! /bin/sh
 
-set -eu
-
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <setup-path>" >&2
   exit 64
@@ -24,17 +22,13 @@ if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
   exit 69
 fi
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl is required." >&2
-  exit 69
-fi
+. "$setup_path/prelude.sh"
 
+need curl
 if [ ! -x /bin/bash ]; then
   echo "/bin/bash is required." >&2
   exit 69
 fi
-
-. "$setup_path/link.sh"
 
 find_brew() {
   brew_path=$(command -v brew 2>/dev/null || true)

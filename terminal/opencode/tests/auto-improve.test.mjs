@@ -373,7 +373,7 @@ test("installer links the plugin file and the configuration leaves it off", asyn
   assert.doesNotMatch(plugins, /auto-improve\.mjs/)
 
   // Run the real installer in a scratch home. The PATH holds only sh and the
-  // tools link.sh needs, so the git clone and npm install steps stay skipped.
+  // tools prelude.sh needs, so the git clone and npm install steps stay skipped.
   const home = await mkdtemp(join(tmpdir(), "opencode-install-"))
   try {
     const bin = join(home, "bin")

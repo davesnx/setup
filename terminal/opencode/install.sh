@@ -1,9 +1,8 @@
 #!/usr/bin/env sh
 
-set -eu
-
 ROOT=$(CDPATH='' cd "$(dirname "$0")" && pwd)
 setup_path=$(CDPATH='' cd "$ROOT/../.." && pwd)
+. "$setup_path/prelude.sh"
 PROFILE=${1:-}
 
 if [ -z "$PROFILE" ]; then
@@ -22,8 +21,6 @@ if [ ! -f "$PROFILE_FILE" ]; then
 fi
 
 CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}/opencode
-
-. "$setup_path/link.sh"
 
 for name in opencode.jsonc tui.json instructions.md package.json agent-permission-boundaries.mjs auto-improve.mjs; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name"
