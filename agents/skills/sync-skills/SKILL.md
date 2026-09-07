@@ -6,7 +6,7 @@ compatibility: Requires Git and an SSH host named nspawn. Uses /Users/davesnx/Co
 
 # Sync Skills
 
-Synchronize the skill directories through Git: `skills/` (shared by every
+Synchronize the skill directories through Git: `agents/skills/` (shared by every
 harness) and `terminal/opencode/skills/` (OpenCode-only skills). Below, "the
 skill directories" means exactly those two paths. A sync request authorizes the required commit, push, SSH connection, and pull, but no
 other repository changes.
@@ -56,7 +56,7 @@ publish unrelated local commits.
 If the skill directories have changes:
 
 1. Stage only the skill directories with
-   `git add -- skills terminal/opencode/skills`.
+   `git add -- agents/skills terminal/opencode/skills`.
 2. Inspect the staged diff and confirm that every staged path is under the
    skill directories.
 3. Determine and run the repository-required format, lint, build, and relevant

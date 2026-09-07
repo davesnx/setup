@@ -8,15 +8,15 @@ Usage: skill-vendor check
        skill-vendor pull [--force]
        skill-vendor push [--branch NAME] [-m MESSAGE]
 
-Keep vendored skills in skills/ in step with the repositories that publish
-them. skills/VENDOR lists one upstream per line:
+Keep vendored skills in agents/skills/ in step with the repositories that publish
+them. agents/skills/VENDOR lists one upstream per line:
 
   REPOSITORY BRANCH DIR COMMIT SKILL...
 
 DIR is the directory that holds the skills in the upstream repository, or .
 for its root. COMMIT is the upstream commit the local copies were last synced
 with, or - before the first sync. Each SKILL is a directory with the same
-name in skills/ and in DIR upstream.
+name in agents/skills/ and in DIR upstream.
 
 check  compares every skill with the pinned commit and the upstream branch
        head. Reports up to date, upstream ahead, local ahead, new local,
@@ -48,7 +48,7 @@ invalid() {
 }
 
 script_dir=$(CDPATH='' cd "$(dirname "$0")" && pwd)
-manifest=${SKILL_VENDOR_MANIFEST:-$script_dir/../../skills/VENDOR}
+manifest=${SKILL_VENDOR_MANIFEST:-$script_dir/../../agents/skills/VENDOR}
 [ -f "$manifest" ] || fail "manifest not found: $manifest"
 skills_dir=$(CDPATH='' cd "$(dirname "$manifest")" && pwd)
 manifest=$skills_dir/$(basename "$manifest")

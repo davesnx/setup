@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import stat
 import subprocess
 import sys
@@ -251,13 +252,17 @@ class ClaudeAutoImproveTests(unittest.TestCase):
         self.assertFalse(self.directory.exists())
 
     def install_hook(self):
-        # Run only the hook link section; the root installer changes the host.
-        installer = (ROOT / "install.sh").read_text()
-        block = installer.split('mkdir -p "$HOME/.claude/hooks"', 1)[1].split("# Tmux", 1)[0]
+        # Run the real installer with claude absent from PATH, so the MCP block is skipped.
+        parts = os.environ.get("PATH", "").split(os.pathsep)
+        claude_path = shutil.which("claude")
+        if claude_path:
+            excluded = os.path.dirname(claude_path)
+            parts = [part for part in parts if part != excluded]
+        env = dict(self.env, PATH=os.pathsep.join(parts),
+                   SETUP_BACKUP_ROOT=str(self.home / "backups"))
         return subprocess.run(
-            ["sh", "-eu", "-c", 'setup_path=$1; mkdir -p "$HOME/.claude/hooks"\n' + block,
-             "install-hook-test", str(ROOT)],
-            env=self.env, text=True, capture_output=True, timeout=5,
+            ["sh", str(ROOT / "terminal/claude/install.sh")],
+            env=env, text=True, capture_output=True, timeout=5,
         )
 
     def test_install_is_repeatable_and_preserves_puppet_dcg(self):

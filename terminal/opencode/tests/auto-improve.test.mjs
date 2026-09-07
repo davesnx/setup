@@ -370,6 +370,6 @@ test("installer links the plugin file and the configuration leaves it off", asyn
   const plugins = config.match(/"plugin": \[([\s\S]*?)\n  \]/)[1]
   assert.doesNotMatch(plugins, /auto-improve\.mjs/)
   const installer = await readFile(new URL("../install.sh", import.meta.url), "utf8")
-  assert.match(installer, /for name in [^\n]* auto-improve\.mjs; do\n  link_path "\$ROOT\/\$name" "\$CONFIG_HOME\/\$name" "\$BACKUP_ROOT\/opencode\/\$name"/)
+  assert.match(installer, /for name in [^\n]* auto-improve\.mjs; do\n  link_path "\$ROOT\/\$name" "\$CONFIG_HOME\/\$name"/)
   assert.ok((await stat(new URL("../auto-improve.mjs", import.meta.url))).isFile())
 })

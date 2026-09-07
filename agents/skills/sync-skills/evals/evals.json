@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "I added a new skill on my Mac. Sync skills to nspawn, but leave my unrelated modified Zed settings alone.",
-      "expected_output": "Uses the local setup checkout, stages and commits only the skill directories (skills/ and terminal/opencode/skills/), pushes normally, checks that nspawn is on the same branch with a clean checkout, and pulls with --ff-only.",
+      "expected_output": "Uses the local setup checkout, stages and commits only the skill directories (agents/skills/ and terminal/opencode/skills/), pushes normally, checks that nspawn is on the same branch with a clean checkout, and pulls with --ff-only.",
       "files": []
     },
     {

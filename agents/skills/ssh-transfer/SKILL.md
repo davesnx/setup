@@ -84,4 +84,4 @@ the direction and destination, or the failure and required next action.
 For an interrupted transfer, rerun the same command to reuse destination
 `.rsync-partial` data. Preserve failed-transfer errors instead of hiding them.
 For detailed copy behavior and command tests, read the setup checkout's
-[`terminal/bin/README.md`](../../terminal/bin/README.md).
+[`terminal/bin/README.md`](../../../terminal/bin/README.md).

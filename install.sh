@@ -41,6 +41,9 @@ fi
 
 echo "👉 dotfiles path: '$setup_path'"
 
+# One backup directory per run for every folder installer.
+. "$setup_path/link.sh"
+
 if [ "$(uname -s)" = Darwin ]; then
   echo ""
   echo "Installing custom packages"
@@ -58,30 +61,6 @@ ln -s -i "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
 ln -s -i "$setup_path/git/.gitconfig" "$HOME/.gitconfig"
 ln -s -i "$setup_path/git/.gitignore_global" "$HOME/.gitignore_global"
 ln -s -i "$setup_path/git/.gitattributes" "$HOME/.gitattributes"
-
-# Claude Code
-mkdir -p "$HOME/.claude"
-ln -s -i "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
-ln -s -i "$setup_path/terminal/claude/settings.local.json" "$HOME/.claude/settings.local.json"
-ln -s -i "$setup_path/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
-# Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
-# stand-in only where nothing is there yet. -f also replaces a stand-in link
-# left dangling by the move from .claude/ to terminal/claude/, which -e misses.
-mkdir -p "$HOME/.claude/hooks"
-if [ ! -e "$HOME/.claude/hooks/dcg" ]; then
-  ln -sfn "$setup_path/terminal/claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
-fi
-
-auto_improve_hook="$HOME/.claude/hooks/auto-improve.py"
-auto_improve_source="$setup_path/terminal/claude/hooks/auto-improve.py"
-if [ -L "$auto_improve_hook" ] && [ "$(readlink "$auto_improve_hook")" = "$auto_improve_source" ]; then
-  :
-elif [ -e "$auto_improve_hook" ] || [ -L "$auto_improve_hook" ]; then
-  echo "Cannot replace existing Claude auto-improve hook: $auto_improve_hook" >&2
-  exit 73
-else
-  ln -s "$auto_improve_source" "$auto_improve_hook"
-fi
 
 # Tmux
 ln -s -i "$setup_path/terminal/tmux/.tmux.conf" "$HOME/.tmux.conf"
@@ -121,7 +100,9 @@ fi
 # Change default terminal to ZSH
 chsh -s "$zsh_path"
 
-# OpenCode, Claude Code, and shared agent skills (profile auto-detected).
+# Shared agent rules and skills first; Claude Code and OpenCode link into them.
+sh "$setup_path/agents/install.sh"
+sh "$setup_path/terminal/claude/install.sh"
 sh "$setup_path/terminal/opencode/install.sh"
 
 sh "$setup_path/terminal/bin/eval-harness/install.sh"

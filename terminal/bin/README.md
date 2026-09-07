@@ -97,10 +97,10 @@ transport instead of SSH. They do not test a live Mac-to-nspawn connection.
 
 # Vendor published skills
 
-Some skills in `skills/` are also published for other people from their own
+Some skills in `agents/skills/` are also published for other people from their own
 repository. `ocaml-mlx/skills` carries the mlx skills. The copies in this
 repository are the working copies. `skill-vendor` moves changes in either
-direction, only when asked. `skills/VENDOR` lists each upstream repository,
+direction, only when asked. `agents/skills/VENDOR` lists each upstream repository,
 its branch, the directory that holds the skills there (`.` for the root), the
 commit the copies were last synced with, and the skill names.
 
@@ -138,4 +138,4 @@ Rules:
 - A new skill also needs whatever the upstream repository asks for, such as a
   README row or a plugin manifest entry. Push it on a branch and finish those
   by hand in the pull request.
-- Commit `skills/VENDOR` together with the skill copies it describes.
+- Commit `agents/skills/VENDOR` together with the skill copies it describes.

@@ -44,7 +44,7 @@ opencode
     assert.equal(result.status, 0, result.stderr)
     const state = overrides.EVAL_STATE_DIR || path.join(overrides.XDG_STATE_HOME || path.join(env.HOME, '.local/state'), 'opencode/eval-harness')
     assert.deepEqual(result.stdout.trimEnd().split('\n'), [
-      overrides.OPENCODE_SKILLS_ROOT || path.join(repo, 'skills'),
+      overrides.OPENCODE_SKILLS_ROOT || path.join(repo, 'agents/skills'),
       overrides.OPENCODE_SKILLS_EXTRA_ROOT ?? (overrides.OPENCODE_SKILLS_ROOT ? '' : path.join(repo, 'terminal/opencode/skills')),
       state,
       overrides.EVAL_HARNESS_REGISTRY || path.join(state, 'registry.yaml'),

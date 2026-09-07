@@ -12,7 +12,7 @@ Clone this repository, then select the profile for the machine:
 ```
 
 The script links the tracked OpenCode files into `~/.config/opencode`. Shared
-skills live in the repository-level `skills/` directory, linked to
+skills live in the repository-level `agents/skills/` directory, linked to
 `~/.agents/skills` and `~/.claude/skills`; OpenCode, Claude Code, Codex, and the
 `skills` CLI all read those two locations. Skills that exist only for OpenCode
 (currently `simplify`, `code-review`, and the `code-standards` skill they share,
@@ -62,7 +62,7 @@ by this setup yet.
 
 ## Automatic improvement reviews
 
-The shared [`auto-improve` skill](../../skills/auto-improve/SKILL.md) reviews the
+The shared [`auto-improve` skill](../../agents/skills/auto-improve/SKILL.md) reviews the
 current session for useful changes to skills, hooks, scripts, and agent rules.
 It proposes changes and waits for your approval. The reminders do not change
 tool permissions or provide a read-only sandbox.
@@ -86,7 +86,7 @@ your answer in a hook. You can request another review manually.
   which could interrupt an active goal or race with new input. Verified on
   OpenCode 1.18.27 with plugin SDK 1.18.25.
 
-The root `install.sh` links Claude's hook without replacing the existing
+`terminal/claude/install.sh` links Claude's hook without replacing the existing
 `~/.claude/hooks/dcg` file. The OpenCode installer links `auto-improve.mjs`.
 Restart both applications after installation or configuration changes.
 
@@ -211,28 +211,28 @@ references such as `{env:OPENCODE_ANTHROPIC_API_KEY}` at run time.
 The shell wraps global lifecycle commands for the `skills` CLI. Commands such
 as `npx skills add`, `update`, `remove`, and `list` always use global scope.
 The CLI writes global skills to `~/.agents/skills`, which resolves to this
-repository's `skills/` directory. It records the source and folder hash of each
-installed skill in `~/.agents/.skill-lock.json`, which `install.sh` links to
-`skills/.skill-lock.json`. Commit the lock file together with the skills it
+repository's `agents/skills/` directory. It records the source and folder hash of each
+installed skill in `~/.agents/.skill-lock.json`, which `agents/install.sh` links to
+`agents/skills/.skill-lock.json`. Commit the lock file together with the skills it
 describes, so both machines share one record of what is installed.
 
-Before the first `install.sh` run on a machine that already has its own lock
+Before the first `agents/install.sh` run on a machine that already has its own lock
 file, merge its entries into the tracked file. Otherwise the installer moves the
 old file to the backup directory and its entries are lost:
 
 ```sh
-jq -s '.[1] * .[0]' skills/.skill-lock.json ~/.agents/.skill-lock.json > skills/.skill-lock.json.new
-mv skills/.skill-lock.json.new skills/.skill-lock.json
+jq -s '.[1] * .[0]' agents/skills/.skill-lock.json ~/.agents/.skill-lock.json > agents/skills/.skill-lock.json.new
+mv agents/skills/.skill-lock.json.new agents/skills/.skill-lock.json
 ```
 
 Skills this repository publishes for other people, such as the mlx skills
-in `ocaml-mlx/skills`, do not go through the `skills` CLI. `skills/VENDOR`
+in `ocaml-mlx/skills`, do not go through the `skills` CLI. `agents/skills/VENDOR`
 lists them and `terminal/bin/skill-vendor` syncs them on demand. See
 `terminal/bin/README.md`.
 
 Each vendored skill has an `UPSTREAM.md` that records the source path, the
 revision, and any local edits. The `plannotator*` skills come from the
 Plannotator installer (`curl -fsSL https://plannotator.ai/install.sh | bash`).
-It writes the core skills directly into `skills/` and installs the extra skills
+It writes the core skills directly into `agents/skills/` and installs the extra skills
 with `npx skills add`. After an update, run `git diff -- skills`, re-apply the
 local edits listed in each `UPSTREAM.md`, update the revision there, and commit.
