@@ -138,9 +138,22 @@ alias pg='pgcli'
 alias my='mycli'
 
 # Extend ls
-alias l="eza --group-directories-first --oneline"
-alias ls="eza --group-directories-first -lh --octal-permissions"
-alias lsa="eza --group-directories-first -alh --octal-permissions"
+alias l="eza --group-directories-first -lh --octal-permissions"
+alias ls="eza --group-directories-first -alh --octal-permissions"
+alias lsa="eza \
+  --long --all --all \
+  --group-directories-first \
+  --header \
+  --octal-permissions \
+  --group --smart-group \
+  --links --blocksize \
+  --time-style="+%Y-%m-%d %H:%M" --changed \
+  --git --git-repos \
+  --icons=auto --classify=auto \
+  --color-scale=all --color-scale-mode=gradient \
+  --hyperlink \
+  --no-quotes"
+
 # List only directories
 alias ld="ls -D"
 
