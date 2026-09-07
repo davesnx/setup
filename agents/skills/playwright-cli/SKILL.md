@@ -21,10 +21,15 @@ playwright-cli snapshot
 playwright-cli detach
 ```
 
-If `attach` cannot connect, ask the user to run "Open Brave Agent" in Raycast
-and, on nspawn, to reconnect the SSH session so the port forward exists. Claude
-Code runs `playwright-cli` outside its Bash sandbox, so no sandbox override is
-needed. Call it as a plain command, with a pipe when needed. A subshell group
+When `attach` fails with `connect ECONNREFUSED 127.0.0.1:9222`, nothing
+listens on the port. Stop and tell the user. Do not fall back to a headless
+browser unless they agree. Ask them to start Brave with CDP on the Mac, either
+with "Open Brave Agent" in Raycast or by running
+`mac/raycast/raycast-open-chrome-agent.sh` from the setup checkout in a Mac
+shell. On nspawn, the SSH session must also carry the 9222 forward from
+`ssh/nspawn.conf`; if Brave is already running, ask them to reconnect SSH.
+Retry `attach` after they confirm. Claude Code runs `playwright-cli` outside
+its Bash sandbox, so no sandbox override is needed. Call it as a plain command, with a pipe when needed. A subshell group
 such as `( playwright-cli ... )` runs sandboxed and fails with `EROFS` under
 `~/.cache/ms-playwright`.
 
