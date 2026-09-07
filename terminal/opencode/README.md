@@ -14,15 +14,15 @@ Clone this repository, then select the profile for the machine:
 The script links the tracked OpenCode files into `~/.config/opencode`. Shared
 skills and the shared `AGENTS.md` file live in `agents/`; see
 [`agents/README.md`](../../agents/README.md) for how each installer links
-them. Skills that exist only for OpenCode (currently `simplify`,
-`code-review`, and the `code-standards` skill they share, because Claude Code
-ships its own `/simplify` and `/code-review`) live in
-`terminal/opencode/skills/`, linked to `~/.config/opencode/skills`, which only
-OpenCode reads. Existing files move to a timestamped directory under
-`~/.local/state/setup/backups`.
+them. The OpenCode-only skills are `simplify` and `code-review`, because
+Claude Code ships its own `/simplify` and `/code-review`. They load the
+shared `code-standards` skill from `agents/skills`. The OpenCode-only skills
+live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
+which only OpenCode reads. Existing files move to a timestamped directory
+under `~/.local/state/setup/backups`.
 
-The shell configuration exports `OPENCODE_CONFIG` when the selected
-`host.jsonc` link exists. Start a new shell after installation.
+`main.sh`, sourced by the shell profile, exports `OPENCODE_CONFIG` when the
+selected `host.jsonc` link exists. Start a new shell after installation.
 
 ## Model selection
 
