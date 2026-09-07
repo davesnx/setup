@@ -37,9 +37,9 @@ your answer in a hook. You can request another review manually.
   after three distinct prompts reach a response boundary. The main session
   starts the review as a background fork and ends its turn, so the
   conversation stays free. It relays the fork's proposals when they arrive.
-  The continuation Stop is allowed to finish. Requires Python 3 on macOS or
-  Linux and Claude Code 2.1.196 or later for prompt IDs. Verified on Claude
-  Code 2.1.263.
+  The continuation Stop is allowed to finish. Requires Node 22.18 or later on
+  macOS or Linux and Claude Code 2.1.196 or later for prompt IDs. Verified on
+  Claude Code 2.1.263.
 - OpenCode: the plugin is off by default. OpenCode has no forked subagent, so
   the review would run inline in the conversation. When listed in
   `opencode.jsonc`, it counts three completed normal user turns at
@@ -73,8 +73,12 @@ for explicit use.
 Run the automated checks from the repository root:
 
 ```sh
-python3 -m unittest discover -s terminal/claude/tests -p 'test_*.py' -v
+npm ci --prefix terminal/claude/hooks
+npm test --prefix terminal/claude/hooks
+npm run typecheck --prefix terminal/claude/hooks
+npm run format:check --prefix terminal/claude/hooks
 node --test terminal/opencode/tests/*.test.mjs
+bun test terminal/core/utils
 sh mac/tests/install.sh
 ```
 
@@ -120,9 +124,8 @@ server is registered.
   Agent" (`mac/raycast/raycast-open-chrome-agent.sh`) starts Brave with its
   own profile and CDP on `127.0.0.1:9222`.
 - nspawn: install the CLI with `npm install -g @playwright/cli@latest`.
-  `ssh/nspawn.conf` reverse-forwards port 9222 from the Mac, so the same
-  endpoint works there. Reconnect SSH once after `ssh/install.sh` adds the
-  forward.
+  `ssh/config.conf` reverse-forwards port 9222 from the Mac, so the same
+  endpoint works there.
 
 The skill attaches with `playwright-cli attach --cdp=http://127.0.0.1:9222`.
 Claude Code's `settings.json` lists `playwright-cli *` in the sandbox's

@@ -23,10 +23,14 @@ It also creates `~/.claude/hooks` and links two hooks with guards:
 - `hooks/dcg` links to `~/.claude/hooks/dcg` only when nothing exists there
   yet. Puppet installs the real `dcg` wrapper at that path on nspawn; the
   installer never replaces it.
-- `hooks/auto-improve.py` links to `~/.claude/hooks/auto-improve.py` only
+- `hooks/auto-improve.ts` links to `~/.claude/hooks/auto-improve.ts` only
   when that path is missing or already links to this file. A foreign file at
   that path makes the installer refuse and exit with status 73, rather than
   overwrite it.
+
+The installer uses npm to install the hook's locked production dependencies
+before creating its link. It then removes the old Python hook link only if
+it points to this repository's former hook. The hook requires Node 22.18 or later.
 
 Existing files at any other link target move to a timestamped directory under
 `~/.local/state/setup/backups` before the new link is created.
@@ -56,8 +60,11 @@ Restart Claude Code after changing these settings.
 See [`agents/README.md`](../../agents/README.md#automatic-improvement-reviews)
 for the shared contract implemented by the Claude Code hook.
 
-Run the Python test suite from the repository root:
+Run the TypeScript checks from the repository root:
 
 ```sh
-python3 -m unittest discover -s terminal/claude/tests -p 'test_*.py' -v
+npm ci --prefix terminal/claude/hooks
+npm test --prefix terminal/claude/hooks
+npm run typecheck --prefix terminal/claude/hooks
+npm run format:check --prefix terminal/claude/hooks
 ```

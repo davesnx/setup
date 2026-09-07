@@ -8,8 +8,8 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 #?? 1.0.0
 ##?
 ##? Usage:
-##?    git-find
+##?    git-find <pattern>
 
-docs::eval "$#"
+docs::parse "$@"
 
-git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --regexp-ignore-case --grep=$1;
+git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --regexp-ignore-case --grep="$1"

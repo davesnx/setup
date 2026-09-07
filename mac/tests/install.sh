@@ -123,6 +123,9 @@ EOF
 cat >"$test_bin/npm" <<'EOF'
 #!/bin/sh
 printf 'npm:%s\n' "$*" >>"$COMMAND_LOG"
+if [ "${FAIL_NPM:-0}" -eq 1 ]; then
+  exit 45
+fi
 EOF
 
 cat >"$test_bin/trash" <<'EOF'
@@ -156,7 +159,7 @@ prepare_home() {
   : >"$command_log"
   rm -rf "$work/fallback"
   rm -f "$test_bin/brew" "$test_bin/brew-count"
-  unset FAIL_BREW_CALL INSTALL_BREW FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET || true
+  unset FAIL_BREW_CALL INSTALL_BREW FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
 }
 
 install_brew_stub() {
@@ -173,6 +176,7 @@ expect_exit() {
   set -e
   if [ "$actual" -ne "$expected" ]; then
     printf 'expected exit %s, got %s: %s\n' "$expected" "$actual" "$*" >&2
+    cat "$work/stderr" >&2
     return 1
   fi
 }
@@ -195,7 +199,7 @@ for name in dirname date curl zsh git; do
 done
 : > "$command_log"
 expect_exit 69 env PATH="$minimal_bin" /bin/sh "$root/install.sh"
-grep -q 'npm is required' "$work/stderr"
+grep -Fxq 'npm is required.' "$work/stderr"
 [ ! -s "$command_log" ]
 printf 'PASS: missing npm stops the root installer before mutation\n'
 
@@ -298,6 +302,51 @@ if grep -q '^chsh:' "$command_log"; then
 fi
 [ ! -e "$HOME/.zim" ]
 printf 'PASS: failed root link stops later phases\n'
+
+prepare_home
+install_brew_stub
+mkdir -p "$HOME/.claude/hooks"
+ln -s "$root/terminal/claude/hooks/auto-improve.py" "$HOME/.claude/hooks/auto-improve.py"
+FAIL_NPM=1
+export FAIL_NPM
+expect_exit 45 /bin/sh "$root/install.sh"
+[ "$(grep -c '^npm:' "$command_log")" -eq 1 ]
+grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+[ ! -e "$HOME/.claude/hooks/auto-improve.ts" ]
+[ ! -L "$HOME/.claude/hooks/auto-improve.ts" ]
+[ "$(readlink "$HOME/.claude/hooks/auto-improve.py")" = "$root/terminal/claude/hooks/auto-improve.py" ]
+if grep -q '^npm:.*eval-harness' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: failed hook npm install stops before publishing and preserves the old hook\n'
+
+unset FAIL_NPM
+: >"$command_log"
+yes y | expect_exit 0 /bin/sh "$root/install.sh"
+grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+[ "$(readlink "$HOME/.claude/hooks/auto-improve.ts")" = "$root/terminal/claude/hooks/auto-improve.ts" ]
+[ ! -L "$HOME/.claude/hooks/auto-improve.py" ]
+printf 'PASS: retry installs the new hook and removes the old managed link\n'
+
+: >"$command_log"
+yes y | expect_exit 0 /bin/sh "$root/install.sh"
+grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+[ "$(readlink "$HOME/.claude/hooks/auto-improve.ts")" = "$root/terminal/claude/hooks/auto-improve.ts" ]
+if grep -q '^ln:.*auto-improve.ts' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: an installed hook still gets dependencies without replacing its link\n'
+
+prepare_home
+install_brew_stub
+mkdir -p "$HOME/.claude/hooks"
+printf 'custom hook\n' >"$HOME/.claude/hooks/auto-improve.ts"
+expect_exit 73 /bin/sh "$root/install.sh"
+grep -qx 'custom hook' "$HOME/.claude/hooks/auto-improve.ts"
+if grep -q '^npm:' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: unexpected hook destination stops before npm\n'
 
 prepare_home
 install_brew_stub
