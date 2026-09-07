@@ -25,7 +25,7 @@ check, hook, or script over another reminder when the rule can be enforced.
   checkpoint, not permission to edit or to schedule another review.
 
 For installed trigger behavior, state, and disabling instructions, see
-[the setup reference](../../../terminal/opencode/README.md#automatic-improvement-reviews).
+[the setup reference](../../README.md#automatic-improvement-reviews).
 
 ## Review
 
