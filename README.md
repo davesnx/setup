@@ -16,7 +16,8 @@ Personal machine setup: dotfiles, installers, and agent configuration.
   `README.md` are tracked.
 - `mac/`: macOS-only setup (Homebrew, editors, Ghostty), with `daemons/`
   (launchd agents), `enpass/` (the Enpass CLI wrapper), and `tests/` (the
-  installer test suite).
+  installer test suite). `mac/mac-os.sh` writes system defaults; no installer
+  calls it, run it once on a new Mac.
 - `ssh/`: the SSH config fragment that opens links from a remote host on
   this machine.
 - `terminal/`: shell tools, with `bin/` (scripts; the ssh-transfer and

@@ -11,9 +11,6 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
-
 # Scrollbars show always
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
 
@@ -30,14 +27,6 @@ EOF
 
 # Disable the over-the-top focus ring animation
 defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false
-
-# Expand save panel by default
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
-
-# Expand print panel by default
-defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
-defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 
 # Save to disk (not to iCloud) by default
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
@@ -57,16 +46,7 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 # Disable window dragging
 defaults write -g NSWindowShouldDragOnGesture -bool false
 
-###############################################################################
-# SSD-specific tweaks                                                         #
-###############################################################################
-
-# Disable hibernation (speeds up entering sleep mode)
-sudo pmset -a hibernatemode 0
-
-###############################################################################
-# Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
-###############################################################################
+# Trackpad, mouse, keyboard, Bluetooth accessories, and input
 
 # Trackpad: enable tap to click for this user and for the login screen
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
@@ -90,12 +70,7 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 # Show language menu in the top right corner of the boot screen
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
-# Set the timezone; see `sudo systemsetup -listtimezones` for other values
-sudo systemsetup -settimezone "Europe/Brussels" > /dev/null
-
-###############################################################################
-# Screen                                                                      #
-###############################################################################
+# Screen
 
 # Require password immediately after sleep or screen saver begins
 defaults write com.apple.screensaver askForPassword -int 1
@@ -104,16 +79,7 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
 
-# Enable subpixel font rendering on non-Apple LCDs
-# Reference: https://github.com/kevinSuttle/macOS-Defaults/issues/17#issuecomment-266633501
-defaults write NSGlobalDomain AppleFontSmoothing -int 1
-
-# Font rendering stuff
-defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO
-
-###############################################################################
-# Finder                                                                      #
-###############################################################################
+# Finder
 
 # Finder: disable window animations and Get Info animations
 defaults write com.apple.finder DisableAllAnimations -bool true
@@ -162,9 +128,7 @@ defaults write NSGlobalDomain com.apple.springing.enabled -bool true
 # Remove the spring loading delay for directories
 defaults write NSGlobalDomain com.apple.springing.delay -float 0
 
-###############################################################################
-# Dock, Dashboard, and hot corners                                            #
-###############################################################################
+# Dock
 
 # Enable highlight hover effect for the grid view of a stack (Dock)
 defaults write com.apple.dock mouse-over-hilite-stack -bool true
@@ -189,12 +153,6 @@ defaults write com.apple.dock expose-animation-duration -float 0
 # Don’t group windows by application in Mission Control
 defaults write com.apple.dock expose-group-by-app -bool false
 
-# Disable Dashboard
-defaults write com.apple.dashboard mcx-disabled -bool true
-
-# Don’t show Dashboard as a Space
-defaults write com.apple.dock dashboard-in-overlay -bool true
-
 # Don’t automatically rearrange Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
 
@@ -206,12 +164,10 @@ defaults write com.apple.dock autohide -bool true
 # Make Dock icons of hidden applications translucent
 defaults write com.apple.dock showhidden -bool true
 
-###############################################################################
-# Terminal & iTerm 2                                                          #
-###############################################################################
+# Terminal & iTerm 2
 
 # Only use UTF-8 in Terminal.app
-defaults write com.apple.terminal StringEncodings -array 4
+defaults write com.apple.Terminal StringEncodings -array 4
 
 # Disable the annoying line marks
 defaults write com.apple.Terminal ShowLineMarks -int 0
@@ -222,16 +178,12 @@ defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 # Disable Window resizing is off slightly for iTerm2
 defaults write com.googlecode.iterm2 DisableWindowSizeSnap -integer 1
 
-###############################################################################
-# Time Machine                                                                #
-###############################################################################
+# Time Machine
 
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-###############################################################################
-# Activity Monitor                                                            #
-###############################################################################
+# Activity Monitor
 
 # Show the main window when launching Activity Monitor
 defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
