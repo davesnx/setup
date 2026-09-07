@@ -243,6 +243,16 @@ printf 'PASS: installer finds Apple Silicon Brew\n'
 
 prepare_home
 install_brew_stub
+cursor_projects="$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager/projects.json"
+[ ! -d "$(dirname "$cursor_projects")" ]
+expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+[ -L "$cursor_projects" ]
+[ "$(readlink "$cursor_projects")" = "$root/mac/editors/vscode/projects.json" ]
+cmp "$root/mac/editors/vscode/projects.json" "$cursor_projects"
+printf 'PASS: installer creates the Cursor Project Manager directory and links projects\n'
+
+prepare_home
+install_brew_stub
 expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
 [ -L "$HOME/.local/bin/ghostty-remote-tmux" ]
 [ "$(readlink "$HOME/.local/bin/ghostty-remote-tmux")" = "$root/terminal/bin/ghostty-remote-tmux" ]

@@ -84,8 +84,10 @@ ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application
 ln -sf "$setup_path/mac/editors/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
 
 # Cursor
+mkdir -p "$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager"
 ln -sf "$setup_path/mac/editors/vscode/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
 ln -sf "$setup_path/mac/editors/vscode/keybindings.json" "$HOME/Library/Application Support/Cursor/User/keybindings.json"
+ln -sf "$setup_path/mac/editors/vscode/projects.json" "$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager/projects.json"
 
 # Zed
 mkdir -p "$HOME/.config/zed/themes"

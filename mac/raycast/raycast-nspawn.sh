@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S LC_ALL=C bash
+
+# Raycast can pass a macOS locale identifier that Bash cannot use at startup.
 
 # Required parameters:
 # @raycast.schemaVersion 1
