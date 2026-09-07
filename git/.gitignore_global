@@ -236,7 +236,17 @@ itomate.yml
 # Cursor
 .cursor/*
 
-**/.claude/settings.local.json
+# Claude Code: track only the shared project config
+**/.claude/*
+!**/.claude/CLAUDE.md
+!**/.claude/settings.json
+!**/.claude/skills/
+!**/.claude/hooks/
+!**/.claude/agents/
+!**/.claude/commands/
+!**/.claude/rules/
+!**/.claude/output-styles/
+!**/.claude/workflows/
 
 # Workplace https://github.com/davesnx/workplace
 **/.workplace/**
