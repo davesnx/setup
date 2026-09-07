@@ -53,10 +53,13 @@ Gate-only choices use the same finish:
 
 ### Step 1 — fetch the page
 
-Use `agent-browser` (preferred) or a plain `fetch`. If the site has multiple pages worth sampling (landing + blog + product), fetch 2–3 and merge the palette signals.
+Use `playwright-cli` (preferred) or a plain `fetch`. If the site has multiple pages worth sampling (landing + blog + product), fetch 2–3 and merge the palette signals.
 
 ```bash
-agent-browser navigate https://example.com --screenshot out.png --html out.html
+playwright-cli open https://example.com
+playwright-cli screenshot --filename=out.png
+playwright-cli --raw eval "document.documentElement.outerHTML" > out.html
+playwright-cli close
 ```
 
 ---

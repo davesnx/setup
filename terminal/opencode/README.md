@@ -113,12 +113,8 @@ Quit and restart OpenCode, then select **Writer** with Tab. Use
 
 ## Browser tools
 
-The local profile starts Chrome DevTools MCP with a persistent Brave profile.
-Playwriter uses its standard local relay on `127.0.0.1:19988` and the Brave
-extension.
-
-The SSH profile connects Chrome DevTools and Playwriter directly to Chromium's
-CDP endpoint on `127.0.0.1:9222` inside the remote host.
+Both profiles use the shared `playwright-cli` skill. Neither registers a
+browser MCP server. See [`agents/README.md`](../../agents/README.md#browser-control).
 
 ## Eval harness
 

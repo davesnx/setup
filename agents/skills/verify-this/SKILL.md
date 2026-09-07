@@ -29,7 +29,7 @@ Do not use this for vague claims like "the code is cleaner". Ask for a measurabl
 
 - Code behavior: focused unit/integration tests or a minimal repro script.
 - CLI/TUI behavior: terminal transcript or demo recording.
-- UI behavior: screenshots, accessibility snapshots, or browser traces (agent-browser when available).
+- UI behavior: screenshots, accessibility snapshots, or browser traces (playwright-cli when available).
 - API behavior: local HTTP/RPC request and response diff.
 - Performance: same-machine baseline/treatment timings or CPU profiles.
 - Memory: heap snapshots before and after the suspected operation.

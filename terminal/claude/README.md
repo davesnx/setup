@@ -36,12 +36,9 @@ It also creates `~/.claude/hooks` and links two hooks with guards:
 Existing files at any other link target move to a timestamped directory under
 `~/.local/state/setup/backups` before the new link is created.
 
-When the `claude` command is on `PATH`, the installer also registers a
-user-scope Chrome DevTools MCP server, matching the profile:
-
-- `ssh`: connects to `--browser-url=http://127.0.0.1:9222`.
-- `local`: launches Brave with a persistent profile under
-  `~/.cache/chrome-devtools-mcp/brave-profile`.
+Browser control uses the shared `playwright-cli` skill, not an MCP server.
+`settings.json` lists `playwright-cli *` in the sandbox's excluded commands so
+it can reach Brave. See [`agents/README.md`](../../agents/README.md#browser-control).
 
 Start a new shell and restart Claude Code after installation.
 

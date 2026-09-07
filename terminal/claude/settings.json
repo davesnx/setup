@@ -178,7 +178,8 @@
     "excludedCommands": [
       "git *",
       "gh *",
-      "opam *"
+      "opam *",
+      "playwright-cli *"
     ],
     "network": {
       "allowLocalBinding": true

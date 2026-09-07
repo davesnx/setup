@@ -109,3 +109,21 @@ Plannotator installer (`curl -fsSL https://plannotator.ai/install.sh | bash`).
 It writes the core skills directly into `agents/skills/` and installs the extra skills
 with `npx skills add`. After an update, run `git diff -- agents/skills`, re-apply the
 local edits listed in each `UPSTREAM.md`, update the revision there, and commit.
+
+## Browser control
+
+Both harnesses drive the user's Brave through the shared
+[`playwright-cli` skill](skills/playwright-cli/SKILL.md). No browser MCP
+server is registered.
+
+- Mac: the Brewfile installs `playwright-cli`. The Raycast command "Open Brave
+  Agent" (`mac/raycast/raycast-open-chrome-agent.sh`) starts Brave with its
+  own profile and CDP on `127.0.0.1:9222`.
+- nspawn: install the CLI with `npm install -g @playwright/cli@latest`.
+  `ssh/nspawn.conf` reverse-forwards port 9222 from the Mac, so the same
+  endpoint works there. Reconnect SSH once after `ssh/install.sh` adds the
+  forward.
+
+The skill attaches with `playwright-cli attach --cdp=http://127.0.0.1:9222`.
+Claude Code's `settings.json` lists `playwright-cli *` in the sandbox's
+excluded commands, because sandboxed commands cannot reach loopback ports.

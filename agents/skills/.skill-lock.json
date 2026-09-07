@@ -1,16 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "agent-browser": {
-      "source": "vercel-labs/agent-browser",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
-      "skillPath": "skills/agent-browser/SKILL.md",
-      "skillFolderHash": "9fa6850b305ad7237ffe61fc12f9e3d2d9c3d990",
-      "pluginName": "agent-browser",
-      "installedAt": "2026-03-14T11:30:54.796Z",
-      "updatedAt": "2026-03-14T11:30:54.796Z"
-    },
     "to-spec": {
       "source": "mattpocock/skills",
       "sourceType": "github",
