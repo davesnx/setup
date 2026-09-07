@@ -12,27 +12,22 @@ _compose_version() {
   echo -e "${version_code}\n${git_info}"
 }
 
-docs::eval() {
-   local -r file="$0"
-   local -r help="$(extract_help "$file")"
+# Parse "$@" against the ##? usage block of the calling script into shell
+# variables, or print the help or version and exit.
+docs::parse() {
+  local -r file="$0"
+  local -r docopts="${DOTFILES_PATH}/terminal/core/utils/docopts.ts"
 
-   docopts="${DOTFILES_PATH}/terminal/core/utils/docopts"
+  if ! platform::command_exists bun; then
+    log::error "You need to have bun installed in order to run $docopts"
+    exit 1
+  fi
 
-   if [[ ${1:-} == "--version" ]]; then
-      local -r version="$(_compose_version "$file")"
-      eval "$($docopts -h "${help}" -V "${version}" : "${@:1}")"
-   else
-      eval "$($docopts -h "${help}" : "${@:1}")"
-   fi
-}
-
-docs::eval_help() {
-   local -r file="$0"
-
-   case "${!#:-}" in
-      -h|--help) extract_help "$file"; exit 0 ;;
-      --version) _compose_version "$file"; exit 0 ;;
-   esac
+  if [[ ${1:-} == "--version" ]]; then
+    eval "$("$docopts" -h "$(extract_help "$file")" -V "$(_compose_version "$file")" : "$@")"
+  else
+    eval "$("$docopts" -h "$(extract_help "$file")" : "$@")"
+  fi
 }
 
 docs::eval_zsh() {
@@ -48,28 +43,4 @@ docs::eval_zsh() {
     exit 0
     ;;
   esac
-}
-
-docs::eval_help_first_arg() {
-  local -r file="$0"
-
-  case "${1:-}" in
-  -h | --help)
-    extract_help "$file"
-    exit 0
-    ;;
-  --version)
-    _compose_version "$file"
-    exit 0
-    ;;
-  esac
-}
-
-docs::parse() {
-  if ! platform::command_exists docpars; then
-    log::error "You need to have docpars installed in order to use dotly"
-    exit 1
-  fi
-
-  eval "$(docpars -h "$(grep "^##?" "$0" | cut -c 5-)" : "$@")"
 }

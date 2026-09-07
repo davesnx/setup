@@ -75,6 +75,7 @@ Run the automated checks from the repository root:
 ```sh
 python3 -m unittest discover -s terminal/claude/tests -p 'test_*.py' -v
 node --test terminal/opencode/tests/*.test.mjs
+bun test terminal/core/utils
 sh mac/tests/install.sh
 ```
 

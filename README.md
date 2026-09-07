@@ -34,7 +34,9 @@ Personal machine setup: dotfiles, installers, and agent configuration.
   `terminal/bin`, `mac/enpass`, `terminal/opencode`. `.zshrc` sources the ones
   that define aliases and functions: `terminal/_aliases`, `agents`, `git`,
   `local`. `terminal/core/main.sh` is the bash library that the `terminal/bin`
-  scripts source; the shell does not load it.
+  scripts source; the shell does not load it. Its `docs::parse` runs
+  `terminal/core/utils/docopts.ts` with Bun to turn a script's `##?` usage
+  block into shell variables.
 - An installer owns every link inside its destination directory. Removing a
   folder then removes its links with it.
 - Root `install.sh` calls installers in this order: mac (Darwin only), git,
