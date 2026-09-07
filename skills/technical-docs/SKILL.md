@@ -1,6 +1,6 @@
 ---
 name: technical-docs
-description: "Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, PR descriptions, runbooks, and architecture docs, including docs from supplied facts. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings."
+description: "Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, runbooks, and architecture docs, including docs from supplied facts. PR titles and bodies belong to write-pr-body. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings."
 metadata:
   source: "https://github.com/cursor/plugins/blob/main/pstack/skills/technical-writing/SKILL.md"
 ---
@@ -8,6 +8,8 @@ metadata:
 # Technical docs
 
 Write developer documentation that a tired engineer understands on the first read.
+
+PR titles and bodies use `write-pr-body`, not a documentation mode here.
 
 ## Set the document contract
 
@@ -51,10 +53,6 @@ State the problem, constraints, goals, non-goals, proposed design, alternatives,
 ### Product requirements document
 
 State the problem, the affected users, and measurable success criteria. Write user stories as "As a [user], I want to [action], so that [benefit]," each with acceptance criteria that define done. List functional requirements and explicit non-goals. For an AI-powered feature, add an AI system requirements subsection: the model and tool needs, the evaluation strategy, and how the system handles failure. Close with risks and a phased rollout.
-
-### PR description
-
-Explain the problem, the behavior change, the reason for the approach, and the verification. Include user-visible risks, rollout needs, and screenshots when they help review. Do not restate the diff file by file.
 
 ## Write direct sentences
 

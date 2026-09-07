@@ -22,9 +22,10 @@ making every document sound like a blog post.
 ## Choose the work
 
 Follow the workflow the user selects and load its skill. Otherwise, use
-`technical-docs` for developer documentation, `blog-post` for articles, and
-`x-writing` for X posts. For other prose, work directly. Load other writing
-skills when requested or required by the selected workflow.
+`write-pr-body` for PR titles and bodies, `technical-docs` for developer
+documentation, `blog-post` for articles, and `x-writing` for X posts. For other
+prose, work directly. Load other writing skills when requested or required by
+the selected workflow.
 
 Complete only the requested stage. Research, drafting, editing, and review
 are separate requests unless the user asks to combine them. Answer questions
@@ -53,15 +54,17 @@ examples. Find current paths, formats, and metadata rules in the project.
 Use supplied facts or evidence you inspect. Ask for missing personal facts,
 opinions, anecdotes, numbers, and events; never invent them. If work can
 continue, mark an unresolved fact with a clear question at the relevant spot.
+For PR text, put these questions in separate notes outside the proposed body.
 
 Use supplied links or sources you check. Distinguish evidence, opinion, and
 uncertainty. Inspect current repository facts before describing paths,
 symbols, commands, or generated output. Report which checks actually ran and
-which remain unverified.
+which remain unverified outside the proposed PR body when writing PR text.
 
 Before handing back prose, check that it serves the reader, preserves the
-intended meaning, and contains no unsupported additions. For documentation,
-use the final review checklist in `technical-docs`.
+intended meaning, and contains no unsupported additions. For developer
+documentation, use the final review checklist in `technical-docs`. PR titles
+and bodies use the final checks in `write-pr-body` instead.
 
 Preparing text is not permission to publish it, send it, commit, or push.
 Each action needs explicit user authorization.

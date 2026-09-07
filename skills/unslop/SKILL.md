@@ -3,10 +3,9 @@ name: unslop
 description: Edit or review prose to remove AI-generated writing patterns. Use only for writing, documentation, copy, reports, or messages when the user asks to unslop or deslop text, remove AI tone, or clean up prose. Do not use for source code.
 ---
 
-# Unslop
+# Intent
 
-Edit text to remove AI patterns while preserving its substance and intended
-voice.
+Edit text to remove AI patterns while preserving its substance and intended voice.
 
 ## Editorial invariants
 

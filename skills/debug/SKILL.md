@@ -1,12 +1,11 @@
 ---
 name: debug
-description: Diagnosis loop for hard bugs and performance regressions. Use when the user explicitly asks to diagnose or debug, or provides a concrete runtime failure or measured regression. Do not use to judge whether a pull request or commit is the wrong solution; use code-review instead.
+description: Diagnosis loop for bugs and performance regressions. Use when the user explicitly asks to diagnose or debug, or provides a concrete runtime failure, shares a log file or measured regression.
 ---
 
 # Debug
 
-A diagnosis loop scaled to the uncertainty. Read enough code, tests, and logs to
-identify the reported behavior and the smallest useful check.
+Read enough code, tests, and logs to identify the reported behavior and the smallest useful check.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 

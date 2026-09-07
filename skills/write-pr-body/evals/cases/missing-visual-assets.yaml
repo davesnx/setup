@@ -1,0 +1,64 @@
+schema_version: 2
+id: missing-visual-assets
+mode: prose
+skill_under_test: write-pr-body
+skills_loaded: [write-pr-body]
+description: "Missing visual comparison evidence stays in separate notes without fake media"
+tags: [visuals, evidence, missing-assets]
+
+prompt: |
+  Draft the PR title in title.txt and body in body.md from this verified context.
+  Put any missing material or questions in notes.md, separate from the proposed
+  body. Use file tools for local reads and writes; do not run shell commands.
+  Read local skills as needed. This is a local text exercise: do not run
+  git, gh, checks, benchmarks, or any network action. Do not commit, push,
+  create/edit a PR, or upload anything. Write only the requested local text
+  artifacts in the current directory; do not inspect another repo.
+
+  The full aggregate diff and every outgoing commit were inspected. Target:
+  upstream/release/2.x at 5d12a90. PR head: fix/mobile-toolbar at 7b30c42. The
+  mobile toolbar now wraps action buttons onto a second row at narrow widths
+  instead of clipping the final button. Labels and click behavior are unchanged.
+  This is a visual correction. No template or title prefix is required.
+
+  The required comparison scenario is the account page at a 390x844 viewport,
+  light theme, signed-in state, on both refs. No screenshots or videos have been
+  captured for either ref. There are no verified uploaded asset URLs or local
+  media files, and upload authorization has not been given. The code facts above
+  are settled; visual evidence is the only missing input. Draft what is supported
+  now rather than waiting for another reply.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: output_not_contains
+    value: '"tool":"bash"'
+  - kind: output_not_contains
+    value: '"tool":"webfetch"'
+  - kind: output_not_contains
+    value: '"tool":"websearch"'
+  - kind: file_exists
+    path: title.txt
+  - kind: file_exists
+    path: body.md
+  - kind: file_exists
+    path: notes.md
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("fs");
+      const title = fs.readFileSync("title.txt", "utf8");
+      const body = fs.readFileSync("body.md", "utf8");
+      const notes = fs.readFileSync("notes.md", "utf8");
+      const all = title + body + notes;
+      const outcome = /toolbar|button/i.test(title) && /wrap|second row/i.test(body) && /clip|narrow|mobile/i.test(body);
+      const evidence = /before|baseline|target/i.test(notes) && /after|candidate|head|\bPR\b/i.test(notes) && /screenshot|video|image|asset/i.test(notes);
+      const blocked = /missing|incomplete|not ready|blocked|unavailable/i.test(notes) && /provide|capture|need|supply|request/i.test(notes) && /upload/i.test(notes) && /authoriz|permission|approv|consent/i.test(notes);
+      const fake = /https?:\/\/|file:\/\/|!\[|\.(?:png|jpe?g|webp|gif|mp4)\b/i.test(all);
+      const leaked = /missing|incomplete|placeholder|\bTBD\b|upload|screenshot|awaiting/i.test(body);
+      process.stdout.write(outcome && evidence && blocked && !fake && !leaked ? "ready" : "invalid");
+      '
+    unsafe_shell: true
+    expect_exact: "ready"

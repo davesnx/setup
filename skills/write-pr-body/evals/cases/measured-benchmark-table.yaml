@@ -1,0 +1,71 @@
+schema_version: 2
+id: measured-benchmark-table
+mode: prose
+skill_under_test: write-pr-body
+skills_loaded: [write-pr-body]
+description: "Benchmark text preserves measured baseline/head values, refs, units, and context"
+tags: [benchmarks, evidence, comparison]
+
+prompt: |
+  Write the PR title to title.txt and body to body.md from these verified facts.
+  Use the supplied units. Report the two measured metrics without calculating
+  deltas or adding metrics. Use file tools for local reads and writes; do not
+  run shell commands. Read local skills as needed. This is a local text
+  exercise: do not run git, gh, checks, benchmarks, or any network action. Do
+  not commit, push, create/edit a PR, or upload anything. Write only the requested
+  local text artifacts in the current directory; do not inspect another repo.
+
+  The complete final aggregate diff replaces repeated parsing of an immutable
+  query plan with reuse within each request. Query results and the public API
+  are unchanged. All outgoing commits and affected callers have been inspected.
+  The target is upstream/release/2.x at 5d12a90; the PR head is perf/plan-reuse at
+  7b30c42. No template or title prefix is required. There are no visual changes.
+
+  Verified benchmark export for both refs: the same query-batch workload of
+  10000 queries, Node 22 on the same dedicated Linux x86_64 host, 5 warm-up runs
+  and 20 measured runs per ref. Values are medians across those measured runs;
+  no confidence interval was recorded. Baseline means the target branch, not an
+  earlier PR commit. Target 5d12a90: batch latency 84 ms; throughput 1200 queries/s.
+  PR head 7b30c42: batch latency 63 ms; throughput 1600 queries/s. Memory was not
+  measured. The export above is the full measurement evidence. Required checks
+  passed on the final tree; that readiness fact is not a benchmark result.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: output_not_contains
+    value: '"tool":"bash"'
+  - kind: output_not_contains
+    value: '"tool":"webfetch"'
+  - kind: output_not_contains
+    value: '"tool":"websearch"'
+  - kind: file_exists
+    path: title.txt
+  - kind: file_exists
+    path: body.md
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("fs");
+      const body = fs.readFileSync("body.md", "utf8");
+      const rows = body.split("\n").filter(line => /^\s*\|/.test(line));
+      const table = rows.join("\n");
+      const latency = rows.find(line => /latency/i.test(line) && /\b84\b/.test(line) && /\b63\b/.test(line));
+      const throughput = rows.find(line => /throughput/i.test(line) && /\b1,?200\b/.test(line) && /\b1,?600\b/.test(line));
+      const refs = ["release/2.x", "5d12a90", "perf/plan-reuse", "7b30c42"].every(ref => body.includes(ref));
+      const units = /\bms\b/.test(table) && /queries\s*\/\s*s\b|queries per second/i.test(table);
+      const context = [/query-batch/, /10,?000/, /Node\s*22/i, /Linux/i, /x86_64/, /\b20\b/, /median/i, /confidence|uncertainty|interval/i].every(re => re.test(body));
+      const header = rows.find(line => /before|baseline|target/i.test(line) && /after|candidate|head|\bPR\b/i.test(line));
+      const columns = header && /5d12a90/.test(header.split("|")[2]) && /7b30c42/.test(header.split("|")[3]);
+      const numbers = row => (row.split("|").slice(2).join("|").match(/\d[\d,]*(?:\.\d+)?/g) || []).map(value => Number(value.replace(/,/g, "")));
+      const values = latency && throughput && JSON.stringify(numbers(latency)) === "[84,63]" && JSON.stringify(numbers(throughput)) === "[1200,1600]";
+      const invented = /\b(?:memory|RSS|heap)\b[^\n]*\d|\d[^\n]*\b(?:MiB|MB|GiB|GB)\b/i.test(body);
+      const reports = /checks? passed|tests? passed|\bCI\b|format:check|npm (?:run|test)/i.test(body);
+      const prose = body.split("\n").filter(line => line.trim() && !/^\s*\||^\s*#{1,6}\s|^\*\*[^*]+\*\*\s*$/.test(line));
+      const bullets = prose.every(line => /^\s*[-*+]\s|^\s{2,}\S/.test(line));
+      process.stdout.write(refs && units && context && columns && values && bullets && !invented && !reports ? "ready" : "invalid");
+      '
+    unsafe_shell: true
+    expect_exact: "ready"

@@ -2,7 +2,7 @@ schema_version: 2
 id: technical-docs-routes-developer-docs-only
 mode: deterministic
 skill_under_test: technical-docs
-skills_loaded: [technical-docs, x-writing]
+skills_loaded: [technical-docs, x-writing, write-pr-body, create-pr]
 description: "Supplied, settled facts route to developer documentation only"
 tags: [routing, developer-docs, near-miss]
 
@@ -17,7 +17,18 @@ budget:
   max_seconds: 90
 
 checks:
-  - kind: output_contains
-    value: '"name":"technical-docs"'
-  - kind: output_not_contains
-    value: '"name":"x-writing"'
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("fs");
+      const events = fs.readFileSync("../transcript.jsonl", "utf8").trim().split("\n").map(JSON.parse);
+      const loaded = name => events.some(event => {
+        const part = event.part;
+        if (part?.state?.status !== "completed") return false;
+        const input = part.state.input;
+        return part.tool === "skill" && input?.name === name || part.tool === "read" && input?.filePath?.endsWith("/skills/" + name + "/SKILL.md");
+      });
+      process.stdout.write(loaded("technical-docs") && !["x-writing", "write-pr-body", "create-pr"].some(loaded) ? "ready" : "invalid");
+      '
+    unsafe_shell: true
+    expect_exact: "ready"

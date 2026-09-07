@@ -1,0 +1,77 @@
+schema_version: 2
+id: final-aggregate-body-only
+mode: prose
+skill_under_test: write-pr-body
+skills_loaded: [write-pr-body, create-pr, technical-docs, github]
+description: "Title/body-only work uses the final aggregate outcome, not the development history"
+tags: [routing, final-aggregate, concise]
+
+prompt: |
+  Write only the PR title and body from the supplied verified context. Save the
+  title in title.txt and the Markdown body in body.md in the current directory.
+  This is a local text exercise, not a request to prepare or publish a PR.
+  Use file tools for local reads and writes; do not run shell commands.
+  Read local skills as needed. Do not run git, gh, checks, benchmarks, or any
+  network action. Do not commit, push, create/edit a PR, or upload anything.
+  Write only the requested local text artifacts; do not inspect another repo.
+
+  Settled context, already checked against every outgoing commit and the final
+  aggregate diff: target upstream/release/2.x at 5d12a90; head fix/cache-expiry
+  at 7b30c42. No uncommitted changes. No PR template or title prefix is required.
+  The complete final diff changes cache validity from expiresAt >= now to
+  expiresAt > now. Entries whose expiry equals the current timestamp are now
+  stale, rather than staying valid for another refresh cycle. Earlier and later
+  timestamp behavior is unchanged. The existing cache API is unchanged.
+  This is a narrow non-visual correction with no performance claim.
+
+  Development notes retained for context: an earlier version added a scheduler
+  refactor and a CacheClock adapter. Both were fully removed before the final
+  diff. The PR shrank from 480 lines to 12 lines during that work. Required
+  validation on the final tree passed: npm run format:check, npm run lint,
+  npm run typecheck, and npm test (42 passing tests).
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: output_not_contains
+    value: '"tool":"bash"'
+  - kind: output_not_contains
+    value: '"tool":"webfetch"'
+  - kind: output_not_contains
+    value: '"tool":"websearch"'
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("fs");
+      const events = fs.readFileSync("../transcript.jsonl", "utf8").trim().split("\n").map(JSON.parse);
+      const loaded = name => events.some(event => {
+        const part = event.part;
+        if (part?.state?.status !== "completed") return false;
+        const input = part.state.input;
+        return part.tool === "skill" && input?.name === name || part.tool === "read" && input?.filePath?.endsWith("/skills/" + name + "/SKILL.md");
+      });
+      process.stdout.write(loaded("write-pr-body") && !["create-pr", "technical-docs"].some(loaded) ? "ready" : "invalid");
+      '
+    unsafe_shell: true
+    expect_exact: "ready"
+  - kind: file_exists
+    path: title.txt
+  - kind: file_exists
+    path: body.md
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("fs");
+      const title = fs.readFileSync("title.txt", "utf8").trim();
+      const body = fs.readFileSync("body.md", "utf8").trim();
+      const bullets = body.match(/^\s*[-*+]\s+/gm) || [];
+      const facts = /expir|stale|cache/i.test(title) && /equal|exact|\bnow\b|same timestamp/i.test(body) && /stale|expir|invalid/i.test(body);
+      const concise = title.length > 0 && !title.includes("\n") && bullets.length >= 1 && bullets.length <= 4 && body.split(/\s+/).length <= 150;
+      const diary = /scheduler|CacheClock|refactor|\b480\b|\b12 lines\b|shrank|shrink|chronolog|first we|then we/i.test(title + "\n" + body);
+      const reports = /\btests?\b|\bCI\b|validat|format:check|typecheck|npm|\blint\b|checklist/i.test(body);
+      process.stdout.write(facts && concise && !diary && !reports ? "ready" : "invalid");
+      '
+    unsafe_shell: true
+    expect_exact: "ready"
