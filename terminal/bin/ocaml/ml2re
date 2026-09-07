@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$DOTFILES_PATH/terminal/core/_main.sh"
+source "$DOTFILES_PATH/terminal/core/main.sh"
 
 ##? Transform Ocaml to Reason files
 ##? 0.1.0

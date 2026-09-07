@@ -45,7 +45,7 @@ Saved state remains under
 The default model is `openai/gpt-5.6-sol` unless `EVAL_MODEL`, `EVAL_SMOKE_MODEL`,
 or `EVAL_FULL_MODEL` is set.
 
-The wrapper searches both `skills/` and `terminal/opencode/skills/`. An explicit
+The wrapper searches both `agents/skills/` and `terminal/opencode/skills/`. An explicit
 `OPENCODE_SKILLS_ROOT` replaces this default search. Set
 `OPENCODE_SKILLS_EXTRA_ROOT` to add one more directory. Missing skills, cases,
 fixtures, model errors, and incomplete or malformed transcripts fail with exit

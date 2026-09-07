@@ -1,6 +1,6 @@
 # OpenCode setup
 
-Shared OpenCode settings and agent skills.
+OpenCode configuration, agents, and OpenCode-only skills.
 
 ## Install
 
@@ -12,21 +12,17 @@ Clone this repository, then select the profile for the machine:
 ```
 
 The script links the tracked OpenCode files into `~/.config/opencode`. Shared
-skills live in the repository-level `skills/` directory, linked to
-`~/.agents/skills` and `~/.claude/skills`; OpenCode, Claude Code, Codex, and the
-`skills` CLI all read those two locations. Skills that exist only for OpenCode
-(currently `simplify`, `code-review`, and the `code-standards` skill they share,
-because Claude Code ships its own `/simplify` and `/code-review`) live in
-`terminal/opencode/skills/`, linked to `~/.config/opencode/skills`, which only
-OpenCode reads. Existing files move to a timestamped directory under
-`~/.local/state/setup/backups`.
+skills and the shared `AGENTS.md` file live in `agents/`; see
+[`agents/README.md`](../../agents/README.md) for how each installer links
+them. The OpenCode-only skills are `simplify` and `code-review`, because
+Claude Code ships its own `/simplify` and `/code-review`. They load the
+shared `code-standards` skill from `agents/skills`. The OpenCode-only skills
+live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
+which only OpenCode reads. Existing files move to a timestamped directory
+under `~/.local/state/setup/backups`.
 
-The global `AGENTS.md` file is also linked to `~/.config/opencode/AGENTS.md`,
-`~/.agents/AGENTS.md`, and `~/.claude/CLAUDE.md`, so Claude Code reads the same
-rules.
-
-The shell configuration exports `OPENCODE_CONFIG` when the selected
-`host.jsonc` link exists. Start a new shell after installation.
+`main.sh`, sourced by the shell profile, exports `OPENCODE_CONFIG` when the
+selected `host.jsonc` link exists. Start a new shell after installation.
 
 ## Model selection
 
@@ -35,13 +31,7 @@ in `opencode.jsonc`. `instructions.md` contains OpenCode-only guidance and is
 loaded through that config's `instructions` field. It is not shared with Claude.
 `AGENTS.md` keeps the shared engineering rules without a model requirement.
 
-`../claude/settings.json` keeps Fable 5.1 for Claude's main work. Its
-`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` settings
-select Sonnet for subagents, teammates, and workflow agents, including those with
-their own model overrides. The force setting requires Claude Code 2.1.257 or
-later. The Sonnet alias follows the version selected by the provider.
-
-Restart OpenCode and Claude Code after changing these settings.
+Restart OpenCode after changing these settings.
 
 ## Skill access
 
@@ -59,6 +49,12 @@ reduce catalogue context, and `deny` is not a manual-only mode. A dedicated
 command or agent is needed if a workflow must stay available by explicit request
 while hidden from the normal agent. No catalogue-wide restrictions are applied
 by this setup yet.
+
+## Automatic improvement reviews
+
+See [`agents/README.md`](../../agents/README.md#automatic-improvement-reviews)
+for the shared contract. OpenCode's plugin, `auto-improve.mjs`, is off by
+default. Add it to the plugin list in `opencode.jsonc` to enable it.
 
 ## Plan agent
 
@@ -117,12 +113,8 @@ Quit and restart OpenCode, then select **Writer** with Tab. Use
 
 ## Browser tools
 
-The local profile starts Chrome DevTools MCP with a persistent Brave profile.
-Playwriter uses its standard local relay on `127.0.0.1:19988` and the Brave
-extension.
-
-The SSH profile connects Chrome DevTools and Playwriter directly to Chromium's
-CDP endpoint on `127.0.0.1:9222` inside the remote host.
+Both profiles use the shared `playwright-cli` skill. Neither registers a
+browser MCP server. See [`agents/README.md`](../../agents/README.md#browser-control).
 
 ## Eval harness
 
@@ -149,34 +141,3 @@ node_modules/
 
 Use environment variables for MCP and provider credentials. OpenCode expands
 references such as `{env:OPENCODE_ANTHROPIC_API_KEY}` at run time.
-
-## Install skills
-
-The shell wraps global lifecycle commands for the `skills` CLI. Commands such
-as `npx skills add`, `update`, `remove`, and `list` always use global scope.
-The CLI writes global skills to `~/.agents/skills`, which resolves to this
-repository's `skills/` directory. It records the source and folder hash of each
-installed skill in `~/.agents/.skill-lock.json`, which `install.sh` links to
-`skills/.skill-lock.json`. Commit the lock file together with the skills it
-describes, so both machines share one record of what is installed.
-
-Before the first `install.sh` run on a machine that already has its own lock
-file, merge its entries into the tracked file. Otherwise the installer moves the
-old file to the backup directory and its entries are lost:
-
-```sh
-jq -s '.[1] * .[0]' skills/.skill-lock.json ~/.agents/.skill-lock.json > skills/.skill-lock.json.new
-mv skills/.skill-lock.json.new skills/.skill-lock.json
-```
-
-Skills this repository publishes for other people, such as the mlx skills
-in `ocaml-mlx/skills`, do not go through the `skills` CLI. `skills/VENDOR`
-lists them and `terminal/bin/skill-vendor` syncs them on demand. See
-`terminal/bin/README.md`.
-
-Each vendored skill has an `UPSTREAM.md` that records the source path, the
-revision, and any local edits. The `plannotator*` skills come from the
-Plannotator installer (`curl -fsSL https://plannotator.ai/install.sh | bash`).
-It writes the core skills directly into `skills/` and installs the extra skills
-with `npx skills add`. After an update, run `git diff -- skills`, re-apply the
-local edits listed in each `UPSTREAM.md`, update the revision there, and commit.

@@ -250,3 +250,6 @@ itomate.yml
 
 # Workplace https://github.com/davesnx/workplace
 **/.workplace/**
+
+# playwright-cli output (snapshots, logs, screenshots)
+.playwright-cli/

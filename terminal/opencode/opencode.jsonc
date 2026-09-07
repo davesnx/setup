@@ -23,7 +23,6 @@
     "./plugins/opencode-notify/src/notify.ts",
     ["@plannotator/opencode@latest", { "workflow": "user-managed" }],
     "./agent-permission-boundaries.mjs",
-    "./auto-improve.mjs",
   ],
   "provider": {
     "openai": {

@@ -196,6 +196,9 @@ describe("Claude auto-improve", () => {
     for (const text of [
       "auto-improve",
       "one-per-session",
+      "Do not run the review in this",
+      "background fork",
+      "end the turn",
       "read-only",
       "at most 3",
       "evidence-backed",
@@ -211,21 +214,7 @@ describe("Claude auto-improve", () => {
   }
 
   function installHook() {
-    // Run only the hook link section; the full installer changes the host.
-    const installer = readFileSync(join(ROOT, "install.sh"), "utf8");
-    const start = 'mkdir -p "$HOME/.claude/hooks"';
-    assert.ok(installer.includes(start));
-    const rest = installer.slice(installer.indexOf(start) + start.length);
-    assert.ok(rest.includes("# Tmux"));
-    const block = rest.slice(0, rest.indexOf("# Tmux"));
-    return run([
-      "sh",
-      "-eu",
-      "-c",
-      `setup_path=$1; ${start}\n${block}`,
-      "install-hook-test",
-      ROOT,
-    ]);
+    return run(["sh", join(ROOT, "terminal/claude/install.sh")]);
   }
 
   test("three completions and continuation", async () => {

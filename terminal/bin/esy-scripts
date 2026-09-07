@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source "$DOTFILES_PATH/terminal/core/_main.sh"
+source "$DOTFILES_PATH/terminal/core/main.sh"
 
 ##? Run scripts from package.json with esy
 #?? 1.1.0

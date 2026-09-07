@@ -43,6 +43,7 @@ brew "pinentry-mac"
 brew "direnv"
 brew "gh"
 brew "opencode"
+brew "playwright-cli" # https://github.com/microsoft/playwright-cli
 brew "hyperfine"
 brew "mycli"
 

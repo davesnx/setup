@@ -17,12 +17,16 @@ import { homedir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
 const REVIEW =
-  "Load the auto-improve skill for this automatic, one-per-session checkpoint. " +
-  "Inspect the current session and relevant setup files read-only. Show at most " +
-  "3 concrete, evidence-backed proposals for skills, hooks, scripts, or rules, " +
-  "and ask which to apply. Make no setup or code edits, commits, or external " +
-  "calls to publish. If no proposal is useful, finish quietly. Do not issue " +
-  "another automatic review in this session.";
+  "Automatic, one-per-session auto-improve checkpoint. Do not run the review in " +
+  "this conversation. Start it as a background fork with the Agent tool " +
+  "(subagent_type fork), then end the turn so the user can keep working. The " +
+  "fork loads the auto-improve skill, inspects the current session and relevant " +
+  "setup files read-only, does the work itself without further subagents, and " +
+  "returns at most 3 concrete, evidence-backed proposals for skills, hooks, " +
+  "scripts, or rules, or reports that none is useful. Make no setup or code " +
+  "edits, commits, or external calls to publish. When the fork result arrives, " +
+  "relay the proposals in a short list and ask which to apply, or finish " +
+  "quietly. Do not issue another automatic review in this session.";
 
 type State = {
   current_prompt_id: string | null;

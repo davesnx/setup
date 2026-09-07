@@ -8,7 +8,7 @@ Koffi provides native file locking on macOS and glibc Linux. Version 2.16.3 is
 pinned because 3.2.1 crashed during `flock` calls with Intel Node on this
 Apple Silicon Mac. Its prebuilt binary avoids a local native build.
 
-The root `install.sh` installs the locked production dependencies, then links
+`terminal/claude/install.sh` installs the locked production dependencies, then links
 the script to `~/.claude/hooks/auto-improve.ts`.
 It removes an old Python link only when that link points to this repository's
 former hook. It preserves unrelated files and links.

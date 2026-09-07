@@ -10,31 +10,10 @@
         "BUILDKITE_ORG_SLUG": "ahrefs",
       },
     },
-    "chrome-devtools": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@1.8.0",
-        "--browser-url=http://127.0.0.1:9222",
-        "--no-usage-statistics",
-        "--no-performance-crux",
-        "--redact-network-headers",
-      ],
-    },
     "grafana": {
       "type": "local",
       "enabled": true,
       "command": ["grafana-mcp"],
-    },
-    "playwriter": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "playwriter@latest"],
-      "environment": {
-        "PLAYWRITER_DIRECT": "1",
-      },
     },
   },
 }

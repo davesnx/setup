@@ -1,24 +1,3 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "chrome-devtools": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@1.8.0",
-        "--executable-path=/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
-        "--user-data-dir=/Users/davesnx/.cache/chrome-devtools-mcp/brave-profile",
-        "--no-usage-statistics",
-        "--no-performance-crux",
-        "--redact-network-headers",
-      ],
-    },
-    "playwriter": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "playwriter@latest"],
-    },
-  },
 }

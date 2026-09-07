@@ -42,7 +42,7 @@ case "$command_name" in
 		;;
 esac
 
-OPENCODE_SKILLS_ROOT="${OPENCODE_SKILLS_ROOT:-$root/skills}" \
+OPENCODE_SKILLS_ROOT="${OPENCODE_SKILLS_ROOT:-$root/agents/skills}" \
 OPENCODE_SKILLS_EXTRA_ROOT="$extra_skills_root" \
 EVAL_STATE_DIR="$state_dir" \
 EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
