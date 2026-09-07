@@ -1,0 +1,3 @@
+# Skills published from this repository. Managed by terminal/bin/skill-vendor.
+# repository branch dir commit skills...
+git@github.com:ocaml-mlx/skills.git main skills 0f4deb7 setup-mlx mlx-syntax convert-reason-to-mlx

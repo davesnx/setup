@@ -94,3 +94,48 @@ bash tests/ssh-transfer.sh
 
 The tests require rsync 3 or newer. They use temporary files and a local test
 transport instead of SSH. They do not test a live Mac-to-nspawn connection.
+
+# Vendor published skills
+
+Some skills in `skills/` are also published for other people from their own
+repository. `ocaml-mlx/skills` carries the mlx skills. The copies in this
+repository are the working copies. `skill-vendor` moves changes in either
+direction, only when asked. `skills/VENDOR` lists each upstream repository,
+its branch, the directory that holds the skills there (`.` for the root), the
+commit the copies were last synced with, and the skill names.
+
+See what changed on either side:
+
+```sh
+skill-vendor check
+```
+
+Take the upstream version of every listed skill and record its commit:
+
+```sh
+skill-vendor pull
+```
+
+Publish local edits as a commit on the upstream branch:
+
+```sh
+skill-vendor push -m "Clarify the component signature"
+```
+
+Publish them on a new branch for a pull request instead:
+
+```sh
+skill-vendor push --branch convert-reason-to-mlx -m "Add convert-reason-to-mlx skill"
+```
+
+Rules:
+
+- `pull` stops when a skill has local edits. `pull --force` discards them.
+- `push` stops when upstream moved. Run `pull` first. A `diverged` skill needs
+  a manual merge.
+- Clones live under `~/.cache/skill-vendor`. Both machines need SSH access to
+  the upstream repository.
+- A new skill also needs whatever the upstream repository asks for, such as a
+  README row or a plugin manifest entry. Push it on a branch and finish those
+  by hand in the pull request.
+- Commit `skills/VENDOR` together with the skill copies it describes.

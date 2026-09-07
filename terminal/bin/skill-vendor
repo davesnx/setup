@@ -1,0 +1,279 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: skill-vendor check
+       skill-vendor pull [--force]
+       skill-vendor push [--branch NAME] [-m MESSAGE]
+
+Keep vendored skills in skills/ in step with the repositories that publish
+them. skills/VENDOR lists one upstream per line:
+
+  REPOSITORY BRANCH DIR COMMIT SKILL...
+
+DIR is the directory that holds the skills in the upstream repository, or .
+for its root. COMMIT is the upstream commit the local copies were last synced
+with, or - before the first sync. Each SKILL is a directory with the same
+name in skills/ and in DIR upstream.
+
+check  compares every skill with the pinned commit and the upstream branch
+       head. Reports up to date, upstream ahead, local ahead, new local,
+       new upstream, diverged, or pending (in neither place yet). Exits 1
+       when any skill needs a pull or push.
+pull   replaces local copies with the upstream head and records that commit.
+       Refuses while a skill is local ahead, new local, or diverged, unless
+       --force discards those local changes.
+push   commits local copies on top of the upstream branch, pushes, and
+       records the new commit. Refuses while upstream is ahead or diverged;
+       pull first. --branch NAME pushes a new branch for a pull request and
+       leaves the pin unchanged.
+
+Clones are cached under ${XDG_CACHE_HOME:-~/.cache}/skill-vendor.
+SKILL_VENDOR_MANIFEST overrides the manifest path; SKILL_VENDOR_CACHE the
+cache directory.
+EOF
+}
+
+fail() {
+  printf 'skill-vendor: %s\n' "$1" >&2
+  exit 1
+}
+
+invalid() {
+  printf 'skill-vendor: %s\n' "$1" >&2
+  printf 'Use skill-vendor --help for usage.\n' >&2
+  exit 64
+}
+
+script_dir=$(CDPATH='' cd "$(dirname "$0")" && pwd)
+manifest=${SKILL_VENDOR_MANIFEST:-$script_dir/../../skills/VENDOR}
+[ -f "$manifest" ] || fail "manifest not found: $manifest"
+skills_dir=$(CDPATH='' cd "$(dirname "$manifest")" && pwd)
+manifest=$skills_dir/$(basename "$manifest")
+cache_root=${SKILL_VENDOR_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/skill-vendor}
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' HUP TERM
+
+cache_path() {
+  local url=${1%.git}
+  url=${url#*://}
+  url=${url#*@}
+  url=${url/:/\/}
+  printf '%s/%s' "$cache_root" "${url#/}"
+}
+
+ensure_clone() {
+  local url=$1 branch=$2 dir
+  dir=$(cache_path "$url")
+  if [ ! -d "$dir/.git" ]; then
+    mkdir -p "$(dirname "$dir")"
+    git clone -q "$url" "$dir" </dev/null || fail "cannot clone $url"
+  fi
+  git -C "$dir" fetch -q origin "$branch" </dev/null || fail "cannot fetch $branch from $url"
+  printf '%s' "$dir"
+}
+
+# Path of SKILL inside the upstream repository.
+upath() {
+  if [ "$updir" = . ]; then printf '%s' "$1"; else printf '%s/%s' "$updir" "$1"; fi
+}
+
+# Extract upstream PATH at COMMIT into DEST/PATH. Fails when absent.
+extract() {
+  local dir=$1 commit=$2 path=$3 dest=$4
+  git -C "$dir" cat-file -e "$commit:$path" 2>/dev/null || return 1
+  mkdir -p "$dest"
+  git -C "$dir" archive "$commit" "$path" | tar -x -C "$dest"
+}
+
+same() {
+  diff -rq "$1" "$2" >/dev/null 2>&1
+}
+
+status_of() {
+  local dir=$1 pinned=$2 head=$3 skill=$4 rel
+  rel=$(upath "$skill")
+  local local_dir=$skills_dir/$skill at_pin=$work/pin/$rel at_head=$work/head/$rel
+  local has_pin=false has_head=false has_local=false
+  rm -rf "$at_pin" "$at_head"
+  if [ "$pinned" != - ] && extract "$dir" "$pinned" "$rel" "$work/pin"; then has_pin=true; fi
+  if extract "$dir" "$head" "$rel" "$work/head"; then has_head=true; fi
+  [ -d "$local_dir" ] && has_local=true
+  if ! $has_local; then
+    if $has_head; then echo 'new upstream'; else echo pending; fi
+    return
+  fi
+  if ! $has_head; then
+    echo 'new local'
+    return
+  fi
+  if same "$local_dir" "$at_head"; then
+    echo 'up to date'
+    return
+  fi
+  if ! $has_pin; then
+    echo diverged
+    return
+  fi
+  local upstream_changed=true local_changed=true
+  same "$at_pin" "$at_head" && upstream_changed=false
+  same "$at_pin" "$local_dir" && local_changed=false
+  if $upstream_changed && $local_changed; then
+    echo diverged
+  elif $upstream_changed; then
+    echo 'upstream ahead'
+  else
+    echo 'local ahead'
+  fi
+}
+
+# Resolve one manifest line; sets dir, head, and a valid commit or -.
+resolve() {
+  dir=$(ensure_clone "$url" "$branch")
+  head=$(git -C "$dir" rev-parse "origin/$branch")
+  git -C "$dir" cat-file -e "$commit^{commit}" 2>/dev/null || commit=-
+}
+
+check() {
+  local rc=0 url branch updir commit skills dir head skill status
+  while read -r url branch updir commit skills; do
+    case $url in '' | '#'*) continue ;; esac
+    resolve
+    printf '%s %s %s  pinned %s  upstream %s\n' "$url" "$branch" "$updir" "${commit:0:7}" "${head:0:7}"
+    for skill in $skills; do
+      status=$(status_of "$dir" "$commit" "$head" "$skill")
+      printf '  %-24s %s\n' "$skill" "$status"
+      case $status in 'up to date' | pending) ;; *) rc=1 ;; esac
+    done
+  done <"$manifest"
+  [ "$rc" -eq 0 ] || printf 'Run skill-vendor pull or push. Diverged skills need a manual merge.\n' >&2
+  return "$rc"
+}
+
+# Rewrite the manifest through a callback that prints each resolved line.
+rewrite_manifest() {
+  local line url branch updir commit skills dir head
+  : >"$work/VENDOR"
+  while IFS= read -r line; do
+    case $line in
+      '' | '#'*)
+        printf '%s\n' "$line" >>"$work/VENDOR"
+        continue
+        ;;
+    esac
+    read -r url branch updir commit skills <<<"$line"
+    resolve
+    "$1" >>"$work/VENDOR"
+  done <"$manifest"
+  cp "$work/VENDOR" "$manifest"
+}
+
+pull_line() {
+  local skill status blocked=''
+  for skill in $skills; do
+    status=$(status_of "$dir" "$commit" "$head" "$skill")
+    case $status in 'local ahead' | 'new local' | diverged) blocked="$blocked $skill" ;; esac
+  done
+  if [ -n "$blocked" ] && [ "$force" != true ]; then
+    fail "local changes in$blocked. Push first, or pull --force to discard them."
+  fi
+  rm -rf "$work/pull"
+  for skill in $skills; do
+    if extract "$dir" "$head" "$(upath "$skill")" "$work/pull"; then
+      rm -rf "${skills_dir:?}/${skill:?}"
+      cp -R "$work/pull/$(upath "$skill")" "$skills_dir/$skill"
+      printf 'pulled %s at %s\n' "$skill" "${head:0:7}" >&2
+    fi
+  done
+  printf '%s %s %s %s %s\n' "$url" "$branch" "$updir" "$head" "$skills"
+}
+
+push_line() {
+  local skill status blocked='' to_push='' new target rel
+  for skill in $skills; do
+    status=$(status_of "$dir" "$commit" "$head" "$skill")
+    case $status in
+      'upstream ahead' | 'new upstream' | diverged) blocked="$blocked $skill" ;;
+      'local ahead' | 'new local') to_push="$to_push $skill" ;;
+    esac
+  done
+  [ -z "$blocked" ] || fail "upstream changes in$blocked. Pull first."
+  if [ -z "$to_push" ]; then
+    printf 'nothing to push to %s\n' "$url" >&2
+    printf '%s %s %s %s %s\n' "$url" "$branch" "$updir" "$commit" "$skills"
+    return
+  fi
+  git -C "$dir" reset -q --hard
+  git -C "$dir" clean -qfd
+  git -C "$dir" checkout -q --detach "origin/$branch"
+  for skill in $to_push; do
+    rel=$(upath "$skill")
+    rm -rf "${dir:?}/${rel:?}"
+    mkdir -p "$(dirname "$dir/$rel")"
+    cp -R "$skills_dir/$skill" "$dir/$rel"
+    git -C "$dir" add -A -- "$rel"
+  done
+  git -C "$dir" commit -q -m "${message:-Update$to_push}" || fail 'commit failed'
+  new=$(git -C "$dir" rev-parse HEAD)
+  target=${new_branch:-$branch}
+  git -C "$dir" push -q origin "HEAD:refs/heads/$target" </dev/null || fail "push to $target failed"
+  printf 'pushed%s to %s %s at %s\n' "$to_push" "$url" "$target" "${new:0:7}" >&2
+  if [ -n "$new_branch" ]; then
+    printf 'Open a pull request for %s, then run skill-vendor pull after it merges.\n' "$target" >&2
+    printf '%s %s %s %s %s\n' "$url" "$branch" "$updir" "$commit" "$skills"
+  else
+    printf '%s %s %s %s %s\n' "$url" "$branch" "$updir" "$new" "$skills"
+  fi
+}
+
+[ "$#" -ge 1 ] || invalid 'expected check, pull, or push'
+action=$1
+shift
+force=false
+new_branch=''
+message=''
+case $action in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  check)
+    [ "$#" -eq 0 ] || invalid 'check takes no arguments'
+    check
+    ;;
+  pull)
+    while [ "$#" -gt 0 ]; do
+      case $1 in
+        --force) force=true ;;
+        *) invalid "unknown option: $1" ;;
+      esac
+      shift
+    done
+    rewrite_manifest pull_line
+    ;;
+  push)
+    while [ "$#" -gt 0 ]; do
+      case $1 in
+        --branch)
+          [ "$#" -ge 2 ] || invalid '--branch requires a name'
+          new_branch=$2
+          [[ $new_branch =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || invalid 'invalid branch name'
+          shift
+          ;;
+        -m)
+          [ "$#" -ge 2 ] || invalid '-m requires a message'
+          message=$2
+          shift
+          ;;
+        *) invalid "unknown option: $1" ;;
+      esac
+      shift
+    done
+    rewrite_manifest push_line
+    ;;
+  *) invalid "unknown action: $action" ;;
+esac

@@ -169,6 +169,11 @@ jq -s '.[1] * .[0]' skills/.skill-lock.json ~/.agents/.skill-lock.json > skills/
 mv skills/.skill-lock.json.new skills/.skill-lock.json
 ```
 
+Skills this repository publishes for other people, such as the mlx skills
+in `ocaml-mlx/skills`, do not go through the `skills` CLI. `skills/VENDOR`
+lists them and `terminal/bin/skill-vendor` syncs them on demand. See
+`terminal/bin/README.md`.
+
 Each vendored skill has an `UPSTREAM.md` that records the source path, the
 revision, and any local edits. The `plannotator*` skills come from the
 Plannotator installer (`curl -fsSL https://plannotator.ai/install.sh | bash`).
