@@ -1,32 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "claude-fable-5-1",
-  "effortLevel": "xhigh",
-  "alwaysThinkingEnabled": true,
-  "autoUpdatesChannel": "latest",
-  "tui": "fullscreen",
-  "spinnerVerbs": {
-    "mode": "replace",
-    "verbs": ["Thinking"]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.ts",
-    "padding": 0
-  },
-  "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true,
-  "includeCoAuthoredBy": false,
-  "remoteControlAtStartup": true,
   "respectGitignore": true,
   "cleanupPeriodDays": 365,
-  "preferredNotifChannel": "terminal_bell",
-  "teammateMode": "in-process",
-  "attribution": {
-    "commit": "",
-    "pr": "",
-    "sessionUrl": false
-  },
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "1",
@@ -39,8 +14,13 @@
     "BASH_MAX_OUTPUT_LENGTH": "60000",
     "DISABLE_ERROR_REPORTING": "1"
   },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(git diff:*)",
       "Bash(git status:*)",
@@ -108,8 +88,10 @@
       "Bash(reboot*)",
       "Bash(*.ssh/id_*)",
       "Bash(*.aws/credentials*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
+  "model": "claude-fable-5-1",
   "hooks": {
     "PreToolUse": [
       {
@@ -123,12 +105,41 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.ts",
+    "padding": 0
+  },
   "extraKnownMarketplaces": {
     "plannotator": {
       "source": {
         "source": "github",
         "repo": "backnotprop/plannotator"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Thinking"
+    ]
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "terminal_bell",
+  "teammateMode": "in-process",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "enabledPlugins": {
+    "ponytail@ponytail": true
   }
 }
