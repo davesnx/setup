@@ -1,0 +1,108 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: ssh-transfer [--host HOST] [--dry-run] push LOCAL REMOTE
+       ssh-transfer [--host HOST] [--dry-run] pull REMOTE LOCAL
+
+Run both directions from the Mac. The default SSH host is nspawn.
+HOST must start with a letter or digit and contain only letters, digits,
+dots, underscores, or hyphens. Use SSH configuration for connection settings.
+Options must precede push or pull. Use -h or --help for this help.
+
+Relative remote paths start at remote HOME; remote ~ paths are not needed.
+Quote paths that contain spaces or shell characters.
+Remote paths cannot contain *, ?, [, ], or backslash. Copy a safe-named
+parent directory instead; its child names can contain those characters.
+A source directory with a trailing / copies its contents; without / it
+copies the directory. Changed files can be overwritten, but unrelated
+destination files are not deleted. Partial files use .rsync-partial.
+--dry-run lists changes without transferring files.
+
+Requires SSH and rsync 3 or newer on both machines.
+On Mac, install modern rsync with: brew install rsync
+EOF
+}
+
+invalid() {
+  printf 'ssh-transfer: %s\n' "$1" >&2
+  printf 'Use ssh-transfer --help for usage.\n' >&2
+  exit 64
+}
+
+host=nspawn
+dry_run=false
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --host)
+      [ "$#" -ge 2 ] || invalid '--host requires a host'
+      host=$2
+      shift 2
+      ;;
+    --dry-run)
+      dry_run=true
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    push | pull) break ;;
+    *) invalid "unknown option or action: $1" ;;
+  esac
+done
+
+[[ $host =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]] || invalid 'invalid SSH host'
+[ "$#" -eq 3 ] || invalid 'expected push or pull and exactly two paths'
+action=$1
+source=$2
+destination=$3
+if [ -z "$source" ] || [ -z "$destination" ]; then
+  invalid 'paths must not be empty'
+fi
+remote=$destination
+if [ "$action" = pull ]; then
+  remote=$source
+fi
+case "$remote" in
+  *'*'* | *'?'* | *'['* | *']'* | *"\\"*)
+    invalid 'remote paths cannot contain *, ?, [, ], or backslash; copy the parent directory instead'
+    ;;
+esac
+
+if ! command -v rsync >/dev/null 2>&1; then
+  printf 'ssh-transfer: rsync 3 or newer is required; on Mac run: brew install rsync\n' >&2
+  exit 69
+fi
+if ! command -v ssh >/dev/null 2>&1; then
+  printf 'ssh-transfer: ssh is required\n' >&2
+  exit 69
+fi
+version=$(rsync --version)
+if ! [[ $version =~ rsync[[:space:]]+version[[:space:]]+([0-9]+)\. ]] || [ "${BASH_REMATCH[1]}" -lt 3 ]; then
+  printf 'ssh-transfer: rsync 3 or newer is required; on Mac run: brew install rsync\n' >&2
+  exit 69
+fi
+
+# A colon in a relative path must not select another host or an rsync daemon.
+case "$source" in
+  /* | ./*) ;;
+  *) source=./$source ;;
+esac
+case "$destination" in
+  /* | ./*) ;;
+  *) destination=./$destination ;;
+esac
+case "$action" in
+  push) destination=$host:$destination ;;
+  pull) source=$host:$source ;;
+esac
+
+args=(-rlt --protect-args --human-readable --progress --partial-dir=.rsync-partial
+  '--rsh=ssh -o ClearAllForwardings=yes')
+if [ "$dry_run" = true ]; then
+  args+=(--dry-run --itemize-changes)
+fi
+exec rsync "${args[@]}" -- "$source" "$destination"
