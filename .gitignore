@@ -29,9 +29,6 @@ __pycache__/
 # Eval harness dependencies
 /terminal/bin/eval-harness/node_modules/
 
-# Local plans
-/plans/
-
 # Machine-specific overrides
 /local/*
 !/local/README.md

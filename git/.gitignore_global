@@ -227,15 +227,16 @@ Temporary Items
 # itomate config
 itomate.yml
 
-# Cursor
-.cursor/ignore/*
-
 # Ignore direnv
 .envrc
 
 # Opencode
 .opencode/*
 
+# Cursor
+.cursor/*
+
 **/.claude/settings.local.json
 
+# Workplace https://github.com/davesnx/workplace
 **/.workplace/**
