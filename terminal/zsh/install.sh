@@ -4,6 +4,7 @@ setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
 . "$setup_path/prelude.sh"
 
 need zsh
+need trash
 zsh_path=$(command -v zsh)
 
 link_path "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"

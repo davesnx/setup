@@ -34,7 +34,6 @@ fi
 
 sh "$setup_path/git/install.sh"
 sh "$setup_path/local/install.sh"
-sh "$setup_path/ssh/install.sh"
 sh "$setup_path/terminal/zsh/install.sh"
 sh "$setup_path/terminal/tmux/install.sh"
 sh "$setup_path/terminal/htop/install.sh"

@@ -98,7 +98,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$HOME/.claude/hooks/auto-improve.py\"",
+            "command": "node \"$HOME/.claude/hooks/auto-improve.ts\" || true",
             "timeout": 5
           }
         ]
@@ -109,7 +109,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$HOME/.claude/hooks/auto-improve.py\"",
+            "command": "node \"$HOME/.claude/hooks/auto-improve.ts\" || true",
             "timeout": 5
           }
         ]
