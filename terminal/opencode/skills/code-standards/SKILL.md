@@ -47,6 +47,26 @@ refactored behavior. Keep unrelated old code unchanged.
   behavior permits. Remove a branch, helper, mode, or layer rather than
   rearrange it.
 
+## Cyclomatic complexity
+
+- Cyclomatic complexity counts linearly independent paths through a function's
+  control flow, not all execution paths.
+- Start at 1. Each binary decision adds 1: `if`, `else if`, conditional loops,
+  and ternary expressions. An unconditional `else` adds nothing.
+- A decision with N distinct outgoing branches adds N - 1. Counting conventions
+  differ for case labels, exception handlers, and short-circuit expressions
+  such as `&&` and `||`. Compare scores only under the same convention.
+- Use project limits. Otherwise: 1-5 low, 6-10 moderate, 11-15 high, 16+ very
+  high. These are review guides, not quality ratings.
+- Cyclomatic complexity adds no penalty for nesting. Cognitive complexity
+  estimates how hard control flow is to read and penalizes nesting. Keep the
+  scores separate.
+- Neither score proves correctness, readability, or adequate testing. Neither
+  measures runtime cost or total system complexity, or sets a required test
+  count. Equal scores do not imply equal maintenance cost or defect risk.
+- Consider branch meaning and interactions, input values, state, failure
+  behavior, and infeasible paths alongside the count.
+
 ## Boundaries and safety
 
 - Don't lie to the type system. When the compiler can't prove a fact, prove it:
