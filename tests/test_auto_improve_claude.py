@@ -64,7 +64,8 @@ class ClaudeAutoImproveTests(unittest.TestCase):
         specific = response["hookSpecificOutput"]
         self.assertEqual(set(specific), {"hookEventName", "additionalContext"})
         self.assertEqual(specific["hookEventName"], "Stop")
-        for text in ("auto-improve", "one-per-session", "read-only", "at most 3",
+        for text in ("auto-improve", "one-per-session", "Do not run the review in this",
+                     "background fork", "end the turn", "read-only", "at most 3",
                      "evidence-backed", "ask which to apply", "Make no setup or code edits",
                      "commits", "external calls to publish", "finish quietly",
                      "Do not issue another automatic review"):

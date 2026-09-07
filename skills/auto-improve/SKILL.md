@@ -1,6 +1,6 @@
 ---
 name: auto-improve
-description: Proactively review the agent workflow periodically at completed-task boundaries, after repeated corrections or tool failures, or when a reusable workflow emerges. Propose improvements to skills, hooks, scripts, or agent rules and ask for approval before editing. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
+description: Use proactively when a host requests an auto-improve checkpoint, after repeated corrections or tool failures, or when a reusable workflow emerges. Propose improvements to skills, hooks, scripts, or agent rules and ask for approval before editing. Limit automatic reviews to one per session. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
 ---
 
 # Auto Improve
@@ -10,15 +10,22 @@ check, hook, or script over another reminder when the rule can be enforced.
 
 ## Checkpoints
 
-- By default, review after three substantial tasks have completed since the
-  last review in this session. Count completed tasks, not tool calls.
+- Follow the host's checkpoint when one is supplied. The installed triggers
+  count completed user replies, not tasks or tool calls. Finish the user's
+  current task before a review attached to that task's input.
+- Without a host trigger, review after three substantial completed tasks.
 - Review sooner after repeated corrections or failures, or when a useful
   workflow is missing from the existing skills. Finish urgent work first.
+- Allow at most one automatic review per session, including checkpoints with
+  no useful proposal. Explicit user requests can run further reviews.
 - Review only new evidence. While a proposal awaits an answer, do not ask
   again. Respect a decline; revisit it only if the user asks or evidence changes.
 - A skill is not a timer. These are agent instructions; reliable scheduling
   requires a host hook, plugin, or scheduler. Treat a due marker as one
   checkpoint, not permission to edit or to schedule another review.
+
+For installed trigger behavior, state, and disabling instructions, see
+[the setup reference](../../terminal/opencode/README.md#automatic-improvement-reviews).
 
 ## Review
 
@@ -45,9 +52,11 @@ Present at most three concrete proposals. For each, give:
 - The verification check and any wider effect, such as cross-project behavior,
   added model calls, or startup dependencies.
 
-Ask which proposals to apply, then stop for the user's answer. General task
-edit authority, loading this skill, or receiving a hook reminder is not approval
-to change the agent setup. Honor review-only and plan-only requests.
+Ask which proposals to apply, then stop for the user's answer. When you run as
+a forked or delegated subagent, return the proposals to the parent session
+instead; the parent relays them and asks. General task edit authority, loading
+this skill, or receiving a hook reminder is not approval to change the agent
+setup. Honor review-only and plan-only requests.
 
 If no proposal earns a change, finish quietly for an automatic checkpoint.
 For an explicit request, say that no useful change was found and why.

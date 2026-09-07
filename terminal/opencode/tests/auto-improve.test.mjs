@@ -364,10 +364,11 @@ test("SDK and claim failures log diagnostics and skip the reminder without chang
   assert.equal((await f.input("msg_retry")).parts.length, 2)
 })
 
-test("configuration and installer reference the plugin file", async () => {
+test("installer links the plugin file and the configuration leaves it off", async () => {
+  // OpenCode has no forked subagent, so the review would run inline. Off by default.
   const config = await readFile(new URL("../opencode.jsonc", import.meta.url), "utf8")
   const plugins = config.match(/"plugin": \[([\s\S]*?)\n  \]/)[1]
-  assert.match(plugins, /"\.\/auto-improve\.mjs",\s*$/)
+  assert.doesNotMatch(plugins, /auto-improve\.mjs/)
   const installer = await readFile(new URL("../install.sh", import.meta.url), "utf8")
   assert.match(installer, /for name in [^\n]* auto-improve\.mjs; do\n  link_path "\$ROOT\/\$name" "\$CONFIG_HOME\/\$name" "\$BACKUP_ROOT\/opencode\/\$name"/)
   assert.ok((await stat(new URL("../auto-improve.mjs", import.meta.url))).isFile())

@@ -60,6 +60,62 @@ command or agent is needed if a workflow must stay available by explicit request
 while hidden from the normal agent. No catalogue-wide restrictions are applied
 by this setup yet.
 
+## Automatic improvement reviews
+
+The shared [`auto-improve` skill](../../skills/auto-improve/SKILL.md) reviews the
+current session for useful changes to skills, hooks, scripts, and agent rules.
+It proposes changes and waits for your approval. The reminders do not change
+tool permissions or provide a read-only sandbox.
+
+Both integrations allow one automatic review per session, even when no proposal
+is useful. This avoids repeated approval requests without trying to interpret
+your answer in a hook. You can request another review manually.
+
+- Claude Code: `UserPromptSubmit` records a prompt ID. `Stop` requests a review
+  after three distinct prompts reach a response boundary. The main session
+  starts the review as a background fork and ends its turn, so the
+  conversation stays free. It relays the fork's proposals when they arrive.
+  The continuation Stop is allowed to finish. Requires Python 3 on macOS or
+  Linux and Claude Code 2.1.196 or later for prompt IDs. Verified on Claude
+  Code 2.1.263.
+- OpenCode: the plugin is off by default. OpenCode has no forked subagent, so
+  the review would run inline in the conversation. When listed in
+  `opencode.jsonc`, it counts three completed normal user turns at
+  `session.idle`, then appends a synthetic reminder to the next normal user
+  input. The current task comes first. It does not post a separate prompt,
+  which could interrupt an active goal or race with new input. Verified on
+  OpenCode 1.18.27 with plugin SDK 1.18.25.
+
+The root `install.sh` links Claude's hook without replacing the existing
+`~/.claude/hooks/dcg` file. The OpenCode installer links `auto-improve.mjs`.
+Restart both applications after installation or configuration changes.
+
+Private state lives under `${XDG_STATE_HOME:-$HOME/.local/state}/auto-improve/`,
+in separate `claude/` and `opencode/` directories. It stores hashed identifiers
+and review state, not prompt or transcript text. Issued markers survive
+restarts and resumes. OpenCode's completion count before issuance is in memory
+and starts again after a server restart. A new session gets a new allowance.
+
+The integrations save the issued marker before delivering a reminder. If the
+process stops in that gap, the review can be skipped rather than repeated.
+State or API failures skip the review and produce a diagnostic. They do not
+block the user's task. A failed or cancelled turn is not a completed OpenCode
+turn; Claude counts a prompt only when its normal Stop hook runs.
+
+To disable Claude's reminders, remove only the auto-improve entries from
+`UserPromptSubmit` and `Stop` in `terminal/claude/settings.json`. Leave other
+hooks intact. To enable the OpenCode plugin, add `./auto-improve.mjs` to the
+plugin list in `terminal/opencode/opencode.jsonc`. The skill remains available
+for explicit use.
+
+Run the automated checks from the repository root:
+
+```sh
+python3 -m unittest discover -s tests -p test_auto_improve_claude.py -v
+node --test terminal/opencode/tests/*.test.mjs
+sh tests/mac-installer.sh
+```
+
 ## Plan agent
 
 [`agents/plan.md`](agents/plan.md) overrides the built-in Plan agent using

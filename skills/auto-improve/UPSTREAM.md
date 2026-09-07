@@ -19,8 +19,9 @@
 - Model-invoked as well as explicitly requested; the source sets
   `disable-model-invocation: true` for manual-only use on supporting hosts.
 - Periodic, read-only reviews propose improvements to skills, hooks, scripts,
-  and agent rules. The default checkpoint is three completed substantial tasks;
-  a host hook, plugin, or scheduler is needed for reliable scheduling.
+  and agent rules. Installed triggers count completed user replies and allow
+  one automatic review per session. Without a host trigger, the agent uses
+  three completed substantial tasks as its checkpoint.
 - Repeated failures, lasting user corrections, and verified reusable workflows
   provide evidence. Existing guidance and enforcement are reused.
 - Every proposal waits for user approval before edits. Pending or declined
