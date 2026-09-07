@@ -86,10 +86,10 @@ From the setup repository root, run:
 
 ```sh
 bash -n terminal/bin/ssh-transfer
-bash -n terminal/bin/tests/ssh-transfer.sh
-shellcheck terminal/bin/ssh-transfer terminal/bin/tests/ssh-transfer.sh
-shfmt -d -i 2 -ci terminal/bin/ssh-transfer terminal/bin/tests/ssh-transfer.sh
-bash terminal/bin/tests/ssh-transfer.sh
+bash -n agents/skills/ssh-transfer/tests/ssh-transfer.sh
+shellcheck terminal/bin/ssh-transfer agents/skills/ssh-transfer/tests/ssh-transfer.sh
+shfmt -d -i 2 -ci terminal/bin/ssh-transfer agents/skills/ssh-transfer/tests/ssh-transfer.sh
+bash agents/skills/ssh-transfer/tests/ssh-transfer.sh
 ```
 
 The tests require rsync 3 or newer. They use temporary files and a local test
@@ -139,3 +139,6 @@ Rules:
   README row or a plugin manifest entry. Push it on a branch and finish those
   by hand in the pull request.
 - Commit `agents/skills/VENDOR` together with the skill copies it describes.
+
+The `skill-vendor` skill under `agents/skills/` gives agents this procedure. Its
+test is `agents/skills/skill-vendor/tests/skill-vendor.sh`.

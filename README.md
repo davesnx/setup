@@ -19,7 +19,8 @@ Personal machine setup: dotfiles, installers, and agent configuration.
   installer test suite).
 - `ssh/`: the SSH config fragment that opens links from a remote host on
   this machine.
-- `terminal/`: shell tools, with `bin/` (scripts and their tests), `claude/`
+- `terminal/`: shell tools, with `bin/` (scripts; the ssh-transfer and
+  skill-vendor tests live with their skills under `agents/skills/`), `claude/`
   (Claude Code config), `opencode/` (OpenCode config), `zsh/`, `tmux/`, and
   `htop/`.
 
