@@ -24,7 +24,13 @@ playwright-cli detach
 If `attach` cannot connect, ask the user to run "Open Brave Agent" in Raycast
 and, on nspawn, to reconnect the SSH session so the port forward exists. Claude
 Code runs `playwright-cli` outside its Bash sandbox, so no sandbox override is
-needed.
+needed. Call it as a plain command, with a pipe when needed. A subshell group
+such as `( playwright-cli ... )` runs sandboxed and fails with `EROFS` under
+`~/.cache/ms-playwright`.
+
+Without Brave, `playwright-cli open` needs `--browser=chromium` or a config
+that selects the bundled Chromium; the default channel is Google Chrome. Sites
+behind Cloudflare, such as hltv.org, block that headless browser.
 
 ## Quick start
 
