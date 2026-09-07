@@ -8,9 +8,9 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 #?? 1.0.0
 ##?
 ##? Usage:
-##?    timestamp_to_date
+##?    timestamp_to_date <timestamp>
 
-docs::eval "$#"
+docs::parse "$@"
 
 let DATE_FORMATTED=$1/1000
 

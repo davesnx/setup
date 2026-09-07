@@ -78,6 +78,7 @@ npm test --prefix terminal/claude/hooks
 npm run typecheck --prefix terminal/claude/hooks
 npm run format:check --prefix terminal/claude/hooks
 node --test terminal/opencode/tests/*.test.mjs
+bun test terminal/core/utils
 sh mac/tests/install.sh
 ```
 
