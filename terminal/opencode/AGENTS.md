@@ -4,6 +4,7 @@
 
 - Always use ASD-STE100 Simplified Technical English.
 - Please remove all mannered prose.
+- Make sure each word in this text justifies its existence.
 - Do not use jargon. Write clearly, simply, and concisely, as one person
   speaking to another.
 - Use lists when requested or when they improve clarity. Use plain prose when
