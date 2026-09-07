@@ -67,6 +67,9 @@
   irreversible actions or external messages unless already authorized.
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
+- When `git status` shows uncommitted work you did not make, another session
+  may be active in the checkout. Do not stage, commit, or rewrite that work.
+  Move your task to its own worktree and commit only your own paths there.
 
 ## Orchestration
 
