@@ -33,10 +33,5 @@ zmodule zsh-users/zsh-history-substring-search
 # Must be sourced after completion
 zmodule zsh-users/zsh-syntax-highlighting
 
-# zoxide is initialized manually in .zshrc with evalcache
-
 # Defer loading of modules until after compinit
 zmodule romkatv/zsh-defer -d
-
-# https://github.com/mroth/evalcache
-zmodule mroth/evalcache

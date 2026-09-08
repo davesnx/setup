@@ -97,20 +97,10 @@ fi
 # Initialize zsh-defer
 autoload -Uz ${ZIM_HOME}/modules/zsh-defer/zsh-defer
 
-# Refresh native wordcode after edits; Zsh ignores it whenever the source is newer.
-_zshrc_source="$DOTFILES_PATH/terminal/zsh/.zshrc"
-[[ "$_zshrc_source.zwc" -nt "$_zshrc_source" ]] || zsh-defer zcompile "$_zshrc_source"
-unset _zshrc_source
-
 # Load autosuggestions (deferred for faster startup)
 zsh-defer source ~/.zim/modules/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# Load zoxide
-if [[ -n "$CURSOR_AGENT" ]]; then
-  eval "$(zoxide init zsh)"
-else
-  zsh-defer _evalcache zoxide init zsh
-fi
+eval "$(zoxide init zsh)"
 
 # Fuzzy Autocompletion
 zstyle ':completion:*' completer _complete _match _approximate
@@ -122,7 +112,14 @@ source "$DOTFILES_PATH/git/main.sh"
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
 
-source "$DOTFILES_PATH/terminal/zsh/node-env.zsh"
+# fnm before direnv: direnv restores the PATH it recorded when a project
+# loaded, so Node must already be on it. `fnm use` repoints a symlink and never
+# edits PATH, so nothing has to run after direnv.
+if (( ${+commands[fnm]} )); then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+  _fnm_autoload_hook # fnm's hook only runs on cd; also select the startup project
+fi
+eval "$(direnv hook zsh)"
 
 # Load opam and switch automatically when entering or leaving a local switch.
 _opam_local_switch_hook() {
