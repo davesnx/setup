@@ -3,14 +3,18 @@
 source "$DOTFILES_PATH/terminal/core/main.sh"
 
 ##? Dump OCaml AST from file or stdin, works with Reason
-##? 0.1.0
+#?? 0.1.0
 ##?
 ##? Usage:
-##?    dumpast file.ml
-##?    dumpast file.re
-##?    dumpast -e "foo(2)"
+##?    dumpast [<file>]
+##?    dumpast --reason
+##?    dumpast -e <expression>
+##?
+##? Examples:
 ##?    cat file.ml | dumpast
 ##?    cat file.re | dumpast --reason
+
+docs::parse "$@"
 
 # Create temporary files with proper extensions
 temp_ml=$(mktemp).ml

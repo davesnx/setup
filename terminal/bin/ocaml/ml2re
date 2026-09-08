@@ -3,10 +3,11 @@
 source "$DOTFILES_PATH/terminal/core/main.sh"
 
 ##? Transform Ocaml to Reason files
-##? 0.1.0
+#?? 0.1.0
 ##?
 ##? Usage:
-##?    ml2re file.ml
-##?    ml2re file.mli
+##?    ml2re <file>
+
+docs::parse "$@"
 
 refmt --parse ml --print re --assume-explicit-arity "$@"

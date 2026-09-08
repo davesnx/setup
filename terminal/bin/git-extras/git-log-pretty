@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 ##? Usage:
 ##?    git-log-pretty
 
-docs::eval_zsh "$0" "$@"
+docs::parse "$@"
 
 commit=$(git log --graph --color=always --date=human --format="%C(auto)%h%d %s %C(black)%C(bold)%ad by %an" | fzf --ansi --no-sort)
 commit_hash=$(echo ${commit} | awk '{print $2}')

@@ -8,9 +8,11 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 #?? 1.0.0
 ##?
 ##? Usage:
-##?    git-stashl
+##?    git-stash-list
 
-git stash list "$@" --color=always |
+docs::parse "$@"
+
+git stash list --color=always |
   fzf --ansi --no-sort \
     --preview="echo {} | cut -d':' -f1 | xargs git stash show -p --color=always | sed 1,2d" |
   awk '{print "git stash apply "$1}' | sed 's/.$//'

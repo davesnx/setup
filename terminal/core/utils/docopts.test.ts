@@ -150,6 +150,11 @@ describe("terminal/bin help blocks", () => {
     expect(scripts.length).toBeGreaterThan(20);
   });
 
+  test("every script parses its arguments through docs::parse", () => {
+    const missing = scripts.filter((script) => !readFileSync(script, "utf8").includes("docs::parse"));
+    expect(missing.map((script) => script.slice(binRoot.length))).toEqual([]);
+  });
+
   for (const script of scripts) {
     test(`${script.slice(binRoot.length)} --help`, () => {
       const doc = readFileSync(script, "utf8")

@@ -10,7 +10,7 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 ##? Usage:
 ##?    empty_trash
 
-docs::eval_zsh "$0" "$@"
+docs::parse "$@"
 
 sudo rm -rfv /Volumes/*/.Trashes
 echo '[x] Volumes trash empty'

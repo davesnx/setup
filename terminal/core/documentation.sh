@@ -13,9 +13,10 @@ _compose_version() {
 }
 
 # Parse "$@" against the ##? usage block of the calling script into shell
-# variables, or print the help or version and exit.
+# variables, or print the help or version and exit. Inside a zsh function $0
+# is the function name, so zsh scripts are found through ZSH_ARGZERO.
 docs::parse() {
-  local -r file="$0"
+  local -r file="${ZSH_ARGZERO:-$0}"
   local -r docopts="${DOTFILES_PATH}/terminal/core/utils/docopts.ts"
 
   if ! platform::command_exists bun; then
@@ -28,19 +29,4 @@ docs::parse() {
   else
     eval "$("$docopts" -h "$(extract_help "$file")" : "$@")"
   fi
-}
-
-docs::eval_zsh() {
-  local -r file=$1
-
-  case "${2:-}" in
-  -h | --help)
-    extract_help "$file"
-    exit 0
-    ;;
-  --version)
-    _compose_version "$file"
-    exit 0
-    ;;
-  esac
 }
