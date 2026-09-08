@@ -1,5 +1,3 @@
-# Sourced by terminal/zsh/.zshrc.
-
 # Keep the skills CLI on the shared global skill directory.
 function npx() {
 	if [[ "$1" == "skills" ]]; then
