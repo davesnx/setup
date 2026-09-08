@@ -13,10 +13,10 @@ $EDITOR local/overrides.zsh
 `install.sh` runs once when a machine is set up. It links `local/gitconfig` to
 `~/.gitconfig.local` when that file exists.
 
-`main.sh` runs at every shell start. It only adds `local/bin` to `path` when
-that directory exists, then sources every `.zsh` file here in name order. Use
-the `.zsh` files for local paths, environment values, aliases, and functions.
-Put machine-only commands in `local/bin`.
+`main.sh` runs at every shell start and sources every `.zsh` file here in name
+order. Use the `.zsh` files for local paths, environment values, aliases, and
+functions. Put machine-only commands in `local/bin` and add that directory to
+`path` from one of the `.zsh` files.
 
 Keep literal credentials out of these files. Load them from the operating
 system keychain, a password manager, or environment variables.

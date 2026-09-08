@@ -47,10 +47,5 @@ export NODE_REPL_HISTORY=~/.node_history
 export NODE_REPL_HISTORY_SIZE='32768'
 export NODE_REPL_MODE='sloppy'
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  export BROWSER="xdg-open"
-  export GH_BROWSER="xdg-open"
-fi
-
 # OrbStack adds its CLI tools and completions from this file when installed.
 [[ -r "$HOME/.orbstack/shell/init.zsh" ]] && source "$HOME/.orbstack/shell/init.zsh"
