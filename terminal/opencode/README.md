@@ -52,9 +52,36 @@ by this setup yet.
 
 ## Automatic improvement reviews
 
-See [`agents/README.md`](../../agents/README.md#automatic-improvement-reviews)
-for the shared contract. OpenCode's plugin, `auto-improve.mjs`, is off by
-default. Add it to the plugin list in `opencode.jsonc` to enable it.
+The enabled `auto-improve.mjs` plugin loads the shared
+[`auto-improve` skill](../../agents/skills/auto-improve/SKILL.md) and starts a
+separate, read-only review after three completed replies. You can continue the source
+conversation while it runs. Review prompts, tool calls, and proposals stay out
+of that conversation's context.
+
+When proposals are ready, a notification points to `Auto-improve: <source title>`.
+Open `/sessions` and select that session to read them. No proposals means no
+plugin notification. Nothing switches your current session or applies changes.
+The reviewer remains read-only; request approved changes in a normal session.
+
+The review uses the source's selected model, with at most 12 model steps.
+It copies the source history, which adds model usage and local session storage.
+The plugin uses `session.fork` and `promptAsync`, not native background Task:
+Task sends its completed output back into the parent context.
+
+Remove `./auto-improve.mjs` from the plugin list to disable automatic reviews.
+Quit and restart OpenCode after changing the configuration.
+
+Run the isolated host test with OpenCode 1.18.27 installed:
+
+```sh
+OPENCODE_LIVE_TEST=1 node --test terminal/opencode/tests/auto-improve-live.test.mjs
+```
+
+It uses a local fake model, temporary HOME/XDG directories, and authenticated
+test servers on free ports in `25000-25099`. It makes no real model calls and
+does not load your credentials. The test checks concurrent parent replies,
+unchanged parent messages, actual tool denials, allowed reads and skill loading,
+and notification-only delivery. Normal test runs skip this opt-in check.
 
 ## Plan agent
 

@@ -52,13 +52,16 @@ Present at most three concrete proposals. For each, give:
 - The verification check and any wider effect, such as cross-project behavior,
   added model calls, or startup dependencies.
 
-Ask which proposals to apply, then stop for the user's answer. When you run as
-a forked or delegated subagent, return the proposals to the parent session
-instead; the parent relays them and asks. General task edit authority, loading
-this skill, or receiving a hook reminder is not approval to change the agent
-setup. Honor review-only and plan-only requests.
+Use the host's result destination. An independent review keeps proposals in
+its own session; do not send them into the source conversation. A delegated
+subagent that returns to its parent supplies the proposals for that parent to
+relay and ask which to apply. In a normal interactive review, ask directly and
+stop for the user's answer. General task edit authority, loading this skill,
+or receiving a hook reminder is not approval to change the agent setup.
+Honor review-only and plan-only requests.
 
 If no proposal earns a change, finish quietly for an automatic checkpoint.
+Use the host's no-proposal response when one is specified.
 For an explicit request, say that no useful change was found and why.
 
 ## Apply Approved Changes
