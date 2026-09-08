@@ -40,7 +40,7 @@ ENP_PIN="$(security find-generic-password \
 
 The CLI PIN and Enpass master password are not stored in this repository.
 
-Start a new shell so `main.sh` adds `mac/enpass/bin` to `PATH`.
+Start a new login shell so `terminal/zsh/.zprofile` adds `mac/enpass/bin` to `PATH`.
 
 ## Use the CLI
 

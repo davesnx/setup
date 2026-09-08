@@ -21,8 +21,8 @@ live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
 which only OpenCode reads. Existing files move to a timestamped directory
 under `~/.local/state/setup/backups`.
 
-`main.sh`, sourced by the shell profile, exports `OPENCODE_CONFIG` when the
-selected `host.jsonc` link exists. Start a new shell after installation.
+`terminal/zsh/.zprofile` exports `OPENCODE_CONFIG` when the selected `host.jsonc`
+link exists. Start a new login shell after installation.
 
 ## Model selection
 

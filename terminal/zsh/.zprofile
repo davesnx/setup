@@ -6,8 +6,20 @@ export BUN_INSTALL="$HOME/.bun"
 
 [[ "$OSTYPE" == darwin* ]] && source "$DOTFILES_PATH/mac/main.sh"
 
+export OPENCODE_ENABLE_EXA=1
+
+# Load the selected OpenCode host profile when it is installed.
+if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
+  export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
+fi
+
 # PATH setup
 paths=(
+  "$DOTFILES_PATH/mac/enpass/bin"
+  "$DOTFILES_PATH/terminal/bin"
+  "$DOTFILES_PATH/terminal/bin/git-extras"
+  "$DOTFILES_PATH/terminal/bin/ocaml"
+  "$DOTFILES_PATH/terminal/bin/fs"
   "$HOME/bin"
   "$HOME/.local/bin"
   "$HOME/.npm/node_modules/bin"
@@ -27,12 +39,6 @@ paths=(
   "/sbin"
 )
 export PATH="${(j.:.)paths}"
-
-# Each folder prepends its own PATH entries; enpass sources after terminal/bin
-# so it stays ahead, matching the order this array used to declare.
-source "$DOTFILES_PATH/terminal/bin/main.sh"
-source "$DOTFILES_PATH/mac/enpass/main.sh"
-source "$DOTFILES_PATH/terminal/opencode/main.sh"
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
