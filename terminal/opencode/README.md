@@ -52,9 +52,9 @@ by this setup yet.
 
 ## Automatic improvement reviews
 
-See [`agents/README.md`](../../agents/README.md#automatic-improvement-reviews)
-for the shared contract. The enabled `auto-improve.mjs` plugin starts a separate,
-read-only review after three completed replies. You can continue the source
+The enabled `auto-improve.mjs` plugin loads the shared
+[`auto-improve` skill](../../agents/skills/auto-improve/SKILL.md) and starts a
+separate, read-only review after three completed replies. You can continue the source
 conversation while it runs. Review prompts, tool calls, and proposals stay out
 of that conversation's context.
 
@@ -101,9 +101,9 @@ at most three questions, each with a recommendation and reason.
 Quit and restart OpenCode after changing the agent. Select **Plan** with Tab.
 Use `opencode debug agent plan` to inspect the loaded prompt and permissions.
 
-Plannotator uses its `user-managed` workflow: only Plan can call `submit_plan`.
-The final local permission plugin keeps Plan's declared edit paths from being
-expanded by other plugins. Edits are denied by default.
+Plannotator is pinned to `0.27.12` and uses its `user-managed` workflow. Its config
+hook leaves permissions unchanged: only Plan can call `submit_plan`, and Plan
+edits are denied by default. The local plugin only repairs Writer's Bash rules.
 
 In `~/workplace` or below it, agents first read `~/workplace/AGENTS.md`.
 Project plans use `<project-root>/.workplace/plans/<task>_PLAN.md`. Shared tasks
@@ -117,8 +117,8 @@ Markdown files. Those legacy paths are not the current workplace plan location.
 OpenCode checks paths relative to the checkout, or to `/` when started outside
 Git. Its `*` matches `/`, so these rules can match paths across project homes,
 checkouts, and task worktrees. The rules are not a workplace-only filesystem
-sandbox. The plugin test checks that the declared rules survive and the blanket
-`*.md` allow is removed. This documentation change does not change permissions.
+sandbox. The integration test checks that the declared rules survive the pinned
+upstream hook without adding a blanket `*.md` allow.
 Report blocked paths rather than granting broader edits.
 
 ## Writer agent
@@ -137,6 +137,40 @@ approval default, so dangerous commands do not become approval prompts.
 
 Quit and restart OpenCode, then select **Writer** with Tab. Use
 `opencode debug agent writer` to inspect the loaded prompt and permissions.
+
+## Permission integration check
+
+With Node.js and npm available, run from the repository root:
+
+```sh
+sh terminal/opencode/tests/integration/run.sh
+```
+
+The runner copies the config, agent files, and hooks into a temporary directory.
+It installs the test-only locked dependencies there with lifecycle scripts
+disabled. The test loads Plannotator's OpenCode 1 `main` entry, calls its actual
+config hook, then calls the local repair twice in sequence. It checks Plan's
+declared permissions and Writer's global hard denies, including rule order.
+No OpenCode application, provider, MCP server, model session, or review tool runs.
+HOME, XDG directories, and backup paths are isolated. The temporary directory is
+removed on exit. The real config and notification plugin are not changed.
+
+Dependency preparation needs the npm registry unless you supply a populated
+scratch cache. To repeat the whole check offline:
+
+```sh
+cache=$(mktemp -d)
+SETUP_TEST_NPM_CACHE="$cache" sh terminal/opencode/tests/integration/run.sh
+SETUP_TEST_NPM_CACHE="$cache" SETUP_TEST_OFFLINE=true sh terminal/opencode/tests/integration/run.sh
+```
+
+`tests/integration/package-lock.json` records the package integrity. Version
+`0.27.12` matches the reviewed deployed cache and the npm package. Its
+`user-managed` config hook returns without changing permissions, so no Plan
+repair is needed. Writer still needs the local repair because its Bash `ask`
+default overrides global denies. On upgrades, review the upstream hook, update
+the config pin and test lock together, then run this check. Restart OpenCode
+after changing the deployed config or plugin.
 
 ## Browser tools
 

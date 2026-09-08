@@ -1,0 +1,13 @@
+{
+  "name": "opencode-permission-integration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test permissions.test.mjs"
+  },
+  "dependencies": {
+    "@plannotator/opencode": "0.27.12",
+    "jsonc-parser": "3.3.1",
+    "yaml": "2.8.1"
+  }
+}

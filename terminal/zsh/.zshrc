@@ -122,38 +122,7 @@ source "$DOTFILES_PATH/git/main.sh"
 # Load fzf-keybindings
 zsh-defer source "$DOTFILES_PATH/terminal/zsh/fzf-key-bindings.zsh"
 
-# Load direnv synchronously for command-mode agent shells.
-if [[ -n "$CURSOR_AGENT" ]]; then
-  eval "$(direnv hook zsh)"
-  _direnv_hook
-else
-  zsh-defer -c 'eval "$(direnv hook zsh)"'
-fi
-
-# Load fnm
-_fnm_post_direnv_hook() {
-  if command -v fnm &>/dev/null && [[ -f .node-version || -f .nvmrc ]]; then
-    eval "$(fnm env --shell zsh)"
-    fnm use --silent-if-unchanged
-  fi
-}
-add-zsh-hook chpwd _fnm_post_direnv_hook
-
-if command -v fnm &>/dev/null; then
-  zmodload zsh/datetime
-  zmodload -F zsh/files b:zf_ln
-  export FNM_DIR="$HOME/.fnm"
-  export FNM_MULTISHELL_PATH="$HOME/.local/state/fnm_multishells/${$}_${EPOCHREALTIME//./}"
-  export FNM_VERSION_FILE_STRATEGY="local"
-  export FNM_LOGLEVEL="info"
-  export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
-  export FNM_COREPACK_ENABLED="false"
-  export FNM_RESOLVE_ENGINES="true"
-  zf_ln -s "$FNM_DIR/aliases/default" "$FNM_MULTISHELL_PATH"
-  export PATH="$FNM_MULTISHELL_PATH/bin:$PATH"
-  rehash
-  zmodload -u zsh/files zsh/datetime
-fi
+source "$DOTFILES_PATH/terminal/zsh/node-env.zsh"
 
 # Load opam and switch automatically when entering or leaving a local switch.
 _opam_local_switch_hook() {

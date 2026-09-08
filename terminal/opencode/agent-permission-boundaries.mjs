@@ -1,11 +1,7 @@
 /*
- * Custom OpenCode startup plugin, not a built-in feature. Plannotator grants
- * Plan access to all Markdown files, and Writer's catch-all Bash "ask" rule
- * overrides global hard denies. This plugin runs after Plannotator to restore
- * those permission boundaries.
- *
- * This workaround adds maintenance. Prefer fixing the conflicting configuration
- * and removing the plugin. Deleting it alone would restore the broader access.
+ * Writer's catch-all Bash "ask" rule overrides global hard denies. Keep this
+ * repair until OpenCode can inherit those denies after an agent's default.
+ * Pinned Plannotator's user-managed workflow leaves Plan permissions unchanged.
  */
 
 function rules(value) {
@@ -14,9 +10,6 @@ function rules(value) {
 }
 
 function restoreAgentPermissionBoundaries(config) {
-  const planEdit = rules(config.agent?.plan?.permission?.edit)
-  if (planEdit) delete planEdit["*.md"]
-
   const globalBash = rules(config.permission?.bash)
   const writer = config.agent?.writer
   if (!globalBash || !writer) return
