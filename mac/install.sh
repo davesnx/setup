@@ -90,7 +90,7 @@ link_path "$setup_path/mac/editors/zed/fosk.json" "$HOME/.config/zed/themes/fosk
 # Ghostty
 link_path "$setup_path/mac/ghostty/config.conf" "$HOME/.config/ghostty/config"
 
-# Raycast opens remote tmux sessions through this link.
+# Raycast opens remote multiplexer sessions through this stable link.
 link_path_guarded "$setup_path/terminal/bin/ghostty-remote-tmux" "$HOME/.local/bin/ghostty-remote-tmux"
 
 sh "$setup_path/mac/daemons/install.sh"

@@ -36,6 +36,7 @@ sh "$setup_path/git/install.sh"
 sh "$setup_path/local/install.sh"
 sh "$setup_path/terminal/zsh/install.sh"
 sh "$setup_path/terminal/tmux/install.sh"
+sh "$setup_path/terminal/herdr/install.sh"
 sh "$setup_path/terminal/htop/install.sh"
 
 # Shared agent rules and skills first; Claude Code and OpenCode link into them.

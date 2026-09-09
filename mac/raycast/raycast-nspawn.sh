@@ -9,7 +9,7 @@
 
 # Optional parameters:
 # @raycast.packageName Terminal
-# @raycast.description Open a Ghostty window attached to the tmux session on nspawn.
+# @raycast.description Open a Ghostty window attached to the persistent terminal session on nspawn.
 
 set -euo pipefail
 

@@ -253,3 +253,5 @@ itomate.yml
 
 # playwright-cli output (snapshots, logs, screenshots)
 .playwright-cli/
+
+**/.claude/settings.local.json

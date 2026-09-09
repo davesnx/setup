@@ -10,6 +10,14 @@ fi
 host=$1
 session=$2
 
+# Keep the installed name for Raycast. Swap these lines to roll back the trial.
+# remote_command=(tmux new-session -A -s "$session")
+remote_command=(herdr --session "$session")
+
+# Load .zprofile remotely, quoting arguments for both shell parsing layers.
+printf -v login_command '%q ' "${remote_command[@]}"
+printf -v ssh_command 'exec zsh -lc %q' "exec $login_command"
+
 log_dir="$HOME/Library/Logs/ghostty-remote"
 log_file="$log_dir/$host.log"
 err_file=""
@@ -56,7 +64,7 @@ rotate_log() {
 }
 
 rotate_log
-log "start host=$host session=$session args=$*"
+log "start host=$host session=$session command=${remote_command[*]} args=$*"
 
 # ssh -G resolves the config without connecting, so a typo'd host still
 # reports something useful instead of aborting this diagnostic step.
@@ -71,7 +79,7 @@ err_file=$(mktemp "${TMPDIR:-/tmp}/ghostty-remote-tmux.XXXXXX")
 start_ts=$(date +%s)
 # ssh is the direct subject of the if-condition so its non-zero exit does
 # not trip set -e or the ERR trap; we report its status ourselves below.
-if ssh -t "$host" tmux new-session -A -s "$session" 2>"$err_file"; then
+if ssh -t "$host" "$ssh_command" 2>"$err_file"; then
   status=0
 else
   status=$?
@@ -92,10 +100,10 @@ if [ "$status" -ne 0 ]; then
       message="SSH could not connect to or authenticate with $host. Check that the VPN is on."
       ;;
     127)
-      message="Command not found: tmux may be missing on $host, or ssh is missing locally."
+      message="Command not found: ${remote_command[0]} may be missing on $host or unavailable on its PATH, or ssh is missing locally."
       ;;
     *)
-      message="The remote tmux command on $host exited with status $status."
+      message="The remote ${remote_command[0]} command on $host exited with status $status."
       ;;
   esac
 

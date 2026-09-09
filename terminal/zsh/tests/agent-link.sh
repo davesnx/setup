@@ -39,3 +39,13 @@ echo "PASS: never points the link at itself"
 
 [ "$(seen SSH_AUTH_SOCK="$sock")" = "$sock" ] || fail "touched SSH_AUTH_SOCK without SSH_CONNECTION"
 echo "PASS: does nothing outside an SSH session"
+
+zsh_bin=$(command -v zsh)
+actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -c 'printenv PATH')
+[ "$actual" = /usr/bin:/bin ] || fail "non-login shell changed PATH"
+echo "PASS: non-login shells preserve inherited PATH"
+
+ln -s "$root/terminal/zsh/.zprofile" "$work/.zprofile"
+env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -lc \
+  '[[ ":$PATH:" == *":$HOME/.local/bin:"* ]]' || fail "login shell PATH misses local binaries"
+echo "PASS: login shells load local binaries from .zprofile"

@@ -9,6 +9,7 @@ brew "fzf"
 brew "gcc"
 brew "git"
 brew "htop" # https://hisham.hm/htop/
+brew "herdr" # Ghostty multiplexer trial; tmux remains available for rollback
 brew "jq"
 brew "enpass-cli"
 brew "make"
