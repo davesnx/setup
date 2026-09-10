@@ -65,6 +65,7 @@
   "search.showLineNumbers": true,
   "search.smartCase": true,
   "search.exclude": {
+    "**/.workplace/**": true,
     "**/_build": true,
     "**/node_modules": true,
     "**/.git": true,
