@@ -1,0 +1,77 @@
+onboarding = false
+
+[keys]
+prefix = "ctrl+a"
+new_workspace = ["prefix+c", "prefix+shift+n"]
+next_workspace = "prefix+n"
+previous_workspace = "prefix+p"
+switch_workspace = [
+  "prefix+1", "prefix+2", "prefix+3", "prefix+4",
+  "prefix+5", "prefix+6", "prefix+7", "prefix+8",
+]
+new_tab = ""
+next_tab = ""
+previous_tab = ""
+switch_tab = ""
+split_vertical = ["prefix+|", "prefix+%"]
+split_horizontal = ["prefix+minus", 'prefix+"']
+detach = "prefix+d"
+reload_config = "prefix+r"
+resize_mode = ""
+
+# Ghostty sends these for tmux's live window park/restore, not close/rename.
+# Herdr has no equivalent; consume the keys without destroying anything.
+close_tab = ""
+rename_tab = ""
+
+# Custom jumps use server order; grouped/collapsed worktrees can differ from the sidebar.
+[[keys.command]]
+key = "prefix+0"
+type = "shell"
+description = "First space in server order"
+command = '''
+workspaces=$("$HERDR_BIN_PATH" workspace list) &&
+workspace=$(printf '%s\n' "$workspaces" |
+  jq -er '.result.workspaces[0].workspace_id') &&
+  "$HERDR_BIN_PATH" workspace focus "$workspace"
+'''
+
+[[keys.command]]
+key = "prefix+9"
+type = "shell"
+description = "Ninth space, or last when fewer exist, in server order"
+command = '''
+workspaces=$("$HERDR_BIN_PATH" workspace list) &&
+workspace=$(printf '%s\n' "$workspaces" |
+  jq -er '.result.workspaces | .[0:9] | last | .workspace_id') &&
+  "$HERDR_BIN_PATH" workspace focus "$workspace"
+'''
+
+[terminal]
+new_cwd = "follow"
+kitty_graphics = true
+
+[worktrees]
+directory = "~/.workplace/worktrees"
+
+[theme]
+name = "terminal"
+
+[theme.custom]
+surface_dim = "#36373C"
+accent = "#36373C"
+
+[ui]
+prompt_new_workspace_name = false
+hide_tab_bar_when_single_tab = true
+tab_bar_position = "top"
+window_title = ""
+sidebar_start_collapsed = false
+sidebar_collapsed_mode = "hidden"
+pane_outer_borders = false
+pane_scrollbars = false
+pane_gaps = false
+
+status_indicators = "symbols"
+[ui.sound]
+enabled = false
