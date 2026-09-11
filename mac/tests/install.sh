@@ -182,6 +182,46 @@ expect_exit() {
 }
 
 prepare_home
+expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
+[ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
+cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+printf 'PASS: Herdr installer creates and links its config directory\n'
+
+: >"$command_log"
+expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
+[ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
+[ ! -s "$command_log" ]
+printf 'PASS: repeated Herdr installation leaves its link unchanged\n'
+
+prepare_home
+mkdir -p "$HOME/.config/herdr"
+printf 'original\n' >"$HOME/.config/herdr/config.toml"
+expect_exit 0 env SETUP_BACKUP_ROOT="$HOME/backups" /bin/sh "$root/terminal/herdr/install.sh"
+[ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
+grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
+: >"$command_log"
+expect_exit 0 env SETUP_BACKUP_ROOT="$HOME/backups" /bin/sh "$root/terminal/herdr/install.sh"
+grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
+[ ! -s "$command_log" ]
+printf 'PASS: Herdr installer preserves existing config in backup across repeats\n'
+
+prepare_home
+mkdir -p "$HOME/.config/herdr"
+printf 'original\n' >"$HOME/.config/herdr/config.toml"
+FAIL_LN_TARGET="$HOME/.config/herdr/config.toml"
+export FAIL_LN_TARGET
+expect_exit 43 env SETUP_BACKUP_ROOT="$HOME/backups" /bin/sh "$root/terminal/herdr/install.sh"
+[ ! -e "$HOME/.config/herdr/config.toml" ]
+[ ! -L "$HOME/.config/herdr/config.toml" ]
+grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
+unset FAIL_LN_TARGET
+expect_exit 0 env SETUP_BACKUP_ROOT="$HOME/backups" /bin/sh "$root/terminal/herdr/install.sh"
+[ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
+cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
+printf 'PASS: Herdr installer recovers from failed linking without losing the backup\n'
+
+prepare_home
 expect_exit 64 /bin/sh "$root/mac/install.sh"
 [ ! -s "$command_log" ]
 printf 'PASS: missing setup path stops before commands\n'
@@ -365,6 +405,8 @@ grep -q '^zsh:' "$command_log"
 [ -L "$HOME/.tmux.conf" ]
 grep -q '^git:clone .* https://github.com/o0th/tmux-nova.git ' "$command_log"
 [ -d "$HOME/.tmux/plugins/tmux-nova" ]
+[ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
+cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 printf 'PASS: successful Mac phase reaches root phases\n'
 
 prepare_home

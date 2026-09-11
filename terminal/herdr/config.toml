@@ -38,7 +38,7 @@ name = "terminal"
 # transparent. Every custom token defaults to unset.
 
 # Highlight and selection accent.
-accent = "#D4BFFF"
+accent = "#36373C"
 # Sidebar and panel background.
 # panel_bg = "#24273a"
 # Desktop sidebar background, independent of other panel surfaces.
