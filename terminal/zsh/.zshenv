@@ -4,6 +4,11 @@
 export DOTFILES_PATH="${${(%):-%N}:A:h:h:h}"
 export ZIM_HOME="$HOME/.zim"
 
+# SSH remote commands do not read .zprofile, where the rest of PATH is set.
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
 # Over SSH, a forwarded agent socket gets a new random path per connection,
 # so processes that outlive the connection, such as Claude inside tmux, keep
 # a dead SSH_AUTH_SOCK. Every shell re-points one stable link to the newest
