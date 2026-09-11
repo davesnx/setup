@@ -143,7 +143,18 @@ cat >"$test_bin/bun" <<'EOF'
 printf 'bun:%s\n' "$*" >>"$COMMAND_LOG"
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun"
+cat >"$test_bin/herdr" <<'EOF'
+#!/bin/sh
+printf 'herdr:%s\n' "$*" >>"$COMMAND_LOG"
+[ "$*" = 'config check' ] && [ -f "$HERDR_CONFIG_PATH" ]
+EOF
+
+cat >"$test_bin/jq" <<'EOF'
+#!/bin/sh
+printf 'jq:%s\n' "$*" >>"$COMMAND_LOG"
+EOF
+
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun" "$test_bin/herdr" "$test_bin/jq"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 
@@ -190,7 +201,9 @@ printf 'PASS: Herdr installer creates and links its config directory\n'
 : >"$command_log"
 expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
 [ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
-[ ! -s "$command_log" ]
+if grep -q '^ln:' "$command_log"; then
+  exit 1
+fi
 printf 'PASS: repeated Herdr installation leaves its link unchanged\n'
 
 prepare_home
@@ -202,7 +215,9 @@ grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
 : >"$command_log"
 expect_exit 0 env SETUP_BACKUP_ROOT="$HOME/backups" /bin/sh "$root/terminal/herdr/install.sh"
 grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
-[ ! -s "$command_log" ]
+if grep -q '^ln:' "$command_log"; then
+  exit 1
+fi
 printf 'PASS: Herdr installer preserves existing config in backup across repeats\n'
 
 prepare_home
