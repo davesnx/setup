@@ -3,7 +3,7 @@ id: sql-injection-must-block
 mode: deterministic
 skill_under_test: code-review
 skills_loaded: [code-review]
-description: "Standard review must catch a reachable SQL injection regression"
+description: "Standard review must report a blocking SQL finding with source evidence"
 tags: [security, correctness, standard-review]
 
 setup:
@@ -14,6 +14,19 @@ prompt: |
   Review diff.patch in Standard mode. Write the final review to review.md.
   This is an evaluation fixture, so do not edit the diff or repository.
 
+  Test protocol: review.md must contain one JSON object, without code fences
+  or extra prose. Use exactly these fields:
+  - action: "approve" or "block"
+  - findings: an array of objects with exactly these fields:
+    file (path), line (new-file line number), severity ("low", "medium",
+    "high", or "critical"), category ("sql-injection", "other-security",
+    or "correctness"), remediation ("bound-parameters", "input-validation",
+    or "other"), evidence (an object with source and sink strings copied
+    from the relevant new-file lines, without diff prefixes or indentation).
+  An empty findings array represents no findings. This structured review
+  keeps decisions, locations, and evidence readable. The test grades this
+  contract, not the meaning of unrestricted review prose.
+
 budget:
   max_tokens: 5000
   max_seconds: 90
@@ -22,6 +35,30 @@ checks:
   - kind: file_exists
     path: review.md
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const injection=/sql injection|injection payload|interpolated directly into sql/i.test(s); const severe=/high|critical/i.test(s); const fix=/parameteri[sz]ed|placeholder|bound parameter/i.test(s); process.stdout.write(injection&&severe&&fix?\"blocked\":\"missed\")'"
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const review = JSON.parse(fs.readFileSync('review.md', 'utf8'));
+      assert.deepEqual(Object.keys(review).sort(), ['action', 'findings']);
+      assert.equal(review.action, 'block');
+      assert.ok(Array.isArray(review.findings));
+      assert.equal(review.findings.length, 1);
+      const finding = review.findings[0];
+      assert.deepEqual(Object.keys(finding).sort(), ['category', 'evidence', 'file', 'line', 'remediation', 'severity']);
+      assert.equal(finding.file, 'users.py');
+      assert.ok([10, 11].includes(finding.line));
+      assert.ok(['high', 'critical'].includes(finding.severity));
+      assert.equal(finding.category, 'sql-injection');
+      assert.equal(finding.remediation, 'bound-parameters');
+      assert.deepEqual(finding.evidence, {
+        source: `query = f"SELECT id, name FROM users WHERE name = '{name}'"`,
+        sink: 'return connection.execute(query).fetchone()',
+      });
+      // Exact evidence is tied to this fixture, not a claim to understand prose.
+      const diff = fs.readFileSync('diff.patch', 'utf8');
+      for (const line of Object.values(finding.evidence)) assert.ok(diff.includes('+    ' + line + '\n'));
+      process.stdout.write('blocked');
+      JS
     unsafe_shell: true
     expect_exact: "blocked"

@@ -23,9 +23,33 @@ checks:
   - kind: file_exists
     path: cleanup.md
   - kind: shell
-    cmd: "node -e 'import(\"./sloppy.mjs\").then(m => console.log([m.firstPositive([-2, 0, 3, 4]), m.firstPositive([-2, 0])].join(\",\")))'"
+    cmd: |
+      node --input-type=module <<'JS'
+      import assert from 'node:assert/strict';
+      import { firstPositive } from './sloppy.mjs';
+      const cases = [
+        [[], undefined],
+        [[-2, 0], undefined],
+        [[-Infinity, NaN, -0, -0.5], undefined],
+        [[-2, 0, 3, 4], 3],
+        [[4, 3, 0, -2], 4],
+        [[-1, 7, 2], 7],
+        [[2, 7, -1], 2],
+        [[NaN, -0, 0.125, 9], 0.125],
+        [[-Infinity, Infinity, 2], Infinity],
+        [[2, Infinity, NaN], 2],
+        [[Number.MIN_VALUE, 1], Number.MIN_VALUE],
+      ];
+      // Repeat in reverse order to expose state left by a previous call.
+      for (const [values, expected] of [...cases, ...cases.toReversed()]) {
+        const before = values.slice();
+        assert.equal(firstPositive(values), expected);
+        assert.deepEqual(values, before, 'input was mutated');
+      }
+      process.stdout.write('preserved');
+      JS
     unsafe_shell: true
-    expect_exact: "3,"
+    expect_exact: "preserved"
   - kind: shell
     cmd: "node -e 'const s=require(\"fs\").readFileSync(\"sloppy.mjs\",\"utf8\"); const banned=[\"try {\",\"Array.isArray\",\"typeof value\",\"This function loops\"]; process.stdout.write(banned.every(x=>!s.includes(x))?\"clean\":\"sloppy\")'"
     unsafe_shell: true

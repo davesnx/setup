@@ -1,0 +1,7 @@
+[
+  {"name":"later-allow-overrides-global-deny","restore":["permissions.cjs"]},
+  {"name":"stale-agent-rules-and-parent-leak","restore":["review.cjs"]},
+  {"name":"ask-is-allowed","replace":{"permissions.cjs":["=== 'allow'","!== 'deny'"]}},
+  {"name":"deny-everything","write":{"permissions.cjs":"exports.allowed = () => false;\n"}},
+  {"name":"read-before-check","replace":{"review.cjs":["    if (!allowed", "    io.read(resource);\n    if (!allowed"]}}
+]

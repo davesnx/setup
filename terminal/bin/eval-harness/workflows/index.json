@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {"id":"nested-exit","skill":"debug","split":"development","source":"provenance.md#nested-exit","description":"Propagate a failed command through a patch helper and nested caller."},
+    {"id":"guarded-install","skill":"code-standards","split":"development","source":"provenance.md#guarded-install","description":"Make a guarded installer repeatable without overwriting user files or Git state."},
+    {"id":"agent-recovery","skill":"debug","split":"development","source":"provenance.md#agent-recovery","description":"Keep a responsive shared agent and recover from dead or looping socket links."},
+    {"id":"source-comparison","skill":"how","split":"development","source":"provenance.md#source-comparison","description":"Resolve conflicting installer documentation against executable snapshots."},
+    {"id":"verification-note","skill":"technical-docs","split":"development","source":"provenance.md#verification-note","description":"Write a change note that distinguishes validation from untested runtime behavior."},
+    {"id":"review-permissions","skill":"code-standards","split":"development","source":"provenance.md#review-permissions","description":"Preserve global, agent and session restrictions in a background reviewer."},
+    {"id":"path-migration","skill":"code-standards","split":"heldout","source":"provenance.md#path-migration","description":"Revise an active path migration after the destination changes, preserving historical records."},
+    {"id":"pinned-children","skill":"debug","split":"heldout","source":"provenance.md#pinned-children","description":"Repair a conversion adapter against its pinned dependency rather than a newer local fork."}
+  ]
+}

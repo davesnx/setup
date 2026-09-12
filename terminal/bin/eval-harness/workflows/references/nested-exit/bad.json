@@ -1,0 +1,6 @@
+[
+  {"name":"successful-output-failed-command","restore":["patch.sh"]},
+  {"name":"forgot-nested-caller","restore":["install.sh"]},
+  {"name":"rewrote-user-note","write":{"notes.txt":"Removed stale notes.\n"}},
+  {"name":"always-fails","write":{"patch.sh":"#!/bin/sh\nexit 23\n"}}
+]

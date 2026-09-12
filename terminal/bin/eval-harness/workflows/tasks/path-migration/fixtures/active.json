@@ -1,0 +1,7 @@
+{
+  "dotfiles": "old-setup",
+  "editor": ["old-setup", "other-project"],
+  "service": {"server": "old-setup", "sessions": ["old-setup", "other-project"]},
+  "monorepo": "other-project",
+  "history": "history/session.json"
+}

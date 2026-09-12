@@ -103,7 +103,6 @@ index eeceb37..9349e62 100755
 
 diff --git a/scripts/eval/cleanup.sh b/scripts/eval/cleanup.sh
 new file mode 100644
-index 0000000..203bb4b
 --- /dev/null
 +++ b/scripts/eval/cleanup.sh
 @@ -0,0 +1,93 @@
@@ -126,7 +125,7 @@ index 0000000..203bb4b
 +cleanup_sandboxes() {
 +  local run=$1 target parent
 +  local targets=()
-+  for target in "$run"/*/sandbox "$run"/*/stability/sample-*/sandbox; do
++  for target in "$run"/*/sandbox "$run"/*/stability/sample-*/sandbox "$run"/*/repetitions/sample-*/sandbox; do
 +    [[ -e "$target" || -L "$target" ]] || continue
 +    parent=$target
 +    while [[ "$parent" != "$run" ]]; do
@@ -213,11 +212,62 @@ index b9d5a2e..793d7f9 100755
  SKILL_META="$SKILLS_ROOT/$SKILL/skill.yaml"
 
  if [[ -f "$SKILL_META" ]]; then
+diff --git a/scripts/eval/lib/copy_inputs.py b/scripts/eval/lib/copy_inputs.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/lib/copy_inputs.py
+@@ -0,0 +1,35 @@
++#!/usr/bin/env python3
++"""Copy candidate inputs without following links or including evaluation files."""
++
++import os
++from pathlib import Path
++import shutil
++import stat
++import sys
++
++
++def copy_tree(source, destination, skill=False):
++    source = Path(source)
++    destination = Path(destination)
++    destination.mkdir(parents=True, exist_ok=True)
++    for entry in source.iterdir():
++        if skill and entry.name == "evals":
++            continue
++        mode = entry.lstat().st_mode
++        target = destination / entry.name
++        if stat.S_ISDIR(mode):
++            copy_tree(entry, target, skill)
++        elif stat.S_ISREG(mode):
++            if target.is_symlink():
++                raise ValueError(f"unsafe destination: {target}")
++            shutil.copyfile(entry, target)
++            os.chmod(target, stat.S_IMODE(mode) & 0o777)
++        else:
++            raise ValueError(f"links and special files are not supported: {entry}")
++
++
++if __name__ == "__main__":
++    try:
++        copy_tree(sys.argv[1], sys.argv[2], "--skill" in sys.argv[3:])
++    except (OSError, ValueError) as error:
++        sys.exit(f"candidate copy: {error}")
 diff --git a/scripts/eval/lib/diff.sh b/scripts/eval/lib/diff.sh
-index d20e2d9..3ec3068 100755
 --- a/scripts/eval/lib/diff.sh
 +++ b/scripts/eval/lib/diff.sh
-@@ -44,12 +44,20 @@ build_case_result() {
+@@ -24,6 +24,11 @@
+
+   local passed
+   passed="$(jq -r '.passed' "$checks_file" 2>/dev/null || echo false)"
++  local repetitions_json=null
++  if [[ -f "$run_dir/repetitions.json" ]]; then
++    repetitions_json="$(cat "$run_dir/repetitions.json")"
++    passed="$(jq -r '.passed' <<<"$repetitions_json")"
++  fi
+
+   local baseline_passed=null
+   local env_delta='{"keys_changed": ["__no_baseline__"], "details": {}}'
+@@ -44,12 +49,20 @@
 
    local model_id
    model_id="$(jq -r '.model_id // "unknown"' "$manifest_file" 2>/dev/null || echo unknown)"
@@ -227,7 +277,7 @@ index d20e2d9..3ec3068 100755
 -  local out_t="${toks#* }"
 +  local metrics
 +  local transcripts=("$transcript") sample
-+  for sample in "$run_dir"/stability/sample-*/transcript.jsonl; do
++  for sample in "$run_dir"/stability/sample-*/transcript.jsonl "$run_dir"/repetitions/sample-*/transcript.jsonl; do
 +    [[ -f "$sample" ]] && transcripts+=("$sample")
 +  done
 +  if ! metrics="$(transcript_metrics "${transcripts[@]}" 2>/dev/null)"; then
@@ -243,17 +293,21 @@ index d20e2d9..3ec3068 100755
 
    local stability_json='{"samples":1,"byte_identical":true,"hashes":[],"performed":false}'
    if [[ -f "$stability_file" ]]; then
-@@ -74,6 +82,7 @@ build_case_result() {
+@@ -74,7 +87,9 @@
      --slurpfile manifest "$manifest_file" \
      --arg rerun "$rerun_cmd" \
      --argjson cost "$cost_json" \
 +    --argjson metrics "$metrics" \
      --argjson stability "$stability_json" \
++    --argjson repetitions "$repetitions_json" \
      '{
        case_id: $case_id,
-@@ -84,7 +93,8 @@ build_case_result() {
+       passed: $passed,
+@@ -83,8 +98,10 @@
+       env_delta: $env_delta,
        attribution: $attribution,
        stability: $stability,
++      repetitions: $repetitions,
        env_manifest: ($manifest[0] // {}),
 -      cost: $cost,
 +       cost: $cost,
@@ -261,7 +315,7 @@ index d20e2d9..3ec3068 100755
        rerun: $rerun
      }'
  }
-@@ -110,7 +120,9 @@ build_run_summary() {
+@@ -110,7 +127,9 @@
    fi
 
    local total_cost_usd
@@ -272,11 +326,182 @@ index d20e2d9..3ec3068 100755
 
    jq -n \
      --arg run_id "$run_id" \
+@@ -155,6 +174,10 @@
+     echo "- trigger: \`$trigger\`"
+     echo "- verdict: **$verdict**"
+     echo
++    jq -r '.cases[] | select(.repetitions.total > 1) |
++      "- " + .case_id + ": independent attempts " + (.repetitions.success_count | tostring) +
++      "/" + (.repetitions.total | tostring) + " passed (success rate " +
++      (.repetitions.success_rate | tostring) + "); primary evidence is unchanged"' "$results"
+     local regressions; regressions="$(jq -r '.regressions | length' "$results")"
+     if [[ "$regressions" -gt 0 ]]; then
+       echo "## REGRESSION ($regressions)"
+@@ -166,7 +189,9 @@
+            then " (also: " + (.attribution.also_observed | join(", ")) + ")"
+            else "" end) + "\n" +
+         "- env_delta keys: " + (.env_delta.keys_changed | join(", ")) + "\n" +
+-        "- failed checks: " + ([.checks[] | select(.passed | not) | .failed_check_id] | join("; ")) + "\n" +
++        "- failed checks: " + ([.checks[] | select(.passed | not) | .failed_check_id] +
++          [.repetitions.attempts[]? | select(.attempt > 1) | . as $attempt |
++            .checks[] | select(.passed | not) | "attempt " + ($attempt.attempt | tostring) + ": " + .failed_check_id] | join("; ")) + "\n" +
+         "\n#### Rerun in isolation\n" +
+         "```\n" + .rerun + "\n```\n"
+       ' "$results"
+@@ -176,7 +201,7 @@
+     if [[ "$fails" -gt 0 ]]; then
+       echo "## FAILED CHECKS (full detail)"
+       echo
+-      jq -r '.cases[] | select(.passed == false) |
++      jq -r '.cases[] | select(any(.checks[]; .passed == false)) |
+         "### " + .case_id + "\n" +
+         ([.checks[] | select(.passed | not) |
+           "- **" + .failed_check_id + "**\n" +
+@@ -190,6 +215,15 @@
+            else "" end)
+         ] | join("\n")) + "\n"
+       ' "$results"
++      jq -r '.cases[] | .case_id as $case_id | .repetitions.attempts[]? |
++        select(.attempt > 1 and .passed == false) |
++        "### " + $case_id + " / attempt " + (.attempt | tostring) + " (" + .directory + ")\n" +
++        ([.checks[] | select(.passed | not) |
++          "- **" + .failed_check_id + "**\n" +
++          "  - expected: `" + (.expected | tostring) + "`\n" +
++          "  - actual: `" + (.actual | tostring) + "`\n" +
++          "  - hint: " + (.diff_hint // "")
++        ] | join("\n")) + "\n"' "$results"
+     fi
+
+     local stable; stable="$(jq -r '[.cases[] | select(.passed == true)] | length' "$results")"
+diff --git a/scripts/eval/lib/evidence.py b/scripts/eval/lib/evidence.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/lib/evidence.py
+@@ -0,0 +1,120 @@
++#!/usr/bin/env python3
++"""Seal completed evidence and copy verified evidence for offline regrading.
++
++Hashes detect changed files, not an attacker who can rewrite the seal itself.
++"""
++
++import hashlib
++import json
++from pathlib import Path
++import re
++import shutil
++import stat
++import sys
++
++
++def identifier(value):
++    if not isinstance(value, str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", value):
++        raise ValueError(f"invalid evidence ID: {value!r}")
++    return value
++
++
++def read_json(path):
++    if path.is_symlink() or not path.is_file():
++        raise ValueError(f"missing or unsafe record: {path}")
++    return json.loads(path.read_text())
++
++
++def inventory(run, cases):
++    files = {}
++
++    def visit(directory):
++        for path in sorted(directory.iterdir()):
++            relative = path.relative_to(run)
++            parts = relative.parts
++            if len(parts) == 1 and path.name in {".active", ".finished", "evidence.json"}:
++                continue
++            if parts[0] in cases and path.name == "sandbox" and (
++                len(parts) == 2 or (len(parts) == 4 and parts[1] in {"stability", "repetitions"}
++                                    and re.fullmatch(r"sample-[1-9][0-9]*", parts[2]))
++            ):
++                continue
++            mode = path.lstat().st_mode
++            if stat.S_ISDIR(mode):
++                files[str(relative)] = "directory"
++                visit(path)
++            elif stat.S_ISREG(mode):
++                files[str(relative)] = hashlib.sha256(path.read_bytes()).hexdigest()
++            else:
++                raise ValueError(f"unsafe evidence path (link or special file): {relative}")
++
++    visit(run)
++    return files
++
++
++def case_ids(results, run):
++    if results.get("run_id") != run.name or not isinstance(results.get("cases"), list) or not results["cases"]:
++        raise ValueError("run identity or case list is missing")
++    ids = [identifier(case["case_id"]) for case in results["cases"]]
++    if len(ids) != len(set(ids)):
++        raise ValueError("duplicate case IDs")
++    return ids
++
++
++def finished(run):
++    if run.is_symlink() or (run / ".active").exists() or (run / ".active").is_symlink():
++        raise ValueError("run is active, interrupted, or unsafe")
++    marker = run / ".finished"
++    if marker.is_symlink() or not marker.is_file() or marker.read_text().strip() not in {"0", "12"}:
++        raise ValueError("run has no successful completion record (harness errors cannot be regraded)")
++
++
++def main():
++    command, source, argument = sys.argv[1:]
++    run = Path(source)
++    identifier(run.name)
++    if run.is_symlink():
++        raise ValueError("symlink run rejected")
++    results = read_json(run / "results.json")
++    cases = case_ids(results, run)
++    if command == "seal":
++        record = {"schema_version": 1, "run_id": run.name, "skill": identifier(argument),
++                  "cases": cases, "files": inventory(run, cases)}
++        with (run / "evidence.json").open("x") as output:
++            json.dump(record, output, indent=2)
++        return
++    if command != "snapshot":
++        raise ValueError("expected seal or snapshot")
++    finished(run)
++    record = read_json(run / "evidence.json")
++    identifier(record["skill"])
++    if record.get("schema_version") != 1 or record.get("run_id") != run.name or record.get("cases") != cases:
++        raise ValueError("evidence identity does not match results")
++    files = inventory(run, cases)
++    if record.get("files") != files:
++        raise ValueError("evidence changed or is incomplete: checksum mismatch")
++    for case in cases:
++        for required in ("workdir", "transcript.jsonl", "checks.json", "exit-code", "case.yaml", "env-manifest.json"):
++            if f"{case}/{required}" not in files:
++                raise ValueError(f"incomplete case evidence: {case}/{required}")
++    target = Path(argument)
++    target.mkdir()
++    for name, digest in files.items():
++        destination = target / name
++        if digest == "directory":
++            destination.mkdir(parents=True, exist_ok=True)
++        else:
++            destination.parent.mkdir(parents=True, exist_ok=True)
++            shutil.copyfile(run / name, destination)
++            destination.chmod(stat.S_IMODE((run / name).stat().st_mode) & 0o777)
++    if inventory(target, cases) != files:
++        raise ValueError("evidence changed while copying")
++    finished(run)
++    print(json.dumps(record))
++
++
++if __name__ == "__main__":
++    try:
++        main()
++    except (OSError, ValueError, KeyError, TypeError) as error:
++        sys.exit(f"regrade evidence: {error}")
 diff --git a/scripts/eval/lib/manifest.sh b/scripts/eval/lib/manifest.sh
-index d336fb7..2980408 100755
 --- a/scripts/eval/lib/manifest.sh
 +++ b/scripts/eval/lib/manifest.sh
-@@ -15,7 +15,7 @@ capture_manifest() {
+@@ -15,11 +15,17 @@
    local skill="$1"
    local out="$2"
    local skills_root
@@ -285,7 +510,18 @@ index d336fb7..2980408 100755
    local skill_dir="$skills_root/$skill"
 
    local opencode_version
-@@ -33,9 +33,12 @@ capture_manifest() {
+-  opencode_version="$(opencode --version 2>/dev/null | head -1 || echo "unknown")"
++  local image_id=''
++  if [[ "${EVAL_RUNNER:-host}" == docker ]]; then
++    opencode_version='image-provided (not probed)'
++    image_id="$(docker image inspect --format '{{.Id}}' "${EVAL_DOCKER_IMAGE:-}" 2>/dev/null || true)"
++  else
++    opencode_version="$(opencode --version 2>/dev/null | head -1 || echo "unknown")"
++  fi
+
+   local node_version
+   node_version="$(node --version 2>/dev/null || echo "unknown")"
+@@ -33,9 +39,12 @@
    # This catches cross-skill regressions where editing skill B silently affects skill A.
    local skill_bundle_sha
    if [[ -d "$skills_root" ]]; then
@@ -300,6 +536,62 @@ index d336fb7..2980408 100755
        | sha256sum \
        | cut -d' ' -f1)"
    else
+@@ -75,6 +84,12 @@
+     --arg fixture_sha "$fixture_sha" \
+     --arg timestamp "$timestamp" \
+     --arg skill "$skill" \
++    --arg runner "${EVAL_RUNNER:-host}" \
++    --arg image "${EVAL_DOCKER_IMAGE:-}" \
++    --arg image_id "$image_id" \
++    --arg cpus "${EVAL_DOCKER_CPUS:-1}" \
++    --arg memory "${EVAL_DOCKER_MEMORY:-1g}" \
++    --arg seconds "${EVAL_MAX_SECONDS:-180}" \
+     '{
+       schema_version: 2,
+       opencode_version: $opencode_version,
+@@ -82,6 +97,16 @@
+       node_version: $node_version,
+       platform: $platform,
+       skill_under_test: $skill,
++      execution: {runner:$runner,
++        image:(if $runner == "docker" then $image else null end),
++        image_id:(if $image_id == "" then null else $image_id end),
++        max_seconds:$seconds,
++        cpus:(if $runner == "docker" then $cpus else null end),
++        memory:(if $runner == "docker" then $memory else null end),
++        network:"public networking allowed",
++        limits:(if $runner == "docker" then
++          "Shared host kernel; isolated copied workdir; no host sockets; credentials accessible to candidate and Docker daemon"
++          else "Host execution is not a security boundary; candidate can access host files and inherited environment" end)},
+       skill_bundle_sha: $skill_bundle_sha,
+       skill_sha: $skill_sha,
+       fixture_sha: $fixture_sha,
+diff --git a/scripts/eval/lib/preflight.sh b/scripts/eval/lib/preflight.sh
+--- a/scripts/eval/lib/preflight.sh
++++ b/scripts/eval/lib/preflight.sh
+@@ -13,6 +13,22 @@
+ preflight_check() {
+   local fail=0
+
++  case "${EVAL_RUNNER:-host}" in
++    host) ;;
++    docker)
++      if [[ -z "${EVAL_DOCKER_IMAGE:-}" ]] || ! command -v docker >/dev/null ||
++          ! docker info >/dev/null 2>&1 || ! docker image inspect "$EVAL_DOCKER_IMAGE" >/dev/null 2>&1; then
++        printf '[eval-harness] Docker requires a running daemon and a local EVAL_DOCKER_IMAGE; no host fallback or automatic pull\n' >&2
++        return 1
++      fi
++      if [[ "${EVAL_SKIP_AUTH_CHECK:-0}" != 1 && -z "${OPENCODE_AUTH_FILE:-}" && -z "${EVAL_DOCKER_AUTH_ENV:-}" ]]; then
++        printf '[eval-harness] Docker auth requires OPENCODE_AUTH_FILE or EVAL_DOCKER_AUTH_ENV (explicit provider variable names)\n' >&2
++        return 1
++      fi
++      return 0 ;;
++    *) printf '[eval-harness] EVAL_RUNNER must be host or docker\n' >&2; return 1 ;;
++  esac
++
+   if ! command -v opencode >/dev/null 2>&1; then
+     echo "[eval-harness] preflight FAIL: 'opencode' not on PATH" >&2
+     fail=1
 diff --git a/scripts/eval/lib/pricing.sh b/scripts/eval/lib/pricing.sh
 index 35874ea..5d23e14 100755
 --- a/scripts/eval/lib/pricing.sh
@@ -395,10 +687,14 @@ index f9c40d3..13d599a 100644
    if [[ -n "${OPENCODE_SKILLS_ROOT:-}" ]]; then
      printf '%s\n' "$OPENCODE_SKILLS_ROOT"
 diff --git a/scripts/eval/lib/spawn.sh b/scripts/eval/lib/spawn.sh
-index 150daa0..13c3243 100755
 --- a/scripts/eval/lib/spawn.sh
 +++ b/scripts/eval/lib/spawn.sh
-@@ -13,6 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+@@ -9,10 +9,12 @@
+ set -euo pipefail
+
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++_SPAWN_LIB_DIR="$SCRIPT_DIR"
+
  if ! declare -F resolve_skills_root >/dev/null; then
    source "$SCRIPT_DIR/skills_root.sh"
  fi
@@ -406,21 +702,132 @@ index 150daa0..13c3243 100755
 
  # Usage: spawn_opencode <prompt> <workdir> <sandbox_dir> <transcript_out> [skills_to_load...]
  # - prompt: the user message string
-@@ -49,11 +50,9 @@ spawn_opencode() {
-   done
+@@ -34,41 +36,98 @@
+   shift 4
+   local skills_to_load=("$@")
 
-   local real_skills_root
+-  mkdir -p "$sandbox/home" "$sandbox/opencode/skills" "$sandbox/nano-brain"
+-
+-  for auth_src in \
+-    "${OPENCODE_AUTH_FILE:-}" \
+-    "$HOME/.local/share/opencode/auth.json" \
+-    "$HOME/.config/opencode/auth.json"
+-  do
+-    if [[ -n "$auth_src" && -f "$auth_src" ]]; then
+-      mkdir -p "$sandbox/home/.local/share/opencode"
+-      cp "$auth_src" "$sandbox/home/.local/share/opencode/auth.json"
+-      break
+-    fi
+-  done
+-
+-  local real_skills_root
 -  real_skills_root="$(resolve_skills_root)"
-   for skill in "${skills_to_load[@]}"; do
+-  for skill in "${skills_to_load[@]}"; do
 -    if [[ -d "$real_skills_root/$skill" ]]; then
 -      cp -R "$real_skills_root/$skill" "$sandbox/opencode/skills/$skill"
 -    fi
-+    real_skills_root="$(resolve_skills_root "$skill")" || { echo 13; return; }
-+    cp -R "$real_skills_root/$skill" "$sandbox/opencode/skills/$skill" || { echo 13; return; }
-   done
-
+-  done
+-
    local max_seconds="${EVAL_MAX_SECONDS:-180}"
-@@ -82,13 +81,9 @@ spawn_opencode() {
+   local model="${EVAL_CASE_MODEL:-${EVAL_MODEL:-${OPENCODE_MODEL:-anthropic/claude-3-5-haiku-latest}}}"
+-
+   local exit_code=0
++  # Authentication and runtime state never belong to retained debug sandboxes.
+   (
+-    export HOME="$sandbox/home"
++    set -e
++    umask 077
++    local runtime container='' auth_src='' real_skills_root skill var
++    runtime=$(mktemp -d "${TMPDIR:-/tmp}/eval-candidate.XXXXXX") || exit 13
++    trap 'code=$?; trap - EXIT; if [[ -s "$runtime/container-id" ]]; then docker rm -f "$(<"$runtime/container-id")" >/dev/null 2>&1 || code=13; fi; rm -rf -- "$runtime"; exit "$code"' EXIT
++    trap 'exit 130' INT
++    trap 'exit 143' TERM
++    mkdir -p "$runtime/home/.local/share/opencode" "$sandbox/opencode/skills" "$sandbox/nano-brain" || exit 13
++    for skill in "${skills_to_load[@]}"; do
++      [[ "$skill" =~ ^[[:alnum:]][[:alnum:]_.-]*$ ]] || exit 13
++      real_skills_root="$(resolve_skills_root "$skill")" || exit 13
++      python3 "$_SPAWN_LIB_DIR/copy_inputs.py" "$real_skills_root/$skill" "$sandbox/opencode/skills/$skill" --skill || exit 13
++    done
++
++    if [[ "${EVAL_RUNNER:-host}" == docker ]]; then
++      [[ -n "${EVAL_DOCKER_IMAGE:-}" ]] || { printf 'EVAL_DOCKER_IMAGE is required\n' >&2; exit 13; }
++      local cpus="${EVAL_DOCKER_CPUS:-1}" memory="${EVAL_DOCKER_MEMORY:-1g}"
++      if [[ ! "$max_seconds" =~ ^[1-9][0-9]*$ || ! "$cpus" =~ ^[0-9]+([.][0-9]+)?$ || ! "$cpus" =~ [1-9] || ! "$memory" =~ ^[1-9][0-9]*[kKmMgG]?$ ]]; then
++        printf 'Docker requires positive limits: integer EVAL_MAX_SECONDS, numeric EVAL_DOCKER_CPUS, and EVAL_DOCKER_MEMORY (bytes or k/m/g)\n' >&2
++        exit 13
++      fi
++      local env_args=() auth_args=()
++      for var in ${EVAL_DOCKER_AUTH_ENV:-}; do
++        case "$var" in
++          ANTHROPIC_API_KEY|OPENROUTER_API_KEY|OPENAI_API_KEY|GOOGLE_GENERATIVE_AI_API_KEY) ;;
++          *) printf 'Unsupported Docker auth variable: %s\n' "$var" >&2; exit 13 ;;
++        esac
++        [[ -n "${!var:-}" ]] || { printf 'Docker auth variable is empty: %s\n' "$var" >&2; exit 13; }
++        env_args+=(--env "$var")
++      done
++      if [[ -n "${OPENCODE_AUTH_FILE:-}" ]]; then
++        [[ -f "$OPENCODE_AUTH_FILE" ]] || exit 13
++        cp "$OPENCODE_AUTH_FILE" "$runtime/auth.json" || exit 13
++        auth_args+=(--mount "type=bind,src=$runtime/auth.json,dst=/auth.json,readonly")
++      fi
++      python3 "$_SPAWN_LIB_DIR/copy_inputs.py" "$workdir" "$runtime/workdir" || exit 13
++      python3 "$_SPAWN_LIB_DIR/copy_inputs.py" "$sandbox/opencode" "$runtime/opencode" || exit 13
++      container="eval-candidate-$(basename "$runtime" | tr '[:upper:].' '[:lower:]-')"
++      docker create --pull=never --cidfile "$runtime/container-id" --name "$container" --init \
++        --read-only --cap-drop ALL --security-opt no-new-privileges \
++        --cpus "$cpus" --memory "$memory" \
++        --memory-swap "$memory" --pids-limit 256 \
++        --network bridge --user "$(id -u):$(id -g)" \
++        --tmpfs /tmp:rw,nosuid,nodev,size=256m,mode=1777 \
++        --mount "type=bind,src=$runtime/workdir,dst=/work" \
++        --mount "type=bind,src=$runtime/opencode,dst=/config,readonly" \
++        "${auth_args[@]}" "${env_args[@]}" \
++        --env HOME=/tmp/home --env XDG_CONFIG_HOME=/tmp/home/.config \
++        --env XDG_DATA_HOME=/tmp/home/.local/share --env XDG_CACHE_HOME=/tmp/home/.cache \
++        --env OPENCODE_CONFIG_DIR=/config --env NANO_BRAIN_ROOT=/tmp/nano-brain \
++        --env OPENCODE_EVAL_MODE=1 --env EVAL_HARNESS_RUNNING=1 \
++        --workdir /work --entrypoint /bin/sh "$EVAL_DOCKER_IMAGE" -c \
++        'mkdir -p "$HOME/.local/share/opencode"; if [ -f /auth.json ]; then cp /auth.json "$HOME/.local/share/opencode/auth.json"; fi; export PATH="/work:$PATH"; exec opencode run --model "$1" --format json --dir /work "$2"' \
++        sh "$model" "$prompt" >/dev/null || exit 13
++      container=$(<"$runtime/container-id")
++      local candidate_exit=0
++      timeout --kill-after=1 "$max_seconds" docker start -a "$container" > "$transcript_out" 2>"$transcript_out.err" || candidate_exit=$?
++      if [[ "$candidate_exit" == 124 ]]; then
++        docker kill "$container" >/dev/null 2>&1 || true
++      elif [[ "$candidate_exit" == 0 ]]; then
++        candidate_exit=$(docker inspect --format '{{.State.ExitCode}}' "$container") || exit 13
++      fi
++      # Stop the container before copying outputs; it must not race the scorer.
++      docker rm -f "$container" >/dev/null || exit 13
++      rm -f "$runtime/container-id" || exit 13
++      rm -rf -- "$workdir" || exit 13
++      python3 "$_SPAWN_LIB_DIR/copy_inputs.py" "$runtime/workdir" "$workdir" || exit 13
++      exit "$candidate_exit"
++    fi
++
++    [[ "${EVAL_RUNNER:-host}" == host ]] || { printf 'EVAL_RUNNER must be host or docker\n' >&2; exit 13; }
++    for auth_src in "${OPENCODE_AUTH_FILE:-}" "$HOME/.local/share/opencode/auth.json" "$HOME/.config/opencode/auth.json"; do
++      if [[ -n "$auth_src" && -f "$auth_src" ]]; then
++        cp "$auth_src" "$runtime/home/.local/share/opencode/auth.json" || exit 13
++        break
++      fi
++    done
++    export HOME="$runtime/home"
++    export XDG_CONFIG_HOME="$HOME/.config" XDG_DATA_HOME="$HOME/.local/share" XDG_CACHE_HOME="$HOME/.cache"
+     export OPENCODE_CONFIG_DIR="$sandbox/opencode"
+     export NANO_BRAIN_ROOT="$sandbox/nano-brain"
+     export OPENCODE_EVAL_MODE=1
+     export EVAL_HARNESS_RUNNING=1
+     export PATH="$workdir:$PATH"
+-    cd "$workdir"
+-    timeout "$max_seconds" opencode run \
++    unset OPENCODE_AUTH_FILE
++    cd "$workdir" || exit 13
++    timeout --kill-after=1 "$max_seconds" opencode run \
+       --model "$model" \
+       --format json \
+       --dir "$workdir" \
+@@ -82,13 +141,9 @@
  # Sums prompt_tokens + completion_tokens from opencode --format json events.
  # Per Settled #17: tokens-based capture, not opencode's broken dollar telemetry.
  token_total() {
@@ -510,11 +917,99 @@ index 0000000..9879ea1
 +    *) printf 'usage: transcript.sh {validate|measure} <transcript>\n' >&2; exit 2 ;;
 +  esac
 +fi
+diff --git a/scripts/eval/regrade.sh b/scripts/eval/regrade.sh
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/regrade.sh
+@@ -0,0 +1,84 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++REGRADING_DIR=$(CDPATH='' cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
++source "$REGRADING_DIR/cleanup.sh"
++source "$REGRADING_DIR/lib/skills_root.sh"
++source "$REGRADING_DIR/lib/score.sh"
++
++run_id=''
++case_id=''
++for argument in "$@"; do
++  case "$argument" in
++    regrade) ;;
++    --run=*) run_id=${argument#*=} ;;
++    --case=*) case_id=${argument#*=} ;;
++    --help|-h)
++      printf 'Usage: eval-harness regrade --run=<run-id> --case=<case-id>\n\nRegrade all saved attempts of one case with its current YAML checks.\nNo candidate is invoked. Writes a separate report under state/regrades/.\nRequires sealed, finished evidence from the current harness.\nEVAL_WARN_ONLY=1 returns 0 for failed assertions, never errors.\n'
++      exit 0 ;;
++    *) printf 'regrade: unknown argument: %s\n' "$argument" >&2; exit 2 ;;
++  esac
++done
++[[ -n "$run_id" && "$case_id" =~ ^[[:alnum:]][[:alnum:]_.-]*$ ]] || { printf 'regrade: --run and a valid --case are required\n' >&2; exit 2; }
++state=${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}
++run=$(cleanup_run_path "$state" "$run_id") || exit 13
++[[ ! -L "$state/regrades" ]] || { printf 'regrade: unsafe report directory\n' >&2; exit 13; }
++mkdir -p "$state/regrades"
++report=$(mktemp -d "$state/regrades/$run_id-$case_id.XXXXXX")
++trap 'code=$?; if [[ $code != 0 && ! -f "$report/report.json" ]]; then rm -rf -- "$report"; fi' EXIT
++python3 "$REGRADING_DIR/lib/evidence.py" snapshot "$run" "$report/source" > "$report/source-evidence.json" || exit 13
++jq -e --arg case_id "$case_id" '.cases | index($case_id) != null' "$report/source-evidence.json" >/dev/null || { printf 'regrade: case is not in the source run\n' >&2; exit 13; }
++skill=$(jq -r '.skill' "$report/source-evidence.json")
++root=$(resolve_skills_root "$skill") || exit 13
++case_files=()
++for candidate in "$root/$skill/evals/cases/"*.yaml; do
++  [[ -f "$candidate" ]] || continue
++  if [[ "$(yq -r '.id' "$candidate")" == "$case_id" ]]; then case_files+=("$candidate"); fi
++done
++[[ ${#case_files[@]} == 1 ]] || { printf 'regrade: current YAML case missing or ambiguous\n' >&2; exit 13; }
++cp "${case_files[0]}" "$report/current-case.yaml"
++export EVAL_FIXTURE_DIR="$root/$skill/evals/fixtures"
++evidence="$report/source/$case_id"
++attempt_dirs=("$evidence")
++for attempt in "$evidence"/stability/sample-* "$evidence"/repetitions/sample-*; do
++  [[ -d "$attempt" ]] && attempt_dirs+=("$attempt")
++done
++
++# Validate every saved attempt before running any current check.
++for attempt in "${attempt_dirs[@]}"; do
++  [[ -d "$attempt/workdir" && -f "$attempt/exit-code" && "$(<"$attempt/exit-code")" == 0 ]] || { printf 'regrade: incomplete or failed candidate attempt\n' >&2; exit 13; }
++  problem=$(transcript_error "$attempt/transcript.jsonl")
++  [[ -z "$problem" ]] || { printf 'regrade: %s\n' "$problem" >&2; exit 13; }
++done
++results=()
++index=0
++for attempt in "${attempt_dirs[@]}"; do
++  index=$((index + 1))
++  attempt_name=${attempt#"$evidence"}
++  attempt_name=${attempt_name#/}
++  attempt_name=${attempt_name:-primary}
++  # The scorer may write files. Its working copy is distinct from the snapshot.
++  grading_dir="$report/attempts/$index"
++  mkdir -p "$grading_dir"
++  cp -R "$attempt/workdir" "$grading_dir/workdir"
++  cp "$attempt/transcript.jsonl" "$attempt/exit-code" "$grading_dir/"
++  if [[ -f "$attempt/transcript.jsonl.err" ]]; then cp "$attempt/transcript.jsonl.err" "$grading_dir/"; fi
++  EVAL_SPAWN_EXIT_CODE=0 run_all_checks "$report/current-case.yaml" "$grading_dir/workdir" "$grading_dir/transcript.jsonl" "$grading_dir/checks.json" || exit 13
++  results+=("$(jq --arg attempt "$attempt_name" --arg directory "attempts/$index" '. + {source_attempt:$attempt,directory:$directory}' "$grading_dir/checks.json")")
++done
++printf '%s\n' "${results[@]}" | jq -s \
++  --arg run "$run_id" --arg case_id "$case_id" --arg skill "$skill" \
++  --arg sha "$(sha256sum "$report/current-case.yaml" | cut -d' ' -f1)" \
++  '{schema_version:1,kind:"regrade",source_run:$run,case_id:$case_id,skill:$skill,
++    current_case_sha256:$sha,attempts:.,passed:all(.[]; .passed),
++    harness_error:any(.[].checks[]; .error == true or (.kind == "llm_judge" and .judge.majority_verdict == null)),
++    candidate_invoked:false,cost_usd:null}' > "$report/report.json"
++printf '[eval-harness] regrade report: %s/report.json\n' "$report"
++jq -e '.harness_error == false' "$report/report.json" >/dev/null || exit 13
++if ! jq -e '.passed' "$report/report.json" >/dev/null; then
++  if [[ "${EVAL_WARN_ONLY:-0}" == 1 ]]; then
++    printf '[eval-harness] EVAL_WARN_ONLY=1: failed assertions return 0\n' >&2
++    exit 0
++  fi
++  exit 12
++fi
 diff --git a/scripts/eval/run.sh b/scripts/eval/run.sh
-index 478b388..bd7d82a 100755
 --- a/scripts/eval/run.sh
 +++ b/scripts/eval/run.sh
-@@ -28,6 +28,7 @@ source "$LIB/score.sh"
+@@ -28,6 +28,7 @@
  source "$LIB/diff.sh"
  source "$LIB/stability.sh"
  source "$LIB/pricing.sh"
@@ -522,7 +1017,15 @@ index 478b388..bd7d82a 100755
 
  VERSION="0.4.2"
 
-@@ -59,7 +60,8 @@ Options:
+@@ -47,6 +48,7 @@
+   --debug                 Verbose log + keep sandbox dirs
+   --pin-env=baseline      Re-run with baseline's env-manifest pinned
+   --stability-samples=N   On FAIL re-run case N-1 more times; record byte-identicity (default 1)
++  --repetitions=N         Run N fresh attempts, including successes (default 1)
+   --dry-run               Print plan; don't spawn opencode
+   -h, --help              Show this help
+
+@@ -59,7 +61,8 @@
  Environment:
    OPENCODE_SKILLS_ROOT     Override skills root. If unset: walks up from cwd
                             for .opencode/skills/, else \$HOME/.config/opencode/skills
@@ -532,7 +1035,38 @@ index 478b388..bd7d82a 100755
    EVAL_MAX_SECONDS         Per-case timeout (default: 180)
    EVAL_MODEL               Override model (default: anthropic/claude-haiku-3-5)
    EVAL_BYPASS              Set to 1 to skip evals (logged to history.ndjson)
-@@ -168,7 +170,7 @@ if ! preflight_check; then
+@@ -79,6 +82,7 @@
+ PIN_ENV=""
+ MODE="${EVAL_MODE:-smoke}"
+ STABILITY_SAMPLES="${EVAL_STABILITY_SAMPLES:-1}"
++REPETITIONS="${EVAL_REPETITIONS:-1}"
+
+ for arg in "$@"; do
+   case "$arg" in
+@@ -90,6 +94,7 @@
+     --dry-run)               DRY_RUN=1 ;;
+     --pin-env=*)             PIN_ENV="${arg#*=}" ;;
+     --stability-samples=*)   STABILITY_SAMPLES="${arg#*=}" ;;
++    --repetitions=*)         REPETITIONS="${arg#*=}" ;;
+     -h|--help)               usage; exit 0 ;;
+     run)                     ;;
+     *) echo "unknown arg: $arg" >&2; usage >&2; exit 2 ;;
+@@ -106,6 +111,14 @@
+   exit 2
+ fi
+
++if ! [[ "$REPETITIONS" =~ ^[1-9][0-9]*$ ]] || [[ "$REPETITIONS" -gt 1 && ( "$STABILITY_SAMPLES" -gt 1 || "$MODE" == 2tier ) ]]; then
++  printf '[eval-harness] --repetitions must be positive; use smoke/full mode without failure stability samples\n' >&2
++  exit 2
++fi
++for identifier in "$SKILL" "${CASE_ID:-unused}"; do
++  [[ "$identifier" =~ ^[[:alnum:]][[:alnum:]_.-]*$ ]] || { printf 'Invalid skill or case ID: %s\n' "$identifier" >&2; exit 2; }
++done
++
+ apply_mode_defaults() {
+   local mode="$1"
+   case "$mode" in
+@@ -168,7 +181,7 @@
    exit 13
  fi
 
@@ -541,7 +1075,7 @@ index 478b388..bd7d82a 100755
  SKILL_DIR="$SKILLS_ROOT/$SKILL"
  EVALS_DIR="$SKILL_DIR/evals"
  CASES_DIR="$EVALS_DIR/cases"
-@@ -177,22 +179,37 @@ FIXTURES_DIR="$EVALS_DIR/fixtures"
+@@ -177,22 +190,37 @@
 
  if [[ ! -d "$CASES_DIR" ]]; then
    echo "[eval-harness] no evals found for skill '$SKILL' at $CASES_DIR" >&2
@@ -582,7 +1116,7 @@ index 478b388..bd7d82a 100755
  fi
 
  echo "[eval-harness] v$VERSION trigger=$TRIGGER skill=$SKILL cases=${#CASE_FILES[@]}"
-@@ -209,7 +226,7 @@ case "$PRICING_STATUS" in
+@@ -209,7 +237,7 @@
      fi
      ;;
    MISSING|INVALID)
@@ -591,7 +1125,7 @@ index 478b388..bd7d82a 100755
      ;;
  esac
 
-@@ -219,7 +236,7 @@ for case_file in "${CASE_FILES[@]}"; do
+@@ -219,10 +247,11 @@
    i=$((i+1))
    if [[ ! -f "$case_file" ]]; then
      echo "[eval-harness] case file missing: $case_file" >&2
@@ -600,7 +1134,20 @@ index 478b388..bd7d82a 100755
    fi
 
    cid="$(yq -r '.id' "$case_file")"
-@@ -283,12 +300,13 @@ for case_file in "${CASE_FILES[@]}"; do
++  [[ "$cid" =~ ^[[:alnum:]][[:alnum:]_.-]*$ && "$cid" != null ]] || { printf 'Invalid case ID: %s\n' "$cid" >&2; exit 13; }
+   prompt="$(yq -r '.prompt' "$case_file")"
+   description="$(yq -r '.description // ""' "$case_file")"
+   mapfile -t skills_loaded < <(yq -r '.skills_loaded[]' "$case_file" 2>/dev/null || true)
+@@ -241,7 +270,7 @@
+   fi
+
+   per_case_dir="$RUN_DIR/$cid"
+-  mkdir -p "$per_case_dir"
++  mkdir "$per_case_dir" || { printf 'Duplicate or unsafe case ID: %s\n' "$cid" >&2; exit 13; }
+   workdir="$per_case_dir/workdir"
+   sandbox="$per_case_dir/sandbox"
+   mkdir -p "$workdir"
+@@ -283,14 +312,18 @@
        fi
      else
        echo "[eval-harness] case $cid: fixture source missing: $src_path" >&2
@@ -614,8 +1161,13 @@ index 478b388..bd7d82a 100755
 +    exit 13
    fi
 
++  cp -R "$workdir" "$per_case_dir/inputs"
++  cp "$case_file" "$per_case_dir/case.yaml"
++
    export EVAL_FIXTURE_DIR="$FIXTURES_DIR"
-@@ -305,7 +323,7 @@ for case_file in "${CASE_FILES[@]}"; do
+   transcript="$per_case_dir/transcript.jsonl"
+
+@@ -305,7 +338,7 @@
      if ! flock -w "$lock_timeout" -x 9; then
        echo "[eval-harness] lock timeout (${lock_timeout}s) on $SKILL:$cid:$TRIGGER — another run holds it" >&2
        exec 9>&-
@@ -624,7 +1176,7 @@ index 478b388..bd7d82a 100755
      fi
    else
      mkdir_lock="${lock_file}.d"
-@@ -314,7 +332,7 @@ for case_file in "${CASE_FILES[@]}"; do
+@@ -314,7 +347,7 @@
        if [[ "$waited" -ge "$lock_timeout" ]]; then
          echo "[eval-harness] mkdir-lock timeout (${lock_timeout}s) on $SKILL:$cid:$TRIGGER" >&2
          exec 9>&-
@@ -633,7 +1185,23 @@ index 478b388..bd7d82a 100755
        fi
        sleep 1
        waited=$((waited+1))
-@@ -372,7 +390,7 @@ for case_file in "${CASE_FILES[@]}"; do
+@@ -323,13 +356,8 @@
+
+   capture_manifest "$SKILL" "$per_case_dir/env-manifest.json"
+
+-  if command -v opencode >/dev/null 2>&1; then
+-    exit_code="$(spawn_opencode "$prompt" "$workdir" "$sandbox" "$transcript" "${skills_loaded[@]}")"
+-  else
+-    echo "[eval-harness] WARNING: opencode CLI not on PATH — emitting stub transcript for offline scoring" >&2
+-    : > "$transcript"
+-    exit_code=0
+-  fi
++  exit_code="$(spawn_opencode "$prompt" "$workdir" "$sandbox" "$transcript" "${skills_loaded[@]}")"
++  printf '%s\n' "$exit_code" > "$per_case_dir/exit-code"
+
+   if [[ "$exit_code" == "124" ]]; then
+     echo "[eval-harness] case $cid: opencode timed out after ${EVAL_MAX_SECONDS:-180}s (exit 124)" >&2
+@@ -372,7 +400,7 @@
          }]
        }' > "$per_case_dir/checks.json"
    else
@@ -642,7 +1210,7 @@ index 478b388..bd7d82a 100755
    fi
 
    primary_passed="$(jq -r '.passed' "$per_case_dir/checks.json" 2>/dev/null || echo false)"
-@@ -380,6 +398,7 @@ for case_file in "${CASE_FILES[@]}"; do
+@@ -380,20 +408,21 @@
    if [[ "$STABILITY_SAMPLES" -gt 1 && "$primary_passed" == "false" ]]; then
      echo "[eval-harness] case $cid FAILed — running $((STABILITY_SAMPLES - 1)) stability sample(s)" >&2
      hashes=("$(jq -S '.checks // []' "$per_case_dir/checks.json" 2>/dev/null | sha256sum | cut -d' ' -f1)")
@@ -650,16 +1218,18 @@ index 478b388..bd7d82a 100755
      s=2
      while [[ "$s" -le "$STABILITY_SAMPLES" ]]; do
        sample_dir="$per_case_dir/stability/sample-$s"
-@@ -389,11 +408,15 @@ for case_file in "${CASE_FILES[@]}"; do
-       cp -R "$workdir" "$sample_workdir"
+       mkdir -p "$sample_dir"
+       sample_workdir="$sample_dir/workdir"
+       sample_sandbox="$sample_dir/sandbox"
+-      cp -R "$workdir" "$sample_workdir"
++      cp -R "$per_case_dir/inputs" "$sample_workdir"
        sample_transcript="$sample_dir/transcript.jsonl"
-       if command -v opencode >/dev/null 2>&1; then
+-      if command -v opencode >/dev/null 2>&1; then
 -        spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}" >/dev/null
-+        sample_exit="$(spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}")"
-       else
-         : > "$sample_transcript"
-+        sample_exit=13
-+      fi
+-      else
+-        : > "$sample_transcript"
++      sample_exit="$(spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}")"
++      printf '%s\n' "$sample_exit" > "$sample_dir/exit-code"
 +      EVAL_SPAWN_EXIT_CODE="$sample_exit" run_all_checks "$case_file" "$sample_workdir" "$sample_transcript" "$sample_dir/checks.json"
 +      if jq -e 'any(.checks[]; .error == true)' "$sample_dir/checks.json" >/dev/null; then
 +        sample_error=true
@@ -668,7 +1238,7 @@ index 478b388..bd7d82a 100755
        hashes+=("$(jq -S '.checks // []' "$sample_dir/checks.json" 2>/dev/null | sha256sum | cut -d' ' -f1)")
        s=$((s+1))
      done
-@@ -406,8 +429,9 @@ for case_file in "${CASE_FILES[@]}"; do
+@@ -406,14 +435,33 @@
      stability_json="$(jq -n \
        --argjson samples "$STABILITY_SAMPLES" \
        --argjson identical "$identical" \
@@ -679,11 +1249,43 @@ index 478b388..bd7d82a 100755
      if [[ "$identical" == "false" ]]; then
        echo "[eval-harness] case $cid is FLAKY (samples diverged) — attribution will be tagged" >&2
      fi
-@@ -447,6 +471,10 @@ jq -c --arg event run \
+   fi
+   echo "$stability_json" > "$per_case_dir/stability.json"
+
++  attempts=("$(jq --argjson exit_code "$exit_code" '{attempt:1,directory:".",passed,checks,exit_code:$exit_code,harness_error:any(.checks[]; .error == true)}' "$per_case_dir/checks.json")")
++  for ((s=2; s<=REPETITIONS; s++)); do
++    sample_dir="$per_case_dir/repetitions/sample-$s"
++    mkdir -p "$sample_dir"
++    cp -R "$per_case_dir/inputs" "$sample_dir/workdir"
++    sample_exit="$(spawn_opencode "$prompt" "$sample_dir/workdir" "$sample_dir/sandbox" "$sample_dir/transcript.jsonl" "${skills_loaded[@]}")"
++    printf '%s\n' "$sample_exit" > "$sample_dir/exit-code"
++    EVAL_SPAWN_EXIT_CODE="$sample_exit" run_all_checks "$case_file" "$sample_dir/workdir" "$sample_dir/transcript.jsonl" "$sample_dir/checks.json"
++    attempts+=("$(jq --argjson attempt "$s" --arg dir "repetitions/sample-$s" --argjson exit_code "$sample_exit" \
++      '{attempt:$attempt,directory:$dir,passed,checks,exit_code:$exit_code,harness_error:any(.checks[]; .error == true)}' "$sample_dir/checks.json")")
++  done
++  printf '%s\n' "${attempts[@]}" | jq -s '{
++    mode:"independent_repetitions",attempts:.,total:length,
++    success_count:([.[] | select(.passed)] | length),
++    success_rate:(([.[] | select(.passed)] | length) / length),
++    harness_error:any(.[]; .harness_error),passed:all(.[]; .passed)
++  }' > "$per_case_dir/repetitions.json"
++
+   if ! command -v flock >/dev/null 2>&1; then
+     rmdir "${lock_file}.d" 2>/dev/null || true
+   fi
+@@ -440,6 +488,7 @@
+ summary_json="$(build_run_summary "$results_array_json" "$RUN_ID" "$TRIGGER")"
+ echo "$summary_json" > "$RUN_DIR/results.json"
+ render_diff_md "$RUN_DIR/results.json" "$RUN_DIR/diff.md"
++python3 "$LIB/evidence.py" seal "$RUN_DIR" "$SKILL" || exit 13
+
+ # Append a compact event line to history.ndjson (Settled #18)
+ jq -c --arg event run \
+@@ -447,6 +496,10 @@
    "$RUN_DIR/results.json" >> "$HISTORY_LOG"
 
  verdict="$(jq -r '.verdict' "$RUN_DIR/results.json")"
-+if jq -e 'any(.cases[].checks[]; .error == true) or any(.cases[]; .stability.harness_error == true)' "$RUN_DIR/results.json" >/dev/null; then
++if jq -e 'any(.cases[].checks[]; .error == true) or any(.cases[]; .stability.harness_error == true or .repetitions.harness_error == true)' "$RUN_DIR/results.json" >/dev/null; then
 +  echo "[eval-harness] ERROR: invalid run or scorer failure; see $RUN_DIR/results.json" >&2
 +  exit 13
 +fi

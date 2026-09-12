@@ -1,0 +1,862 @@
+diff --git a/scripts/eval/workflow.sh b/scripts/eval/workflow.sh
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/workflow.sh
+@@ -0,0 +1,86 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++WORKFLOW_DIR=$(CDPATH='' cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
++source "$WORKFLOW_DIR/lib/yq-shim.sh"
++selector=split
++selection=development
++selected=0
++dry=0
++mode=${EVAL_MODE:-full}
++repetitions=${EVAL_REPETITIONS:-1}
++seconds=${EVAL_MAX_SECONDS:-180}
++model=${EVAL_MODEL:-}
++forward=()
++for argument in "$@"; do
++  case "$argument" in
++    workflow) ;;
++    --case=*|--split=*)
++      [[ $selected == 0 ]] || { printf 'workflow: use only one --case or --split selector\n' >&2; exit 2; }
++      selected=1
++      selection=${argument#*=}
++      if [[ $argument == --case=* ]]; then selector=id; else selector=split; fi ;;
++    --dry-run) dry=1 ;;
++    --model=*) model=${argument#*=}; [[ -n $model ]] || exit 2 ;;
++    --mode=*) mode=${argument#*=} ;;
++    --repetitions=*) repetitions=${argument#*=} ;;
++    --max-seconds=*) seconds=${argument#*=} ;;
++    --debug) forward+=(--debug) ;;
++    --help|-h)
++      printf 'Usage: eval-harness workflow [--case=<id> | --split=development|heldout]\n  --dry-run --model=<provider/model> --mode=smoke|full\n  --repetitions=1..20 --max-seconds=1..3600 --debug\nDefaults to development only. Each task has a separate run and result.\n'
++      exit 0 ;;
++    *) printf 'workflow: unknown argument: %s\n' "$argument" >&2; exit 2 ;;
++  esac
++done
++[[ $selector != split || $selection == development || $selection == heldout ]] || exit 2
++[[ $mode == smoke || $mode == full ]] || { printf 'workflow: mode must be smoke or full\n' >&2; exit 2; }
++[[ $repetitions =~ ^[1-9][0-9]?$ && $repetitions -le 20 ]] || { printf 'workflow: repetitions must be 1..20\n' >&2; exit 2; }
++[[ $seconds =~ ^[1-9][0-9]{0,3}$ && $seconds -le 3600 ]] || { printf 'workflow: max-seconds must be 1..3600\n' >&2; exit 2; }
++[[ -n ${EVAL_WORKFLOWS_ROOT:-} ]] || { printf 'workflow: EVAL_WORKFLOWS_ROOT is required\n' >&2; exit 13; }
++tasks=$(python3 "$WORKFLOW_DIR/lib/workflow.py" select "$EVAL_WORKFLOWS_ROOT" "$selector" "$selection") || exit 13
++mapfile -t entries < <(jq -c '.[]' <<< "$tasks")
++# Validate the whole selected group before any task can spend tokens.
++for entry in "${entries[@]}"; do
++  id=$(jq -r '.id' <<< "$entry")
++  directory=$(jq -r '.evals_dir' <<< "$entry")
++  inputs=$(yq -o=json '.' "$directory/cases/$id.yaml" | python3 "$WORKFLOW_DIR/lib/workflow.py" case "$directory" workflow) || exit 13
++  [[ $(yq -r '.id' "$directory/cases/$id.yaml") == "$id" ]] || { printf 'workflow: indexed and YAML case IDs differ\n' >&2; exit 13; }
++  if [[ $dry == 0 && ${EVAL_RUNNER:-host} == docker && $(jq '.native_turns' <<< "$inputs") == true ]]; then
++    printf 'workflow: Docker does not support native turns; use EVAL_RUNNER=host\n' >&2
++    exit 13
++  fi
++done
++if [[ $dry == 1 ]]; then
++  for entry in "${entries[@]}"; do
++    jq -r '"[workflow] [dry-run] \(.id) skill=\(.skill) split=\(.split)"' <<< "$entry"
++  done
++  exit 0
++fi
++[[ ${EVAL_BYPASS:-0} != 1 ]] || { printf 'workflow: EVAL_BYPASS would skip the selected tasks\n' >&2; exit 13; }
++export EVAL_SUITE=workflow EVAL_MAX_SECONDS="$seconds" EVAL_STABILITY_SAMPLES=1
++if [[ -n $model ]]; then export EVAL_MODEL="$model" EVAL_FULL_MODEL="$model" EVAL_SMOKE_MODEL="$model"; fi
++passed=() failed=() errors=() pending=()
++for entry in "${entries[@]}"; do
++  id=$(jq -r '.id' <<< "$entry")
++  skill=$(jq -r '.skill' <<< "$entry")
++  directory=$(jq -r '.evals_dir' <<< "$entry")
++  code=0
++  EVAL_EVALS_DIR="$directory" EVAL_WARN_ONLY=0 bash "$WORKFLOW_DIR/run.sh" \
++    --skill="$skill" --case="$id" --mode="$mode" --repetitions="$repetitions" "${forward[@]}" || code=$?
++  case "$code" in
++    0)
++      if [[ $(jq -r '.manual_review.required // false' <<< "$entry") == true ]]; then
++        pending+=("$id")
++      else
++        passed+=("$id")
++      fi ;;
++    12) failed+=("$id") ;;
++    *) errors+=("$id:$code") ;;
++  esac
++done
++printf '[workflow] PASS (%s): %s\n' "${#passed[@]}" "${passed[*]:-none}"
++printf '[workflow] PENDING MANUAL REVIEW (%s; automatic checks passed): %s\n' "${#pending[@]}" "${pending[*]:-none}"
++printf '[workflow] FAIL (%s): %s\n' "${#failed[@]}" "${failed[*]:-none}"
++printf '[workflow] ERROR (%s): %s\n' "${#errors[@]}" "${errors[*]:-none}"
++[[ ${#errors[@]} == 0 ]] || exit 13
++[[ ${#failed[@]} == 0 ]] || exit 12
+diff --git a/scripts/eval/run.sh b/scripts/eval/run.sh
+--- a/scripts/eval/run.sh
++++ b/scripts/eval/run.sh
+@@ -85,6 +85,13 @@
+ MODE="${EVAL_MODE:-smoke}"
+ STABILITY_SAMPLES="${EVAL_STABILITY_SAMPLES:-1}"
+ REPETITIONS="${EVAL_REPETITIONS:-1}"
++SUITE="${EVAL_SUITE:-regression}"
++case "$SUITE" in
++  regression|workflow) ;;
++  *) printf 'EVAL_SUITE must be regression or workflow\n' >&2; exit 2 ;;
++esac
++workflow_metadata=null
++manual_review=null
+
+ for arg in "$@"; do
+   case "$arg" in
+@@ -149,7 +156,7 @@
+ log_bypass_event() {
+   local skill="$1"; local trigger="$2"
+   jq -n --arg ts "$(date -u +%FT%TZ)" --arg s "$skill" --arg t "$trigger" \
+-    '{event:"bypass", timestamp:$ts, skill:$s, trigger:$t}' >> "$HISTORY_LOG"
++    --arg suite "$SUITE" '{event:"bypass", timestamp:$ts, skill:$s, trigger:$t, suite:$suite}' >> "$HISTORY_LOG"
+ }
+
+ if [[ "${EVAL_BYPASS:-0}" == "1" ]]; then
+@@ -185,7 +192,16 @@
+
+ SKILLS_ROOT="$(resolve_skills_root "$SKILL")" || exit 13
+ SKILL_DIR="$SKILLS_ROOT/$SKILL"
+-EVALS_DIR="$SKILL_DIR/evals"
++EVALS_DIR="${EVAL_EVALS_DIR:-$SKILL_DIR/evals}"
++if [[ $SUITE == workflow ]]; then
++  [[ -n $CASE_ID && -n ${EVAL_WORKFLOWS_ROOT:-} ]] || { printf 'Workflow runs require an indexed case and EVAL_WORKFLOWS_ROOT\n' >&2; exit 13; }
++  workflow_entry=$(python3 "$LIB/workflow.py" select "$EVAL_WORKFLOWS_ROOT" id "$CASE_ID") || exit 13
++  [[ $(jq -r '.[0].skill' <<< "$workflow_entry") == "$SKILL" ]] || { printf 'Workflow skill does not match index\n' >&2; exit 13; }
++  indexed_dir=$(jq -r '.[0].evals_dir' <<< "$workflow_entry")
++  [[ $(realpath "$EVALS_DIR") == "$indexed_dir" ]] || { printf 'Workflow eval directory does not match index\n' >&2; exit 13; }
++  workflow_metadata=$(jq '.[0] | del(.evals_dir, .manual_review)' <<< "$workflow_entry")
++  manual_review=$(jq '.[0].manual_review' <<< "$workflow_entry")
++fi
+ CASES_DIR="$EVALS_DIR/cases"
+ BASELINES_DIR="$EVALS_DIR/baselines"
+ FIXTURES_DIR="$EVALS_DIR/fixtures"
+@@ -225,7 +241,7 @@
+   exit 13
+ fi
+
+-echo "[eval-harness] v$VERSION trigger=$TRIGGER skill=$SKILL cases=${#CASE_FILES[@]}"
++echo "[eval-harness] v$VERSION suite=$SUITE trigger=$TRIGGER skill=$SKILL cases=${#CASE_FILES[@]}"
+ echo "[eval-harness] run_id=$RUN_ID"
+
+ PRICING_STALENESS="$(pricing_staleness_check)"
+@@ -254,7 +270,7 @@
+
+   cid="$(yq -r '.id' "$case_file")"
+   [[ "$cid" =~ ^[[:alnum:]][[:alnum:]_.-]*$ && "$cid" != null ]] || { printf 'Invalid case ID: %s\n' "$cid" >&2; exit 13; }
+-  prompt="$(yq -r '.prompt' "$case_file")"
++  [[ $SUITE != workflow || $cid == "$CASE_ID" ]] || { printf 'Workflow YAML case ID does not match index\n' >&2; exit 13; }
+   description="$(yq -r '.description // ""' "$case_file")"
+   mapfile -t skills_loaded < <(yq -r '.skills_loaded[]' "$case_file" 2>/dev/null || true)
+   [[ ${#skills_loaded[@]} -eq 0 ]] && skills_loaded=("$SKILL")
+@@ -271,6 +287,20 @@
+     continue
+   fi
+
++  case_inputs=$(yq -o=json '.' "$case_file" | python3 "$LIB/workflow.py" case "$EVALS_DIR" "$SUITE") || exit 13
++  case_prompts=$(jq -c '.prompts' <<< "$case_inputs")
++  prompt=$(jq -r '.prompts[0]' <<< "$case_inputs")
++  case_native_turns=$(jq -r '.native_turns' <<< "$case_inputs")
++  setup_script=$(jq -r '.script' <<< "$case_inputs")
++  setup_max_seconds=${EVAL_SETUP_MAX_SECONDS:-180}
++  if [[ -n $setup_script ]]; then
++    [[ $setup_max_seconds =~ ^[1-9][0-9]{0,3}$ && $setup_max_seconds -le 3600 ]] || { printf 'EVAL_SETUP_MAX_SECONDS must be 1..3600\n' >&2; exit 13; }
++  fi
++  if [[ $case_native_turns == true ]]; then
++    [[ ${EVAL_RUNNER:-host} == host ]] || { printf 'Native turns require EVAL_RUNNER=host; Docker multi-turn is not supported\n' >&2; exit 13; }
++    [[ ${EVAL_MAX_SECONDS:-180} =~ ^[1-9][0-9]*$ ]] || { printf 'Native turns require a positive integer EVAL_MAX_SECONDS\n' >&2; exit 13; }
++  fi
++
+   per_case_dir="$RUN_DIR/$cid"
+   mkdir "$per_case_dir" || { printf 'Duplicate or unsafe case ID: %s\n' "$cid" >&2; exit 13; }
+   workdir="$per_case_dir/workdir"
+@@ -323,7 +353,15 @@
+     exit 13
+   fi
+
+-  cp -R "$workdir" "$per_case_dir/inputs"
++  if [[ -n $setup_script ]]; then
++    setup_exit=0
++    (cd "$workdir" && EVAL_FIXTURE_DIR="$FIXTURES_DIR" timeout --kill-after=1 "$setup_max_seconds" bash "$setup_script") > "$per_case_dir/setup.log" 2>&1 || setup_exit=$?
++    if [[ $setup_exit != 0 ]]; then
++      printf '[eval-harness] case %s: setup failed (exit %s); see %s/setup.log\n' "$cid" "$setup_exit" "$per_case_dir" >&2
++      exit 13
++    fi
++  fi
++  python3 "$LIB/copy_inputs.py" "$workdir" "$per_case_dir/inputs" || exit 13
+   cp "$case_file" "$per_case_dir/case.yaml"
+
+   export EVAL_FIXTURE_DIR="$FIXTURES_DIR"
+@@ -417,7 +455,7 @@
+       mkdir -p "$sample_dir"
+       sample_workdir="$sample_dir/workdir"
+       sample_sandbox="$sample_dir/sandbox"
+-      cp -R "$per_case_dir/inputs" "$sample_workdir"
++      python3 "$LIB/copy_inputs.py" "$per_case_dir/inputs" "$sample_workdir" || exit 13
+       sample_transcript="$sample_dir/transcript.jsonl"
+       sample_exit="$(spawn_opencode "$prompt" "$sample_workdir" "$sample_sandbox" "$sample_transcript" "${skills_loaded[@]}")"
+       printf '%s\n' "$sample_exit" > "$sample_dir/exit-code"
+@@ -450,7 +488,7 @@
+   for ((s=2; s<=REPETITIONS; s++)); do
+     sample_dir="$per_case_dir/repetitions/sample-$s"
+     mkdir -p "$sample_dir"
+-    cp -R "$per_case_dir/inputs" "$sample_dir/workdir"
++    python3 "$LIB/copy_inputs.py" "$per_case_dir/inputs" "$sample_dir/workdir" || exit 13
+     sample_exit="$(spawn_opencode "$prompt" "$sample_dir/workdir" "$sample_dir/sandbox" "$sample_dir/transcript.jsonl" "${skills_loaded[@]}")"
+     printf '%s\n' "$sample_exit" > "$sample_dir/exit-code"
+     EVAL_SPAWN_EXIT_CODE="$sample_exit" run_all_checks "$case_file" "$sample_dir/workdir" "$sample_dir/transcript.jsonl" "$sample_dir/checks.json"
+@@ -475,7 +513,11 @@
+
+   passed="$(echo "$case_result" | jq -r '.passed')"
+   if [[ "$passed" == "true" ]]; then
+-    echo "[eval-harness] Case $i/${#CASE_FILES[@]} $cid PASS"
++    if [[ $(jq -r '.required // false' <<< "$manual_review") == true ]]; then
++      echo "[eval-harness] Case $i/${#CASE_FILES[@]} $cid automatic checks PASS; PENDING MANUAL REVIEW"
++    else
++      echo "[eval-harness] Case $i/${#CASE_FILES[@]} $cid PASS"
++    fi
+   else
+     echo "[eval-harness] Case $i/${#CASE_FILES[@]} $cid FAIL"
+   fi
+@@ -488,13 +530,14 @@
+
+ results_array_json="$(printf '%s\n' "${case_results[@]}" | jq -s .)"
+ summary_json="$(build_run_summary "$results_array_json" "$RUN_ID" "$TRIGGER")"
++summary_json=$(jq --arg suite "$SUITE" --argjson workflow "$workflow_metadata" --argjson review "$manual_review" '. + {suite:$suite} | if $suite == "workflow" then . + {workflow:$workflow,manual_review:$review} else . end' <<< "$summary_json")
+ echo "$summary_json" > "$RUN_DIR/results.json"
+ render_diff_md "$RUN_DIR/results.json" "$RUN_DIR/diff.md"
+ python3 "$LIB/evidence.py" seal "$RUN_DIR" "$SKILL" || exit 13
+
+ # Append a compact event line to history.ndjson (Settled #18)
+ jq -c --arg event run \
+-  '{event:$event, run_id:.run_id, trigger:.trigger, verdict:.verdict, summary:.summary}' \
++  '{event:$event, run_id:.run_id, trigger:.trigger, verdict:.verdict, summary:.summary, suite:.suite} + (if .suite == "workflow" then {workflow:.workflow,manual_review:.manual_review} else {} end)' \
+   "$RUN_DIR/results.json" >> "$HISTORY_LOG"
+
+ verdict="$(jq -r '.verdict' "$RUN_DIR/results.json")"
+@@ -508,7 +551,11 @@
+
+ case "$verdict" in
+   PASS)
+-    echo "[eval-harness] PASS $pass/$total — see $RUN_DIR/diff.md"
++    if [[ $(jq -r '.required // false' <<< "$manual_review") == true ]]; then
++      echo "[eval-harness] automatic checks PASS $pass/$total; PENDING MANUAL REVIEW; see $RUN_DIR/diff.md"
++    else
++      echo "[eval-harness] PASS $pass/$total — see $RUN_DIR/diff.md"
++    fi
+     exit 0
+     ;;
+   REGRESSION)
+diff --git a/scripts/eval/regrade.sh b/scripts/eval/regrade.sh
+--- a/scripts/eval/regrade.sh
++++ b/scripts/eval/regrade.sh
+@@ -29,15 +29,32 @@
+ python3 "$REGRADING_DIR/lib/evidence.py" snapshot "$run" "$report/source" > "$report/source-evidence.json" || exit 13
+ jq -e --arg case_id "$case_id" '.cases | index($case_id) != null' "$report/source-evidence.json" >/dev/null || { printf 'regrade: case is not in the source run\n' >&2; exit 13; }
+ skill=$(jq -r '.skill' "$report/source-evidence.json")
+-root=$(resolve_skills_root "$skill") || exit 13
++suite=$(jq -r '.suite // "regression"' "$report/source/results.json")
++workflow_metadata=null
++manual_review=null
++if [[ $suite == workflow ]]; then
++  [[ -n ${EVAL_WORKFLOWS_ROOT:-} ]] || { printf 'regrade: EVAL_WORKFLOWS_ROOT is required\n' >&2; exit 13; }
++  entry=$(python3 "$REGRADING_DIR/lib/workflow.py" select "$EVAL_WORKFLOWS_ROOT" id "$case_id") || exit 13
++  [[ $(jq -r '.[0].skill' <<< "$entry") == "$skill" ]] || { printf 'regrade: workflow skill changed\n' >&2; exit 13; }
++  evals_dir=$(jq -r '.[0].evals_dir' <<< "$entry")
++  manual_review=$(jq '.[0].manual_review' <<< "$entry")
++  workflow_metadata=$(jq '.workflow' "$report/source/results.json")
++  jq -e --arg id "$case_id" --arg skill "$skill" '.id == $id and .skill == $skill and (.split == "development" or .split == "heldout") and (.source | type == "string")' <<< "$workflow_metadata" >/dev/null || { printf 'regrade: invalid saved workflow metadata\n' >&2; exit 13; }
++elif [[ $suite == regression ]]; then
++  root=$(resolve_skills_root "$skill") || exit 13
++  evals_dir="$root/$skill/evals"
++else
++  printf 'regrade: invalid saved suite\n' >&2
++  exit 13
++fi
+ case_files=()
+-for candidate in "$root/$skill/evals/cases/"*.yaml; do
++for candidate in "$evals_dir/cases/"*.yaml; do
+   [[ -f "$candidate" ]] || continue
+   if [[ "$(yq -r '.id' "$candidate")" == "$case_id" ]]; then case_files+=("$candidate"); fi
+ done
+ [[ ${#case_files[@]} == 1 ]] || { printf 'regrade: current YAML case missing or ambiguous\n' >&2; exit 13; }
+ cp "${case_files[0]}" "$report/current-case.yaml"
+-export EVAL_FIXTURE_DIR="$root/$skill/evals/fixtures"
++export EVAL_FIXTURE_DIR="$evals_dir/fixtures"
+ evidence="$report/source/$case_id"
+ attempt_dirs=("$evidence")
+ for attempt in "$evidence"/stability/sample-* "$evidence"/repetitions/sample-*; do
+@@ -49,6 +66,9 @@
+   [[ -d "$attempt/workdir" && -f "$attempt/exit-code" && "$(<"$attempt/exit-code")" == 0 ]] || { printf 'regrade: incomplete or failed candidate attempt\n' >&2; exit 13; }
+   problem=$(transcript_error "$attempt/transcript.jsonl")
+   [[ -z "$problem" ]] || { printf 'regrade: %s\n' "$problem" >&2; exit 13; }
++  if yq -o=json '.' "$evidence/case.yaml" | jq -e 'has("turns")' >/dev/null; then
++    yq -o=json '.turns' "$evidence/case.yaml" | python3 "$REGRADING_DIR/lib/native_turns.py" validate "$attempt" || exit 13
++  fi
+ done
+ results=()
+ index=0
+@@ -60,8 +80,12 @@
+   # The scorer may write files. Its working copy is distinct from the snapshot.
+   grading_dir="$report/attempts/$index"
+   mkdir -p "$grading_dir"
+-  cp -R "$attempt/workdir" "$grading_dir/workdir"
++  python3 "$REGRADING_DIR/lib/copy_inputs.py" "$attempt/workdir" "$grading_dir/workdir" || exit 13
+   cp "$attempt/transcript.jsonl" "$attempt/exit-code" "$grading_dir/"
++  if [[ -f "$attempt/turns.json" ]]; then
++    cp "$attempt/turns.json" "$grading_dir/"
++    cp -R "$attempt/turns" "$grading_dir/turns"
++  fi
+   if [[ -f "$attempt/transcript.jsonl.err" ]]; then cp "$attempt/transcript.jsonl.err" "$grading_dir/"; fi
+   EVAL_SPAWN_EXIT_CODE=0 run_all_checks "$report/current-case.yaml" "$grading_dir/workdir" "$grading_dir/transcript.jsonl" "$grading_dir/checks.json" || exit 13
+   results+=("$(jq --arg attempt "$attempt_name" --arg directory "attempts/$index" '. + {source_attempt:$attempt,directory:$directory}' "$grading_dir/checks.json")")
+@@ -69,11 +93,22 @@
+ printf '%s\n' "${results[@]}" | jq -s \
+   --arg run "$run_id" --arg case_id "$case_id" --arg skill "$skill" \
+   --arg sha "$(sha256sum "$report/current-case.yaml" | cut -d' ' -f1)" \
++  --arg suite "$suite" --argjson workflow "$workflow_metadata" \
++  --argjson review "$manual_review" \
+   '{schema_version:1,kind:"regrade",source_run:$run,case_id:$case_id,skill:$skill,
+     current_case_sha256:$sha,attempts:.,passed:all(.[]; .passed),
+     harness_error:any(.[].checks[]; .error == true or (.kind == "llm_judge" and .judge.majority_verdict == null)),
+-    candidate_invoked:false,cost_usd:null}' > "$report/report.json"
++    candidate_invoked:false,cost_usd:null,suite:$suite} + (if $suite == "workflow" then {workflow:$workflow,manual_review:$review} else {} end)' > "$report/report.json"
++if [[ $suite == workflow ]]; then
++  jq -r '"# Workflow Regrade\n\n- source run: `\(.source_run)`\n- original source: \(.workflow.source)\n- automatic checks: " +
++    (if .harness_error then "ERROR" elif .passed then "PASS" else "FAIL" end) + "\n" +
++    (if .manual_review.required == true then "- manual review: **PENDING MANUAL REVIEW**\n- artifact: `\(.manual_review.artifact)`\n" +
++      ([.manual_review.criteria[] | "- review criterion: " + .] | join("\n")) else "- manual review: not required" end)' "$report/report.json" > "$report/report.md"
++fi
+ printf '[eval-harness] regrade report: %s/report.json\n' "$report"
++if [[ $(jq -r '.required // false' <<< "$manual_review") == true ]]; then
++  printf '[eval-harness] PENDING MANUAL REVIEW: %s (current metadata; report passed covers automatic checks only)\n' "$(jq -r '.artifact' <<< "$manual_review")"
++fi
+ jq -e '.harness_error == false' "$report/report.json" >/dev/null || exit 13
+ if ! jq -e '.passed' "$report/report.json" >/dev/null; then
+   if [[ "${EVAL_WARN_ONLY:-0}" == 1 ]]; then
+diff --git a/scripts/eval/status.sh b/scripts/eval/status.sh
+--- a/scripts/eval/status.sh
++++ b/scripts/eval/status.sh
+@@ -39,8 +39,12 @@
+   if [[ -f "$d/results.json" ]]; then
+     rid="$(jq -r '.run_id' "$d/results.json")"
+     verdict="$(jq -r '.verdict' "$d/results.json")"
++    if [[ $(jq -r '.manual_review.required // false' "$d/results.json") == true ]]; then
++      verdict="automatic $verdict; PENDING MANUAL REVIEW"
++    fi
+     trig="$(jq -r '.trigger' "$d/results.json")"
++    suite="$(jq -r '.suite // "regression"' "$d/results.json")"
+     sum="$(jq -r '"\(.summary.pass)/\(.summary.total)"' "$d/results.json")"
+-    printf "  %s  %-12s  %-12s  %s\n" "$rid" "$trig" "$verdict" "$sum"
++    printf "  %s  %-12s  %-12s  %-12s  %s\n" "$rid" "$suite" "$trig" "$verdict" "$sum"
+   fi
+ done
+diff --git a/scripts/eval/lib/diff.sh b/scripts/eval/lib/diff.sh
+--- a/scripts/eval/lib/diff.sh
++++ b/scripts/eval/lib/diff.sh
+@@ -46,6 +46,9 @@
+   fi
+
+   local rerun_cmd="bash scripts/eval/run.sh --case=$case_id --skill=\${SKILL_UNDER_TEST} --debug --pin-env=baseline"
++  if [[ ${EVAL_SUITE:-regression} == workflow ]]; then
++    rerun_cmd="eval-harness workflow --case=$case_id --debug"
++  fi
+
+   local model_id
+   model_id="$(jq -r '.model_id // "unknown"' "$manifest_file" 2>/dev/null || echo unknown)"
+@@ -172,7 +175,15 @@
+     echo "# eval-harness run $run_id"
+     echo
+     echo "- trigger: \`$trigger\`"
+-    echo "- verdict: **$verdict**"
++    if [[ $(jq -r '.suite // "regression"' "$results") == workflow ]]; then
++      jq -r '"- suite: `workflow`\n- task: `\(.workflow.id)`\n- split: `\(.workflow.split)`\n- source: \(.workflow.source)"' "$results"
++    fi
++    if [[ $(jq -r '.suite // "regression"' "$results") == workflow ]]; then
++      echo "- automatic verdict: **$verdict**"
++      jq -r 'select(.manual_review.required == true) | "- manual review: **PENDING MANUAL REVIEW**\n- artifact: `\(.manual_review.artifact)`\n" + ([.manual_review.criteria[] | "- review criterion: " + .] | join("\n"))' "$results"
++    else
++      echo "- verdict: **$verdict**"
++    fi
+     echo
+     jq -r '.cases[] | select(.repetitions.total > 1) |
+       "- " + .case_id + ": independent attempts " + (.repetitions.success_count | tostring) +
+@@ -228,7 +239,11 @@
+
+     local stable; stable="$(jq -r '[.cases[] | select(.passed == true)] | length' "$results")"
+     if [[ "$stable" -gt 0 ]]; then
+-      echo "## STABLE"
++      if [[ $(jq -r '.suite // "regression"' "$results") == workflow ]]; then
++        echo "## AUTOMATIC CHECKS PASSED"
++      else
++        echo "## STABLE"
++      fi
+       echo
+       jq -r '.cases[] | select(.passed == true) | "- " + .case_id + ": PASS"' "$results"
+     fi
+diff --git a/scripts/eval/lib/spawn.sh b/scripts/eval/lib/spawn.sh
+--- a/scripts/eval/lib/spawn.sh
++++ b/scripts/eval/lib/spawn.sh
+@@ -44,6 +44,10 @@
+     set -e
+     umask 077
+     local runtime container='' auth_src='' real_skills_root skill var
++    if [[ ${case_native_turns:-false} == true && ${EVAL_RUNNER:-host} != host ]]; then
++      printf 'Native turns require EVAL_RUNNER=host; Docker multi-turn is not supported\n' >&2
++      exit 13
++    fi
+     runtime=$(mktemp -d "${TMPDIR:-/tmp}/eval-candidate.XXXXXX") || exit 13
+     trap 'code=$?; trap - EXIT; if [[ -s "$runtime/container-id" ]]; then docker rm -f "$(<"$runtime/container-id")" >/dev/null 2>&1 || code=13; fi; rm -rf -- "$runtime"; exit "$code"' EXIT
+     trap 'exit 130' INT
+@@ -126,7 +130,12 @@
+     export EVAL_HARNESS_RUNNING=1
+     export PATH="$workdir:$PATH"
+     unset OPENCODE_AUTH_FILE
++    unset EVAL_WORKFLOWS_ROOT EVAL_EVALS_DIR EVAL_WORKFLOW_METADATA EVAL_FIXTURE_DIR
+     cd "$workdir" || exit 13
++    if [[ ${case_native_turns:-false} == true ]]; then
++      python3 "$_SPAWN_LIB_DIR/native_turns.py" run "$model" "$workdir" "$transcript_out" "$max_seconds" <<< "$case_prompts"
++      exit $?
++    fi
+     timeout --kill-after=1 "$max_seconds" opencode run \
+       --model "$model" \
+       --format json \
+diff --git a/scripts/eval/lib/workflow.py b/scripts/eval/lib/workflow.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/lib/workflow.py
+@@ -0,0 +1,115 @@
++#!/usr/bin/env python3
++"""Validate workflow selection and case inputs before candidate execution."""
++
++import json
++from pathlib import Path
++import re
++import sys
++
++
++def identifier(value):
++    if not isinstance(value, str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", value):
++        raise ValueError("invalid task or skill ID")
++    return value
++
++
++def local_path(root, name):
++    if not isinstance(name, str) or not name or Path(name).is_absolute() or ".." in Path(name).parts:
++        raise ValueError("expected a nonempty relative path without '..'")
++    target = (root / name).resolve(strict=True)
++    if not target.is_relative_to(root.resolve()) or not target.is_file():
++        raise ValueError("path must be a file inside the task eval directory")
++    return str(target)
++
++
++def review_metadata(directory):
++    path = directory / "metadata.json"
++    if path.is_symlink():
++        raise ValueError("task metadata cannot be a link")
++    if not path.exists():
++        return None
++    metadata = json.loads(path.read_text())
++    if not isinstance(metadata, dict) or set(metadata) != {"manual_review", "artifact", "criteria"} or type(metadata["manual_review"]) is not bool:
++        raise ValueError("metadata requires manual_review (boolean), artifact, and criteria")
++    artifact = metadata["artifact"]
++    if not isinstance(artifact, str) or not artifact.strip() or not Path(artifact).parts or Path(artifact).is_absolute() or ".." in Path(artifact).parts or any(c in artifact for c in "\0\n\r"):
++        raise ValueError("review artifact must be a relative path inside the workdir")
++    criteria = metadata["criteria"]
++    if not isinstance(criteria, list) or not criteria or any(not isinstance(c, str) or not c.strip() or "\0" in c for c in criteria):
++        raise ValueError("review criteria must be nonempty strings")
++    return {"required": metadata["manual_review"],
++            "status": "pending" if metadata["manual_review"] else "not_required",
++            "artifact": artifact, "criteria": criteria}
++
++
++def select(root, selector, value):
++    root = Path(root).resolve(strict=True)
++    index = root / "index.json"
++    if index.is_symlink():
++        raise ValueError("workflow index cannot be a link")
++    manifest = json.loads(index.read_text())
++    if not isinstance(manifest, dict) or set(manifest) != {"schema_version", "tasks"} or type(manifest["schema_version"]) is not int or manifest["schema_version"] != 1:
++        raise ValueError("expected workflow schema_version 1 and tasks")
++    tasks = manifest["tasks"]
++    if not isinstance(tasks, list) or not tasks:
++        raise ValueError("tasks must be a nonempty array")
++    ids = set()
++    selected = []
++    for task in tasks:
++        if not isinstance(task, dict) or set(task) != {"id", "skill", "split", "source", "description"}:
++            raise ValueError("invalid task fields (skip flags are not supported)")
++        identifier(task["id"])
++        identifier(task["skill"])
++        if task["id"] in ids:
++            raise ValueError("duplicate task ID: " + task["id"])
++        ids.add(task["id"])
++        if task["split"] not in {"development", "heldout"}:
++            raise ValueError("invalid task split")
++        for field in ("source", "description"):
++            if not isinstance(task[field], str) or not task[field].strip():
++                raise ValueError("task source and description must be nonempty strings")
++        directory = root / "tasks" / task["id"]
++        case_name = f"tasks/{task['id']}/cases/{task['id']}.yaml"
++        if local_path(root, case_name) != str(root / case_name):
++            raise ValueError("workflow case and its control directories cannot be links")
++        if task[selector] == value:
++            selected.append({**task, "evals_dir": str(directory.resolve()), "manual_review": review_metadata(directory)})
++    if not selected:
++        raise ValueError("no workflow tasks match the selector")
++    return selected
++
++
++def case_inputs(data, directory, suite):
++    if not isinstance(data, dict) or ("prompt" in data) == ("turns" in data):
++        raise ValueError("case requires exactly one of prompt or turns")
++    prompts = data["turns"] if "turns" in data else [data["prompt"]]
++    if not isinstance(prompts, list) or not prompts or any(not isinstance(p, str) or not p.strip() or "\0" in p for p in prompts):
++        raise ValueError("prompt/turns must contain nonempty prompt strings")
++    setup = data.get("setup", {})
++    if not isinstance(setup, dict):
++        raise ValueError("setup must be an object")
++    if suite == "workflow":
++        fixtures = setup.get("fixtures", {})
++        if not isinstance(fixtures, dict):
++            raise ValueError("setup.fixtures must be an object")
++        for destination, source in fixtures.items():
++            if not isinstance(destination, str) or not destination or Path(destination).is_absolute() or ".." in Path(destination).parts:
++                raise ValueError("fixture destination must be a relative path inside the workdir")
++            fixture = local_path(Path(directory), source)
++            if fixture == str((Path(directory) / "metadata.json").resolve()):
++                raise ValueError("manual-review metadata cannot be a candidate fixture")
++    script = local_path(Path(directory), setup["script"]) if "script" in setup else ""
++    return {"prompts": prompts, "script": script, "native_turns": "turns" in data}
++
++
++if __name__ == "__main__":
++    try:
++        if sys.argv[1] == "select":
++            result = select(*sys.argv[2:])
++        elif sys.argv[1] == "case":
++            result = case_inputs(json.load(sys.stdin), *sys.argv[2:])
++        else:
++            raise ValueError("unknown workflow operation")
++        print(json.dumps(result))
++    except (OSError, ValueError, KeyError, TypeError) as error:
++        sys.exit(f"workflow: {error}")
+diff --git a/scripts/eval/lib/native_turns.py b/scripts/eval/lib/native_turns.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/eval/lib/native_turns.py
+@@ -0,0 +1,142 @@
++#!/usr/bin/env python3
++"""Run ordered prompts in one native OpenCode session, with one time budget."""
++
++import json
++import os
++from pathlib import Path
++import signal
++import subprocess
++import sys
++import time
++
++
++def session_id(transcript, expected):
++    events = [json.loads(line) for line in transcript.read_text().splitlines() if line.strip()]
++    ids = {event["sessionID"] for event in events if "sessionID" in event}
++    if len(ids) != 1 or not all(isinstance(value, str) and value.strip() for value in ids):
++        raise ValueError("missing or ambiguous native sessionID")
++    current = ids.pop()
++    if expected is not None and current != expected:
++        raise ValueError("native sessionID changed between turns")
++    return current
++
++
++def transcript_problem(transcript):
++    result = subprocess.run(["bash", str(Path(__file__).with_name("transcript.sh")), "validate", str(transcript)],
++                            text=True, capture_output=True, check=True)
++    return result.stdout.strip()
++
++
++def interrupted(signum, _frame):
++    raise SystemExit(128 + signum)
++
++
++def validate(attempt, prompts):
++    records = json.loads((attempt / "turns.json").read_text())
++    if not isinstance(records, list) or len(records) != len(prompts) or not records:
++        raise ValueError("incomplete turn evidence")
++    session = None
++    combined = b""
++    for number, record in enumerate(records, 1):
++        directory = attempt / "turns" / str(number)
++        transcript = directory / "transcript.jsonl"
++        if record["turn"] != number or record["directory"] != f"turns/{number}" or record["exit_code"] != 0 or (directory / "exit-code").read_text().strip() != "0":
++            raise ValueError("failed or unordered turn evidence")
++        problem = transcript_problem(transcript)
++        if problem:
++            raise ValueError(problem)
++        session = session_id(transcript, session)
++        if record["session_id"] != session:
++            raise ValueError("turn session metadata does not match transcript")
++        combined += transcript.read_bytes()
++    if combined != (attempt / "transcript.jsonl").read_bytes():
++        raise ValueError("combined transcript does not match ordered turns")
++
++
++def run(model, workdir, output, seconds, prompts):
++    transcript = Path(output)
++    attempt = transcript.parent
++    records = []
++    session = None
++    deadline = time.monotonic() + int(seconds)
++    with transcript.open("wb") as combined, Path(output + ".err").open("wb") as errors:
++        for number, prompt in enumerate(prompts, 1):
++            directory = attempt / "turns" / str(number)
++            directory.mkdir(parents=True)
++            turn_transcript = directory / "transcript.jsonl"
++            command = ["opencode", "run", "--model", model, "--format", "json", "--dir", workdir]
++            if session is not None:
++                command += ["--session", session]
++            command += ["--", prompt]
++            started = time.monotonic()
++            code = 0
++            problem = ""
++            with turn_transcript.open("wb") as stdout, (directory / "transcript.jsonl.err").open("wb") as stderr:
++                remaining = deadline - time.monotonic()
++                if remaining <= 0:
++                    code = 124
++                else:
++                    child = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr,
++                                             start_new_session=True)
++                    try:
++                        code = child.wait(timeout=remaining)
++                    except subprocess.TimeoutExpired:
++                        os.killpg(child.pid, signal.SIGTERM)
++                        try:
++                            child.wait(timeout=1)
++                        except subprocess.TimeoutExpired:
++                            pass
++                        # A tool may outlive the CLI, including after its leader exits.
++                        try:
++                            os.killpg(child.pid, signal.SIGKILL)
++                        except ProcessLookupError:
++                            pass
++                        child.wait()
++                        code = 124
++                    except BaseException:
++                        try:
++                            os.killpg(child.pid, signal.SIGKILL)
++                        except ProcessLookupError:
++                            pass
++                        child.wait()
++                        raise
++            if code == 0:
++                try:
++                    problem = transcript_problem(turn_transcript)
++                    if problem:
++                        raise ValueError(problem)
++                    session = session_id(turn_transcript, session)
++                except (ValueError, TypeError, KeyError) as error:
++                    code, problem = 13, str(error)
++            code = code if code >= 0 else 128 - code
++            (directory / "exit-code").write_text(f"{code}\n")
++            combined.write(turn_transcript.read_bytes())
++            combined.flush()
++            errors.write((directory / "transcript.jsonl.err").read_bytes())
++            if problem:
++                errors.write((problem + "\n").encode())
++            records.append({"turn": number, "directory": f"turns/{number}", "session_id": session,
++                            "exit_code": code, "error": problem or None,
++                            "elapsed_ms": round((time.monotonic() - started) * 1000)})
++            (attempt / "turns.json").write_text(json.dumps(records, indent=2) + "\n")
++            if code:
++                return code
++    return 0
++
++
++if __name__ == "__main__":
++    try:
++        prompts = json.load(sys.stdin)
++        if not isinstance(prompts, list) or not prompts or any(not isinstance(p, str) or not p.strip() for p in prompts):
++            raise ValueError("expected nonempty turns")
++        if sys.argv[1] == "validate":
++            validate(Path(sys.argv[2]), prompts)
++        elif sys.argv[1] == "run":
++            signal.signal(signal.SIGTERM, interrupted)
++            signal.signal(signal.SIGINT, interrupted)
++            sys.exit(run(*sys.argv[2:], prompts))
++        else:
++            raise ValueError("unknown native turns operation")
++    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
++        print(f"native turns: {error}", file=sys.stderr)
++        sys.exit(13)
+diff --git a/scripts/eval/lib/copy_inputs.py b/scripts/eval/lib/copy_inputs.py
+--- a/scripts/eval/lib/copy_inputs.py
++++ b/scripts/eval/lib/copy_inputs.py
+@@ -2,30 +2,86 @@
+ """Copy candidate inputs without following links or including evaluation files."""
+
+ import os
++from collections import deque
+ from pathlib import Path
+ import shutil
+ import stat
+ import sys
+
+
++def relative_link(root, link):
++    """Check every expanded component, never following a link outside this tree."""
++    target = os.readlink(link)
++    pending = deque(link.relative_to(root).parts)
++    resolved = []
++    visited = set()
++    while pending:
++        part = pending.popleft()
++        if part in {"", "."}:
++            continue
++        if part == "..":
++            if not resolved:
++                raise ValueError(f"link escapes input tree: {link}")
++            resolved.pop()
++            continue
++        current = root.joinpath(*resolved, part)
++        if current.is_symlink():
++            value = os.readlink(current)
++            if os.path.isabs(value):
++                raise ValueError(f"absolute link is not supported: {current}")
++            # Check the written target too, including unreachable loop suffixes.
++            lexical = list(resolved)
++            for component in value.split("/"):
++                if component == "..":
++                    if not lexical:
++                        raise ValueError(f"link escapes input tree: {current}")
++                    lexical.pop()
++                elif component not in {"", "."}:
++                    lexical.append(component)
++            if current in visited:
++                return target  # A confined cycle stays a link; copying never traverses it.
++            if len(visited) >= 40:
++                raise ValueError(f"link chain exceeds 40 expansions: {link}")
++            visited.add(current)
++            pending.extendleft(reversed(value.split("/")))
++        else:
++            resolved.append(part)
++    return target
++
++
+ def copy_tree(source, destination, skill=False):
+     source = Path(source)
+     destination = Path(destination)
+-    destination.mkdir(parents=True, exist_ok=True)
+-    for entry in source.iterdir():
+-        if skill and entry.name == "evals":
+-            continue
+-        mode = entry.lstat().st_mode
+-        target = destination / entry.name
+-        if stat.S_ISDIR(mode):
+-            copy_tree(entry, target, skill)
+-        elif stat.S_ISREG(mode):
+-            if target.is_symlink():
+-                raise ValueError(f"unsafe destination: {target}")
+-            shutil.copyfile(entry, target)
+-            os.chmod(target, stat.S_IMODE(mode) & 0o777)
+-        else:
+-            raise ValueError(f"links and special files are not supported: {entry}")
++    links = []
++
++    def visit(directory, output):
++        if directory.is_symlink() or output.is_symlink():
++            raise ValueError("copy roots and directory destinations cannot be links")
++        output.mkdir(parents=True, exist_ok=True)
++        for entry in directory.iterdir():
++            if skill and entry.name == "evals":
++                continue
++            mode = entry.lstat().st_mode
++            target = output / entry.name
++            if stat.S_ISDIR(mode):
++                visit(entry, target)
++            elif stat.S_ISREG(mode):
++                if target.is_symlink():
++                    raise ValueError(f"unsafe destination: {target}")
++                shutil.copyfile(entry, target)
++                os.chmod(target, stat.S_IMODE(mode) & 0o777)
++            elif stat.S_ISLNK(mode) and not skill:
++                value = relative_link(source, entry)
++                links.append(target)
++                if not (target.is_symlink() and os.readlink(target) == value):
++                    target.symlink_to(value)
++            else:
++                raise ValueError(f"links and special files are not supported: {entry}")
++
++    visit(source, destination)
++    # A broken source link must not resolve through an unsafe pre-existing destination.
++    for link in links:
++        relative_link(destination, link)
+
+
+ if __name__ == "__main__":
+diff --git a/scripts/eval/lib/evidence.py b/scripts/eval/lib/evidence.py
+--- a/scripts/eval/lib/evidence.py
++++ b/scripts/eval/lib/evidence.py
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python3
+ """Seal completed evidence and copy verified evidence for offline regrading.
+
+-Hashes detect changed files, not an attacker who can rewrite the seal itself.
++Hashes and link targets detect changes, not an attacker who can rewrite the seal.
+ """
+
+ import hashlib
+@@ -12,6 +12,8 @@
+ import stat
+ import sys
+
++from copy_inputs import relative_link
++
+
+ def identifier(value):
+     if not isinstance(value, str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", value):
+@@ -32,19 +34,32 @@
+         for path in sorted(directory.iterdir()):
+             relative = path.relative_to(run)
+             parts = relative.parts
++            mode = path.lstat().st_mode
+             if len(parts) == 1 and path.name in {".active", ".finished", "evidence.json"}:
++                if not stat.S_ISREG(mode):
++                    raise ValueError(f"unsafe control file: {relative}")
+                 continue
+             if parts[0] in cases and path.name == "sandbox" and (
+                 len(parts) == 2 or (len(parts) == 4 and parts[1] in {"stability", "repetitions"}
+                                     and re.fullmatch(r"sample-[1-9][0-9]*", parts[2]))
+             ):
++                if not stat.S_ISDIR(mode):
++                    raise ValueError(f"unsafe sandbox directory: {relative}")
+                 continue
+-            mode = path.lstat().st_mode
+             if stat.S_ISDIR(mode):
+                 files[str(relative)] = "directory"
+                 visit(path)
+             elif stat.S_ISREG(mode):
+                 files[str(relative)] = hashlib.sha256(path.read_bytes()).hexdigest()
++            elif stat.S_ISLNK(mode):
++                if parts[0] in cases and len(parts) > 2 and parts[1] in {"workdir", "inputs"}:
++                    root = run.joinpath(*parts[:2])
++                elif (parts[0] in cases and len(parts) > 4 and parts[1] in {"stability", "repetitions"}
++                      and re.fullmatch(r"sample-[1-9][0-9]*", parts[2]) and parts[3] == "workdir"):
++                    root = run.joinpath(*parts[:4])
++                else:
++                    raise ValueError(f"links are only allowed inside workdir/inputs trees: {relative}")
++                files[str(relative)] = {"symlink": relative_link(root, path)}
+             else:
+                 raise ValueError(f"unsafe evidence path (link or special file): {relative}")
+
+@@ -103,6 +118,9 @@
+         destination = target / name
+         if digest == "directory":
+             destination.mkdir(parents=True, exist_ok=True)
++        elif isinstance(digest, dict):
++            destination.parent.mkdir(parents=True, exist_ok=True)
++            destination.symlink_to(digest["symlink"])
+         else:
+             destination.parent.mkdir(parents=True, exist_ok=True)
+             shutil.copyfile(run / name, destination)

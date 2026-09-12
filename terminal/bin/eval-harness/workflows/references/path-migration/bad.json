@@ -1,0 +1,9 @@
+[
+  {"name":"changed-config-only","restore":["migrate.cjs"]},
+  {"name":"rewrote-session-history","write":{"history/session.json":"{\"resume\":\"new-setup\"}\n"}},
+  {"name":"stale-startup-path","restore":["startup.json"]},
+  {"name":"changed-startup-editor","write":{"startup.json":"{\"setupRoot\":\"new-setup\",\"editor\":\"changed-editor\"}\n"}},
+  {"name":"dropped-startup-editor","write":{"startup.json":"{\"setupRoot\":\"new-setup\"}\n"}},
+  {"name":"deleted-original-tree","remove":["old-setup/tool.txt"]},
+  {"name":"rewrote-user-file","write":{"home/user.txt":"Managed by migration.\n"}}
+]

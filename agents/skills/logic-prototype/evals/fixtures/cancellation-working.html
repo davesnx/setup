@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Cancellation experiment</title>
+<h1>Can an order be cancelled after payment?</h1>
+<p>Order total: 100</p>
+<p>Order state: <output id="order-state">pending</output></p>
+<p>Refund: <output id="refund-amount">0</output></p>
+<button>Pay</button>
+<button>Ship</button>
+<button>Cancel</button>
+<button>Reset</button>
+<script>
+let state = 'pending'
+let refund = 0
+function transition(action) {
+  if (action === 'Reset') { state = 'pending'; refund = 0 }
+  else if (action === 'Pay' && state === 'pending') state = 'paid'
+  else if (action === 'Ship' && state === 'paid') state = 'shipped'
+  else if (action === 'Cancel' && (state === 'pending' || state === 'paid')) {
+    refund = state === 'paid' ? 100 : 0
+    state = 'cancelled'
+  }
+  document.getElementById('order-state').textContent = state
+  document.getElementById('refund-amount').textContent = refund
+}
+document.querySelectorAll('button').forEach(button => {
+  button.addEventListener('click', () => transition(button.textContent))
+})
+</script>
+</html>

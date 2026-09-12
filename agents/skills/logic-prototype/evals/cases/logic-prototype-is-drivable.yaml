@@ -22,6 +22,6 @@ checks:
   - kind: file_exists
     path: prototype.html
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"prototype.html\",\"utf8\"); const required=[/cancel/i,/current state|current order|order state|id=.status/i,/<button/i,/pending/i,/paid/i,/shipped/i,/refund/i,/illegal|cannot|not allowed/i].every(r=>r.test(s)); const external=/(?:src|href)=.{0,2}https?:/i.test(s); process.stdout.write(required&&!external?\"drivable\":\"invalid\")'"
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check-cancellation.cjs" prototype.html'
     unsafe_shell: true
     expect_exact: "drivable"

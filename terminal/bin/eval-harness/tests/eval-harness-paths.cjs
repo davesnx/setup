@@ -64,6 +64,30 @@ opencode
   check(runner, { OPENCODE_SKILLS_ROOT: path.join(work, 'skills'), OPENCODE_SKILLS_EXTRA_ROOT: '', EVAL_STATE_DIR: path.join(work, 'saved'), EVAL_HARNESS_REGISTRY: path.join(work, 'registry'), EVAL_SMOKE_MODEL: 'test/smoke', EVAL_FULL_MODEL: 'test/full' })
   check(runner, { OPENCODE_SKILLS_ROOT: path.join(work, 'skills') })
   check(runner, { OPENCODE_SKILLS_EXTRA_ROOT: path.join(work, 'extra') })
+  const offline = path.join(work, 'offline-bin')
+  fs.mkdirSync(offline)
+  for (const name of ['bash', 'dirname']) {
+    fs.symlinkSync(`/bin/${name}`, path.join(offline, name))
+  }
+  const scripts = path.join(root, 'node_modules/@nano-step/eval-harness/scripts/eval')
+  const offlineScript = `[[ -z "$OPENCODE_REAL_BIN" ]] || exit 99
+[[ "$EVAL_WORKFLOWS_ROOT" == ${JSON.stringify(path.join(root, 'workflows'))} ]] || exit 98
+printf "%s\\n" "$@"
+`
+  fs.writeFileSync(path.join(scripts, 'regrade.sh'), offlineScript)
+  fs.writeFileSync(path.join(scripts, 'run.sh'), offlineScript)
+  fs.writeFileSync(path.join(scripts, 'workflow.sh'), offlineScript)
+  for (const [args, extra] of [
+    [['regrade', '--run=saved', '--case=example'], {}],
+    [['run', '--skill=example'], { EVAL_RUNNER: 'docker' }],
+    [['workflow', '--dry-run'], {}],
+  ]) {
+    const result = spawnSync('/bin/bash', [runner, ...args], {
+      env: { ...env, PATH: offline, ...extra }, encoding: 'utf8',
+    })
+    assert.equal(result.status, 0, result.stderr)
+    assert.deepEqual(result.stdout.trim().split('\n'), args)
+  }
   console.log('PASS: direct and linked runner paths, local dependencies, shims, skills, state, and model settings')
 } finally {
   fs.rmSync(work, { recursive: true, force: true })

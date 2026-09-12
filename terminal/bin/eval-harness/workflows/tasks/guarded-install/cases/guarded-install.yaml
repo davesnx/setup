@@ -1,0 +1,29 @@
+schema_version: 2
+id: guarded-install
+mode: deterministic
+skill_under_test: code-standards
+skills_loaded: [code-standards]
+description: Repair a guarded link installer while preserving staged and working changes.
+setup:
+  script: setup.sh
+  fixtures:
+    .fixture-root: fixtures/.fixture-root
+    install.sh: fixtures/install.sh
+    prelude.sh: fixtures/prelude.sh
+    tool.txt: fixtures/tool.txt
+    notes.txt: fixtures/notes.txt
+    test.cjs: fixtures/test.cjs
+    CONTRACT.md: fixtures/CONTRACT.md
+prompt: |
+  Tighten this installer so rerunning it is safe. CONTRACT.md describes the
+  guarded destination. Run node test.cjs and extend it for reruns and recovery.
+  notes.txt has both staged and unstaged work that must stay exactly as it is.
+  Do not commit, reset, stage, or install anything in your actual home directory.
+budget:
+  max_tokens: 7000
+  max_seconds: 150
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

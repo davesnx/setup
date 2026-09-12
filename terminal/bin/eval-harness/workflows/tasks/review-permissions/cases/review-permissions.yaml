@@ -1,0 +1,31 @@
+schema_version: 2
+id: review-permissions
+mode: deterministic
+skill_under_test: code-standards
+skills_loaded: [code-standards]
+description: Repair background reviewer restrictions across permission and launcher modules.
+setup:
+  fixtures:
+    permissions.cjs: fixtures/permissions.cjs
+    review.cjs: fixtures/review.cjs
+    test.cjs: fixtures/test.cjs
+    CONTRACT.md: fixtures/CONTRACT.md
+turns:
+  - |
+    The background review can read something the source agent cannot. Fix the
+    local review implementation and add tests through the reviewer API. Keep
+    review work separate from the source history. node test.cjs is the current
+    test entry. CONTRACT.md describes the small host substitute.
+  - |
+    Please also cover an "ask" rule. The automatic reviewer must refuse it
+    without asking me for approval. Another plugin can change the source
+    agent's rules after the reviewer factory is created, so verify that case
+    through the read operation, not just a policy helper.
+budget:
+  max_tokens: 8000
+  max_seconds: 180
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

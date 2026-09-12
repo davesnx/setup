@@ -1,0 +1,31 @@
+schema_version: 2
+id: pinned-children
+mode: deterministic
+skill_under_test: debug
+skills_loaded: [debug]
+description: Honor a dependency pin when a local fork has different children behavior.
+setup:
+  fixtures:
+    adapter.cjs: fixtures/adapter.cjs
+    render.cjs: fixtures/render.cjs
+    lock.json: fixtures/lock.json
+    vendor/release.cjs: fixtures/vendor/release.cjs
+    vendor/fork.cjs: fixtures/vendor/fork.cjs
+    vendor/README.md: fixtures/vendor/README.md
+    example.json: fixtures/example.json
+    test.cjs: fixtures/test.cjs
+    CONTRACT.md: fixtures/CONTRACT.md
+prompt: |
+  The conversion adapter works on one machine but not with the pinned release.
+  Repair it here without changing lock.json or vendor sources. Keep the public
+  adapter and render interfaces. CONTRACT.md gives the required children
+  behavior. Verify the pinned path through render.cjs and add regression tests.
+  Both dependency snapshots are local; no compiler install or network is needed.
+budget:
+  max_tokens: 8000
+  max_seconds: 180
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

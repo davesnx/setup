@@ -9,9 +9,12 @@ const root = path.resolve(__dirname, '..')
 const source = process.argv[2] || path.join(root, 'node_modules/@nano-step/eval-harness')
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-patch-test-'))
 const target = path.join(work, 'package with spaces')
-const patch = path.join(root, 'patches/eval-harness-0.4.2.patch')
+const patches = ['eval-harness-0.4.2.patch', 'eval-harness-gaps.patch', 'eval-harness-workflows.patch'].map(name => path.join(root, 'patches', name))
 function run(command, args) {
-  return spawnSync(command, args, { encoding: 'utf8' })
+  return spawnSync(command, args, {
+    encoding: 'utf8',
+    env: command === 'git' ? { ...process.env, GIT_CEILING_DIRECTORIES: work } : process.env,
+  })
 }
 function digest() {
   const hash = crypto.createHash('sha256')
@@ -26,8 +29,10 @@ function apply() {
 }
 try {
   fs.cpSync(source, target, { recursive: true })
-  if (run('git', ['-C', target, 'apply', '--reverse', '--check', patch]).status === 0) {
-    assert.equal(run('git', ['-C', target, 'apply', '--reverse', patch]).status, 0)
+  for (const patch of [...patches].reverse()) {
+    if (run('git', ['-C', target, 'apply', '--reverse', '--check', patch]).status === 0) {
+      assert.equal(run('git', ['-C', target, 'apply', '--reverse', patch]).status, 0)
+    }
   }
   assert.equal(run('git', ['init', '--quiet', work]).status, 0)
   const before = digest()
@@ -38,6 +43,33 @@ try {
   result = apply()
   assert.equal(result.status, 0, result.stderr)
   assert.equal(digest(), patched, 'second application changed files')
+
+  for (const patch of patches.slice(1).reverse()) {
+    assert.equal(run('git', ['-C', target, 'apply', '--reverse', patch]).status, 0)
+  }
+  result = apply()
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(digest(), patched, 'primary-only recovery produced different files')
+
+  assert.equal(run('git', ['-C', target, 'apply', '--reverse', patches[2]]).status, 0)
+  result = apply()
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(digest(), patched, 'two-patch recovery produced different files')
+
+  for (const patch of [...patches].reverse()) {
+    assert.equal(run('git', ['-C', target, 'apply', '--reverse', patch]).status, 0)
+  }
+  const scorer = path.join(target, 'scripts/eval/lib/score.sh')
+  const originalScorer = fs.readFileSync(scorer, 'utf8')
+  assert.ok(originalScorer.includes('  local out\n'))
+  fs.writeFileSync(scorer, originalScorer.replace('  local out\n', '  local out unexpected_drift\n'))
+  const partialDrift = digest()
+  assert.notEqual(apply().status, 0)
+  assert.equal(digest(), partialDrift, 'secondary patch failure applied the primary patch')
+  fs.writeFileSync(scorer, originalScorer)
+  result = apply()
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(digest(), patched)
 
   const pkg = path.join(target, 'package.json')
   const original = fs.readFileSync(pkg, 'utf8')

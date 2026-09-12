@@ -1,0 +1,30 @@
+schema_version: 2
+id: nested-exit
+mode: deterministic
+skill_under_test: debug
+skills_loaded: [debug]
+description: Repair command status propagation through nested shell callers.
+setup:
+  fixtures:
+    patch.sh: fixtures/patch.sh
+    install.sh: fixtures/install.sh
+    command.sh: fixtures/command.sh
+    test.cjs: fixtures/test.cjs
+    notes.txt: fixtures/notes.txt
+turns:
+  - |
+    The patch installer says it succeeded when the patch command fails.
+    Fix this small checkout and add a regression test. Start with node test.cjs.
+    Keep the existing command interface and my notes.txt unchanged.
+  - |
+    I also use install.sh, not just patch.sh. Please check a command that
+    prints "patched" but exits 23. The outer installer must return that status
+    and must not create installed.txt. A successful retry must still work.
+budget:
+  max_tokens: 7000
+  max_seconds: 150
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

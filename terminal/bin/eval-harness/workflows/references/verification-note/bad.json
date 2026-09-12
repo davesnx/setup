@@ -1,0 +1,6 @@
+[
+  {"name":"false-runtime-pass","replace":{"checks.json":["\"status\":\"blocked\"","\"status\":\"passed\""]}},
+  {"name":"copied-examples-claimed-tested","replace":{"checks.json":["\"examples_executed\": false","\"examples_executed\": true"]}},
+  {"name":"invented-command-evidence","replace":{"checks.json":["guide metadata valid","all converter tests passed"]}},
+  {"name":"converter-claimed-moved","replace":{"checks.json":["\"implementation_moved\": false","\"implementation_moved\": true"]}}
+]

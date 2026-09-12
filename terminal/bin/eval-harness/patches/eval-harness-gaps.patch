@@ -1,0 +1,651 @@
+diff --git a/scripts/eval/run.sh b/scripts/eval/run.sh
+--- a/scripts/eval/run.sh
++++ b/scripts/eval/run.sh
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env bash
+ # scripts/eval/run.sh — entrypoint. Executes one or more cases for a skill.
+ # Settled Decisions: 3-trigger model, single-tier in v0.1.0, ephemeral sandbox per case,
+-# run-all-checks, 3-sample stability on FAIL, exit code 12 on regression, 13 on harness error.
++# run-all-checks, 3-sample stability on FAIL, exit code 12 on failed assertions, 13 on harness error.
+
+ set -euo pipefail
+
+@@ -66,10 +66,12 @@
+   EVAL_MAX_SECONDS         Per-case timeout (default: 180)
+   EVAL_MODEL               Override model (default: anthropic/claude-haiku-3-5)
+   EVAL_BYPASS              Set to 1 to skip evals (logged to history.ndjson)
++  EVAL_WARN_ONLY           Set to 1 to return 0 for failed assertions, not errors
++  EVAL_CHECK_TIMEOUT_SECONDS  Positive integer shell-check timeout (default: 30)
+
+ Exit codes:
+-  0    All cases pass, no regression
+-  12   Regression detected (case flipped baseline=PASS to current=FAIL)
++  0    All cases pass, or EVAL_WARN_ONLY=1 explicitly allows failed assertions
++  12   One or more checks failed (including without a baseline)
+   13   Harness or scorer error
+ EOF
+ }
+@@ -512,22 +514,19 @@
+   REGRESSION)
+     echo "[eval-harness] REGRESSION ($pass/$total) — regressions: $regressions"
+     echo "[eval-harness] see $RUN_DIR/diff.md"
+-    # Warn-only check (Settled Decision #9 from prior brief, #15 in v2 brief)
+-    if [[ -f "$STATE_DIR/promoted" ]]; then
+-      echo "[eval-harness] EVAL_HARNESS_REGRESSION=1" >&2
+-      exit 12
+-    else
+-      echo "[eval-harness] WARN-ONLY MODE: exit 0. Promote with 'eval-harness promote' after 7 green days." >&2
+-      exit 0
+-    fi
+     ;;
+   FAIL)
+     echo "[eval-harness] FAIL ($pass/$total) — no baseline diff to compare"
+     echo "[eval-harness] see $RUN_DIR/diff.md"
+-    exit 0
+     ;;
+   *)
+     echo "[eval-harness] ERROR: unknown verdict '$verdict'" >&2
+     exit 13
+     ;;
+ esac
++
++if [[ "${EVAL_WARN_ONLY:-0}" == "1" ]]; then
++  echo "[eval-harness] EVAL_WARN_ONLY=1: failed assertions return 0" >&2
++  exit 0
++fi
++exit 12
+diff --git a/scripts/eval/lib/score.sh b/scripts/eval/lib/score.sh
+--- a/scripts/eval/lib/score.sh
++++ b/scripts/eval/lib/score.sh
+@@ -84,12 +84,31 @@
+     return 0
+   fi
+
+-  local out
+-  out="$(cd "$workdir" && bash -c "$cmd" 2>&1 || true)"
++  local timeout_seconds="${EVAL_CHECK_TIMEOUT_SECONDS-30}"
++  if ! [[ "$timeout_seconds" =~ ^[1-9][0-9]*$ ]]; then
++    jq -n --arg value "$timeout_seconds" '{kind:"shell",passed:false,error:true,
++      failed_check_id:"shell_timeout_config",expected:"positive integer EVAL_CHECK_TIMEOUT_SECONDS",
++      actual:$value,diff_hint:"Set EVAL_CHECK_TIMEOUT_SECONDS to a positive integer (default 30)."}'
++    return 0
++  fi
++  local out exit_code=0 error=false
++  if [[ ! -d "$workdir" ]] || ! command -v timeout >/dev/null 2>&1; then
++    jq -n '{kind:"shell",passed:false,error:true,failed_check_id:"shell_runner",
++      expected:"existing workdir and timeout command",actual:"shell runner unavailable",
++      diff_hint:"Check the workdir and install GNU timeout."}'
++    return 0
++  fi
++  out="$(cd "$workdir" && timeout --kill-after=1 "${timeout_seconds}s" bash -c "$cmd" 2>&1)" || exit_code=$?
+
+   local passed="false"
+   local diff_hint=""
+-  if [[ -n "$expect_regex" ]] && echo "$out" | grep -Eq "$expect_regex"; then
++  if [[ "$exit_code" != 0 ]]; then
++    diff_hint="command exited $exit_code"
++    case "$exit_code" in
++      124|137) error=true; diff_hint="shell check timed out after ${timeout_seconds}s" ;;
++      125|126|127) error=true; diff_hint="shell runner or command unavailable (exit $exit_code)" ;;
++    esac
++  elif [[ -n "$expect_regex" ]] && echo "$out" | grep -Eq "$expect_regex"; then
+     passed="true"
+   elif [[ -n "$expect_min" ]]; then
+     local n; n="$(echo "$out" | tr -d ' \n')"
+@@ -110,6 +129,8 @@
+     --arg expect_min "$expect_min" \
+     --arg expect_exact "$expect_exact" \
+     --argjson passed "$passed" \
++    --argjson exit_code "$exit_code" \
++    --argjson error "$error" \
+     --arg diff_hint "$diff_hint" \
+     '{
+       kind: $kind,
+@@ -122,6 +143,8 @@
+         else "(no expectation)"
+         end),
+       actual: $out,
++      exit_code: $exit_code,
++      error: $error,
+       diff_hint: $diff_hint
+     }'
+ }
+diff --git a/scripts/eval/baseline.sh b/scripts/eval/baseline.sh
+--- a/scripts/eval/baseline.sh
++++ b/scripts/eval/baseline.sh
+@@ -25,6 +25,8 @@
+ when you intend to record the current output as the contract going forward.
+
+ If a baseline already exists, you must pass --force to overwrite.
++Failed assertions can be recorded explicitly, but still fail future runs.
++Runner or scorer errors in any attempt cannot be recorded.
+ EOF
+ }
+
+@@ -52,13 +54,23 @@
+   exit "$run_code"
+ fi
+
+-LATEST_RUN_DIR="$(ls -dt "${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}/runs"/* 2>/dev/null | head -1)"
+-if [[ -z "$LATEST_RUN_DIR" ]] || [[ ! -f "$LATEST_RUN_DIR/results.json" ]]; then
++run_id="$(printf '%s\n' "$RUN_OUT_RAW" | sed -n 's/^\[eval-harness\] run_id=//p')"
++LATEST_RUN_DIR="${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}/runs/$run_id"
++if [[ ! "$run_id" =~ ^[A-Za-z0-9_-]+$ ]] || [[ ! -f "$LATEST_RUN_DIR/results.json" ]]; then
+   echo "[eval-harness] baseline: could not locate the run that just executed" >&2
+   exit 13
+ fi
+
+ source "$SCRIPT_DIR/lib/skills_root.sh"
++if ! jq -e --arg id "$run_id" '
++  .run_id == $id and .trigger == "baseline" and (.cases | length > 0) and
++  all(.cases[]; (.checks | length > 0) and
++    all(.checks[]; .error != true) and .stability.harness_error != true and
++    .repetitions.harness_error != true)
++' "$LATEST_RUN_DIR/results.json" >/dev/null; then
++  echo "[eval-harness] baseline: cannot record missing evidence or harness errors" >&2
++  exit 13
++fi
+ source "$SCRIPT_DIR/lib/preflight.sh"
+
+ if ! preflight_check; then
+diff --git a/scripts/eval/accept.sh b/scripts/eval/accept.sh
+--- a/scripts/eval/accept.sh
++++ b/scripts/eval/accept.sh
+@@ -28,6 +28,8 @@
+ With --bless-env:
+   ALSO updates env_manifest. Future MODEL_CHANGED / OPENCODE_CHANGED attribution
+   will use the current env as the new baseline. Requires confirmation.
++
++Runner or scorer errors in any attempt cannot be accepted.
+ EOF
+ }
+
+@@ -63,7 +65,7 @@
+   echo "[eval-harness] accept: case '$CASE_ID' not in latest run" >&2
+   exit 2
+ fi
+-if jq -e 'any(.checks[]; .error == true) or .stability.harness_error == true' <<<"$NEW_CASE" >/dev/null; then
++if jq -e 'any(.checks[]; .error == true) or .stability.harness_error == true or .repetitions.harness_error == true' <<<"$NEW_CASE" >/dev/null; then
+   echo '[eval-harness] accept: cannot accept a runner or scorer error' >&2
+   exit 13
+ fi
+diff --git a/scripts/eval/twotier.sh b/scripts/eval/twotier.sh
+--- a/scripts/eval/twotier.sh
++++ b/scripts/eval/twotier.sh
+@@ -27,8 +27,8 @@
+   EVAL_FULL_SAMPLES       default: 3
+
+ Exit codes:
+-  0   smoke PASS, or full pass cleared every smoke-FAIL
+-  12  full pass confirmed at least one regression
++  0   smoke PASS, full cleared every failure, or EVAL_WARN_ONLY=1
++  12  full pass confirmed at least one failed assertion (unless EVAL_WARN_ONLY=1)
+   13  harness error during either pass
+ EOF
+ }
+@@ -54,17 +54,17 @@
+ STATE_DIR="${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}"
+
+ echo "[twotier] === SMOKE pass ==="
+-SMOKE_BEFORE="$(ls -1d "$STATE_DIR/runs"/* 2>/dev/null | wc -l | tr -d ' ' || echo 0)"
+-EVAL_MODE=smoke bash "$RUN_BIN" "${ARGS[@]}" --mode=smoke || smoke_rc=$?
++smoke_out="$(EVAL_MODE=smoke bash "$RUN_BIN" "${ARGS[@]}" --mode=smoke 2>&1)" || smoke_rc=$?
++printf '%s\n' "$smoke_out"
+ smoke_rc="${smoke_rc:-0}"
+ if [[ "$smoke_rc" != 0 && "$smoke_rc" != 12 ]]; then
+   exit "$smoke_rc"
+ fi
+
+-SMOKE_RUN="$(ls -dt "$STATE_DIR/runs"/* 2>/dev/null | head -1 || true)"
+-SMOKE_AFTER="$(ls -1d "$STATE_DIR/runs"/* 2>/dev/null | wc -l | tr -d ' ' || echo 0)"
++smoke_id="$(printf '%s\n' "$smoke_out" | sed -n 's/^\[eval-harness\] run_id=//p')"
++SMOKE_RUN="$STATE_DIR/runs/$smoke_id"
+
+-if [[ "$SMOKE_AFTER" -le "$SMOKE_BEFORE" ]] || [[ -z "$SMOKE_RUN" || ! -f "$SMOKE_RUN/results.json" ]]; then
++if [[ ! "$smoke_id" =~ ^[A-Za-z0-9_-]+$ ]] || [[ ! -f "$SMOKE_RUN/results.json" ]]; then
+   echo "[twotier] smoke produced no new results — bailing with smoke exit code $smoke_rc" >&2
+   exit 13
+ fi
+@@ -92,20 +92,22 @@
+ for c in "${cases_arr[@]}"; do
+   echo "[twotier]   escalating case=$c"
+   full_rc=0
+-  EVAL_MODE=full bash "$RUN_BIN" --skill="$SKILL" --case="$c" --mode=full --trigger=2tier-escalation || full_rc=$?
++  full_out="$(EVAL_MODE=full bash "$RUN_BIN" --skill="$SKILL" --case="$c" --mode=full --trigger=2tier-escalation 2>&1)" || full_rc=$?
++  printf '%s\n' "$full_out"
+   if [[ "$full_rc" != 0 && "$full_rc" != 12 ]]; then
+     exit "$full_rc"
+   fi
+-  full_run="$(ls -dt "$STATE_DIR/runs"/* 2>/dev/null | head -1)"
+-  if [[ -z "$full_run" || ! -f "$full_run/results.json" ]]; then
++  full_id="$(printf '%s\n' "$full_out" | sed -n 's/^\[eval-harness\] run_id=//p')"
++  full_run="$STATE_DIR/runs/$full_id"
++  if [[ ! "$full_id" =~ ^[A-Za-z0-9_-]+$ ]] || [[ ! -f "$full_run/results.json" ]]; then
+     echo "[twotier]   case $c: full pass produced no results" >&2
+-    FULL_CASE_RESULTS+=("$(jq -n --arg c "$c" '{case_id:$c, passed:false, baseline_passed:null, full_pass_error:true, attribution:{top:"HARNESS_ERROR"}}')")
+-    continue
++    exit 13
+   fi
+   AGG_RUN_IDS+=("$(basename "$full_run")")
+-  case_result="$(jq -c '.cases[] | select(.case_id == "'"$c"'")' "$full_run/results.json")"
++  case_result="$(jq -c --arg c "$c" '.cases[] | select(.case_id == $c)' "$full_run/results.json")"
+   if [[ -z "$case_result" ]]; then
+-    case_result="$(jq -n --arg c "$c" '{case_id:$c, passed:false, baseline_passed:null, full_pass_error:true}')"
++    echo "[twotier] case $c missing from full results" >&2
++    exit 13
+   fi
+   FULL_CASE_RESULTS+=("$case_result")
+ done
+@@ -172,7 +174,9 @@
+
+ case "$agg_verdict" in
+   PASS) exit 0 ;;
+-  REGRESSION) exit 12 ;;
+-  FAIL) exit 0 ;;
++  REGRESSION|FAIL)
++    [[ "${EVAL_WARN_ONLY:-0}" != 1 ]] || exit 0
++    exit 12
++    ;;
+   *) exit 13 ;;
+ esac
+diff --git a/scripts/eval/status.sh b/scripts/eval/status.sh
+--- a/scripts/eval/status.sh
++++ b/scripts/eval/status.sh
+@@ -31,7 +31,7 @@
+   exit 0
+ fi
+
+-mode="$(if [[ -f "$STATE_DIR/promoted" ]]; then echo "BLOCKING"; else echo "WARN-ONLY"; fi)"
++mode="$(if [[ "${EVAL_WARN_ONLY:-0}" == 1 ]]; then echo "WARN-ONLY (EVAL_WARN_ONLY=1)"; else echo "BLOCKING"; fi)"
+ echo "[eval-harness] mode: $mode"
+
+ echo "[eval-harness] recent runs:"
+diff --git a/scripts/eval/promote.sh b/scripts/eval/promote.sh
+--- a/scripts/eval/promote.sh
++++ b/scripts/eval/promote.sh
+@@ -1,70 +1,14 @@
+ #!/usr/bin/env bash
+-# scripts/eval/promote.sh — promote from WARN-ONLY to BLOCKING.
+-# Settled Decision #15: requires (a) 7 days of runs and (b) zero false-positives logged.
+-
+ set -euo pipefail
+
+-usage() {
+-  cat <<EOF
+-Usage: eval-harness promote [--force]
+-
+-Promotes the harness from WARN-ONLY (default since install) to BLOCKING.
+-After promotion:
+-  - exit code 12 on regression actually blocks pre-push / sync-publish
+-  - bypass remains available via EVAL_BYPASS=1
+-
+-Requirements (unless --force):
+-  - At least 7 days of run history in history.ndjson
+-  - No 'bypass' events in the last 7 days
+-EOF
+-}
+-
+-FORCE=0
+ for arg in "$@"; do
+   case "$arg" in
+-    --force) FORCE=1 ;;
+-    -h|--help) usage; exit 0 ;;
+-    promote) ;;
+-    *) echo "unknown arg: $arg" >&2; usage >&2; exit 2 ;;
++    promote|--force) ;;
++    -h|--help) echo 'Usage: eval-harness promote [--force]'; exit 0 ;;
++    *) echo "unknown arg: $arg" >&2; exit 2 ;;
+   esac
+ done
+
+-STATE_DIR="${EVAL_STATE_DIR:-$HOME/.config/opencode/eval-harness}"
+-HISTORY="$STATE_DIR/history.ndjson"
+-mkdir -p "$STATE_DIR"
+-
+-if [[ "$FORCE" != "1" ]]; then
+-  if [[ ! -f "$HISTORY" ]]; then
+-    echo "[eval-harness] promote: no history.ndjson — cannot verify 7 green days" >&2
+-    echo "[eval-harness] use --force to override" >&2
+-    exit 2
+-  fi
+-
+-  # Look for runs in the last 7 days. Linux: GNU date supports -d. macOS: BSD date uses -v.
+-  if date -d "@0" >/dev/null 2>&1; then
+-    cutoff="$(date -u -d "7 days ago" +%Y-%m-%dT%H:%M:%SZ)"
+-  else
+-    cutoff="$(date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)"
+-  fi
+-
+-  recent_runs="$(jq -s --arg c "$cutoff" '[.[] | select(.event=="run" and (.run_id // "") >= $c)] | length' "$HISTORY")"
+-  bypass_count="$(jq -s --arg c "$cutoff" '[.[] | select(.event=="bypass" and (.timestamp // "") >= $c)] | length' "$HISTORY")"
+-
+-  if [[ "$recent_runs" -lt 1 ]]; then
+-    echo "[eval-harness] promote: insufficient run history in last 7 days ($recent_runs runs)" >&2
+-    echo "[eval-harness] use --force to override" >&2
+-    exit 2
+-  fi
+-  if [[ "$bypass_count" -gt 0 ]]; then
+-    echo "[eval-harness] promote: $bypass_count bypass event(s) in last 7 days" >&2
+-    echo "[eval-harness] resolve and try again, or use --force" >&2
+-    exit 2
+-  fi
+-fi
+-
+-touch "$STATE_DIR/promoted"
+-jq -nc --arg ts "$(date -u +%FT%TZ)" --argjson forced "${FORCE}" \
+-  '{event:"promote", timestamp:$ts, forced:($forced == 1)}' >> "$HISTORY"
+-
+-echo "[eval-harness] promoted to BLOCKING mode. Regressions now exit 12."
+-echo "[eval-harness] revert with: rm $STATE_DIR/promoted"
++echo '[eval-harness] Failed assertions already block by default (exit 12).'
++echo '[eval-harness] Unset EVAL_WARN_ONLY to disable explicit warning mode.'
++echo '[eval-harness] The saved promoted marker no longer controls exit status.'
+diff --git a/scripts/eval/tests/regression_inject.sh b/scripts/eval/tests/regression_inject.sh
+--- a/scripts/eval/tests/regression_inject.sh
++++ b/scripts/eval/tests/regression_inject.sh
+@@ -176,7 +176,7 @@
+ [[ "$ATTRIBUTION_TOP" == "SKILL_CHANGED" ]] || { echo "FAIL: expected attribution=SKILL_CHANGED, got '$ATTRIBUTION_TOP'" >&2; ok=0; }
+ [[ "$REGRESSIONS" == *"atom-tags-decision-architecture"* ]] || { echo "FAIL: expected regression in atom-tags-decision-architecture" >&2; ok=0; }
+ [[ -n "$FAILED_CHECK_ID" ]] || { echo "FAIL: no failed_check_id in results" >&2; ok=0; }
+-[[ "$EXIT_RUN" == "0" ]] || { echo "FAIL: expected warn-only exit 0 (not promoted), got $EXIT_RUN" >&2; ok=0; }
++[[ "$EXIT_RUN" == "12" ]] || { echo "FAIL: expected blocking exit 12, got $EXIT_RUN" >&2; ok=0; }
+
+ echo
+ echo "================================================================"
+diff --git a/scripts/eval/tests/transcript_contract.sh b/scripts/eval/tests/transcript_contract.sh
+--- a/scripts/eval/tests/transcript_contract.sh
++++ b/scripts/eval/tests/transcript_contract.sh
+@@ -102,7 +102,9 @@
+     path: not-created
+ YAML
+ export TRACE_FILE="$WORK/good" EVAL_STATE_DIR="$WORK/state-retry"
+-bash "$ROOT/scripts/eval/run.sh" --skill=private --case=retry --stability-samples=3 > "$WORK/retry.log" 2>&1
++code=0
++bash "$ROOT/scripts/eval/run.sh" --skill=private --case=retry --stability-samples=3 > "$WORK/retry.log" 2>&1 || code=$?
++[[ "$code" == 12 ]] || { cat "$WORK/retry.log" >&2; exit 1; }
+ jq -e '.cases[0].metrics.steps == 6 and .summary.total_cost_usd == 1.125' "$WORK/state-retry"/runs/*/results.json >/dev/null
+ export TRACE_FAIL_SAMPLES=1 EVAL_STATE_DIR="$WORK/state-retry-error"
+ code=0
+diff --git a/scripts/eval/tests/twotier_aggregation.sh b/scripts/eval/tests/twotier_aggregation.sh
+--- a/scripts/eval/tests/twotier_aggregation.sh
++++ b/scripts/eval/tests/twotier_aggregation.sh
+@@ -74,7 +74,7 @@
+ CONTRIBUTING="$(jq -r '.contributing_run_ids | length' "$AGG_RUN/results.json")"
+ [[ "$CONTRIBUTING" -ge "3" ]] || { echo "FAIL: contributing_run_ids should be >=3 (smoke + 2 escalations), got $CONTRIBUTING" >&2; exit 1; }
+
+-[[ "$EXIT_RC" == "0" ]] || { echo "FAIL: no baselines + both fail -> verdict FAIL -> exit 0 expected, got $EXIT_RC" >&2; exit 1; }
++[[ "$EXIT_RC" == "12" ]] || { echo "FAIL: no baselines + both fail -> verdict FAIL -> exit 12 expected, got $EXIT_RC" >&2; exit 1; }
+
+-echo "PASS: 2tier aggregation — 2 cases escalated, both surface in full_cases, contributing_run_ids tracks all 3 sub-runs, exit code 0 when no baseline to compare"
++echo "PASS: 2tier aggregation: both cases escalated, all 3 runs recorded, exit 12 without baselines"
+ exit 0
+diff --git a/scripts/eval/tests/llm_judge_unit.sh b/scripts/eval/tests/llm_judge_unit.sh
+--- a/scripts/eval/tests/llm_judge_unit.sh
++++ b/scripts/eval/tests/llm_judge_unit.sh
+@@ -28,6 +28,7 @@
+ chmod +x "$STUB_BIN/curl"
+ export PATH="$STUB_BIN:$PATH"
+ export ANTHROPIC_API_KEY="sk-ant-AAAAAAAAAAAAAAAAAAAAAA"
++export EVAL_LLM_JUDGE_LIVE=1
+
+ source "$SCRIPT_DIR/../lib/yq-shim.sh"
+ source "$SCRIPT_DIR/../lib/llm_judge.sh"
+diff --git a/scripts/eval/tests/pricing.sh b/scripts/eval/tests/pricing.sh
+--- a/scripts/eval/tests/pricing.sh
++++ b/scripts/eval/tests/pricing.sh
+@@ -7,6 +7,11 @@
+
+ PRICING="$SCRIPT_DIR/../lib/pricing.sh"
+
++cat > "$WORK/rates.json" <<'JSON'
++{"models":{"anthropic/claude-3-5-haiku-latest":{"input_per_mtok_usd":1,"output_per_mtok_usd":5},"anthropic/claude-sonnet-4-6":{"input_per_mtok_usd":3,"output_per_mtok_usd":15}}}
++JSON
++export EVAL_PRICING_FILE="$WORK/rates.json"
++
+ cost="$(bash "$PRICING" cost anthropic/claude-3-5-haiku-latest 1000000 1000000)"
+ usd="$(echo "$cost" | jq -r '.usd')"
+ [[ "$usd" == "6" || "$usd" == "6.0" || "$usd" == "6.000000" ]] || \
+diff --git a/scripts/eval/hooks/pre-push b/scripts/eval/hooks/pre-push
+--- a/scripts/eval/hooks/pre-push
++++ b/scripts/eval/hooks/pre-push
+@@ -2,7 +2,7 @@
+ # eval-harness git pre-push hook.
+ # Settled Decision #3 (v2): pre-push, NOT pre-commit. Fire-rate economics.
+ # Triggers eval for skills whose files are part of the push.
+-# Sync, 60s timeout, warn-only by default (use `eval-harness promote` to enable blocking).
++# Sync, 60s timeout; failed assertions block unless EVAL_WARN_ONLY=1.
+
+ set -euo pipefail
+
+@@ -41,8 +41,15 @@
+ EVAL_HARNESS_BIN="${EVAL_HARNESS_BIN:-eval-harness}"
+ exit_code=0
+ for skill in $unique_skills; do
+-  if ! timeout 60 "$EVAL_HARNESS_BIN" --skill="$skill" --trigger=pre-push; then
+-    exit_code=$?
++  if timeout 60 "$EVAL_HARNESS_BIN" run --skill="$skill" --trigger=pre-push; then
++    continue
++  else
++    result=$?
++  fi
++  if [[ "$result" == 12 && "$exit_code" != 13 ]]; then
++    exit_code=12
++  elif [[ "$result" != 12 ]]; then
++    exit_code=13
+   fi
+ done
+
+diff --git a/scripts/eval/hooks/sync-publish.sh b/scripts/eval/hooks/sync-publish.sh
+--- a/scripts/eval/hooks/sync-publish.sh
++++ b/scripts/eval/hooks/sync-publish.sh
+@@ -31,4 +31,4 @@
+ fi
+
+ EVAL_HARNESS_BIN="${EVAL_HARNESS_BIN:-eval-harness}"
+-"$EVAL_HARNESS_BIN" --skill="$SKILL" --trigger=sync-publish
++"$EVAL_HARNESS_BIN" run --skill="$SKILL" --trigger=sync-publish
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -7,7 +7,7 @@
+
+ ## What it does
+
+-Given a baselined opencode skill, eval-harness detects when behavior has regressed since the baseline, attributes the cause, and tells you exactly what changed.
++eval-harness checks opencode skill behavior and returns a failure when assertions fail, even without a baseline. When a baseline exists, it also detects regressions, attributes the cause, and reports what changed.
+
+ ```
+ $ git push origin main
+@@ -19,7 +19,7 @@
+ [eval-harness] Stability check: 3 samples byte-identical → real FAIL
+ [eval-harness] FAIL 1/3 — see runs/2026-05-30T11-42-08/diff.md
+ [eval-harness] fix_proposal: missing tag "architecture" in $.atoms[].tags[]
+-[eval-harness] WARN-ONLY MODE: push proceeding. Promote with `eval-harness promote`.
++# Failed assertions return exit 12 and block the push by default.
+ ```
+
+ ## Install
+@@ -46,7 +46,7 @@
+
+ # 3. Edit the skill, then run again
+ eval-harness run --skill omo-session-distiller
+-# → exit 12 if regression detected (only when promoted)
++# Exit 12 if assertions fail, including when no baseline exists.
+ ```
+
+ For prose-output skills (requires `ANTHROPIC_API_KEY`):
+@@ -65,7 +65,7 @@
+ ├── baseline.sh               # writes baseline.json (explicit command)
+ ├── accept.sh                 # accept --case [--bless-env]
+ ├── status.sh                 # pull-only result inspection
+-├── promote.sh                # warn-only → blocking promotion
++├── promote.sh                # explains default blocking; no state change
+ ├── trend.sh                  # reads history.ndjson
+ ├── lib/
+ │   ├── yq-shim.sh + _yq.py   # python-backed yq fallback (no yq binary required)
+@@ -104,7 +104,7 @@
+ - **Project-config layer**: `.opencode/eval-harness.yaml` walked up from cwd. Env vars win when explicitly set.
+ - **Per-case model override**: case YAML `.model` field. Resolution: case > env > project config > built-in.
+ - **3-sample byte-identical stability check** on FAIL → flaky tag if mismatch, no false attribution.
+-- **Warn-only by default** for 7 days. Promote with `eval-harness promote`.
++- **Blocking by default**: failed assertions return `12`, with or without a baseline. `EVAL_WARN_ONLY=1` explicitly allows failed assertions to return `0`. Runner and scorer errors always return `13`. The saved `promoted` marker has no effect.
+ - **Two-stage `accept`**: default updates fixtures only; `--bless-env` required to update env-manifest (with confirmation).
+ - **Heuristic auto-fix proposals** (v0.4.0): every FAILED check on a safe kind carries a `.fix_proposal` with `instruction` + `patch_snippet`. Never auto-applies — proposes only.
+ - **Time limit**: `EVAL_MAX_SECONDS` limits each attempt. `EVAL_BUDGET_USD` is not enforced and is not a spending cap.
+@@ -122,7 +122,7 @@
+
+ | # | Check kind | What it scores | Reliability |
+ |---|---|---|---|
+-| 1 | `shell`               | Runs a shell command in the case workdir; matches stdout against `expect_regex` / `expect_min` / `expect_exact`. | High — deterministic. |
++| 1 | `shell`               | Requires command exit `0` and matches combined stdout/stderr against `expect_regex` / `expect_min` / `expect_exact`. | High — deterministic. |
+ | 2 | `jq_path_contains`    | Reads a JSON file in workdir, walks a jq path, asserts the result array contains all `contains:` values. | High — deterministic. |
+ | 3 | `file_exists`         | Asserts a file exists at the given path in workdir. | High — deterministic. |
+ | 4 | `output_contains`     | Greps the opencode transcript for a literal string. Records `transcript_span` on hit. | High — deterministic, literal-only. |
+@@ -131,6 +131,12 @@
+
+ If your case YAML uses an unrecognised `kind:`, the harness emits an `error: true` result and excludes it from regression diff — it does not silently pass.
+
++Shell checks use GNU `timeout`. `EVAL_CHECK_TIMEOUT_SECONDS` must be a positive
++integer and defaults to `30`. A nonzero command exit fails the assertion even
++when output matches. Timeout/kill exits (`124`, `137`) and runner availability
++errors (`125`-`127`) are scorer errors. All checks are collected. Each executed
++shell check records its `exit_code` and `error` fields.
++
+ ### Layer 2 — Environment & attribution factors (for FAIL diagnosis)
+
+ When a case fails, the harness attributes the cause using environment-manifest fields captured per run:
+@@ -180,9 +186,9 @@
+   J -- yes --> L[3-sample stability check]
+   L --> M[Compute env_delta + 4-class attribution + fix_proposal]
+   M --> N[Render diff.md with 6-field FAIL detail + cost]
+-  N --> O{Promoted to BLOCKING?}
+-  O -- no  --> P[Warn-only: exit 0, push proceeds]
+-  O -- yes --> Q[exit 12, push BLOCKED unless EVAL_BYPASS=1]
++  N --> O{EVAL_WARN_ONLY=1?}
++  O -- yes --> P[Explicit warning: exit 0, push proceeds]
++  O -- no  --> Q[exit 12, push BLOCKED]
+ ```
+
+ **Factors enforced**: Layer 1 (6 check kinds) + Layer 2 (4 attribution fields + flaky tag). Plus dollar-cost accounting + auto-fix proposals.
+@@ -199,9 +205,11 @@
+   E -- no  --> G{Repo enabled in registry?}
+   G -- no  --> Y[skip, publish proceeds]
+   G -- yes --> H[Run full eval suite for X]
+-  H --> I{Any regression vs baseline?}
++  H --> I{Any failed assertion?}
+   I -- no --> J[exit 0, publish proceeds]
+-  I -- yes --> K[exit 12, publish BLOCKED]
++  I -- yes --> K{EVAL_WARN_ONLY=1?}
++  K -- yes --> J
++  K -- no --> L[exit 12, publish BLOCKED]
+ ```
+
+ ### Workflow C — opencode Stop hook (scaffold)
+@@ -269,13 +277,29 @@
+
+ | Trigger | Mode | Blocks? | Cases |
+ |---|---|---|---|
+-| `sync-skill-to-manager` pre-publish | sync, no timeout | warn-only (promote to block) | full suite for skill |
+-| git `pre-push` | sync, 60s timeout | warn-only (promote to block) | affected fast cases |
++| `sync-skill-to-manager` pre-publish | sync, no timeout | blocks failed assertions unless `EVAL_WARN_ONLY=1` | full suite for skill |
++| git `pre-push` | sync, 60s timeout | blocks failed assertions unless `EVAL_WARN_ONLY=1` | affected fast cases |
+ | manual (`eval-harness run`) | sync, foreground | n/a | user-specified |
+ | opencode Stop hook | scaffold (inactive until opencode ≥ 1.16) | n/a | skills with changed files |
+
+ ## Configuration
+
++### Exit policy and baselines
++
++`run` and two-tier evaluation return `0` for passing checks, `12` for failed
++assertions, and `13` for runner or scorer errors. Explicit `EVAL_WARN_ONLY=1`
++changes only assertion failures to exit `0`. It never suppresses errors.
++`EVAL_BYPASS=1` explicitly skips evaluation and logs a bypass event.
++
++`baseline` and `accept` can record failed assertions when explicitly requested.
++This does not exempt those assertions from future failures. Neither command
++accepts runner or scorer errors, including errors in stability samples or
++repetitions when the primary attempt passed. Baseline creation requires results
++from the run it just executed; a skipped run cannot reuse an older result.
++
++`promote` is no longer required and does not change saved state. To stop using
++explicit warning mode, unset `EVAL_WARN_ONLY`.
++
+ ### `.opencode/eval-harness.yaml` (per-project, optional)
+
+ ```yaml
+@@ -420,7 +444,6 @@
+
+ The version that's actually safe to recommend for CI/CD gating.
+
+-- `--strict` mode (flip warn-only off; exit 12 on first regression)
+ - `--ci` mode + JUnit / SARIF reporter + PR-comment integration
+ - Shared-state daily budget ledger (`EVAL_BUDGET_USD` actually enforced across runs)
+ - Cost-regression gating (block PRs that raise per-case $ vs baseline)
+@@ -431,7 +454,6 @@
+
+ - Branch-filter for pre-push (skip WIP branches)
+ - Cross-skill behavioral interaction diagnosis (which skill broke which?)
+-- Automatic warn-only → blocking promotion after N green days
+ - A/B mode (`eval-harness ab --base=X --candidate=Y`)
+ - opencode Stop-hook activation once plugin API lands
+
+diff --git a/skills/eval-harness/SKILL.md b/skills/eval-harness/SKILL.md
+--- a/skills/eval-harness/SKILL.md
++++ b/skills/eval-harness/SKILL.md
+@@ -25,7 +25,7 @@
+
+ ## What it does (v0.2.0)
+
+-Given a baselined skill, eval-harness:
++Given a skill with eval cases, eval-harness:
+ 1. Runs each case in a fully-sandboxed ephemeral environment (fresh `HOME`, `OPENCODE_CONFIG_DIR`, `NANO_BRAIN_ROOT`, cwd).
+ 2. Runs **all** checks per case (no first-fail-exit) and aggregates failures.
+ 3. On FAIL: classifies into `SKILL_CHANGED` / `FIXTURE_STALE` / `MODEL_CHANGED` / `UNKNOWN_DRIFT` via env-manifest diff.
+@@ -58,17 +58,17 @@
+ # Trend over last 20 runs
+ eval-harness trend --last=20
+
+-# Promote from WARN-ONLY (default) to BLOCKING (exit 12 actually blocks)
+-eval-harness promote   # requires 7-day green history + 0 bypass events
++# Explain the default blocking policy (does not change saved state)
++eval-harness promote
+ ```
+
+ ## Exit codes
+
+ | Code | Meaning |
+ |---|---|
+-| 0  | All cases pass (or warn-only mode hides regression) |
+-| 12 | Regression detected AND harness promoted to blocking |
+-| 13 | Harness/scorer error (NOT a skill regression) |
++| 0  | All cases pass, or explicit `EVAL_WARN_ONLY=1` allows failed assertions |
++| 12 | Failed assertions, including when no baseline exists |
++| 13 | Harness/scorer error in any attempt; never suppressed by warning mode |
+
+ ## Scope (read before relying on it)
+
+@@ -79,16 +79,17 @@
+ - `output_contains` / `output_not_contains` (literal grep in transcript)
+
+ **Prose-output skills cannot be evaluated reliably in v0.1.0.** Deferred to v0.3 (LLM judge with cross-model debias + 3-sample majority).
+
+-## Warn-only mode (default)
++## Explicit warning mode
+
+-After installation, eval-harness ships in WARN-ONLY mode for 7 days:
+-- regressions still detected, diff.md still generated, history.ndjson still appended
+-- exit code is 0 (push proceeds)
+-- promote via `eval-harness promote` once you've run 7 green days
+-
+-This protects against ecosystem-wide block-rage on day 1 when cases are still being tuned.
++Failed assertions block by default. Only `EVAL_WARN_ONLY=1` changes assertion
++failures to exit `0`. Results, diffs, and history still record failures.
++Unset this variable to restore blocking. The saved `promoted` marker has no effect.
++
++Explicit baseline and accept commands can record failed assertions, but cannot
++record runner or scorer errors in any attempt. A passing primary attempt does
++not permit errors in stability samples or repetitions to be accepted.
+
+ ## Bypass
+
+ ```bash

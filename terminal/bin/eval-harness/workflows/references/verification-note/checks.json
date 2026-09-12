@@ -1,0 +1,8 @@
+{
+  "implementation_moved": false,
+  "examples_executed": false,
+  "checks": [
+    {"id":"metadata","command":"node validate.cjs","status":"passed","exit_code":0,"evidence":"guide metadata valid"},
+    {"id":"runtime","command":"node runtime.cjs","status":"blocked","exit_code":69,"evidence":"blocked: fixture-converter-compiler is not supplied"}
+  ]
+}
