@@ -1,0 +1,70 @@
+schema_version: 2
+id: prose-varies-structure-keeps-deliberate-rhythm
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Revise repeated structures across sections without losing distinct facts or quoted rhythm"
+tags: [prose, whole-draft, rhythm, literal-preservation]
+
+prompt: |
+  Unslop this field report as a whole draft. Write only the revised report
+  to revised.md. Keep its distinct observations and the quoted dispatch
+  refrain verbatim. Keep the report in sections.
+
+  ## North depot
+
+  The team checked the north depot on Monday. The team found 12 cracked
+  crates. For example, crate N-17 had a split lid. That's the lesson.
+
+  The team reviewed the north depot log. The team found a missing signature
+  on form N-04. For example, the 06:10 entry had no sign-off. That's the lesson.
+
+  ## River depot
+
+  The team checked the river depot on Wednesday. The team found 7 damp
+  cartons. For example, carton R-08 had a wet label. That's the lesson.
+
+  The team reviewed the river depot log. The team found a broken seal on
+  locker R-22. For example, the 09:35 entry recorded the seal number as
+  unreadable. That's the lesson.
+
+  ## Hill depot
+
+  The team checked the hill depot on Friday. The team found 5 late
+  deliveries. For example, delivery H-03 arrived at 18:40. That's the lesson.
+
+  The team reviewed the hill depot log. The team found a battery reading of
+  11.8 volts on scanner H-09. For example, the 16:20 entry recorded a failed
+  scan. That's the lesson.
+
+  ## Dispatch refrain
+
+  The dispatcher repeats this line at handover:
+  "We count the crates. We count the seals. We count the hours."
+
+budget:
+  max_tokens: 4500
+  max_seconds: 120
+
+# Manual review: inspect the whole draft for repeated subject openings,
+# example placement, paragraph shapes, and closers, not just local word swaps.
+# Keep each depot's distinct observations and the deliberate quoted repetition.
+# Friday dates the inspection, not H-03's arrival; keep that relation unchanged.
+# No sentence, paragraph, or repetition quota is imposed. The checks below
+# cover detail markers, the literal refrain, an empty closer, and one observed
+# date-scoping error. They do not establish complete meaning preservation.
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const s = require('fs').readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const details = [/\bMonday\b/, /\b(?:12|twelve)\b/i, /\bN-17\b/, /\bN-04\b/, /\b06:10\b/, /\bWednesday\b/, /\b(?:7|seven)\b/i, /\bR-08\b/, /\bR-22\b/, /\b09:35\b/, /\bFriday\b/, /\b(?:5|five)\b/i, /\bH-03\b/, /\b18:40\b/, /\b11\.8\b/, /\bH-09\b/, /\b16:20\b/].every(r => r.test(s));
+      const literal = '"We count the crates. We count the seals. We count the hours."';
+      const closer = /\bthat['\u2019]s the lesson\b/i.test(s);
+      const misdatedDelivery = /\bon Friday,\s*(?:delivery )?H-03 arrived\b|\b(?:delivery )?H-03 arrived[^.!?;]*\bon Friday\b/i.test(s);
+      process.stdout.write(details && s.includes(literal) && !closer && !misdatedDelivery ? 'details-and-refrain-present' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: details-and-refrain-present

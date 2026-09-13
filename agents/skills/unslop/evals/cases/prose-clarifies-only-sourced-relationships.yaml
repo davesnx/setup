@@ -1,0 +1,45 @@
+schema_version: 2
+id: prose-clarifies-only-sourced-relationships
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Clarify a documented relationship while keeping an undocumented relationship uncertain"
+tags: [prose, source-boundary, meaning-preservation]
+
+prompt: |
+  Unslop these archive notes. Write only the revised notes to revised.md.
+  Keep the two entries separate.
+
+  ## Mira Chen
+
+  It is important to note that Mira Chen was associated with the Oriole
+  archive in 2018. The payroll record identifies her as its paid archivist
+  for that year.
+
+  ## Tomas Reed
+
+  It is important to note that Tomas Reed was associated with the Oriole
+  archive in 2019. The visitor ledger lists his name but gives no role or
+  reason for the visit. His relationship to the archive is otherwise unknown.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+# Manual review: replace Mira's vague association with the documented paid role.
+# Keep Tomas's association uncertain; a ledger entry does not establish work,
+# ownership, funding, or a purpose for his visit. Do not infer a shared role.
+# These checks cover detail markers and an empty wrapper, not relationship meaning.
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const s = require('fs').readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const details = [/\bMira Chen\b/, /\bTomas Reed\b/, /\bOriole\b/, /\b2018\b/, /\b2019\b/, /\bpayroll\b/i, /\barchivist\b/i, /\bledger\b/i].every(r => r.test(s));
+      const wrapper = /\bit is important to note that\b/i.test(s);
+      process.stdout.write(details && !wrapper ? 'detail-markers-present' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: detail-markers-present

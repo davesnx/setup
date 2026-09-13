@@ -1,0 +1,49 @@
+schema_version: 2
+id: prose-keeps-real-alternatives-and-risks
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: "Remove an empty defense while retaining real options, consequences, and a qualified position"
+tags: [prose, defensive-framing, meaning-preservation]
+
+prompt: |
+  Unslop this operations note. Write only the revised note to revised.md.
+
+  ## Logging
+
+  Don't get me wrong. I'm not saying this for the sake of saying it.
+  We keep audit logs for 30 days. Support uses them to investigate failed
+  uploads.
+
+  ## Intake decision
+
+  One might be tempted to pause intake for 2 hours. That would let us clear
+  the backlog, but customers could not submit new files during the pause.
+  Keeping intake open would allow submissions to continue, but the backlog
+  could grow beyond 900 files. We prefer the pause if support can notify
+  customers first.
+
+  I'm not saying we should disable signature validation. Disabling it would
+  admit unsigned records. Keep validation enabled under either option.
+
+budget:
+  max_tokens: 3500
+  max_seconds: 90
+
+# Manual review: remove the empty Logging defense, not the logging policy.
+# Retain both intake options, their respective consequences, the conditional
+# preference, and the rejection of disabling validation. A polished note that
+# reverses a risk or drops a condition can still pass these detail-only checks.
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const s = require('fs').readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const details = [/\b(?:30|thirty) days\b/i, /\baudit logs\b/i, /\bsupport\b/i, /\buploads\b/i, /\b(?:2|two) hours\b/i, /\b(?:900|nine hundred)\b/i, /\bcustomers\b/i, /\bbacklog\b/i, /\bsignature validation\b/i, /\bunsigned records\b/i].every(r => r.test(s));
+      const emptyDefense = /\bdon['\u2019]t get me wrong\b|\bfor the sake of saying it\b/i.test(s);
+      process.stdout.write(details && !emptyDefense ? 'detail-markers-present' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: detail-markers-present
