@@ -16,9 +16,14 @@ try {
   assert.notEqual(install(path.join(temp, 'absent')).status, 0);
   assert.equal(fs.readlinkSync(target), path.join(temp, 'missing'));
   assert.equal(install(source).status, 0);
-  const before = fs.lstatSync(target, { bigint: true }).ctimeNs;
+  const witness = path.join(temp, 'original-link');
+  fs.linkSync(target, witness);
+  const before = fs.lstatSync(target, { bigint: true });
   assert.equal(install(source).status, 0);
-  assert.equal(fs.lstatSync(target, { bigint: true }).ctimeNs, before);
+  const after = fs.lstatSync(target, { bigint: true });
+  assert.equal(after.ino, before.ino);
+  assert.equal(after.ctimeNs, before.ctimeNs);
   assert.equal(fs.realpathSync(target), source);
+  fs.unlinkSync(witness);
   assert.deepEqual(fs.readdirSync(temp), ['tool']);
 } finally { fs.rmSync(temp, { recursive: true, force: true }); }

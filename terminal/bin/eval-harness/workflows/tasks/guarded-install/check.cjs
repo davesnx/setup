@@ -31,12 +31,16 @@ finish(() => {
     assert.notEqual(call(path.join(temp, 'absent-source')).status, 0);
     assert.equal(fs.readlinkSync(target), path.join(temp, 'missing'));
     assert.equal(call().status, 0);
+    const witness = path.join(temp, 'original-link');
+    // Keep the inode allocated so unlink/recreate cannot reuse its identity.
+    fs.linkSync(target, witness);
     const before = fs.lstatSync(target, { bigint: true });
     assert.equal(call().status, 0);
     const after = fs.lstatSync(target, { bigint: true });
     assert.equal(after.ino, before.ino, 'correct link replaced');
     assert.equal(after.ctimeNs, before.ctimeNs, 'correct link recreated');
     assert.equal(fs.realpathSync(target), source);
+    fs.unlinkSync(witness);
     assert.deepEqual(fs.readdirSync(temp), ['managed'], 'unexpected backup');
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
   assert.equal(run('node', [file('test.cjs')]).status, 0);
