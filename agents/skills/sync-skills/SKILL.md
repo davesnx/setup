@@ -1,6 +1,6 @@
 ---
 name: sync-skills
-description: Sync shared agent skills between the local Mac and nspawn through the setup Git repository. Use when the user says "sync skills", "push skills", "send skills to nspawn", "update nspawn skills", or asks to synchronize OpenCode, Claude, Codex, or Agent Skills across these machines. On local, commit and push skill changes, then pull them on nspawn. On nspawn, commit and push skill changes only.
+description: Sync shared agent skills between the Mac and nspawn through the setup Git repository. Not upstream skill vendoring.
 compatibility: Requires Git and an SSH host named nspawn. Uses /Users/davesnx/Code/github/setup on local and /home/me/workplace/davesnx/setup on nspawn.
 ---
 

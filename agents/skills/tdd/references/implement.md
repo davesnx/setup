@@ -6,7 +6,7 @@ Implement a spec or ticket as a sequence of complete, test-driven slices.
 
 1. Read the full source artifact and linked context. State the requested outcome, scope, exclusions, dependencies, and completion criteria.
 2. Resolve ambiguity from the codebase first. If terms, scenarios, invariants, or a qualifying decision remain unclear, mention `domain-modeling` as optional support. Load it only when the user also asks for that work. Ask the user only for decisions that evidence cannot settle.
-3. Identify the interfaces and seams that expose the requested behavior. Confirm the seams before writing tests.
+3. Use the user-specified or already agreed public interface, following the seam rules in [TDD](../SKILL.md#seams--where-tests-go). Ask only about a material interface decision that remains unresolved.
 4. Order the work as vertical slices. Each slice delivers one observable behavior through Red-green-refactor mode.
 5. During each slice, run the single focused test and the smallest useful typecheck or build check. Do not wait until the end to discover structural errors.
 6. After all slices, run the repository's complete required format, lint, typecheck, build, and relevant test commands.

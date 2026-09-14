@@ -2,7 +2,9 @@
 
 Review implementation quality, structural simplicity, abstraction boundaries, and long-term codebase health. Working code is not sufficient when the change creates avoidable complexity.
 
-The shared quality bar — pass-through wrappers, casts that hide invariants, reuse of canonical helpers, and structural simplification over rearrangement — is defined in the `code-standards` skill. Load it and apply it here; this file adds only the checks specific to reviewing a diff.
+Consult `code-standards` when a structural decision needs shared guidance, such as
+ownership, unsafe casts, or helper reuse. Apply the relevant sections, not a full
+standards pass for every diff. This file adds review-specific checks.
 
 ## Review-Specific Checks
 

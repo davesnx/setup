@@ -1,6 +1,6 @@
 ---
 name: simplify
-description: "After working on code, ensure the changes contain only the minimal, idiomatic edits. Simplify or refactor existing code while preserving its required behavior, and remove AI-generated slop introduced by you. Use for explicit cleanup, refactoring, removal of unnecessary complexity, or a request to use Simplify"
+description: "Simplify code while preserving behavior when asked for cleanup, refactoring, or Simplify. Not an automatic post-edit pass or prose cleanup."
 ---
 
 # Simplify
@@ -13,8 +13,8 @@ local conventions of each touched file.
 
 For a review-only request, report findings without edits. For prose cleanup,
 use Unslop. When another workflow owns the task, preserve its edit boundary.
-When the cleanup changes boundaries, persistence, error handling, or state
-models, load the `code-standards` skill.
+Load `code-standards` when a cleanup decision needs its guidance on boundaries,
+persistence, error handling, or state models, not for every edit in those areas.
 
 ## 1. Bound the scope
 

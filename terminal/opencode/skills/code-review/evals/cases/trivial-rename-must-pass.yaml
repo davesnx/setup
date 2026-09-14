@@ -13,12 +13,16 @@ setup:
 prompt: |
   Review diff.patch in Standard mode. Write the final review to review.md.
   This is an evaluation fixture, so do not edit the diff or repository.
+  All callers use the unchanged public export cwd. There are no other changed
+  files or requirements. Keep the report short; empty sections are not needed.
 
 budget:
   max_tokens: 4000
   max_seconds: 90
 
 checks:
+  - kind: output_not_contains
+    value: '"name":"code-standards"'
   - kind: file_exists
     path: review.md
   - kind: shell

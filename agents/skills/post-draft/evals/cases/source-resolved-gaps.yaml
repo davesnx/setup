@@ -1,0 +1,76 @@
+schema_version: 2
+id: source-resolved-gaps
+mode: prose
+skill_under_test: post-draft
+skills_loaded: [post-draft]
+description: Write from linked author evidence without inventing an interview round
+tags: [prose, partial-draft, evidence, voice-preservation]
+
+setup:
+  fixtures:
+    VOICE.md: fixtures/VOICE.md
+    src/content/posts/cache-notebook.md: fixtures/partial-cache.md
+    source-notes.md: fixtures/source-notes.md
+
+prompt: |
+  Finish the supported parts of src/content/posts/cache-notebook.md.
+  My source notes are [here](source-notes.md). Read them and VOICE.md.
+  There has been no interview. All available evidence is in this sandbox;
+  no web or other repository. Keep the headings and maintenance note intact.
+  Put a brief account of what you did in progress.md. For this test only,
+  progress.md must be JSON with exactly these fields: evidence_source
+  (the source file path), answered_interview_rounds (a number), status
+  (the draft's SKILLS state), and cold_start_claims (an array).
+  For each cold-start statement added to the prose, include a claim record:
+  text (the exact written passage), subject ("author" or "external-report"),
+  status ("measured" or "unavailable"), milliseconds (a number for a measured
+  result, otherwise null), and source_quote (an exact supporting sentence
+  from source-notes.md, with line breaks replaced by spaces). A denial that
+  the external result belongs to me records my result as unavailable, not
+  as a measurement. Use an empty array if no cold-start statements are added.
+  The checker validates these records against the source and written spans.
+  Manual review must still check that the records cover the prose and classify
+  it truthfully; the checker does not infer the meaning of free-form prose.
+
+budget:
+  max_tokens: 4500
+  max_seconds: 120
+
+checks:
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("node:fs");
+      const assert = require("node:assert/strict");
+      const s = fs.readFileSync("src/content/posts/cache-notebook.md", "utf8");
+      const opening = s.split(/^# Why keep the cache\?\s*$/m)[1]?.split(/^## /m)[0] || "";
+      assert.match(opening, /\bI\b/);
+      assert.match(opening, /offline/i);
+      assert.match(opening, /train/i);
+      assert.doesNotMatch(opening, /\[Q:/);
+      const skills = s.match(/<!--\s*SKILLS\b([\s\S]*?)-->/)?.[1] || "";
+      assert.match(skills, /^state:\s*partial\s*$/m);
+      assert.match(skills, /^next:.*(?:bench|cold.start|measur|evidence)/im);
+      assert.match(s, /\[Q:[^\]]*(?:cold.start|bench-results|measur)[^\]]*\]/i);
+      assert.deepEqual(s.match(/^#{1,6} .+$/gm), ["# Why keep the cache?", "## What is still unknown?", "## Maintenance note"]);
+      assert.equal(s.split("## Maintenance note")[1]?.trim(), "The backup key is in the blue drawer. This note does not concern cache performance.");
+      const { cold_start_claims, ...progress } = JSON.parse(fs.readFileSync("progress.md", "utf8"));
+      assert.deepEqual(progress, {
+        evidence_source: "source-notes.md", answered_interview_rounds: 0, status: "partial"
+      });
+      const source = fs.readFileSync("source-notes.md", "utf8").replace(/\s+/g, " ");
+      const prose = s.replace(/<!--[\s\S]*?-->/g, "").replace(/\[Q:[^\]]*\]/g, "");
+      assert.ok(Array.isArray(cold_start_claims));
+      for (const claim of cold_start_claims) {
+        const { text, ...evidence } = claim;
+        assert.ok(typeof text === "string" && text.trim() && prose.includes(text));
+        assert.ok(["author", "external-report"].includes(evidence.subject));
+        const expected = evidence.subject === "author"
+          ? { subject: "author", status: "unavailable", milliseconds: null, source_quote: "My bench-results.txt was never captured." }
+          : { subject: "external-report", status: "measured", milliseconds: 12, source_quote: "An external report says its author measured a 12 ms cold start." };
+        assert.ok(source.includes(expected.source_quote));
+        assert.deepEqual(evidence, expected);
+      }
+      process.stdout.write("source-supported-partial");'
+    unsafe_shell: true
+    expect_exact: source-supported-partial

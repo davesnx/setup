@@ -1,6 +1,6 @@
 ---
 name: x-writing
-description: Write, edit, or analyze posts and threads for X, including audience fit, supplied analytics, and verified recommendation-system constraints. Use for X-content requests and diagnosis. Treat algorithm details as constraints and never promise reach. Do not use for developer documentation, which belongs to technical-docs, or for independent evidence gathering and cited technical findings.
+description: Draft, edit, or analyze X posts and threads using supplied material and analytics. Not developer documentation or independent research.
 metadata:
   algorithm-source: "https://github.com/xai-org/x-algorithm"
 ---
@@ -8,6 +8,8 @@ metadata:
 # X writing
 
 Write useful X posts for a specific audience. Do not claim that a phrase, format, posting time, or action count guarantees distribution.
+Developer documentation uses `technical-docs`; independent research is a separate
+task. Treat verified recommendation details as constraints, not promises.
 
 ## Draft or edit a post
 

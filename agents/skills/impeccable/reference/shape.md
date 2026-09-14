@@ -16,7 +16,7 @@ This is a required interaction, not optional guidance. Ask these questions in co
 
 ### Interview cadence
 
-Discovery includes at least one user-answer round unless PRODUCT.md, DESIGN.md, or an already-confirmed brief directly answers the needed inputs. With a sparse prompt, do **not** synthesize a complete brief for confirmation on the first response.
+Discovery includes at least one user-answer round unless supplied user context, relevant design code, available PRODUCT.md or DESIGN.md, or an already-confirmed brief directly answers the needed inputs. Missing context files do not require init. With a sparse prompt, do **not** synthesize a complete brief for confirmation on the first response.
 
 - Use the harness's structured question tool when one exists. Otherwise, ask directly in chat and stop.
 - Ask **2-3 questions per round**, then wait for answers.
@@ -115,7 +115,7 @@ After the interview and any required probes, present a brief and **end your resp
 
 **Choose the brief shape based on how clear the answers are:**
 
-- **Compact form (3-5 bullets)** when discovery was crisp and the original prompt + PRODUCT.md already pinned scope, content, and direction. State what you're building, the visual lane, and end with one or two specific questions or a clear "confirm or override?" prompt. This is the default for typical craft requests with a clear prompt.
+- **Compact form (3-5 bullets)** when discovery was crisp and the original prompt and available project context already pinned scope, content, and direction. State what you're building, the visual lane, and end with one or two specific questions or a clear "confirm or override?" prompt. This is the default for typical craft requests with a clear prompt.
 - **Full structured form (sections below)** when the task is genuinely ambiguous, multi-screen, or when the user asked for shape as a standalone step. Use this when the discipline of structure earns its weight.
 
 Don't pad a clear brief into a long one to look thorough. A 70-line brief restating answers the user just gave is noise, not rigor. Equally, don't skip the confirmation pause to look efficient: the pause is the point.

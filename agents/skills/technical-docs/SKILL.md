@@ -1,6 +1,6 @@
 ---
 name: technical-docs
-description: "Write, edit, or review developer documentation: READMEs, RFCs, PRDs, tutorials, how-to guides, reference pages, explanations, runbooks, and architecture docs, including docs from supplied facts. PR titles and bodies belong to write-pr-body. Do not use for open-ended evidence gathering, source conflict analysis, or X posts, which belong to x-writing. Do not use for commit messages, product UI copy, or code review findings."
+description: "Write, edit, or review developer documentation. Excludes PR text, social posts, and independent research."
 metadata:
   source: "https://github.com/cursor/plugins/blob/main/pstack/skills/technical-writing/SKILL.md"
 ---
@@ -10,6 +10,8 @@ metadata:
 Write developer documentation that a tired engineer understands on the first read.
 
 PR titles and bodies use `write-pr-body`, not a documentation mode here.
+X posts use `x-writing`. Independent research, commit messages, product UI copy,
+and code review findings are outside this skill's scope.
 
 ## Set the document contract
 
@@ -75,7 +77,11 @@ Cut filler, hype, false drama, and words that do no work. Prefer short, familiar
 
 ## Verify repository facts
 
-Inspect the current repository before you state paths, symbols, commands, file trees, counts, generated values, or test results. Do not invent missing commands or values. If a fact needs research beyond the supplied material, stop and ask for technical research rather than presenting a guess as documentation.
+Inspect relevant repository evidence before you state paths, symbols, commands,
+file trees, counts, generated values, or test results. Do not invent missing
+commands or values. Complete supported sections and identify unresolved facts.
+Ask only when missing evidence blocks the requested result; independent research
+outside the request needs separate direction.
 
 ## Final review
 

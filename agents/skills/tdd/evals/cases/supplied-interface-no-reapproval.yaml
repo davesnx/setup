@@ -1,0 +1,48 @@
+schema_version: 2
+id: supplied-interface-no-reapproval
+mode: prose
+skill_under_test: tdd
+skills_loaded: [tdd]
+description: "Use a supplied public interface without another approval gate; allow assertions for one behavior"
+tags: [tdd, interface, red-green-refactor]
+
+prompt: |
+  Use TDD Implement mode. We agreed to use the existing public function
+  createUser({name}) and getUser(id). The single behavior for this cycle is:
+  creating Alice makes that user retrievable with the returned ID and name
+  Alice. The function signatures and return shape {id, name} are settled.
+  There are no unresolved interface decisions. Do not implement code or run
+  commands. Record the execution decision in decision.json, with exactly:
+  interface: array of public function names;
+  approval_question: a question string, or null if none is needed;
+  phases: ordered array using write-test, run-red, implement, run-green, refactor;
+  behaviors_this_cycle: number;
+  assertions: array naming the returned fields to verify via getUser;
+  next_behavior: start-now or backlog.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: decision.json
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const assert = require('node:assert/strict');
+      const decision = JSON.parse(fs.readFileSync('decision.json', 'utf8'));
+      assert.deepEqual(decision, {
+        interface: ['createUser', 'getUser'],
+        approval_question: null,
+        phases: ['write-test', 'run-red', 'implement', 'run-green', 'refactor'],
+        behaviors_this_cycle: 1,
+        assertions: decision.assertions,
+        next_behavior: 'backlog',
+      });
+      assert.deepEqual(decision.assertions.toSorted(), ['id', 'name']);
+      process.stdout.write('bounded');
+      JS
+    unsafe_shell: true
+    expect_exact: "bounded"

@@ -1,6 +1,6 @@
 ---
 name: comment-purge
-description: "Use only for an explicit user request to clean up code comments or run Comment Purge, even on hosts that ignore disable-model-invocation. Delete unnecessary comments, review exceptions, and fix accepted in-scope causes. Not for general code review or refactoring."
+description: "Remove unnecessary code comments when explicitly requested. Preserve meaningful warnings, contracts, and directives. Not general code review or refactoring."
 disable-model-invocation: true
 license: MIT
 ---
@@ -8,7 +8,8 @@ license: MIT
 # Comment Purge
 
 Delete unnecessary comments rather than rewrite them. Keep protected comments
-and fix the code problems that accepted findings expose.
+and unresolved warnings. Fix exposed code problems only within the authorized
+scope; comment cleanup alone does not authorize behavior changes.
 
 ## Scope
 
@@ -21,8 +22,9 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 
 ## Deletion Rules
 
-- Delete narration, section banners, commented-out dead code, workaround
-  explanations, and explanations of internal code that needs a clearer design.
+- Delete narration, section banners, commented-out dead code, and explanations
+  shown to be redundant, false, or obsolete. Keep a workaround's explanation
+  until evidence shows the constraint is obsolete or an authorized fix removes it.
 - Keep legal and license notices and doc comments that define public API contracts.
 - Keep verified non-obvious constraints from an external dependency, platform,
   vendor, or protocol that this project cannot change.
@@ -38,9 +40,9 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
   justifications. Trace nearby code, exact symbols, callers, tests, and available
   issue or dependency evidence. A claimed external constraint needs proof that
   it still applies on a live path. Do not depend on a named skill or command.
-- After investigation, delete comments with no proven exception, including
-  ambiguous warnings. Internal surprises need a code change, not shorter prose.
-  These deletion rules never override protected directives or legal notices.
+- Preserve ambiguous warnings when the evidence does not establish that removal
+  is safe. Report the missing evidence or proposed code change. These deletion
+  rules never override protected directives or legal notices.
 - Use neutral action flags such as `Refactor`, `Fix suppression`, or
   `Unenforced constraint`. Name the exact in-scope symbol, evidence, and needed
   change. Do not invent defects or label intentional behavior as faulty.
@@ -54,16 +56,17 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
    files, deleted comment count, action flags with evidence, and skips.
 2. The parent reviews the report and diff. Reject application-code edits, scope
    escapes, protected deletions, unsupported flags, and missed suppressions.
-   Check evidence for both deleted and kept warnings. Restore a comment only
-   with an exact exception and scoped proof; do not restore internal-code
-   explanations because the refactor is still open. Delete refuted or ambiguous
-   keeps after investigation. Preserve valid action flags for internal surprises.
+   Check evidence for deleted warnings and restore any removed without sufficient
+   evidence. Keep explanations while their constraint or refactor is unresolved.
+   Delete refuted warnings only when the evidence establishes safe removal.
+   Preserve valid action flags for internal surprises.
 3. For a rejected pass, undo only that pass's rejected edits, preserving the
    baseline and concurrent user changes. Name the failure and allow one corrected
    pass. If it is rejected again, remove its rejected edits, report the work open,
    and stop with failure. Ask if edits cannot be separated safely.
-4. The parent fixes accepted trivial causes directly: remove a dead path, drop
-   an unused parameter, or use the correct API. For larger refactors, first sketch
+4. Within the authorized scope, the parent fixes accepted trivial causes: remove
+   a dead path, drop an unused parameter, or use the correct API. For larger
+   refactors, first sketch
    the proposed structure using surrounding code, then make the smallest in-scope
    root-cause fix. Remove the named workarounds, not just their explanations.
    Do not add symptom guards. If a cause is outside scope, make only a sound
@@ -72,8 +75,9 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
    as wording freezes or approval warnings, offer the cheapest in-scope type,
    runtime check, test, or CI rule. Ask before encoding it; unattended execution
    needs explicit caller pre-approval, never implied consent. If approved, encode
-   the constraint and delete the comment. Otherwise delete the unprotected warning
-   and report the remaining unenforced constraint. Sketch out-of-scope work only.
+   and verify the constraint before deleting a now-redundant comment. Otherwise
+   preserve the warning and report the remaining unenforced constraint. Sketch
+   out-of-scope work only.
 6. After the final edit, run required repository formatting, lint, build/typecheck,
    and relevant test commands from repository instructions and CI configuration.
    Review the final diff for scope, protected comments, directives, and user work.

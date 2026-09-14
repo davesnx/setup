@@ -39,9 +39,16 @@ Use the job label, step key, command, exit status, and focused log window to ide
 
 ## Watch
 
+Use these snapshots in each all-provider polling round described in [Watch](../SKILL.md#watch). Verify the recorded build and commit identity; do not switch to the latest build. Check jobs even while the build is running, since a failed job can coexist with pending jobs.
+
 ```bash
-bk build watch <build-number> --pipeline <org>/<pipeline>
+bk build view <build-number> --pipeline <org>/<pipeline> --json
+bk job list --pipeline <org>/<pipeline> --build <build-number> --json
 ```
+
+Do not use `bk build watch`. Bound snapshot requests by the round's remaining budget, then return to the shared loop to recheck all providers and the requested target identity. A pending build does not extend the round or total deadline. A request timeout means unavailable data, not a CI result.
+
+## Retry
 
 Retry a failed job only when the user authorized retries and there is evidence of a flake:
 
