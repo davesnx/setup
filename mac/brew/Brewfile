@@ -1,5 +1,4 @@
 tap "jonahsnider/tap"
-tap "oven-sh/bun"
 
 brew "sqlite"
 brew "openssl"
@@ -52,6 +51,7 @@ brew "bun" # Runs terminal/claude/statusline.ts
 brew "ngrep" # Used by the sniff alias
 
 cask "firefox"
+cask "ghostty"
 cask "google-chrome"
 cask "hovrly"
 cask "figma"
@@ -61,7 +61,6 @@ cask "spotify"
 cask "telegram"
 cask "jordanbaird-ice"
 cask "wispr-flow"
-cask "visual-studio-code"
 cask "cursor"
 cask "vlc"
 cask "whatsapp"
@@ -76,7 +75,6 @@ cask "flux-app" # https://justgetflux.com/
 cask "kap" # https://getkap.co/
 cask "rectangle" # https://rectangleapp.com/
 cask "cloudflare-warp" # https://1.1.1.1/
-cask "monitorcontrol" # https://github.com/MonitorControl/MonitorControl#readme
 cask "alt-tab" # https://alt-tab-macos.netlify.app/
 cask "insomnia" # https://insomnia.rest/
 cask "raycast" # https://raycast.com/
