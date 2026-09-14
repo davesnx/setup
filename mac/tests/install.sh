@@ -307,7 +307,7 @@ install_brew_stub
 FAIL_BREW_CALL=2
 export FAIL_BREW_CALL
 expect_exit 42 /bin/sh "$root/mac/install.sh" "$root"
-grep -q '^brew:trust --tap jonahsnider/tap$' "$command_log"
+grep -q '^brew:trust --tap jonahsnider/tap oven-sh/bun$' "$command_log"
 if grep -q '^brew:bundle ' "$command_log"; then
   exit 1
 fi

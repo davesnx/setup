@@ -43,7 +43,7 @@ brew_path=$(command -v brew) || {
 
 eval "$("$brew_path" shellenv sh)"
 
-"$brew_path" trust --tap jonahsnider/tap
+"$brew_path" trust --tap jonahsnider/tap oven-sh/bun
 
 # All apps (This line is 2 times because there are dependencies between brew cask and brew)
 "$brew_path" bundle --file="$setup_path/mac/brew/Brewfile"
