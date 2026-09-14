@@ -30,39 +30,20 @@ if [ ! -x /bin/bash ]; then
   exit 69
 fi
 
-find_brew() {
-  brew_path=$(command -v brew 2>/dev/null || true)
-  case "$brew_path" in
-    /*)
-      if [ -x "$brew_path" ]; then
-        return 0
-      fi
-      ;;
-  esac
+PATH="$PATH:${BREW_SEARCH_PATHS:-/opt/homebrew/bin:/usr/local/bin}"
+if ! command -v brew >/dev/null 2>&1; then
+  installer=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
+  /bin/bash -c "$installer"
+fi
 
-  for brew_path in ${BREW_SEARCH_PATHS:-/opt/homebrew/bin/brew /usr/local/bin/brew}; do
-    if [ -x "$brew_path" ]; then
-      return 0
-    fi
-  done
-
-  brew_path=
-  return 1
+brew_path=$(command -v brew) || {
+  echo "Homebrew installation completed, but brew was not found." >&2
+  exit 69
 }
 
-if ! find_brew; then
-  homebrew_installer=$(mktemp "${TMPDIR:-/tmp}/homebrew-install.XXXXXX")
-  trap 'rm -f "$homebrew_installer"' EXIT HUP INT TERM
-  curl -fsSL -o "$homebrew_installer" https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
-  /bin/bash "$homebrew_installer"
-  rm -f "$homebrew_installer"
-  trap - EXIT HUP INT TERM
+eval "$("$brew_path" shellenv sh)"
 
-  if ! find_brew; then
-    echo "Homebrew installation completed, but brew was not found." >&2
-    exit 69
-  fi
-fi
+"$brew_path" trust --tap jonahsnider/tap
 
 # All apps (This line is 2 times because there are dependencies between brew cask and brew)
 "$brew_path" bundle --file="$setup_path/mac/brew/Brewfile"

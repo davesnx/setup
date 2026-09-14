@@ -9,13 +9,15 @@ trap 'rm -rf "$work"' EXIT HUP INT TERM
 test_bin="$work/bin"
 command_log="$work/commands.log"
 brew_template="$work/brew"
-apple_silicon_brew="$work/fallback/apple-silicon/brew"
+apple_silicon_brew="$work/fallback/apple silicon/bin/brew"
+intel_brew="$work/fallback/intel/bin/brew"
 mkdir -p "$test_bin"
 
 export COMMAND_LOG="$command_log"
 export TEST_BIN="$test_bin"
 export BREW_TEMPLATE="$brew_template"
-BREW_SEARCH_PATHS="$apple_silicon_brew $work/fallback/intel/brew"
+# Restrict fallback discovery as well as PATH so tests never run host Homebrew.
+BREW_SEARCH_PATHS="${apple_silicon_brew%/brew}:${intel_brew%/brew}"
 export BREW_SEARCH_PATHS
 
 cat >"$brew_template" <<'EOF'
@@ -30,6 +32,14 @@ printf 'brew:%s\n' "$*" >>"$COMMAND_LOG"
 if [ "${FAIL_BREW_CALL:-0}" -eq "$count" ]; then
   exit 42
 fi
+case "$1" in
+  shellenv)
+    [ "$*" = 'shellenv sh' ] || exit 2
+    printf '%s\n' 'export TEST_BREW_SHELLENV=1'
+    ;;
+  trust|bundle) [ "${TEST_BREW_SHELLENV:-0}" -eq 1 ] || exit 2 ;;
+  *) exit 2 ;;
+esac
 EOF
 chmod +x "$brew_template"
 
@@ -58,19 +68,27 @@ while [ "$#" -gt 0 ]; do
 done
 
 printf 'curl:%s\n' "$url" >>"$COMMAND_LOG"
-[ -n "$output" ] || exit 2
 
 case "$url" in
   *Homebrew*)
-    cat >"$output" <<'INSTALLER'
+    cat <<'INSTALLER'
 #!/bin/bash
+printf 'bootstrap\n' >>"$COMMAND_LOG"
+if [[ ${FAIL_BOOTSTRAP:-0} == 1 ]]; then
+  exit 41
+fi
 if [[ ${INSTALL_BREW:-0} == 1 ]]; then
-  cp "$BREW_TEMPLATE" "$TEST_BIN/brew"
-  chmod +x "$TEST_BIN/brew"
+  mkdir -p "${BREW_INSTALL_PATH%/*}"
+  cp "$BREW_TEMPLATE" "$BREW_INSTALL_PATH"
+  chmod +x "$BREW_INSTALL_PATH"
 fi
 INSTALLER
+    if [ "${FAIL_BREW_DOWNLOAD:-0}" -eq 1 ]; then
+      exit 22
+    fi
     ;;
   *zimfw*)
+    [ -n "$output" ] || exit 2
     printf '%s\n' '# fixture zimfw' >"$output"
     if [ "${FAIL_ZIM_DOWNLOAD:-0}" -eq 1 ]; then
       exit 22
@@ -170,7 +188,9 @@ prepare_home() {
   : >"$command_log"
   rm -rf "$work/fallback"
   rm -f "$test_bin/brew" "$test_bin/brew-count"
-  unset FAIL_BREW_CALL INSTALL_BREW FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
+  unset FAIL_BREW_CALL INSTALL_BREW FAIL_BREW_DOWNLOAD FAIL_BOOTSTRAP TEST_BREW_SHELLENV FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
+  BREW_INSTALL_PATH="$apple_silicon_brew"
+  export BREW_INSTALL_PATH
 }
 
 install_brew_stub() {
@@ -284,7 +304,18 @@ printf 'PASS: missing curl stops before mutation\n'
 
 prepare_home
 install_brew_stub
-FAIL_BREW_CALL=1
+FAIL_BREW_CALL=2
+export FAIL_BREW_CALL
+expect_exit 42 /bin/sh "$root/mac/install.sh" "$root"
+grep -q '^brew:trust --tap jonahsnider/tap$' "$command_log"
+if grep -q '^brew:bundle ' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: failed tap trust stops before bundle\n'
+
+prepare_home
+install_brew_stub
+FAIL_BREW_CALL=3
 export FAIL_BREW_CALL
 expect_exit 42 /bin/sh "$root/mac/install.sh" "$root"
 [ ! -e "$HOME/.hushlogin" ]
@@ -292,7 +323,7 @@ printf 'PASS: failed bundle stops the Mac installer\n'
 
 prepare_home
 install_brew_stub
-FAIL_BREW_CALL=1
+FAIL_BREW_CALL=3
 export FAIL_BREW_CALL
 expect_exit 42 /bin/sh "$root/install.sh"
 [ ! -e "$HOME/.zshenv" ]
@@ -302,19 +333,58 @@ fi
 printf 'PASS: failed Mac phase stops the root installer\n'
 
 prepare_home
+install_brew_stub
+expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+[ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
+[ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
+if grep -q '^curl:' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: installer initializes Brew on PATH before bundling without bootstrap\n'
+
+prepare_home
 INSTALL_BREW=1
 export INSTALL_BREW
 expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+[ "$(grep -c '^bootstrap$' "$command_log")" -eq 1 ]
+[ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
 [ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
 printf 'PASS: installer discovers newly installed Brew\n'
 
+for fallback_brew in "$apple_silicon_brew" "$intel_brew"; do
+  prepare_home
+  mkdir -p "$(dirname "$fallback_brew")"
+  cp "$brew_template" "$fallback_brew"
+  chmod +x "$fallback_brew"
+  expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+  [ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
+  [ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
+  if grep -q '^curl:' "$command_log"; then
+    exit 1
+  fi
+done
+printf 'PASS: installer finds Apple Silicon and Intel Brew outside PATH\n'
+
 prepare_home
-mkdir -p "$(dirname "$apple_silicon_brew")"
-cp "$brew_template" "$apple_silicon_brew"
-chmod +x "$apple_silicon_brew"
-expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
-[ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
-printf 'PASS: installer finds Apple Silicon Brew\n'
+FAIL_BREW_DOWNLOAD=1
+export FAIL_BREW_DOWNLOAD
+expect_exit 22 /bin/sh "$root/mac/install.sh" "$root"
+if grep -Eq '^(bootstrap|brew:)' "$command_log"; then
+  exit 1
+fi
+[ ! -e "$HOME/.hushlogin" ]
+printf 'PASS: failed Brew download never executes partial installer output\n'
+
+prepare_home
+FAIL_BOOTSTRAP=1
+export FAIL_BOOTSTRAP
+expect_exit 41 /bin/sh "$root/mac/install.sh" "$root"
+grep -qx 'bootstrap' "$command_log"
+if grep -q '^brew:' "$command_log"; then
+  exit 1
+fi
+[ ! -e "$HOME/.hushlogin" ]
+printf 'PASS: failed Brew bootstrap stops the installer\n'
 
 prepare_home
 install_brew_stub
