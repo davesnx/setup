@@ -1,0 +1,6 @@
+[
+  {"name":"each-login-replaces-agent","restore":["select.cjs"]},
+  {"name":"empty-agent-treated-as-dead","replace":{"select.cjs":["result.status === 0 || result.status === 1","result.status === 0"]}},
+  {"name":"socket-type-only","replace":{"select.cjs":["responsive(stable)","fs.existsSync(stable)"]}},
+  {"name":"unresolved-incoming","replace":{"select.cjs":["resolved = fs.realpathSync(incoming)","resolved = incoming"]}}
+]

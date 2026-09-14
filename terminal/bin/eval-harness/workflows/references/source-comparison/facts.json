@@ -1,0 +1,6 @@
+[
+  {"topic":"script_precedence","value":"framework","source":"upstream/install.cjs","quote":"exports.choose = (framework, user) => framework || user;"},
+  {"topic":"restoration","value":"every-install","source":"upstream/install.cjs","quote":"exports.restore = (scripts, run) => scripts.slice().sort().forEach(run);"},
+  {"topic":"upstream_existing_file","value":"overwrite","source":"upstream/install.cjs","quote":"exports.link = (existing, io) => { if (existing) io.remove(); io.link(); };"},
+  {"topic":"local_existing_file","value":"backup","source":"local/install.cjs","quote":"exports.link = (existing, io) => { if (existing) io.backup(); io.link(); };"}
+]

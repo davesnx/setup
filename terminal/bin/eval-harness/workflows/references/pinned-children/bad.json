@@ -1,0 +1,7 @@
+[
+  {"name":"uses-local-fork","restore":["adapter.cjs"]},
+  {"name":"pin-only-no-adapter","write":{"adapter.cjs":"const backend = require('./vendor/release.cjs');\nexports.convert = input => ({version: backend.version, args: backend.convert(input)});\n"}},
+  {"name":"reports-release-but-loads-fork","write":{"adapter.cjs":"const backend = require('./vendor/fork.cjs');\nexports.convert = input => ({version: '0.11', args: backend.convert(input)});\n"}},
+  {"name":"accepts-duplicate-explicit-children","replace":{"adapter.cjs":["if (explicit.length > 1)","if (explicit.length > 9)"]}},
+  {"name":"fork-loaded-as-unused-runtime-dependency","replace":{"adapter.cjs":["const backend = require(lock.module);","require('./vendor/fork.cjs');\nconst backend = require(lock.module);"]}}
+]

@@ -56,6 +56,10 @@ These announce insight rather than deliver it.
 
 **Instead:** Remove the setup. Preserve a conclusion or distinction in a direct sentence.
 
+## Empty defenses and fake alternatives
+
+"I'm not saying...", "Don't get me wrong...", and "One might be tempted to..." can set up an objection or option only to dismiss it. Remove this framing when it adds no substance. Preserve real objections, options, risks, and claims, including qualifications or negations that limit the writer's position.
+
 ## False agency
 
 Inanimate subjects can hide who acted. Complaints don't "become" fixes, and decisions don't "emerge" without a person deciding. Name the actor when doing so improves the sentence.

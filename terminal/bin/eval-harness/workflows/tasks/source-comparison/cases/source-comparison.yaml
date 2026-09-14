@@ -1,0 +1,28 @@
+schema_version: 2
+id: source-comparison
+mode: deterministic
+skill_under_test: how
+skills_loaded: [how]
+description: Compare conflicting local source snapshots without inventing evidence.
+setup:
+  fixtures:
+    upstream/README.md: fixtures/upstream/README.md
+    upstream/install.cjs: fixtures/upstream/install.cjs
+    local/install.cjs: fixtures/local/install.cjs
+    inspect.cjs: fixtures/inspect.cjs
+    FORMAT.md: fixtures/FORMAT.md
+prompt: |
+  Would taking the upstream installer change our safety guarantees? Compare
+  the two snapshots here. I care about a same-named user script, rerunning
+  restoration, and an existing user file at the link destination. Write a
+  short comparison.md and facts.json in FORMAT.md's format. Do not change the
+  snapshots. You can run node inspect.cjs offline. Explain any disagreement
+  you find between the docs and the implementation.
+budget:
+  max_tokens: 6500
+  max_seconds: 150
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

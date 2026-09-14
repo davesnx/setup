@@ -1,0 +1,10 @@
+const upstream = require('./upstream/install.cjs');
+const local = require('./local/install.cjs');
+const events = [];
+const io = { remove: () => events.push('remove'), backup: () => events.push('backup'), link: () => events.push('link') };
+console.log('selected:', upstream.choose('bundled', 'personal'));
+upstream.restore(['b', 'a'], name => events.push(name));
+upstream.restore(['b', 'a'], name => events.push(name));
+upstream.link(true, io);
+local.link(true, io);
+console.log(JSON.stringify(events));

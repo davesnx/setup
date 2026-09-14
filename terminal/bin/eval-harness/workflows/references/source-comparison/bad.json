@@ -1,0 +1,6 @@
+[
+  {"name":"trusted-overview","replace":{"facts.json":["\"value\":\"framework\"","\"value\":\"user\""]}},
+  {"name":"invented-source-line","replace":{"facts.json":["framework || user;","framework ?? user;"]}},
+  {"name":"fabricated-file","replace":{"facts.json":["local/install.cjs","local/verified.cjs"]}},
+  {"name":"changed-source-to-fit-conclusion","write":{"upstream/install.cjs":"exports.choose = (framework, user) => user;\n"}}
+]

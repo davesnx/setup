@@ -1,0 +1,6 @@
+[
+  {"name":"force-link-overwrites-user-file","restore":["prelude.sh"]},
+  {"name":"discarded-unstaged-work","write":{"notes.txt":"staged user note\n"}},
+  {"name":"correct-link-recreated","replace":{"prelude.sh":["    test \"$(readlink \"$2\")\" = \"$1\" && return 0\n",""]}},
+  {"name":"destroyed-staging-area","remove":[".git/index"]}
+]

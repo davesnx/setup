@@ -1,0 +1,31 @@
+schema_version: 2
+id: agent-recovery
+mode: deterministic
+skill_under_test: debug
+skills_loaded: [debug]
+description: Repair shared socket selection with isolated responsive and stalled agents.
+setup:
+  fixtures:
+    select.cjs: fixtures/select.cjs
+    startup.sh: fixtures/startup.sh
+    probe.cjs: fixtures/probe.cjs
+    test.cjs: fixtures/test.cjs
+    CONTRACT.md: fixtures/CONTRACT.md
+turns:
+  - |
+    New logins sometimes break the shared agent path. Fix startup.sh and its
+    selector using this local reproduction. node test.cjs currently fails.
+    Keep the stable agent.sock path. Do not touch a real SSH directory or key.
+  - |
+    A second login must not take over while the shared agent still responds,
+    even if it has no identities. After that agent stops responding, another
+    login should recover. Please test a live but stalled socket too, not only
+    missing files. Non-SSH startup must stay unchanged.
+budget:
+  max_tokens: 8000
+  max_seconds: 180
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

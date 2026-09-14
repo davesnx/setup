@@ -11,7 +11,7 @@ setup:
     "voice.md": fixtures/voice-sample.md
 
 prompt: |
-  Use voice.md as my writing sample. Keep my first-person viewpoint and use
+  Load Unslop and use voice.md as my writing sample. Keep my first-person viewpoint and use
   an em dash to connect these thoughts. Write only the result to revised.md:
   "My second deploy worked. I still have not tested my rollback plan."
 

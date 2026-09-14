@@ -9,7 +9,7 @@ while [[ -L "$script" ]]; do
 done
 root=$(CDPATH='' cd "$(dirname "$script")" && pwd)
 package="${1:-$root/node_modules/@nano-step/eval-harness}"
-patch="$root/patches/eval-harness-0.4.2.patch"
+patches=("$root/patches/eval-harness-0.4.2.patch" "$root/patches/eval-harness-gaps.patch" "$root/patches/eval-harness-workflows.patch")
 
 # An enclosing checkout makes git apply skip these package-relative paths.
 GIT_CEILING_DIRECTORIES=$(CDPATH='' cd "$package/.." && pwd -P)
@@ -19,8 +19,26 @@ if [[ "$(node -p 'require(process.argv[1]).version' "$package/package.json")" !=
   printf 'The eval-harness patch requires version 0.4.2.\n' >&2
   exit 1
 fi
-if git -C "$package" apply --reverse --check "$patch" 2>/dev/null; then
-  exit 0
-fi
-git -C "$package" apply --check "$patch"
-git -C "$package" apply "$patch"
+scratch=$(mktemp -d)
+trap 'rm -rf -- "$scratch"' EXIT
+cp -R "$package/." "$scratch/"
+GIT_CEILING_DIRECTORIES="$GIT_CEILING_DIRECTORIES:$(dirname "$scratch")"
+
+# Check the full chain on a copy before changing the installed package.
+first=0
+for ((last=${#patches[@]}-1; last>=0; last--)); do
+  if git -C "$scratch" apply --reverse --check "${patches[$last]}" 2>/dev/null; then
+    first=$((last+1))
+    for ((index=last; index>=0; index--)); do
+      git -C "$scratch" apply --reverse "${patches[$index]}"
+    done
+    break
+  fi
+done
+for patch in "${patches[@]}"; do
+  git -C "$scratch" apply --check "$patch"
+  git -C "$scratch" apply "$patch"
+done
+for patch in "${patches[@]:$first}"; do
+  git -C "$package" apply "$patch"
+done

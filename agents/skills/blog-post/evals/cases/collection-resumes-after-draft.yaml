@@ -3,7 +3,7 @@ id: collection-resumes-after-draft
 mode: prose
 skill_under_test: blog-post
 skills_loaded: [blog-post]
-description: "A one-off draft request does not turn later collected notes into automatic edits"
+description: "Resume note collection without editing the draft or promoting an observation to a causal result"
 tags: [prose, collection]
 
 setup:
@@ -22,6 +22,19 @@ prompt: |
   Respond to the latest message. For this test, put your chat reply in
   reply.md. Existing draft.md is available if the workflow calls for an edit.
 
+  Test protocol: represent the reply as one JSON object, without code fences
+  or extra prose, using exactly these fields:
+  - notes: an array of objects with source ("latest-user", "earlier-user",
+    or "assistant") and quote (verbatim note text from that source;
+    introductory "Another note:" may be omitted).
+  - cache_effect: "unknown", "improved", "worsened", or "no-effect".
+    This records what the supplied evidence establishes about causation,
+    not whether the two reported durations differ.
+  - draft_action: "unchanged" or "edited".
+  Record the new note and the current evidence status. This bounded capture
+  protocol replaces free-form chat for this test only; it does not test
+  unrestricted prose quality or infer prose meaning from keywords.
+
 budget:
   max_tokens: 3000
   max_seconds: 90
@@ -33,12 +46,17 @@ checks:
     cmd: |
       node <<'JS'
       const fs = require('fs');
-      const draft = fs.readFileSync('draft.md', 'utf8');
-      const reply = fs.readFileSync('reply.md', 'utf8').trim();
-      const unchanged = draft.trim() === 'I tried a local cache. My first build took 40 seconds.';
-      const brief = reply.length > 0 && reply.split(/\s+/).length <= 100;
-      const noDraft = !/^#{1,6} /m.test(reply) && !/I tried a local cache\. My first build/i.test(reply);
-      process.stdout.write(unchanged && brief && noDraft ? 'collected' : 'invalid');
+      const assert = require('node:assert/strict');
+      assert.equal(fs.readFileSync('draft.md', 'utf8'), 'I tried a local cache. My first build took 40 seconds.\n');
+      const reply = JSON.parse(fs.readFileSync('reply.md', 'utf8'));
+      const quote = reply.notes?.[0]?.quote;
+      assert.ok(["Friday's build took 28 seconds.", "Another note: Friday's build took 28 seconds."].includes(quote));
+      assert.deepEqual(reply, {
+        notes: [{ source: 'latest-user', quote }],
+        cache_effect: 'unknown',
+        draft_action: 'unchanged',
+      });
+      process.stdout.write('collected');
       JS
     unsafe_shell: true
     expect_exact: collected

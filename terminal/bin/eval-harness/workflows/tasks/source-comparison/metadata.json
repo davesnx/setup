@@ -1,0 +1,5 @@
+{
+  "manual_review": true,
+  "artifact": "comparison.md",
+  "criteria": ["Correct reasoning from the cited snapshots", "Explains the documentation conflict", "No fabricated evidence or unsupported generalization", "Useful safety comparison"]
+}

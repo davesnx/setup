@@ -1,0 +1,39 @@
+schema_version: 2
+id: path-migration
+mode: deterministic
+skill_under_test: code-standards
+skills_loaded: [code-standards]
+description: Change a migration destination without rewriting history or unrelated paths.
+setup:
+  script: setup.sh
+  fixtures:
+    active.json: fixtures/active.json
+    startup.json: fixtures/startup.json
+    migrate.cjs: fixtures/migrate.cjs
+    test.cjs: fixtures/test.cjs
+    history/session.json: fixtures/history/session.json
+    old-setup/tool.txt: fixtures/old-setup/tool.txt
+    new-setup/tool.txt: fixtures/new-setup/tool.txt
+    new-setup/repo/tool.txt: fixtures/new-setup/repo/tool.txt
+    other-project/notes.txt: fixtures/other-project/notes.txt
+    home/user.txt: fixtures/home/user.txt
+    CONTRACT.md: fixtures/CONTRACT.md
+turns:
+  - |
+    Migrate this small setup from old-setup to new-setup/repo. Fix migrate.cjs
+    and run it. Update the active startup, editor, service paths and managed
+    link. Keep the original tree and existing local work. CONTRACT.md lists
+    what is active and what is historical. Add a test for rerunning it.
+  - |
+    Change the destination to new-setup, without the repo directory. Please
+    apply that change too, not just describe it. The stored session resume
+    path is historical and should not be rewritten. Leave the other project
+    and my home/user.txt alone. Verify all active paths and rerun the migration.
+budget:
+  max_tokens: 8000
+  max_seconds: 180
+checks:
+  - kind: shell
+    cmd: 'node "$EVAL_FIXTURE_DIR/../check.cjs"'
+    unsafe_shell: true
+    expect_exact: ok

@@ -11,7 +11,7 @@ root=$(CDPATH='' cd "$package_root/../../.." && pwd -P) || exit 1
 harness_root="$package_root/node_modules/@nano-step/eval-harness/scripts/eval"
 command_name="${1:-run}"
 usage() {
-  printf 'Usage: eval-harness <command> [options]\n\nCommands: run, baseline, accept, status, trend, promote, cleanup\nCleanup:  eval-harness cleanup --run=<run-id>\n\nUse <command> --help for command options.\n'
+  printf 'Usage: eval-harness <command> [options]\n\nCommands: run, workflow, baseline, accept, status, trend, promote, cleanup, regrade\nWorkflow: eval-harness workflow [--case=<id> | --split=development|heldout]\nCleanup:  eval-harness cleanup --run=<run-id>\nRegrade:  eval-harness regrade --run=<run-id> --case=<case-id>\n\nUse <command> --help for command options.\n'
 }
 case "$command_name" in
   help|--help|-h) usage; exit 0 ;;
@@ -23,8 +23,10 @@ if [[ ! -d "$harness_root" ]]; then
 fi
 
 opencode_bin=''
-if [[ "$command_name" != cleanup ]]; then
-  opencode_bin="$(command -v opencode)" || exit 1
+if [[ "$command_name" != cleanup && "$command_name" != regrade && "${EVAL_RUNNER:-host}" != docker ]]; then
+  opencode_bin="$(command -v opencode)" || {
+    [[ "$command_name" == workflow ]] || exit 13
+  }
 fi
 state_dir="${EVAL_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/opencode/eval-harness}"
 extra_skills_root="${OPENCODE_SKILLS_EXTRA_ROOT:-}"
@@ -33,7 +35,7 @@ if [[ -z "${OPENCODE_SKILLS_ROOT:-}" && -z "${OPENCODE_SKILLS_EXTRA_ROOT+x}" ]];
 fi
 
 case "$command_name" in
-	run|baseline|accept|status|trend|promote|cleanup)
+	run|workflow|baseline|accept|status|trend|promote|cleanup|regrade)
 		[[ $# -eq 0 ]] || shift
 		;;
 	*)
@@ -45,6 +47,7 @@ esac
 OPENCODE_SKILLS_ROOT="${OPENCODE_SKILLS_ROOT:-$root/agents/skills}" \
 OPENCODE_SKILLS_EXTRA_ROOT="$extra_skills_root" \
 EVAL_STATE_DIR="$state_dir" \
+EVAL_WORKFLOWS_ROOT="${EVAL_WORKFLOWS_ROOT:-$package_root/workflows}" \
 EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
 ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-${OPENCODE_ANTHROPIC_API_KEY:-}}" \
 EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \

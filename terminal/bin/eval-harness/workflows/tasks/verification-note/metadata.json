@@ -1,0 +1,5 @@
+{
+  "manual_review": true,
+  "artifact": "note.md",
+  "criteria": ["Consistent with checks.json", "No runtime or example verification claim without evidence", "Distinguishes documentation from implementation changes", "States the missing verification clearly"]
+}
