@@ -11,6 +11,9 @@ __pycache__/
 # Private Stuff
 /**/**/private-*
 
+# Choosy license (settings only belong in Git)
+/mac/choosy/**/.key
+
 # OpenCode private and generated state
 /terminal/opencode/service.json
 /terminal/opencode/user_profile.json

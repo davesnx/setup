@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "notion.so/ahrefs" AND URL CONTAINS "https://app.notion.com/p/ahrefs"</string>
+    <key>title</key><string>notion.so to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 1</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL BEGINSWITH "github.com"</string>
+    <key>title</key><string>github.com to personal</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "https://github.com/ahrefs-core/monorepo/"</string>
+    <key>title</key><string>github.com/ahrefs-core/monorepo to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "buildkite.com/ahrefs"</string>
+    <key>title</key><string>buildkite to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "app.ahrefs.me"</string>
+    <key>title</key><string>ahrefs.me to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "basecamp.com"</string>
+    <key>title</key><string>basecamp.com to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "greenhouse.io"</string>
+    <key>title</key><string>greenhouse.io to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "grafana.ahrefs.dev"</string>
+    <key>title</key><string>grafana to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL CONTAINS "account.hubstaff.com"</string>
+    <key>title</key><string>hubstaff to ahrefs</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL BEGINSWITH "https://stackoverflowteams.com"</string>
+    <key>title</key><string>Stakoverflow - teams</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>URL BEGINSWITH "https://linear.app/ahrefs/"</string>
+    <key>title</key><string>linear</string>
+  </dict>
+  <dict>
+    <key>behaviour</key><integer>6</integer>
+    <key>behaviourArgument</key><dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 1</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <key>enabled</key><true/>
+    <key>predicate</key><string>TRUEPREDICATE</string>
+    <key>title</key><string>Default behaviour</string>
+  </dict>
+</array>
+</plist>

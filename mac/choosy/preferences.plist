@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>browsers</key>
+  <array>
+    <dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 1</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 2</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+    <dict>
+      <key>path</key><string>/Applications/Brave Browser.app</string>
+      <key>profileName</key><string>Profile 3</string>
+      <key>supportPath</key><string></string>
+      <key>type</key><string>ChoosyBraveProfileMode</string>
+    </dict>
+  </array>
+  <key>displayBrowserNames</key><true/>
+  <key>displayMenuBarItem</key><false/>
+  <key>displayMode</key><integer>0</integer>
+  <key>displayURL</key><true/>
+  <key>iconSize</key><integer>112</integer>
+  <key>launchAtLogin</key><true/>
+</dict>
+</plist>
