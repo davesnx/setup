@@ -53,6 +53,8 @@ export FZF_COMPLETION_OPTS='+c -x'
 # Post-init module configuration
 # ------------------------------
 
+source "$DOTFILES_PATH/terminal/zsh/selection.zsh"
+
 # zsh-history-substring-search
 autoload -U history-substring-search-up history-substring-search-down
 

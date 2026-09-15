@@ -4,6 +4,9 @@ zmodule environment
 # Applies correct bindkeys for input events
 zmodule input
 
+# Shift selection in the command line, using its own temporary keymap.
+zmodule jirutka/zsh-shift-select
+
 # Sets a custom terminal title
 zmodule termtitle
 
