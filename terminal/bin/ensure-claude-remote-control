@@ -5,5 +5,23 @@ set -eu
 exec /usr/bin/ssh \
   -o BatchMode=yes \
   -o ConnectTimeout=10 \
+  -o ServerAliveInterval=15 \
+  -o ServerAliveCountMax=2 \
   nspawn \
-  "tmux has-session -t claude-for-remote-control 2>/dev/null || exec tmux new-session -d -s claude-for-remote-control -c /home/me 'exec /home/me/.local/bin/claude --remote-control --permission-mode auto'"
+  '
+set -eu
+session=claude-for-remote-control
+command="exec /home/me/.local/bin/claude --remote-control --permission-mode auto"
+
+if ! tmux has-session -t "=$session" 2>/dev/null; then
+  exec tmux new-session -d -s "$session" -c /home/me "$command"
+fi
+
+# With remain-on-exit enabled, Claude can exit without removing its pane.
+panes=$(tmux list-panes -s -t "=$session" -F "#{pane_id} #{pane_dead} #{pane_start_command}")
+printf "%s\n" "$panes" | while read -r pane dead start_command; do
+  if [ "$dead" = 1 ] && [ "$start_command" = "\"$command\"" ]; then
+    tmux respawn-pane -t "$pane" -c /home/me "$command"
+  fi
+done
+'
