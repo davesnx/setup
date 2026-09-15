@@ -95,6 +95,7 @@ to subagents and orchestrate them:
 
 ## Code
 
+- Default to TypeScript with strict type checking for scripts instead of Python.
 - Read the affected code, callers, and tests before changing behavior or making
   claims about it.
 - When adding a requirement, consider the design you would choose if it had

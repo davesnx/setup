@@ -22,8 +22,8 @@ Send pages and links to another browser using Choosy (macOS only).
 # Cookie Editor
 A powerful and easy-to-use Cookie Editor.
 
-# DeArrow - Better Titles and Thumbnails
-Crowdsourcing titles and thumbnails to be descriptive and not sensational
+# Disable All Extensions
+Quickly disable all browser extensions.
 
 # Email Tracker for Gmail, Mailsuite-Mailtrack
 Gmail mail merge and mass email tracker with 2 million+ users. Free, unlimited email tracking to boost outreach and email marketing.
@@ -43,17 +43,11 @@ Edit, create and view your documents, spreadsheets and presentations – all wit
 # Grammarly: AI Writing and Grammar Checker App
 Improve your writing with all-in-one assistance—including generative AI, grammar check, and more.
 
-# Honey: Automatic Coupons & Rewards
-Automatically find and apply discounts when you shop online!
-
 # HTTPS Everywhere
 Encrypt the Web! Automatically use HTTPS security on many sites.
 
 # I still don't care about cookies
 Community version of the extension `I don't care about cookies` (no Avast)
-
-# Instapaper
-Instapaper browser extension to save links for offline reading.
 
 # JSON Formatter
 Makes JSON easy to read. Open source.
@@ -61,11 +55,8 @@ Makes JSON easy to read. Open source.
 # Just Read
 A feature-packed, customizable reader extension.
 
-# LiveReload
-ID: jnihajbhpnppcggbcgedagnkighmdlei
-
-# Loom – Screen Recorder & Screen Capture
-Record your screen and camera with one click. Share that content in an instant with a link.
+# LeechBlock NG
+Block distracting websites to help you stay focused.
 
 # Make Medium Readable Again
 Neutralizes annoying parts of the Medium reading experience and lets you read again.
@@ -85,23 +76,20 @@ Simplifies the GitHub interface and adds useful features
 # RSC Devtools
 React Server Components network visualizer
 
+# Shiori
+Save bookmarks to your Shiori instance.
+
 # sleeper
 An ambient new tab browser extension
-
-# StayFree - Website Blocker & Web Analytics
-Analytics to help you understand and control your website usage, leading to less distractions and enhanced productivity
-
-# svg-grabber - get all the svg's from a site
-A tool to quickly preview and get all the svg assets from a website.
 
 # Tab Size on GitHub
 Make tab indented code more readable by forcing the tab size to 4 instead of 8
 
 # Tampermonkey
-Change the web at will with userscripts
+Change the web at will with userscripts. [Tracked scripts and settings](tampermonkey/README.md).
+
+# uBlock Origin
+Block ads, trackers, and other unwanted web content.
 
 # Vimium
 The Hacker's Browser. Vimium provides keyboard shortcuts for navigation and control in the spirit of Vim.
-
-# W3Schools Hider
-Hides W3Schools (and other) results from Google Searches

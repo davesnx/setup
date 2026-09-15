@@ -1,0 +1,27 @@
+[
+  {
+    "file": "google-hit-hider.user.js",
+    "page": "https://greasyfork.org/en/scripts/1682-google-hit-hider-by-domain-search-filter-block-sites",
+    "url": "https://update.greasyfork.org/scripts/1682/Google%20Hit%20Hider%20by%20Domain%20%28Search%20Filter%20%20Block%20Sites%29.user.js"
+  },
+  {
+    "file": "image-max-url.user.js",
+    "page": "https://github.com/qsniyg/maxurl",
+    "url": "https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.user.js"
+  },
+  {
+    "file": "general-url-cleaner.user.js",
+    "page": "https://greasyfork.org/en/scripts/10096-general-url-cleaner",
+    "url": "https://update.greasyfork.org/scripts/10096/General%20URL%20Cleaner.user.js"
+  },
+  {
+    "file": "youtube-direct-downloader.user.js",
+    "page": "https://greasyfork.org/en/scripts/481954-youtube-direct-downloader",
+    "url": "https://update.greasyfork.org/scripts/481954/YouTube%20Direct%20Downloader.user.js"
+  },
+  {
+    "file": "assassinate-ad-block-blockers.user.js",
+    "page": "https://greasyfork.org/en/scripts/382482-assassinate-ad-block-blockers",
+    "url": "https://update.greasyfork.org/scripts/382482/Assassinate%20Ad%20Block%20Blockers.user.js"
+  }
+]
