@@ -1,3 +1,4 @@
+tap "buildkite/buildkite"
 tap "jonahsnider/tap"
 tap "oven-sh/bun"
 
@@ -51,6 +52,8 @@ brew "mycli"
 brew "bun" # Runs terminal/claude/statusline.ts
 brew "ngrep" # Used by the sniff alias
 
+cask "claude-code"
+cask "buildkite/buildkite/buildkite-mcp-server"
 cask "firefox"
 cask "google-chrome"
 cask "hovrly"
