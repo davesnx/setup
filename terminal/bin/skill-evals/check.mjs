@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+// Task checks run from a copied grader tree that is not a Git checkout, so the
+// pilot passes SETUP_ROOT. Direct runs resolve the checkout this file lives in.
+const here = dirname(fileURLToPath(import.meta.url));
+const root = process.env.SETUP_ROOT
+  ?? execFileSync('git', ['-C', here, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
 const fixture = (skill, file) => readFileSync(resolve(root,
   `terminal/opencode/skills/${skill}/evals/fixtures/${file}`), 'utf8');
 const read = (file) => readFileSync(file, 'utf8');

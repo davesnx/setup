@@ -20,7 +20,8 @@ from isolate import BUILTIN_SKILLS
 from report import summarize
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[2]
+_TOPLEVEL = ["git", "-C", str(HERE), "rev-parse", "--show-toplevel"]
+ROOT = Path(subprocess.check_output(_TOPLEVEL, text=True).strip())
 CATALOG = {
     "code-review": ROOT / "terminal/opencode/skills/code-review",
     "simplify": ROOT / "terminal/opencode/skills/simplify",
@@ -226,7 +227,7 @@ def prepare(
     labels = study.get("routing_labels", load_json(HERE / "routing.json"))
     (directory / "routing-labels.json").write_text(json.dumps(labels, indent=2) + "\n")
     grader_root = directory / "grader"
-    checker_root = grader_root / "terminal/bin/skill-evals"
+    checker_root = grader_root / HERE.relative_to(ROOT)
     checker_root.mkdir(parents=True)
     shutil.copyfile(HERE / "check.mjs", checker_root / "check.mjs")
     for name, files in FIXTURES.items():
