@@ -56,7 +56,7 @@ EOF
 chmod +x "$work/bin/date"
 PATH="$work/bin:$PATH" "$BASH" "$root/terminal/bin/git-extras/git-standup" >"$work/standup"
 
-mkdir -p 'dir with spaces' '-leading-dash'
+mkdir -p -- 'dir with spaces' '-leading-dash'
 touch -- 'dir with spaces/one' $'dir with spaces/two\nlines' '-leading-dash/one'
 output=$("$BASH" "$root/terminal/bin/fs/count_files_recursive_per_directory")
 assert_contains "$output" 'dir with spaces/ 2'
