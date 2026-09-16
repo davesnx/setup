@@ -4,6 +4,10 @@
       "type": "http",
       "url": "https://mcp.notion.com/mcp"
     },
+    "ahrefs": {
+      "type": "http",
+      "url": "https://api.ahrefs.com/mcp/mcp"
+    },
     "sequential-thinking": {
       "command": "npx",
       "args": [

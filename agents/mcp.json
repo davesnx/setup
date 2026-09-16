@@ -8,8 +8,8 @@
     },
     "ahrefs": {
       "type": "remote",
-      "enabled": false,
-      "url": "https://api.ahrefs.me/mcp/mcp"
+      "enabled": true,
+      "url": "https://api.ahrefs.com/mcp/mcp"
     },
     "sequential-thinking": {
       "type": "local",
