@@ -14,7 +14,7 @@ const bin = path.join(home, '.local/bin')
 const command = path.join(bin, 'eval-harness')
 const stubBin = path.join(work, 'stubs')
 const record = path.join(work, 'npm.json')
-const env = { ...process.env, HOME: home, XDG_CONFIG_HOME: config, PATH: `${stubBin}:${process.env.PATH}`, NPM_RECORD: record }
+const env = { ...process.env, DOTFILES_PATH: repo, HOME: home, XDG_CONFIG_HOME: config, PATH: `${stubBin}:${process.env.PATH}`, NPM_RECORD: record }
 
 function install(overrides = {}) {
   return spawnSync('sh', [path.join(root, 'install.sh')], { env: { ...env, ...overrides }, encoding: 'utf8' })

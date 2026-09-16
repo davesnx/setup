@@ -48,8 +48,8 @@ opencode
       overrides.OPENCODE_SKILLS_EXTRA_ROOT ?? (overrides.OPENCODE_SKILLS_ROOT ? '' : path.join(repo, 'terminal/opencode/skills')),
       state,
       overrides.EVAL_HARNESS_REGISTRY || path.join(state, 'registry.yaml'),
-      overrides.EVAL_SMOKE_MODEL || overrides.EVAL_MODEL || 'openai/gpt-5.6-sol',
-      overrides.EVAL_FULL_MODEL || overrides.EVAL_MODEL || 'openai/gpt-5.6-sol',
+      overrides.EVAL_SMOKE_MODEL || overrides.EVAL_MODEL || 'openai/gpt-6-astra',
+      overrides.EVAL_FULL_MODEL || overrides.EVAL_MODEL || 'openai/gpt-6-astra',
       path.join(bin, 'opencode'),
       path.join(root, 'shims/opencode'),
       path.join(root, 'shims/yq'),
@@ -61,6 +61,8 @@ opencode
     check(command)
   }
   check(runner, { XDG_STATE_HOME: path.join(work, 'state'), EVAL_MODEL: 'test/model' })
+  check(runner, { EVAL_MODEL: 'test/model', EVAL_SMOKE_MODEL: 'test/smoke' })
+  check(runner, { EVAL_MODEL: 'test/model', EVAL_FULL_MODEL: 'test/full' })
   check(runner, { OPENCODE_SKILLS_ROOT: path.join(work, 'skills'), OPENCODE_SKILLS_EXTRA_ROOT: '', EVAL_STATE_DIR: path.join(work, 'saved'), EVAL_HARNESS_REGISTRY: path.join(work, 'registry'), EVAL_SMOKE_MODEL: 'test/smoke', EVAL_FULL_MODEL: 'test/full' })
   check(runner, { OPENCODE_SKILLS_ROOT: path.join(work, 'skills') })
   check(runner, { OPENCODE_SKILLS_EXTRA_ROOT: path.join(work, 'extra') })
@@ -87,6 +89,19 @@ printf "%s\\n" "$@"
     })
     assert.equal(result.status, 0, result.stderr)
     assert.deepEqual(result.stdout.trim().split('\n'), args)
+  }
+  for (const args of [['--help'], ['run', '--help'], ['run', '-h'], ['workflow', '--help']]) {
+    const result = spawnSync('/bin/bash', [path.join(source, 'eval-harness'), ...args], {
+      env, encoding: 'utf8',
+    })
+    assert.equal(result.status, 0, result.stderr)
+    assert.match(result.stdout, /Wrapper default smoke\/full model: openai\/gpt-6-astra/)
+    assert.match(result.stdout, /run: tier variables > EVAL_MODEL > wrapper default/)
+    assert.match(result.stdout, /workflow: --model > EVAL_MODEL > tier variables > wrapper default/)
+    assert.match(result.stdout, /Upstream model defaults do not apply through this wrapper/)
+    assert.doesNotMatch(result.stdout, /local-opencode/)
+    if (args[0] === 'run') assert.match(result.stdout, /--skill=<name>/)
+    if (args[0] === 'workflow') assert.match(result.stdout, /--model=<provider\/model>/)
   }
   console.log('PASS: direct and linked runner paths, local dependencies, shims, skills, state, and model settings')
 } finally {

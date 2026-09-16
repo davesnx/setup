@@ -3,6 +3,17 @@
 from pathlib import Path
 
 
+def validate_claude_model(model: str | None) -> None:
+    """These runners call Claude Code, not OpenCode or the current host model."""
+    if model is not None and not (
+        model in ("sonnet", "opus", "haiku")
+        or (model.startswith("claude-") and "/" not in model)
+    ):
+        raise ValueError(
+            "Claude-only runner: use a claude-* model ID or sonnet/opus/haiku alias; "
+            "host and provider/model IDs are not supported"
+        )
+
 
 def parse_skill_md(skill_path: Path) -> tuple[str, str, str]:
     """Parse a SKILL.md file, returning (name, description, full_content)."""

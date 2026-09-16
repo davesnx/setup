@@ -391,7 +391,7 @@ When this gets unwieldy:
 - **Sources or consumers as a single collapsed node** when ≥3 distinct items exist — defeats the whole point of this type. Use Architecture or High-level if you want collapsing.
 - **One bus arrow from "sources" to "the platform"** — every wire is labeled with its protocol; this is how integration teams read the diagram.
 - **Per-tool color coding** (teal-NiFi, magenta-MinIO, yellow-Jupyter) inside the zone — collapses hierarchy; only the two focal accents earn coral, plus up to 2 custom colors on cross-cutting components (§4 cap).
-- **More than 2 focal components** — focal exists to distinguish "platform" from "pile of tools"; >2 erases the signal (same rule as SKILL.md §1).
+- **More than 2 focal components** — focal exists to distinguish "platform" from "pile of tools"; >2 erases the signal (same as the [common design rules](../SKILL.md#design-rules)).
 - **`color` override on a focal component** — ignored. Focal_accent always wins.
 - **Footer wired to one specific tool** (e.g., AD → Airflow only) — wrong unless that service truly only protects one tool. The default is the layer-wide connection.
 - **Footer or identity inside the zone** — identity gates the layer from outside. Drawing it inside misrepresents the trust model.

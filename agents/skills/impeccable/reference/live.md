@@ -41,6 +41,8 @@ Output JSON: `{ ok, serverPort, serverToken, pageFiles, hasProduct, product, pro
 
 If output is `{ ok: false, error: "config_missing" | "config_invalid", path }`, this project hasn't been configured for live mode (or its config is stale). See **First-time setup** at the bottom.
 
+If output reports `context_missing`, live mode needs shared PRODUCT.md and DESIGN.md files. Resolve those through `init` or `document` with their confirmation steps; do not bypass the check or invent project decisions. This live-mode requirement does not block ordinary design edits without PRODUCT.md.
+
 ## Poll loop
 
 **Default (portable, all harnesses):**

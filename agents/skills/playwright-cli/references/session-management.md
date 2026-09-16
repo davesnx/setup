@@ -1,10 +1,35 @@
 # Browser Session Management
 
-Run multiple isolated browser sessions concurrently with state persistence.
+Use this reference for failed CDP connections or advanced session needs.
+Routine attach/open is covered by the [common path](../SKILL.md#common-browser-task).
+Follow the [root safety rules](../SKILL.md#safety-and-ownership). Names below
+are examples, not permission to take over an existing session. Add
+`-s=<task-session>` to unqualified commands, or set `PLAYWRIGHT_CLI_SESSION`.
+
+## Brave on the Mac
+
+The user's browser is Brave on the Mac. The Raycast command "Open Brave Agent"
+(`mac/raycast/raycast-open-chrome-agent.sh` in the setup repository) starts it
+with CDP on `127.0.0.1:9222`. On nspawn, SSH forwards that port from the Mac.
+
+When `attach` fails with `connect ECONNREFUSED 127.0.0.1:9222`, nothing
+listens on the port. Stop and tell the user. Do not fall back to a headless
+browser unless they agree. Ask them to start Brave with CDP on the Mac, either
+with "Open Brave Agent" in Raycast or by running
+`mac/raycast/raycast-open-chrome-agent.sh` from the setup checkout in a Mac
+shell. On nspawn, the SSH session must also carry the 9222 forward from
+`ssh/nspawn.conf`; if Brave is already running, ask them to reconnect SSH.
+Retry the common path's named `attach` command after they confirm.
+
+Without Brave, `playwright-cli open` needs `--browser=chromium` or a config
+that selects the bundled Chromium; the default channel is Google Chrome.
+Sites behind Cloudflare, such as hltv.org, can block that headless browser.
+See [open parameters](browser-commands.md#open-parameters) for browser,
+mobile/device, profile, and config examples.
 
 ## Named Browser Sessions
 
-Use `-s` flag to isolate browser contexts:
+Use `-s` to name separate browsers created with `open`:
 
 ```bash
 # Browser 1: Authentication flow
@@ -20,7 +45,7 @@ playwright-cli -s=public snapshot
 
 ## Browser Session Isolation Properties
 
-Each browser session has independent:
+Separately opened browsers have independent:
 - Cookies
 - LocalStorage / SessionStorage
 - IndexedDB
@@ -28,26 +53,27 @@ Each browser session has independent:
 - Browsing history
 - Open tabs
 
+Multiple named CDP attachments to the same external browser share its state;
+the name routes CLI commands, not a separate browser context.
+
 ## Browser Session Commands
 
 ```bash
 # List all browser sessions
 playwright-cli list
 
-# Stop a browser session (close the browser)
-playwright-cli close                # stop the default browser
-playwright-cli -s=mysession close   # stop a named browser
+# Stop only a browser opened by this task
+playwright-cli -s=mysession close
+# Release only a connection attached by this task
+playwright-cli -s=brave-task detach
 
-# Stop all browser sessions
-playwright-cli close-all
-
-# Forcefully kill all daemon processes (for stale/zombie processes)
-playwright-cli kill-all
-
-# Delete browser session user data (profile directory)
-playwright-cli delete-data                # delete default browser data
-playwright-cli -s=mysession delete-data   # delete named browser data
+# Delete task-owned profile data only with user approval
+playwright-cli -s=mysession delete-data
 ```
+
+`close-all` and `kill-all` affect other sessions. Do not use them for task
+cleanup or stale-session recovery; report an unresponsive owned session if
+scoped cleanup fails.
 
 ## Environment Variable
 
@@ -78,7 +104,9 @@ playwright-cli -s=site2 snapshot
 playwright-cli -s=site3 snapshot
 
 # Cleanup
-playwright-cli close-all
+playwright-cli -s=site1 close
+playwright-cli -s=site2 close
+playwright-cli -s=site3 close
 ```
 
 ### A/B Testing Sessions
@@ -203,23 +231,19 @@ playwright-cli -s=docs-scrape open https://docs.example.com
 playwright-cli -s=s1 open https://github.com
 ```
 
-### 2. Always Clean Up
+### 2. Clean Up Owned Sessions
 
 ```bash
-# Stop browsers when done
+# Stop only browsers this task opened
 playwright-cli -s=auth close
 playwright-cli -s=scrape close
-
-# Or stop all at once
-playwright-cli close-all
-
-# If browsers become unresponsive or zombie processes remain
-playwright-cli kill-all
+# For an attached browser, detach instead
+playwright-cli -s=brave-task detach
 ```
 
 ### 3. Delete Stale Browser Data
 
 ```bash
-# Remove old browser data to free disk space
+# Remove only task-owned data with user approval
 playwright-cli -s=oldsession delete-data
 ```

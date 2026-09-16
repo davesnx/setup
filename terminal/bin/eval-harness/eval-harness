@@ -10,8 +10,13 @@ package_root=$(CDPATH='' cd "$(dirname "$script_path")" && pwd -P) || exit 1
 root=$(CDPATH='' cd "$package_root/../../.." && pwd -P) || exit 1
 harness_root="$package_root/node_modules/@nano-step/eval-harness/scripts/eval"
 command_name="${1:-run}"
+default_model='openai/gpt-6-astra'
+model_usage() {
+  printf '\nWrapper default smoke/full model: %s\nrun: tier variables > EVAL_MODEL > wrapper default.\nworkflow: --model > EVAL_MODEL > tier variables > wrapper default.\nUpstream model defaults do not apply through this wrapper.\n\n' "$default_model"
+}
 usage() {
   printf 'Usage: eval-harness <command> [options]\n\nCommands: run, workflow, baseline, accept, status, trend, promote, cleanup, regrade\nWorkflow: eval-harness workflow [--case=<id> | --split=development|heldout]\nCleanup:  eval-harness cleanup --run=<run-id>\nRegrade:  eval-harness regrade --run=<run-id> --case=<case-id>\n\nUse <command> --help for command options.\n'
+  model_usage
 }
 case "$command_name" in
   help|--help|-h) usage; exit 0 ;;
@@ -22,8 +27,16 @@ if [[ ! -d "$harness_root" ]]; then
 	exit 1
 fi
 
+show_model_help=0
+for argument in "$@"; do
+  case "$command_name:$argument" in
+    run:--help|run:-h|workflow:--help|workflow:-h) show_model_help=1 ;;
+  esac
+done
+[[ "$show_model_help" == 0 ]] || model_usage
+
 opencode_bin=''
-if [[ "$command_name" != cleanup && "$command_name" != regrade && "${EVAL_RUNNER:-host}" != docker ]]; then
+if [[ "$show_model_help" == 0 && "$command_name" != cleanup && "$command_name" != regrade && "${EVAL_RUNNER:-host}" != docker ]]; then
   opencode_bin="$(command -v opencode)" || {
     [[ "$command_name" == workflow ]] || exit 13
   }
@@ -50,8 +63,8 @@ EVAL_STATE_DIR="$state_dir" \
 EVAL_WORKFLOWS_ROOT="${EVAL_WORKFLOWS_ROOT:-$package_root/workflows}" \
 EVAL_HARNESS_REGISTRY="${EVAL_HARNESS_REGISTRY:-$state_dir/registry.yaml}" \
 ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-${OPENCODE_ANTHROPIC_API_KEY:-}}" \
-EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \
-EVAL_FULL_MODEL="${EVAL_FULL_MODEL:-${EVAL_MODEL:-openai/gpt-5.6-sol}}" \
+EVAL_SMOKE_MODEL="${EVAL_SMOKE_MODEL:-${EVAL_MODEL:-$default_model}}" \
+EVAL_FULL_MODEL="${EVAL_FULL_MODEL:-${EVAL_MODEL:-$default_model}}" \
 OPENCODE_REAL_BIN="$opencode_bin" \
 PATH="$package_root/shims:$PATH" \
 bash "$harness_root/$command_name.sh" "$command_name" "$@"

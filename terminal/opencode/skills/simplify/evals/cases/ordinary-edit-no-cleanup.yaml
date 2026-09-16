@@ -1,0 +1,34 @@
+schema_version: 2
+id: simplify-ordinary-edit-no-cleanup
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify]
+description: "An ordinary edit does not trigger a full Simplify pass"
+tags: [routing, scope]
+setup:
+  fixtures:
+    "profile.html": fixtures/profile.html
+    "baseline.html": fixtures/profile.html
+prompt: |
+  Change the title in profile.html from Profile to Account. Keep everything
+  else unchanged. This is the last edit in the task; report the result.
+  Do not change baseline.html; it is the original file for comparison.
+budget:
+  max_tokens: 2000
+  max_seconds: 60
+checks:
+  - kind: output_not_contains
+    value: '"name":"simplify"'
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const baseline = fs.readFileSync('baseline.html', 'utf8');
+      const expected = baseline.replace('<title>Profile</title>', '<title>Account</title>');
+      assert.notEqual(expected, baseline);
+      assert.equal(fs.readFileSync('profile.html', 'utf8'), expected);
+      process.stdout.write('changed');
+      JS
+    unsafe_shell: true
+    expect_exact: "changed"

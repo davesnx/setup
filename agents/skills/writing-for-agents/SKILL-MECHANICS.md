@@ -1,29 +1,63 @@
 # Skill mechanics
 
-The skill-specific branch of [`writing-for-agents`](SKILL.md): what changes when the document is a skill (frontmatter, the invocation choice, and router skills). Everything else about writing it is the universal reference in `SKILL.md`.
+Read this branch of [writing-for-agents](SKILL.md) when writing skill metadata
+or choosing invocation and router behavior. Check the actual host before relying
+on any frontmatter control.
+
+## Metadata
+
+Keep `name` stable and `description` short. State the task that selects the skill
+and necessary exclusions, not broad topic keywords. A description supports
+discovery; it does not grant permissions or guarantee loading. Keep exact output
+requirements in the body or a clearly linked reference.
 
 ## Invocation
 
-The `disable-model-invocation` behavior below is specific to hosts that support
-it, such as Claude Code. OpenCode ignores that frontmatter field. In OpenCode,
-`permission.skill` (globally or per agent) controls loading: `ask` keeps the skill
-visible and requires approval; `deny` hides it and blocks the skill tool. Neither
-is an exact manual-only mode, and neither prevents direct reads of the file.
-Check the host before choosing the mechanism.
+### Hosts that support manual-only skills
 
-Two choices, trading the two loads:
+On hosts such as Claude Code that honor `disable-model-invocation: true`, this
+field prevents automatic model invocation. The description remains in the file
+for human-facing use but is not offered for automatic discovery. The user can
+invoke the skill through the host's manual mechanism, subject to other controls.
 
-- A **model-invoked** skill keeps a `description`, so the agent can fire it autonomously, and other skills can reach it. You can still type its name: model-invocation always _includes_ user reach; a description only ever adds agent discovery, never removes the human's. The description is the skill's top-level context pointer, forced to stay loaded at all times: permanent context load in exchange for discoverability. A model-invoked skill whose content is all reference is also one home for shared reference: another skill can invoke it, so reference needed by several skills lives in one place. Mechanics: omit `disable-model-invocation`, and write a model-facing description carrying the trigger branches (the pointer-writing rules in `SKILL.md` apply in full).
-- A **user-invoked** skill strips the description from the agent's reach: only the human typing its name can invoke it, and no other skill can. Zero context load, but it spends cognitive load: you are the index that must remember it exists. Mechanics: set `disable-model-invocation: true`; the `description` becomes human-facing: a one-line summary, trigger lists stripped.
+Omit that field when automatic discovery is needed. Write the description for
+the agent with precise task triggers. Manual availability is a separate host
+setting; for example, Claude Code's `user-invocable: false` hides a skill from
+the slash-command menu. Do not claim that model invocation always includes
+manual invocation on every host.
 
-Pick model-invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
+### OpenCode
 
-Shared reference that two user-invoked skills both need can live in neither: with no descriptions, neither can fire the other. Push it to a plain file outside the skill system: external reference any skill can point at.
+OpenCode ignores `disable-model-invocation`. Its `permission.skill` settings,
+globally or per agent, control the skill tool:
+
+- `ask` keeps the skill visible and requires approval to load it.
+- `deny` hides the skill and blocks loading through the skill tool.
+
+Neither is an exact manual-only mode. Neither prevents direct file reads.
+Keep model-facing trigger boundaries in the description even if another host
+treats the skill as manual-only. Do not promise zero discovery context or
+human-only reach from a frontmatter field that OpenCode ignores. Use separate
+tool and filesystem permissions where access itself must be restricted.
 
 ## Splitting by invocation
 
-The invocation cut of splitting (the sequence cut lives in `SKILL.md`): split off a model-invoked skill when you have a distinct leading word that should trigger it on its own (a trigger word you actually use in your prompts), or another skill must reach it. You pay context load for the new always-loaded description, so that independent reach has to be worth it.
+Create a separate skill when a distinct task needs independent discovery or
+manual use. Shared vocabulary alone is not enough. Keep separate skills when
+their task boundaries differ, even if they use the same reference.
+
+Shared reference can live in a plain file with conditional links from either
+skill. Automatic invocation restrictions are not file-access restrictions;
+choose links or skill loading according to the host and permissions.
 
 ## Router skills
 
-When user-invoked skills multiply past what you can remember, that piled-up cognitive load is cured by a **router skill**: one user-invoked skill that names the others and when to reach for each, so the human has one skill to remember instead of many. It can only hint, never fire them: user-invoked skills have no description, so nothing but the human can reach them.
+A router gives one entry point with named branches and a condition for each.
+For detail within one skill, link to reference files and load only the selected
+branch. For separate skills, say whether to load the skill or ask the user to
+invoke it; check host permissions first.
+
+On a host that enforces manual-only invocation, a router can direct the user to
+a manual-only skill but cannot invoke it automatically. In OpenCode, that
+frontmatter flag does not impose this restriction; skill-tool permissions still
+apply. Do not use a router or direct read to bypass an approval or access rule.

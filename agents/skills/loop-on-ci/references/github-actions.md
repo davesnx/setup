@@ -30,10 +30,16 @@ If `gh` rejects a JSON field, rerun with the available fields it reports.
 
 ## Watch
 
+Use these snapshots in each all-provider polling round described in [Watch](../SKILL.md#watch). Read the PR head before and after the provider snapshots; stop if it differs from the recorded commit. Inspect each recorded GitHub Actions run and its jobs, plus the current check set for that commit.
+
 ```bash
-gh pr checks <pr> --watch --fail-fast
+gh pr view <pr> --json headRefOid
+gh pr checks <pr> --json name,bucket,state,workflow,link
+gh run view <run-id> --json databaseId,headSha,status,conclusion,jobs
 ```
 
-`gh pr checks` exits 1 for failing checks and 8 for pending checks. Interpret the table or JSON instead of treating every nonzero exit as a tooling failure.
+For branch targets, recheck the branch tip; for a fixed commit, verify the returned run's commit. Do not use `gh run watch` or `gh pr checks --watch`: either can hide another provider's failure or a target change while waiting. Bound snapshot requests by the round's remaining budget and return to the shared polling loop even when a run is pending.
+
+For PR snapshots, `gh pr checks` exits 1 for failing checks and 8 for pending checks. Interpret the returned states, not just the exit code. A request timeout means unavailable data, not a CI result.
 
 Only this adapter fetches GitHub Actions logs. Route a check whose link points to Buildkite to the Buildkite adapter.

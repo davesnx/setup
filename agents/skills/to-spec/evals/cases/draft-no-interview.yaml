@@ -1,0 +1,58 @@
+schema_version: 2
+id: draft-no-interview
+mode: prose
+skill_under_test: to-spec
+skills_loaded: [to-spec]
+description: "Draft from agreed facts without questions, invented stories, seam approval, or publication"
+tags: [spec, draft, scope, authorization]
+
+prompt: |
+  Use to-spec. Return a draft only; do not publish or run commands.
+  The full agreement: members can export their own orders as CSV through
+  the existing exportOrders interface. PDF export was suggested but not
+  agreed. Retention duration is unresolved. No testing decisions were made.
+  Tracker instructions already read: GitHub issues require the existing
+  label spec. There is no ready-for-agent label.
+  Write the draft as spec.json with exactly these fields:
+  problem: string; solution: string;
+  stories: array of {actor, feature, benefit}, using null for an unknown benefit;
+  use actor IDs member or admin and feature IDs export-own-orders-csv,
+  export-orders-pdf, or schedule-export for these story concepts;
+  interfaces: array of names; testing_decisions: array of strings;
+  open_questions: array of unresolved topics;
+  interview_questions: array of questions you need answered before drafting;
+  publication: {status, url, required_labels}, status is draft or published,
+  url is null if unpublished. Do not add facts to complete the template.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: spec.json
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const assert = require('node:assert/strict');
+      const spec = JSON.parse(fs.readFileSync('spec.json', 'utf8'));
+      assert.equal(typeof spec.problem, 'string');
+      assert.equal(typeof spec.solution, 'string');
+      assert.match(spec.solution, /CSV/);
+      assert.ok(Array.isArray(spec.open_questions));
+      assert.ok(spec.open_questions.some(question => /retention/i.test(question)));
+      assert.deepEqual(spec, {
+        problem: spec.problem,
+        solution: spec.solution,
+        stories: [{actor: 'member', feature: 'export-own-orders-csv', benefit: null}],
+        interfaces: ['exportOrders'],
+        testing_decisions: [],
+        open_questions: spec.open_questions,
+        interview_questions: [],
+        publication: {status: 'draft', url: null, required_labels: ['spec']},
+      });
+      process.stdout.write('draft');
+      JS
+    unsafe_shell: true
+    expect_exact: "draft"

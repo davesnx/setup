@@ -46,8 +46,30 @@ eval-harness run --skill=technical-docs
 
 Saved state remains under
 `${XDG_STATE_HOME:-~/.local/state}/opencode/eval-harness`. No run data is moved.
-The default model is `openai/gpt-5.6-sol` unless `EVAL_MODEL`, `EVAL_SMOKE_MODEL`,
-or `EVAL_FULL_MODEL` is set.
+The default smoke and full model is `openai/gpt-6-astra`, matching setup's
+`terminal/opencode/opencode.jsonc`. This is an explicit wrapper default, not a
+dynamic read of the host session. For `run`, `EVAL_SMOKE_MODEL` and
+`EVAL_FULL_MODEL` take priority over `EVAL_MODEL` for their respective tiers.
+For `workflow`, `--model` takes priority over `EVAL_MODEL`; either one overrides
+both tier variables. Without either, workflow uses the selected tier variable,
+then the wrapper default. Wrapper help identifies these defaults separately
+from the upstream help's model defaults, which do not apply through this wrapper.
+
+OpenCode must be on `PATH`. If it is installed at `~/.opencode/bin/opencode` but
+that directory is missing from `PATH`, use a command-local path:
+
+```sh
+PATH="$HOME/.opencode/bin:$PATH" terminal/bin/eval-harness/eval-harness workflow --case=nested-exit --dry-run
+```
+
+To run that one case after checking provider access, replace `--dry-run` with
+`--model=openai/gpt-6-astra --repetitions=1 --max-seconds=180`. This sends live
+model requests. The timeout is not a token or dollar cap.
+
+The separate `agents/skills/skill-creator/scripts/run_eval.py` runner uses
+Claude Code only. Its `--model` does not accept OpenCode provider/model IDs.
+Its profile requirements are in
+`agents/skills/skill-creator/scripts/README.md#unsupported-catalogs`.
 
 The wrapper searches both `agents/skills/` and `terminal/opencode/skills/`. An explicit
 `OPENCODE_SKILLS_ROOT` replaces this default search. Set

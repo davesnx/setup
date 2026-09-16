@@ -64,13 +64,13 @@ Load the selected `type-*.md`. Override the grammar only when the content disagr
 - Start from a blank `viewBox` selected by the size preset. Mermaid positions do not exist in the source, and a renderer's positions must not be recreated.
 - Use semantic treatments from the chosen type. A Mermaid cylinder becomes Store/State; a rhombus stays a decision only in a flowchart; subgraphs become zones or collapsible groups.
 - Ignore init themes, `style`, `classDef`, `class`, inline `:::class` attachments, and `linkStyle`. One accent plus the ink ramp replaces the source theme. A leading `---` frontmatter block is title/config, so it is skipped with the same reasoning.
-- Reroute all connections with the SKILL.md §6 connector rules. Mermaid edge length markers are ranking hints, not content.
+- Reroute all connections with the [connector rules](svg-primitives.md#mandatory-connector-rules). Mermaid edge length markers are ranking hints, not content.
 - Do not add a component merely to fill space. Imports remain bounded by source meaning.
 
 ## Step 6 — Deliver
 
 1. Write the self-contained HTML.
-2. Run the SKILL.md §9 taste gate and [`output-spec.md` §6](output-spec.md) checklist.
+2. Run the [pre-output checklist](../SKILL.md#pre-output-checklist) and [`output-spec.md` §6](output-spec.md#6-checklist) checklist.
 3. Export SVG/PNG only when requested, following [`export.md`](export.md).
 4. Report the fidelity ledger: source count, drawn count, and every merge, collapse, or drop.
 

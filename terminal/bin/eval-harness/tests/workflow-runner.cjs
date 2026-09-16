@@ -305,6 +305,24 @@ if (prompt !== 'incomplete') console.log(JSON.stringify({ type: 'step_finish', .
   const singleRun = runs(status(workflow(['--case=development-pass']), 0))[0];
   assert.ok(!fs.existsSync(path.join(singleRun, 'development-pass/turns.json')));
 
+  for (const mode of ['smoke', 'full']) {
+    for (const [options, model, expected] of [
+      [[], '', `fake/${mode}`],
+      [[], 'fake/environment', 'fake/environment'],
+      [['--model=fake/cli'], 'fake/environment', 'fake/cli'],
+    ]) {
+      const before = calls().length;
+      status(workflow(['--case=development-pass', `--mode=${mode}`, ...options], {
+        EVAL_MODEL: model, EVAL_SMOKE_MODEL: 'fake/smoke', EVAL_FULL_MODEL: 'fake/full',
+      }), 0);
+      const candidateCalls = calls().slice(before);
+      assert.equal(candidateCalls.length, 1);
+      const args = candidateCalls[0].args;
+      assert.notEqual(args.indexOf('--model'), -1);
+      assert.equal(args[args.indexOf('--model') + 1], expected);
+    }
+  }
+
   const setupCount = setups();
   const callCount = calls().length;
   fs.unlinkSync(fake);
@@ -351,7 +369,7 @@ if (prompt !== 'incomplete') console.log(JSON.stringify({ type: 'step_finish', .
   seal.files['development-pass/turns.json'] = createHash('sha256').update(fs.readFileSync(turnFile)).digest('hex');
   fs.writeFileSync(sealPath, JSON.stringify(seal));
   assert.match(status(regrade(savedRun, gradingEnv), 13).stderr, /session metadata/);
-  console.log('PASS: workflow selection, setup, clean repetitions, native sessions, timeout/errors, and current-check regrade');
+  console.log('PASS: workflow selection, candidate model precedence, setup, clean repetitions, native sessions, timeout/errors, and current-check regrade');
 } finally {
   fs.rmSync(work, { recursive: true, force: true });
 }

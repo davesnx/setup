@@ -1,0 +1,20 @@
+schema_version: 2
+id: code-standards-ordinary-edit-no-standards
+mode: deterministic
+skill_under_test: code-standards
+skills_loaded: [code-standards]
+description: "A routine code edit does not require shared design guidance"
+tags: [routing, scope]
+prompt: |
+  Create sum.mjs with one exported function sum(a, b) that returns a + b.
+  Inputs are numbers. No extra behavior or design analysis is needed.
+budget:
+  max_tokens: 2000
+  max_seconds: 60
+checks:
+  - kind: output_not_contains
+    value: '"name":"code-standards"'
+  - kind: shell
+    cmd: "node --input-type=module -e 'import { sum } from \"./sum.mjs\"; if (sum(2, 3) !== 5) process.exit(1); process.stdout.write(\"sum\")'"
+    unsafe_shell: true
+    expect_exact: "sum"

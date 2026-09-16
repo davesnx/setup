@@ -1,0 +1,40 @@
+schema_version: 2
+id: direct-complete-review
+mode: prose
+skill_under_test: blog-post
+skills_loaded: [blog-post]
+description: Review a complete post directly without an interview or source edits
+tags: [prose, review, evidence]
+
+setup:
+  fixtures:
+    draft.md: fixtures/collected-draft.md
+
+prompt: |
+  Review this complete short post in draft.md for developers. I want editorial
+  findings, not edits. The audience and plain first-person voice are intentional.
+  Use only this file; no research or reader test. Put your findings in review.md.
+  For this test only, return JSON with exactly these keys: findings (a nonempty
+  array of editorial observations), blocking_questions (an array), draft_action
+  ("unchanged" or "edited").
+
+budget:
+  max_tokens: 2000
+  max_seconds: 90
+
+checks:
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("node:fs");
+      const assert = require("node:assert/strict");
+      const review = JSON.parse(fs.readFileSync("review.md", "utf8"));
+      assert.deepEqual(Object.keys(review).sort(), ["blocking_questions", "draft_action", "findings"]);
+      assert.ok(Array.isArray(review.findings) && review.findings.length > 0);
+      assert.ok(review.findings.every(s => typeof s === "string" && s.trim()));
+      assert.deepEqual(review.blocking_questions, []);
+      assert.equal(review.draft_action, "unchanged");
+      assert.equal(fs.readFileSync("draft.md", "utf8"), "I tried a local cache. My first build took 40 seconds.\n");
+      process.stdout.write("reviewed");'
+    unsafe_shell: true
+    expect_exact: reviewed

@@ -6,4 +6,19 @@
 - Vendored: September 7, 2026
 - License: Apache-2.0
 
-Local changes (2026-09-07): added the "Brave on the Mac" section to `SKILL.md` and extended the frontmatter description to mention Brave. To update, run `playwright-cli install --skills` in an empty directory, copy `.claude/skills/playwright-cli/` here, and re-apply both edits.
+## Local changes
+
+- 2026-09-07: added Brave CDP guidance and a Brave-aware description.
+- 2026-09-14: reduced [SKILL.md](SKILL.md) to a task router with common safety,
+  ownership, targeting, and completion rules. Moved the command catalog and
+  examples to [browser commands](references/browser-commands.md). Routine
+  attach/open, inspection, actions, and cleanup stay in the root; load the
+  catalog only for missing commands/options. Brave recovery and advanced
+  sessions stay in [session management](references/session-management.md).
+  Replaced global cleanup examples with task-scoped cleanup.
+
+For an approved upstream refresh, generate skills in an empty directory with
+`playwright-cli install --skills`, then compare the generated
+`.claude/skills/playwright-cli/` files with this directory. Preserve these local
+changes and all scoped references; do not overwrite the router with the
+upstream command catalog.

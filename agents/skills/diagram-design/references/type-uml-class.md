@@ -40,7 +40,7 @@ Multiplicities (`1`, `0..*`, `1..*`) sit in Geist Mono 8px, 10–12px off the bo
 
 ## Connector rules
 
-All six SKILL.md §6 connector rules apply in full — orthogonal rounded elbows (`r=8`), no diagonals, bridge/hop for unavoidable crossings, fanned attach points ≥12px apart when several relationships share an edge, masked labels with the 6–10px gap, connectors drawn before boxes. Prefer laying classes out so relationships resolve to straight lines or single-elbow routes; a class diagram with every edge bridging is over budget — split by package instead.
+All six [connector rules](svg-primitives.md#mandatory-connector-rules) apply in full — orthogonal rounded elbows (`r=8`), no diagonals, bridge/hop for unavoidable crossings, fanned attach points ≥12px apart when several relationships share an edge, masked labels with the 6–10px gap, connectors drawn before boxes. Prefer laying classes out so relationships resolve to straight lines or single-elbow routes; a class diagram with every edge bridging is over budget — split by package instead.
 
 ## Complexity budget
 

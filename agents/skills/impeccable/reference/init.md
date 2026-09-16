@@ -6,7 +6,7 @@ The setup command for a project. One codebase crawl feeds everything it writes:
 - **DESIGN.md** (visual): root project file for visual theme, color palette, typography, components, layout. Follows the [Google Stitch DESIGN.md format](https://stitch.withgoogle.com/docs/design-md/format/). Answers "how it looks".
 - **`.impeccable/live/config.json`** (live mode): pre-configured so `/impeccable live` boots straight into variant mode with no first-time detour.
 
-It closes by pointing the user at the best command to run next. Every other impeccable command reads PRODUCT.md and DESIGN.md before doing any work.
+Use init when explicitly requested or when necessary project context remains unresolved after reading the user's context and relevant code. Missing PRODUCT.md alone does not require init or block a small design task. Other commands read these files when available; live mode retains its shared-context requirements. Init closes by pointing the user at the best command to run next.
 
 ## Step 1: Load current state
 
@@ -21,7 +21,7 @@ Decision tree:
 
 Never silently overwrite an existing file. Always confirm first.
 
-If init was invoked as a setup blocker by another command, such as `/impeccable craft landing page`, pause that command here. Complete init, then resume the original command. Your own writes are the freshest source; no reload needed. For craft, resume into shape next; init creates project context, but it is not a substitute for the task-specific shape interview and confirmed design brief.
+If init is needed to resolve missing project decisions for another command, pause that command here. Complete init, then resume the original command. Your own writes are the freshest source; no reload needed. For craft, resume into shape next; init creates project context, but it is not a substitute for the task-specific shape interview and confirmed design brief.
 
 ## Step 2: Explore the codebase
 
@@ -167,6 +167,6 @@ Then recommend the **best commands to run next**, drawn from what your Step 2 cr
 
 The full command menu is one bare `/impeccable` away; keep this list short and pointed.
 
-If init was invoked as a blocker by another impeccable command (e.g. the user ran `/impeccable polish` with no PRODUCT.md), resume that original task now. Your own writes are the freshest source; no reload needed.
+If init resolved necessary project context for another impeccable command, resume that original task now. Your own writes are the freshest source; no reload needed.
 
 Optionally STOP and ask the user to clarify (use the harness's structured question tool when one exists). Ask whether they'd like a brief summary of PRODUCT.md appended to AGENTS.md for easier agent reference. If yes, append a short **Design Context** pointer section there.
