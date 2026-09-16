@@ -46,6 +46,18 @@ link_path() {
   ln -s "$1" "$2"
 }
 
+# select_profile [NAME]: the host profile for this machine, `local` or `ssh`.
+# An explicit NAME wins; otherwise an SSH session selects `ssh`.
+select_profile() {
+  if [ -n "${1:-}" ]; then
+    printf '%s\n' "$1"
+  elif [ -n "${SSH_CONNECTION:-}" ]; then
+    printf 'ssh\n'
+  else
+    printf 'local\n'
+  fi
+}
+
 # link_path_guarded SOURCE TARGET: for a path another tool may own. A regular
 # file or directory there stops the installer with status 73, an old link is
 # replaced, and nothing is moved.

@@ -5,9 +5,11 @@ Claude Code settings, hooks, and status line.
 ## Install
 
 ```sh
-./terminal/claude/install.sh
+./terminal/claude/install.sh local
+./terminal/claude/install.sh ssh
 ```
 
+Without an argument, an SSH session selects `ssh` and anything else `local`.
 The script links:
 
 - `settings.json` to `~/.claude/settings.json`.
@@ -17,9 +19,9 @@ The script links:
   each machine keeps its own copy.
 - `agents/AGENTS.md` to `~/.claude/CLAUDE.md`.
 - `agents/skills` to `~/.claude/skills`.
-- `.mcp.json` to `~/.mcp.json`. `mcp.ts` renders that file from the shared
-  `agents/mcp.json` first, so edits belong in the shared file. See
-  [`agents/README.md`](../../agents/README.md#mcp-servers).
+- `hosts/<profile>.json` to `~/.mcp.json`. `mcp.ts` renders both profile
+  files from the shared `agents/mcp.json` first, with Node, so edits belong in
+  the shared file. See [`agents/README.md`](../../agents/README.md#mcp-servers).
 
 It also creates `~/.claude/hooks` and links two hooks with guards:
 
@@ -35,7 +37,8 @@ Two more SessionStart hooks run commands inline from `settings.json`. One runs
 `~/.claude/hooks/herdr-agent-state.sh` when that file exists; Herdr installs and
 updates it, and it is not part of this repository. The other prints a warning
 into the session when `~/.claude/CLAUDE.md` or the skills link is missing, which
-means the installers have not run since the linked sources moved.
+means the installers have not run since the linked sources moved. A PostToolUse
+hook runs both MCP renderers when Claude Code edits `agents/mcp.json`.
 
 The installer uses npm to install the hook's locked production dependencies
 before creating its link. It then removes the old Python hook link only if

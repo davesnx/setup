@@ -12,7 +12,9 @@ export DOTFILES_PATH="$PWD"
 ./terminal/opencode/install.sh ssh
 ```
 
-The script links the tracked OpenCode files into `~/.config/opencode`. Shared
+The script links the tracked OpenCode files into `~/.config/opencode`.
+`hosts/local.jsonc` and `hosts/ssh.jsonc` are rendered from the shared
+`agents/mcp.json`; edit that file, not the profiles. Shared
 skills and the shared `AGENTS.md` file live in `agents/`; see
 [`agents/README.md`](../../agents/README.md) for how each installer links
 them. The OpenCode-only skills are `simplify` and `code-review`, because
@@ -25,9 +27,9 @@ under `~/.local/state/setup/backups`.
 `terminal/zsh/.zprofile` exports `OPENCODE_CONFIG` when the selected `host.jsonc`
 link exists. Start a new login shell after installation.
 
-MCP servers come from the shared `agents/mcp.json`, linked to
-`~/.config/opencode/opencode.json`. OpenCode merges that file with
-`opencode.jsonc`. See [`agents/README.md`](../../agents/README.md#mcp-servers).
+MCP servers come from the shared `agents/mcp.json`. `mcp.ts` renders it into
+`mcp.json`, linked to `~/.config/opencode/opencode.json`, and OpenCode merges
+that file with `opencode.jsonc`. See [`agents/README.md`](../../agents/README.md#mcp-servers).
 
 ## Model selection
 

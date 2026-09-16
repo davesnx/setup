@@ -2,13 +2,21 @@
 
 . "$DOTFILES_PATH/prelude.sh"
 
-need bun
+need node
 need npm
+
+PROFILE=$(select_profile "${1:-}")
 
 link_path "$DOTFILES_PATH/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 link_path "$DOTFILES_PATH/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
-bun "$DOTFILES_PATH/terminal/claude/mcp.ts"
-link_path "$DOTFILES_PATH/terminal/claude/.mcp.json" "$HOME/.mcp.json"
+node "$DOTFILES_PATH/terminal/claude/mcp.ts"
+MCP_FILE="$DOTFILES_PATH/terminal/claude/hosts/$PROFILE.json"
+if [ ! -f "$MCP_FILE" ]; then
+  printf 'Unknown Claude Code profile: %s\n' "$PROFILE" >&2
+  printf 'Available profiles: local, ssh\n' >&2
+  exit 1
+fi
+link_path "$MCP_FILE" "$HOME/.mcp.json"
 
 if [ -f "$DOTFILES_PATH/terminal/claude/settings.local.json" ]; then
   link_path "$DOTFILES_PATH/terminal/claude/settings.local.json" "$HOME/.claude/settings.local.json"

@@ -2,15 +2,9 @@
 
 . "$DOTFILES_PATH/prelude.sh"
 ROOT="$DOTFILES_PATH/terminal/opencode"
-PROFILE=${1:-}
 
-if [ -z "$PROFILE" ]; then
-  if [ -n "${SSH_CONNECTION:-}" ]; then
-    PROFILE=ssh
-  else
-    PROFILE=local
-  fi
-fi
+need node
+PROFILE=$(select_profile "${1:-}")
 
 PROFILE_FILE="$ROOT/hosts/$PROFILE.jsonc"
 if [ ! -f "$PROFILE_FILE" ]; then
@@ -35,7 +29,8 @@ for name in agents skills themes vendor; do
 done
 
 link_path "$DOTFILES_PATH/agents/AGENTS.md" "$CONFIG_HOME/AGENTS.md"
-link_path "$DOTFILES_PATH/agents/mcp.json" "$CONFIG_HOME/opencode.json"
+node "$ROOT/mcp.ts"
+link_path "$ROOT/mcp.json" "$CONFIG_HOME/opencode.json"
 
 link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc"
 

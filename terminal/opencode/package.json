@@ -3,5 +3,6 @@
     "@opencode-ai/plugin": "1.18.25",
     "detect-terminal": "^3.0.0",
     "node-notifier": "^10.0.1"
-  }
+  },
+  "type": "module"
 }

@@ -1,5 +1,6 @@
 {
-  "servers": {
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
     "notion": {
       "type": "remote",
       "enabled": true,
@@ -52,44 +53,6 @@
       "url": "https://mcp.context7.com/mcp",
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
-      }
-    }
-  },
-  "hosts": {
-    "ssh": {
-      "notion": {
-        "oauth": {
-          "callbackPort": 25121
-        }
-      },
-      "ahrefs": {
-        "oauth": {
-          "callbackPort": 25122
-        }
-      },
-      "linear": {
-        "oauth": {
-          "callbackPort": 25123
-        }
-      },
-      "grafana": {
-        "type": "local",
-        "enabled": true,
-        "command": [
-          "grafana-mcp"
-        ]
-      },
-      "buildkite": {
-        "type": "local",
-        "enabled": false,
-        "command": [
-          "buildkite-mcp-server",
-          "stdio"
-        ],
-        "environment": {
-          "BUILDKITE_API_TOKEN": "{env:BUILDKITE_API_TOKEN}",
-          "BUILDKITE_ORG_SLUG": "ahrefs"
-        }
       }
     }
   }

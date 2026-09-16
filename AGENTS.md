@@ -29,8 +29,8 @@ agents/skills/            The only skills directory -> ~/.claude/skills, ~/.agen
                           references stay inside it. Third-party skills carry UPSTREAM.md.
 agents/skills/VENDOR      Skills published upstream from here, managed by skill-vendor.
 agents/skills/.skill-lock.json  Versions of skills installed with npx skills -> ~/.agents/
-agents/mcp.json           MCP servers for both tools -> ~/.config/opencode/opencode.json.
-                          terminal/claude/mcp.ts renders it to terminal/claude/.mcp.json.
+agents/mcp.json           Every MCP server once, in the common format. Never linked.
+agents/mcp.ts             Reads and validates mcp.json for the two renderers below.
 agents/main.sh            npx skills wrapper, sourced at shell start.
 agents/README.md          MCP details.
 
@@ -45,10 +45,13 @@ terminal/bin/eval-harness/  Skill eval runner. Predates the agents/ rule. Move w
 terminal/node/            Node via fnm and shared CLIs in package.json. npm i -g writes here.
                           Never add Node tools to the Brewfile.
 terminal/claude/          Claude Code only. settings.json -> ~/.claude/settings.json,
-                          hooks/, statusline.ts, .mcp.json -> ~/.mcp.json (generated).
+                          hooks/, statusline.ts. mcp.ts renders hosts/<profile>.json, the
+                          machine's profile -> ~/.mcp.json.
 terminal/opencode/        OpenCode only -> ~/.config/opencode. opencode.jsonc, agents/,
                           hosts/, themes/, vendor/ for whole third-party plugins, and
                           skills/ only for skills whose names clash with Claude built-ins.
+                          mcp.ts renders mcp.json -> ~/.config/opencode/opencode.json
+                          and hosts/*.jsonc, the per-machine profile -> host.jsonc.
 terminal/tmux/            .tmux.conf -> ~/.tmux.conf
 terminal/herdr/           config.toml -> ~/.config/herdr/config.toml
 terminal/htop/            htoprc -> ~/.config/htop/htoprc
@@ -86,6 +89,10 @@ local/                    Machine-specific overrides. Git-ignored except README,
   references live in that directory. Vendor third-party skills and plugins in
   this repository with an `UPSTREAM.md`. Global configuration folders only link
   to this repository.
+- MCP servers are declared in `agents/mcp.json` only, per-machine differences
+  under its `hosts` key. After editing it, run `node terminal/claude/mcp.ts`
+  and `node terminal/opencode/mcp.ts`, and commit the rendered files with it.
+  Claude Code runs both on edit through a hook.
 - Plans go in `.workplace/plans/<name>_PLAN.md`. The global Git ignore file
   excludes `.workplace/` everywhere.
 - A new module is a directory with `install.sh` called from the root

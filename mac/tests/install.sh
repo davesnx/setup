@@ -175,6 +175,7 @@ cat >"$node_bin/node" <<'EOF'
 printf 'node:%s\n' "$*" >>"$COMMAND_LOG"
 case "$1" in
   -e) [ "${FAIL_NODE_ARCH:-0}" -eq 0 ] || exit 1 ;;
+  *.ts) ;;
   *) exit 2 ;;
 esac
 EOF

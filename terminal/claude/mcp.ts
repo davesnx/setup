@@ -1,36 +1,33 @@
-// Renders Claude Code's .mcp.json from the shared agents/mcp.json.
-// The source uses OpenCode's schema because it carries `enabled` and `oauth`,
-// which .mcp.json cannot express, and OpenCode has no way to read .mcp.json.
-import { readFileSync, writeFileSync } from "node:fs";
+// Renders Claude Code's MCP files from agents/mcp.json. Claude Code reads one
+// file per machine with no layering, so each host profile gets a complete
+// list: the shared servers merged with that profile's additions and
+// overrides. The installer links the machine's profile to ~/.mcp.json.
+// Claude Code's format is `mcpServers`, `command` plus `args`, `env`,
+// `type: "http"`, and `${NAME}` secrets. It has no `enabled` or `oauth`, so
+// disabled servers are left out and OAuth stays with Claude Code's own login
+// flow; agents/README.md covers the callback port on nspawn.
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-
-export type Server = {
-  type: "local" | "remote";
-  enabled?: boolean;
-  command?: string[];
-  environment?: Record<string, string>;
-  url?: string;
-  headers?: Record<string, string>;
-};
+import { isMain, profiles, readDeclaration } from "../../agents/mcp.ts";
+import type { Server } from "../../agents/mcp.ts";
 
 type StdioServer = { command: string; args: string[]; env?: Record<string, string> };
 type HttpServer = { type: "http"; url: string; headers?: Record<string, string> };
+export type ClaudeConfig = { mcpServers: Record<string, StdioServer | HttpServer> };
 
-export const source = join(import.meta.dir, "..", "..", "agents", "mcp.json");
-export const target = join(import.meta.dir, ".mcp.json");
+export const hostsDir = join(import.meta.dirname, "hosts");
+export const hostTarget = (profile: string): string => join(hostsDir, `${profile}.json`);
 
-export function toClaude(mcp: Record<string, Server>): { mcpServers: Record<string, StdioServer | HttpServer> } {
-  const mcpServers: Record<string, StdioServer | HttpServer> = {};
-  for (const [name, server] of Object.entries(mcp)) {
+export function toClaude(servers: Record<string, Server>): ClaudeConfig {
+  const mcpServers: ClaudeConfig["mcpServers"] = {};
+  for (const [name, server] of Object.entries(servers)) {
     if (server.enabled === false) continue;
     if (server.type === "local") {
-      const [command, ...args] = server.command ?? [];
-      if (!command) throw new Error(`${name}: local server needs a command`);
-      const entry: StdioServer = { command, args };
+      const [command, ...args] = server.command;
+      const entry: StdioServer = { command: command as string, args };
       if (server.environment) entry.env = server.environment;
       mcpServers[name] = entry;
     } else {
-      if (!server.url) throw new Error(`${name}: remote server needs a url`);
       const entry: HttpServer = { type: "http", url: server.url };
       if (server.headers) entry.headers = server.headers;
       mcpServers[name] = entry;
@@ -39,17 +36,18 @@ export function toClaude(mcp: Record<string, Server>): { mcpServers: Record<stri
   return { mcpServers };
 }
 
-export function render(mcp: Record<string, Server>): string {
-  // OpenCode expands secrets written as {env:NAME}; Claude Code expands the same reference as ${NAME}.
-  const json = JSON.stringify(toClaude(mcp), null, 2).replaceAll(
+export function render(servers: Record<string, Server>): string {
+  const json = JSON.stringify(toClaude(servers), null, 2).replaceAll(
     /\{env:([A-Za-z_][A-Za-z0-9_]*)\}/g,
     (_, name: string) => "${" + name + "}",
   );
   return `${json}\n`;
 }
 
-export function readSource(): Record<string, Server> {
-  return (JSON.parse(readFileSync(source, "utf8")) as { mcp: Record<string, Server> }).mcp;
+if (isMain(import.meta.url)) {
+  const declaration = readDeclaration();
+  mkdirSync(hostsDir, { recursive: true });
+  for (const profile of profiles) {
+    writeFileSync(hostTarget(profile), render({ ...declaration.servers, ...declaration.hosts[profile] }));
+  }
 }
-
-if (import.meta.main) writeFileSync(target, render(readSource()));

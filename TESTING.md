@@ -23,6 +23,9 @@ It checks:
 - Command-line help parsing, Zsh startup, SSH agent links, and PATH inheritance.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
+- MCP declaration: `agents/mcp.json` validates, the rendered files match it,
+  and OpenCode accepts the shared file merged with each host profile when
+  `opencode` is installed.
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
   tracked directory in the first two levels has a row, and no tracked symlink
   is absolute.

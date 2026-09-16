@@ -1,19 +1,48 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "buildkite": {
-      "type": "local",
-      "enabled": false,
-      "command": ["buildkite-mcp-server", "stdio"],
-      "environment": {
-        "BUILDKITE_API_TOKEN": "{env:BUILDKITE_API_TOKEN}",
-        "BUILDKITE_ORG_SLUG": "ahrefs",
-      },
+    "notion": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.notion.com/mcp",
+      "oauth": {
+        "callbackPort": 25121
+      }
+    },
+    "ahrefs": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://api.ahrefs.com/mcp/mcp",
+      "oauth": {
+        "callbackPort": 25122
+      }
+    },
+    "linear": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.linear.app/mcp",
+      "oauth": {
+        "callbackPort": 25123
+      }
     },
     "grafana": {
       "type": "local",
       "enabled": true,
-      "command": ["grafana-mcp"],
+      "command": [
+        "grafana-mcp"
+      ]
     },
-  },
+    "buildkite": {
+      "type": "local",
+      "enabled": false,
+      "command": [
+        "buildkite-mcp-server",
+        "stdio"
+      ],
+      "environment": {
+        "BUILDKITE_API_TOKEN": "{env:BUILDKITE_API_TOKEN}",
+        "BUILDKITE_ORG_SLUG": "ahrefs"
+      }
+    }
+  }
 }
