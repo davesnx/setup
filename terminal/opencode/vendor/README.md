@@ -12,8 +12,9 @@ source in setup.
 
 The vendored files are the upstream `skills/i-have-adhd` directory, OpenCode
 plugin and command, and license. OpenCode loads the plugin through its linked
-`vendor` directory. Claude Code links directly to the same skill directory.
-The installers create these links.
+`vendor` directory. Claude Code reads the same directory through the
+`agents/skills/i-have-adhd` link. That link is relative and tracked by Git, so
+it resolves on every checkout.
 
 Restart the tools, then run `/i-have-adhd`. Say `normal mode` to stop using the
 style for that session.

@@ -1,6 +1,5 @@
 #! /bin/zsh
 
-# Language toolchain paths
 export GEM_HOME="$HOME/.gem"
 export BUN_INSTALL="$HOME/.bun"
 

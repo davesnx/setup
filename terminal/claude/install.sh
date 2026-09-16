@@ -16,7 +16,6 @@ fi
 
 link_path "$DOTFILES_PATH/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 link_path "$DOTFILES_PATH/agents/skills" "$HOME/.claude/skills"
-link_path "$DOTFILES_PATH/terminal/opencode/vendor/i-have-adhd/skills/i-have-adhd" "$HOME/.claude/skills/i-have-adhd"
 
 # Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
 # stand-in only where nothing is there yet.

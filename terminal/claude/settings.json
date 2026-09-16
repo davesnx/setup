@@ -20,6 +20,7 @@
     "sessionUrl": false
   },
   "includeCoAuthoredBy": false,
+  "includeGitInstructions": false,
   "permissions": {
     "allow": [
       "Bash(git diff:*)",
@@ -92,6 +93,9 @@
     "defaultMode": "auto"
   },
   "model": "claude-fable-5-1",
+  "fallbackModel": [
+    "opus"
+  ],
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -144,6 +148,10 @@
     "command": "~/.claude/statusline.ts",
     "padding": 0
   },
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "i-have-adhd@i-have-adhd": true
+  },
   "extraKnownMarketplaces": {
     "plannotator": {
       "source": {
@@ -164,6 +172,43 @@
       }
     }
   },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowLocalBinding": true
+    },
+    "credentials": {
+      "files": [
+        {
+          "path": "~/.ssh",
+          "mode": "deny"
+        },
+        {
+          "path": "~/.config/gh",
+          "mode": "deny"
+        },
+        {
+          "path": "~/.npmrc",
+          "mode": "deny"
+        },
+        {
+          "path": "~/.aws/credentials",
+          "mode": "deny"
+        }
+      ]
+    },
+    "excludedCommands": [
+      "git *",
+      "gh *",
+      "opam *",
+      "playwright-cli *",
+      "docker *",
+      "orb *",
+      "orbctl *",
+      "make *"
+    ]
+  },
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
@@ -173,43 +218,14 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",
+  "plansDirectory": ".workplace/plans",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
   "teammateMode": "in-process",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "enabledPlugins": {
-    "ponytail@ponytail": true,
-    "i-have-adhd@i-have-adhd": true
-  },
-  "plansDirectory": ".workplace/plans",
-  "teammateDefaultModel": "sonnet",
-  "useAutoModeDuringPlan": true,
   "inputNeededNotifEnabled": true,
-  "fallbackModel": [
-    "opus"
-  ],
-  "includeGitInstructions": false,
-  "sandbox": {
-    "enabled": true,
-    "autoAllowBashIfSandboxed": true,
-    "excludedCommands": [
-      "git *",
-      "gh *",
-      "opam *",
-      "playwright-cli *"
-    ],
-    "network": {
-      "allowLocalBinding": true
-    },
-    "credentials": {
-      "files": [
-        { "path": "~/.ssh", "mode": "deny" },
-        { "path": "~/.config/gh", "mode": "deny" },
-        { "path": "~/.npmrc", "mode": "deny" },
-        { "path": "~/.aws/credentials", "mode": "deny" }
-      ]
-    }
-  }
+  "agentPushNotifEnabled": true,
+  "useAutoModeDuringPlan": true,
+  "teammateDefaultModel": "sonnet"
 }

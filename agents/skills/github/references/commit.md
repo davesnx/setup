@@ -1,7 +1,10 @@
 # Commit
 
 Generate a concise commit message, validate the exact final change, and create
-the commit without bypassing repository hooks.
+the commit without bypassing repository hooks. By default, commit only the work
+from the current session. Leave unrelated changes out, whether they existed
+before the session or were made during it by the user, another agent, or another
+process. Expand this scope only when the user explicitly asks.
 
 ## Inputs
 
@@ -15,7 +18,12 @@ the commit without bypassing repository hooks.
    git branch --show-current
    ```
 
-   - Read staged and unstaged changes with `git diff` and `git diff --cached`.
+   - Inspect `git status`, including untracked files, and read staged and
+     unstaged changes with `git diff` and `git diff --cached`.
+   - Identify the session's work from the conversation, edit history, and any
+     starting diff. A file's modification time or staged state does not prove
+     that its changes belong to this session. If ownership is unclear, ask
+     before including the uncertain changes.
    - If the user provided `since`, inspect that history only to understand context and wording.
    - If there are no uncommitted changes, stop. Do not create a commit from an already committed range.
 
@@ -73,7 +81,8 @@ the commit without bypassing repository hooks.
    - Follow the exact style, casing, and verb tense of previous commits.
    - Focus on the purpose/effect of the changes, not a mechanical list of files.
    - Keep it concise: aim for under 72 characters.
-   - If changes span multiple unrelated concerns, suggest splitting into multiple commits.
+   - Describe only the selected session work. If that work spans multiple
+     unrelated concerns, suggest splitting it into multiple commits.
 
 7. **Finalize the commit message**:
 
@@ -94,10 +103,19 @@ the commit without bypassing repository hooks.
 
 9. **Stage and inspect the intended change**:
 
-   Stage only files belonging to the requested change. Do not default to
-   `git add -A` in a dirty worktree. Inspect `git diff --cached --stat` and
-   `git diff --cached` before committing, and stop if the staged diff contains
-   unrelated changes, generated artifacts that were not reviewed, or secrets.
+   Stage only the session's changes. If a file also contains unrelated edits,
+   stage only the relevant hunks; do not stage the whole file. If the edits
+   cannot be separated with confidence, stop and ask. Do not use `git add -A`
+   or `git commit -a` to collect changes from a dirty worktree.
+
+   Preserve unrelated work and its staged state. If unrelated changes are
+   already staged, use an isolated index or worktree for the selected change;
+   do not unstage someone else's work or include it in the commit. Validate
+   the exact selected tree under step 8 before committing.
+
+   Inspect the selected index with `git diff --cached --stat` and
+   `git diff --cached` before committing. Stop if it contains unrelated
+   changes, generated artifacts that were not reviewed, or secrets.
 
 10. **Create the commit**:
 
@@ -123,7 +141,9 @@ the commit without bypassing repository hooks.
 - NEVER include files that look like secrets (.env, credentials, tokens).
 - NEVER amend existing commits unless the user explicitly asks.
 - NEVER push unless the user explicitly asks.
-- If there are no changes to commit, tell the user and stop.
+- If there are no changes from the current session to commit, tell the user
+  and stop, even if unrelated changes remain.
 - If the diff is very large, summarize the key themes rather than listing every change.
 - Match the repository's commit style exactly. If commits use lowercase imperative ("add feature"), do that. If they use capitalized imperative ("Add feature"), do that. If they use conventional commits ("feat: add feature"), do that.
-- When the diff contains multiple unrelated changes, suggest separate commits for each logical unit.
+- When the selected session work contains multiple unrelated changes, suggest
+  separate commits for each logical unit.
