@@ -10,14 +10,16 @@ are examples, not permission to take over an existing session. Add
 
 The user's browser is Brave on the Mac. The Raycast command "Open Brave Agent"
 (`mac/raycast/raycast-open-chrome-agent.sh` in the setup repository) starts it
-with CDP on `127.0.0.1:9222`. On nspawn, SSH forwards that port from the Mac.
+with CDP at the `--browser-url` endpoint in `agents/mcp.json` under
+`servers.chrome-devtools.command`. On nspawn, SSH must forward that declared
+port from the Mac. Read it with `node "${DOTFILES_PATH:?}/agents/mcp.ts" browser-url`.
 
-When `attach` fails with `connect ECONNREFUSED 127.0.0.1:9222`, nothing
+When `attach` fails with `connect ECONNREFUSED` at the declared endpoint, nothing
 listens on the port. Stop and tell the user. Do not fall back to a headless
 browser unless they agree. Ask them to start Brave with CDP on the Mac, either
 with "Open Brave Agent" in Raycast or by running
 `mac/raycast/raycast-open-chrome-agent.sh` from the setup checkout in a Mac
-shell. On nspawn, the SSH session must also carry the 9222 forward from
+shell. On nspawn, the SSH session must also carry the declared port's forward from
 `~/.ssh/config`; if Brave is already running, ask them to reconnect SSH.
 Retry the common path's named `attach` command after they confirm.
 
@@ -164,7 +166,8 @@ When `--session` is not provided, the session is named after the channel (e.g. `
 Connect to a browser that exposes a Chrome DevTools Protocol endpoint:
 
 ```bash
-playwright-cli attach --cdp=http://localhost:9222
+CDP_URL=$(node "${DOTFILES_PATH:?}/agents/mcp.ts" browser-url) &&
+  playwright-cli attach --cdp="$CDP_URL"
 ```
 
 ### Attach via browser extension

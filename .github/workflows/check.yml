@@ -28,7 +28,7 @@ jobs:
       - name: Install check tools (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update && sudo apt-get install -y shfmt zsh
+          sudo apt-get update && sudo apt-get install -y shfmt zsh jq
           curl -fsSL https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz -o "$RUNNER_TEMP/shellcheck.tar.xz"
           tar -xJf "$RUNNER_TEMP/shellcheck.tar.xz" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/shellcheck-v0.11.0" >> "$GITHUB_PATH"
@@ -36,6 +36,6 @@ jobs:
         if: runner.os == 'macOS'
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
-        run: brew install bash shellcheck shfmt
+        run: brew install bash shellcheck shfmt jq
       - name: Run checks
         run: bash check.sh

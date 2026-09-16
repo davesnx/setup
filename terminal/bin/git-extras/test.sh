@@ -62,6 +62,15 @@ output=$("$BASH" "$root/terminal/bin/fs/count_files_recursive_per_directory")
 assert_contains "$output" 'dir with spaces/ 2'
 assert_contains "$output" '-leading-dash/ 1'
 
+mkdir -p "$work/counts/nested"
+touch "$work/counts/one" "$work/counts/nested/"$'two\nlines'
+ln -s one "$work/counts/link"
+output=$(cd "$work/counts" && "$BASH" "$root/terminal/bin/fs/count_files_recursive")
+if [[ "$output" -ne 2 ]]; then
+  printf 'FAIL: expected 2 files, including a newline name, got %s\n' "$output" >&2
+  exit 1
+fi
+
 mkdir "$work/empty"
 git -C "$work/empty" init -q
 output=$(cd "$work/empty" && "$BASH" "$effort")

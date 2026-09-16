@@ -7,8 +7,8 @@
 // `servers` apply on every machine. `hosts.<profile>` holds per-machine
 // additions and overrides, merged over the shared entry of the same name; a
 // profile is one of the OpenCode host profiles in terminal/opencode/hosts.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export type LocalServer = {
@@ -88,13 +88,18 @@ function merge(base: unknown, patch: Record<string, unknown>): Record<string, un
 }
 
 export function validate(input: unknown): Declaration {
-  const servers = isObject(input) ? input.servers : undefined;
-  if (!isObject(servers)) throw new Error("agents/mcp.json: expected { servers: { <name>: { type, ... } } }");
+  if (!isObject(input) || !isObject(input.servers)) {
+    throw new Error("agents/mcp.json: expected { servers: { <name>: { type, ... } } }");
+  }
+  for (const key of Object.keys(input)) {
+    if (key !== "servers" && key !== "hosts") fail("root", `unknown key ${key}; allowed: servers, hosts`);
+  }
+  const servers = input.servers;
   const shared: Record<string, Server> = {};
   for (const [name, raw] of Object.entries(servers)) shared[name] = validateServer(name, raw);
 
   const hosts = { local: {}, ssh: {} } as Declaration["hosts"];
-  const rawHosts = (input as { hosts?: unknown }).hosts ?? {};
+  const rawHosts = input.hosts ?? {};
   if (!isObject(rawHosts)) throw new Error("agents/mcp.json: hosts must be an object keyed by profile");
   for (const [profile, entries] of Object.entries(rawHosts)) {
     if (!(profiles as readonly string[]).includes(profile)) {
@@ -117,10 +122,44 @@ export function readServers(): Record<string, Server> {
   return readDeclaration().servers;
 }
 
+export function browserUrl(declaration: Declaration): string {
+  function endpoint(server: Server | undefined, name: string): string {
+    if (!server || server.type !== "local") fail(name, "browser endpoint requires a local server");
+    const args = server.command.filter((arg) => arg === "--browser-url" || arg.startsWith("--browser-url="));
+    const [argument] = args;
+    if (args.length !== 1 || argument === undefined) fail(name, "expected exactly one --browser-url=http://127.0.0.1:<port> argument");
+    const match = /^--browser-url=(http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4}))$/.exec(argument);
+    const url = match?.[1];
+    if (!url || match?.[0] !== argument || Number(match?.[2]) > 65535) fail(name, "--browser-url must be http://127.0.0.1:<port>, port 1–65535 without leading zeros or a path");
+    return url;
+  }
+
+  const shared = endpoint(declaration.servers["chrome-devtools"], "servers.chrome-devtools");
+  for (const profile of profiles) {
+    const server = declaration.hosts[profile]["chrome-devtools"] ?? declaration.servers["chrome-devtools"];
+    if (endpoint(server, `hosts.${profile}.chrome-devtools`) !== shared) {
+      fail(`hosts.${profile}.chrome-devtools`, "browser endpoint must match servers.chrome-devtools on every profile");
+    }
+  }
+  return shared;
+}
+
 // True when the renderer runs as a script, under Node or Bun, not when imported by a test.
 export function isMain(moduleUrl: string): boolean {
   const script = process.argv[1];
-  return script !== undefined && resolve(script) === fileURLToPath(moduleUrl);
+  return script !== undefined && existsSync(script) && realpathSync(script) === fileURLToPath(moduleUrl);
+}
+
+if (isMain(import.meta.url)) {
+  try {
+    if (process.argv.length !== 3 || process.argv[2] !== "browser-url") {
+      throw new Error("Usage: node agents/mcp.ts browser-url");
+    }
+    console.log(browserUrl(readDeclaration()));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }
 
 // The installers run the renderers on every install. An identical rewrite is

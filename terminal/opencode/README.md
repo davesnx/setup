@@ -13,6 +13,8 @@ export DOTFILES_PATH="$PWD"
 ```
 
 The script links the tracked OpenCode files into `~/.config/opencode`.
+If `XDG_CONFIG_HOME` is set and non-empty, it uses `$XDG_CONFIG_HOME/opencode`
+instead. The paths below show the default location.
 `hosts/local.jsonc` and `hosts/ssh.jsonc` are rendered from the shared
 `agents/mcp.json`; edit that file, not the profiles. Shared
 skills and the shared `AGENTS.md` file live in `agents/`; see
@@ -24,8 +26,11 @@ live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
 which only OpenCode reads. Existing files move to a timestamped directory
 under `~/.local/state/setup/backups`.
 
-`terminal/zsh/.zprofile` exports `OPENCODE_CONFIG` when the selected `host.jsonc`
-link exists. Start a new login shell after installation.
+`terminal/zsh/.zprofile` looks for `host.jsonc` in the same config directory.
+When that file exists, startup sets `OPENCODE_CONFIG` to its path, replacing
+any inherited value. When it is absent, startup leaves `OPENCODE_CONFIG`
+unchanged. Start a new login shell after installation, with the same
+`XDG_CONFIG_HOME` value used for installation.
 
 MCP servers come from the shared `agents/mcp.json`. `mcp.ts` renders it into
 `mcp.json`, linked to `~/.config/opencode/opencode.json`, and OpenCode merges

@@ -19,8 +19,8 @@ zmodule git-info
 # Additional completion definitions for Zsh. Must be sourced before the completion module.
 zmodule zsh-users/zsh-completions --fpath src
 # Enables and configures smart and extensive tab completion. Must be sourced after all modules that add completion definitions.
-if [[ -d /opt/homebrew/share/zsh ]] && [[ $(uname) == Darwin ]] && [[ $(uname -m) == arm64 ]] ; then
-    zmodule /opt/homebrew/share/zsh/site-functions --fpath .
+if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
+    zmodule "$HOMEBREW_PREFIX/share/zsh/site-functions" --fpath .
 fi
 # Only the zimfw completion function. terminal/zsh/completion.zsh replaces the
 # module init, which stats every completion file on each start.

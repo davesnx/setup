@@ -3,7 +3,7 @@
 set -euo pipefail
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 
-for tool in git shellcheck shfmt zsh bun node npm python3; do
+for tool in git shellcheck shfmt zsh bun node npm python3 jq; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     printf '%s is required to run the checks.\n' "$tool" >&2
     exit 69
@@ -31,6 +31,9 @@ bun test "$root/terminal/claude/mcp.test.ts"
 bun test "$root/terminal/opencode/mcp.test.ts"
 sh "$root/terminal/zsh/tests/agent-link.sh"
 zsh "$root/terminal/zsh/tests/cached-init.zsh"
+bash "$root/terminal/zsh/tests/syntax-selection.sh"
+zsh "$root/terminal/bin/scripts.test.zsh"
+sh "$root/mac/tests/shell-startup.sh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
 
 # Layout: AGENTS.md names only paths that exist, every tracked directory in
@@ -56,6 +59,7 @@ while IFS= read -r link; do
 done < <(git -C "$root" ls-files -s | awk '$1 == "120000" { print $4 }')
 
 if [[ "$(uname -s)" == Darwin ]]; then
+  /bin/bash "$root/mac/tests/browser-cdp.sh"
   sh "$root/mac/tests/install.sh"
   sh "$root/mac/choosy/test.sh"
 fi

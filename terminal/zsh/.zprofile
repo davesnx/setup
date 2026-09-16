@@ -8,8 +8,8 @@ export BUN_INSTALL="$HOME/.bun"
 export OPENCODE_ENABLE_EXA=1
 
 # Load the selected OpenCode host profile when it is installed.
-if [[ -f "$HOME/.config/opencode/host.jsonc" ]]; then
-  export OPENCODE_CONFIG="$HOME/.config/opencode/host.jsonc"
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/opencode/host.jsonc" ]]; then
+  export OPENCODE_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/host.jsonc"
 fi
 
 # PATH setup
@@ -28,8 +28,8 @@ paths=(
   "$GEM_HOME/bin"
   "$HOME/.elan/bin"
   "$HOME/.opencode/bin"
-  "/opt/homebrew/bin"
-  "/opt/homebrew/sbin"
+  ${HOMEBREW_PREFIX:+"$HOMEBREW_PREFIX/bin"}
+  ${HOMEBREW_PREFIX:+"$HOMEBREW_PREFIX/sbin"}
   "/usr/local/bin"
   "/usr/local/sbin"
   "/usr/bin"
@@ -37,7 +37,8 @@ paths=(
   "/bin"
   "/sbin"
 )
-export PATH="${(j.:.)paths}"
+path=("${(@u)paths}")
+export PATH
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

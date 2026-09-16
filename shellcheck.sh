@@ -15,9 +15,9 @@ while IFS= read -r -d '' file; do
     '#!'*bash* | '#!'*'/sh' | '#!'*' sh' | '# shellcheck shell='*) files+=("$root/$file") ;;
     '#!'*) ;;
     *)
-      case "$file" in
+      case "${file##*/}" in
         *.sh) files+=("$root/$file") ;;
-        *.zsh) zsh_files+=("$root/$file") ;;
+        *.zsh | .zimrc | .zshenv | .zshrc | .zprofile | .zlogin | .zlogout) zsh_files+=("$root/$file") ;;
       esac
       ;;
   esac
