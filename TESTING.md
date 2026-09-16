@@ -66,6 +66,41 @@ module, and open a new shell:
 ssh nspawn 'cd ~/workplace/davesnx/setup && git pull --ff-only origin main && sh terminal/<module>/install.sh'
 ```
 
+## Check shell selection
+
+After installing the Zim modules from `terminal/zsh/.zimrc`, run:
+
+```sh
+python3 terminal/zsh/tests/selection.py
+```
+
+This test sends keystrokes through real ZLE. It checks Option+Shift word
+selection on both hosts and the existing Ctrl+Shift bindings on Linux. It also
+checks replacement, deletion, undo, copy, cut, repeated loading, and clipboard
+failure recovery. The test mocks the macOS clipboard command and captures Linux
+OSC 52 output. It does not change or read the desktop clipboard. These tests
+need installed Zim modules and run separately from `check.sh`.
+
+On macOS, selected-text copy and cut use the system clipboard command. On Linux,
+they send an OSC 52 clipboard write to the terminal over SSH. This requires
+`base64` and a terminal that accepts OSC 52 writes. Ghostty allows these writes
+by default. Through tmux, keep `set-clipboard on`. Other terminal multiplexers
+must also pass clipboard writes to the client.
+
+From a Herdr pane, check the configured copy, cut, and undo keys with:
+
+```sh
+python3 terminal/zsh/tests/selection-herdr.py
+```
+
+This uses a temporary pane and a mock clipboard. For a desktop check, open a
+fresh Ghostty SSH shell and type `hello world` without pressing Enter. Select
+`world` with Option+Shift+Left, press Cmd+C, and paste into a text editor.
+Confirm that only `world` appears. Then press Cmd+X in the shell. Confirm that
+`hello ` remains and the clipboard still contains `world`. Repeat through your
+terminal multiplexer. OSC 52 has no write acknowledgement, so a successful
+shell test does not prove desktop delivery.
+
 ## Changes that need a real smoke test
 
 Tests cannot prove that external apps, downloads, or future package versions work.

@@ -21,6 +21,17 @@ _selection_collapse() {
 zle -N _selection_left _selection_collapse
 zle -N _selection_right _selection_collapse
 
+_selection_write_clipboard() {
+  if [[ "$OSTYPE" == darwin* ]]; then
+    print -rn -- "$1" | pbcopy
+  else
+    local encoded
+    encoded=$(print -rn -- "$1" | base64) || return 1
+    # OSC 52 reaches the local terminal over SSH. Base64 may wrap long input.
+    print -rn -- $'\e]52;c;'"${encoded//$'\n'/}"$'\a'
+  fi
+}
+
 _selection_clipboard() {
   (( REGION_ACTIVE && CURSOR != MARK )) || return 0
   local -i first=$CURSOR last=$MARK
@@ -28,7 +39,7 @@ _selection_clipboard() {
     first=$MARK
     last=$CURSOR
   fi
-  if ! print -rn -- "${BUFFER[first+1,last]}" | pbcopy; then
+  if ! _selection_write_clipboard "${BUFFER[first+1,last]}"; then
     zle -M 'Could not copy selection to the clipboard'
     return 0
   fi
@@ -43,6 +54,9 @@ zle -N _selection_cut _selection_clipboard
 () {
   local keymap
   for keymap in emacs shift-select; do
+    # Ghostty sends Option+Shift even when the shell runs on Linux over SSH.
+    bindkey -M "$keymap" '^[[1;4D' shift-select::backward-word
+    bindkey -M "$keymap" '^[[1;4C' shift-select::forward-word
     bindkey -M "$keymap" '^[[1;2P' _selection_copy
     bindkey -M "$keymap" '^[[1;2Q' _selection_cut
   done

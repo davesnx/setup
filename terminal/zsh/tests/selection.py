@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Exercise selection through real ZLE keystrokes, with the installed Zim plugins."""
 
+import base64
 import os
 from pathlib import Path
 import pty
+import re
 import select
 import subprocess
 import termios
@@ -13,12 +15,15 @@ import time
 ROOT = Path(__file__).resolve().parents[3]
 ZIM_HOME = Path(os.environ.get("ZIM_HOME", Path.home() / ".zim"))
 SNAPSHOT = b"\x18\x14"
+RECOVER_CLIPBOARD = b"\x18\x12"
 LEFT = b"\x1b[D"
 RIGHT = b"\x1b[C"
 SHIFT_LEFT = b"\x1b[1;2D"
 SHIFT_RIGHT = b"\x1b[1;2C"
 WORD_LEFT = b"\x1b[1;4D"
 WORD_RIGHT = b"\x1b[1;4C"
+CTRL_WORD_LEFT = b"\x1b[1;6D"
+CTRL_WORD_RIGHT = b"\x1b[1;6C"
 COPY = b"\x1b[1;2P"
 CUT = b"\x1b[1;2Q"
 
@@ -32,16 +37,30 @@ source "$ZIM_HOME/modules/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "$SELECTION_ROOT/terminal/zsh/selection.zsh"
 source "$ZIM_HOME/modules/zsh-autosuggestions/zsh-autosuggestions.zsh"
 _zsh_autosuggest_start
+[[ "$SELECTION_RESOURCE" != 1 ]] || source "$SELECTION_ROOT/terminal/zsh/selection.zsh"
 
 # Capture pbcopy input without changing the desktop clipboard.
 _selection_test_clipboard=unchanged
-pbcopy() {
-  local copied
-  IFS= read -r -d '' copied
-  [[ "$SELECTION_CLIPBOARD_FAIL" == 1 ]] && return 1
-  _selection_test_clipboard=$copied
-  return 0
-}
+if [[ "$SELECTION_CLIPBOARD_BACKEND" == osc52 ]]; then
+  OSTYPE=linux-gnu
+  pbcopy() { return 1; }
+  base64() {
+    [[ "$SELECTION_CLIPBOARD_FAIL" != 1 ]] || return 1
+    command base64
+  }
+else
+  OSTYPE=darwin
+  pbcopy() {
+    local copied
+    IFS= read -r -d '' copied
+    [[ "$SELECTION_CLIPBOARD_FAIL" == 1 ]] && return 1
+    _selection_test_clipboard=$copied
+    return 0
+  }
+fi
+_selection_test_recover_clipboard() { SELECTION_CLIPBOARD_FAIL=0; }
+zle -N _selection_test_recover_clipboard
+bindkey -M shift-select '^X^R' _selection_test_recover_clipboard
 
 _selection_test_snapshot() {
   local snapshot="$BUFFER"$'\0'"$CURSOR"$'\0'"$MARK"$'\0'"$REGION_ACTIVE"$'\0'"$KEYMAP"$'\0'"$_selection_test_clipboard"$'\0'
@@ -65,14 +84,16 @@ vared buffer
 
 
 def check(name, keys, expected, cursor=None, selected=None, initial="hello world", start=None,
-          clipboard="unchanged", clipboard_failure=False):
+          clipboard="unchanged", clipboard_failure=False, clipboard_backend="native",
+          resource=False, retry_keys=b""):
     master, slave = pty.openpty()
     termios.tcsetwinsize(slave, (40, 120))
     reader, writer = os.pipe()
     env = dict(os.environ, TERM="xterm-256color", ZIM_HOME=str(ZIM_HOME),
                SELECTION_ROOT=str(ROOT), SELECTION_FD=str(writer),
                SELECTION_BUFFER=initial, SELECTION_CURSOR=str(len(initial) if start is None else start),
-               SELECTION_CLIPBOARD_FAIL=str(int(clipboard_failure)))
+               SELECTION_CLIPBOARD_FAIL=str(int(clipboard_failure)),
+               SELECTION_CLIPBOARD_BACKEND=clipboard_backend, SELECTION_RESOURCE=str(int(resource)))
     process = subprocess.Popen(
         ["/bin/zsh", "-f", "-i", "-c", SCRIPT], env=env,
         stdin=slave, stdout=slave, stderr=slave, pass_fds=(writer,), start_new_session=True,
@@ -112,8 +133,24 @@ def check(name, keys, expected, cursor=None, selected=None, initial="hello world
                     output.extend(os.read(master, 65536))
         os.write(master, SNAPSHOT)
         buffer, position, mark, active, keymap, copied = state()
+        if retry_keys:
+            assert buffer == initial, (name, "failed cut changed buffer", buffer)
+            assert active and keymap == "shift-select", (name, "failed cut lost selection")
+            assert copied == "unchanged", (name, "failed copy changed clipboard", copied)
+            os.write(master, RECOVER_CLIPBOARD + retry_keys + SNAPSHOT)
+            buffer, position, mark, active, keymap, copied = state()
+        while select.select([master], [], [], 0)[0]:
+            output.extend(os.read(master, 65536))
+        packets = re.findall(rb"\x1b\]52;c;([^\x07]*)\x07", output)
+        if clipboard_backend == "osc52":
+            assert copied == "unchanged", (name, "used native clipboard")
+            expected_packets = [] if clipboard == "unchanged" else [clipboard.encode()]
+            assert [base64.b64decode(packet, validate=True) for packet in packets] == expected_packets, (
+                name, "OSC 52 clipboard", packets, expected_packets)
+        else:
+            assert not packets, (name, "unexpected OSC 52 clipboard", packets)
+            assert copied == clipboard, (name, "clipboard", copied, clipboard)
         assert buffer == expected, (name, "buffer", buffer, expected)
-        assert copied == clipboard, (name, "clipboard", copied, clipboard)
         if cursor is not None:
             assert position == cursor, (name, "cursor", position, cursor)
         if selected is not None:
@@ -131,6 +168,16 @@ if __name__ == "__main__":
     check("character selection", SHIFT_LEFT * 3, "hello world", 8, True)
     check("word selection", WORD_LEFT, "hello world", 6, True)
     check("forward word selection", WORD_RIGHT, "hello world", 11, True, start=6)
+    check("extend word selection", WORD_LEFT * 2, "hello world", 0, True)
+    check("shrink word selection", WORD_LEFT * 2 + WORD_RIGHT, "hello world", 6, True)
+    check("selection after reload", WORD_LEFT + CUT, "hello ", 6, False,
+          clipboard="world", resource=True)
+    if os.uname().sysname == "Linux":
+        check("Ctrl+Shift word selection", CTRL_WORD_LEFT, "hello world", 6, True)
+        check("Ctrl+Shift forward word selection", CTRL_WORD_RIGHT, "hello world", 11, True, start=6)
+        check("Ctrl+Shift extends word selection", CTRL_WORD_LEFT * 2, "hello world", 0, True)
+        check("mixed word selection keys", WORD_LEFT + CTRL_WORD_LEFT + WORD_RIGHT,
+              "hello world", 6, True)
     check("shrink selection", SHIFT_LEFT * 3 + SHIFT_RIGHT, "hello world", 9, True)
     check("backspace selection", WORD_LEFT + b"\x7f", "hello ", 6, False)
     check("forward delete selection", WORD_LEFT + b"\x1b[3~", "hello ", 6, False)
@@ -169,3 +216,24 @@ if __name__ == "__main__":
     check("copy and cut without selection", COPY + CUT + b"!", "hello world!", 12, False)
     check("copy and cut with empty selection", SHIFT_LEFT + SHIFT_RIGHT + COPY + CUT, "hello world", 11, True)
     check("failed copy preserves cut selection", WORD_LEFT + CUT, "hello world", 6, True, clipboard_failure=True)
+    check("native cut recovers after copy failure", WORD_LEFT + CUT, "hello ", 6, False,
+          clipboard="world", clipboard_failure=True, retry_keys=CUT)
+    check("OSC 52 copy", SHIFT_LEFT * 5 + COPY, "hello world", 6, True,
+          clipboard="world", clipboard_backend="osc52")
+    check("OSC 52 forward cut", SHIFT_RIGHT * 5 + CUT, "hello ", 6, False, start=6,
+          clipboard="world", clipboard_backend="osc52")
+    check("OSC 52 copy after reload", WORD_LEFT + COPY, "hello world", 6, True,
+          clipboard="world", clipboard_backend="osc52", resource=True)
+    check("OSC 52 copy and cut without selection", COPY + CUT, "hello world", 11, False,
+          clipboard_backend="osc52")
+    check("OSC 52 empty selection", SHIFT_LEFT + SHIFT_RIGHT + COPY + CUT, "hello world", 11, True,
+          clipboard_backend="osc52")
+    check("OSC 52 multiline copy", SHIFT_LEFT * 8 + COPY, "one\ntwo\n", 0, True,
+          initial="one\ntwo\n", clipboard="one\ntwo\n", clipboard_backend="osc52")
+    text = ('niño🙂 $HOME `pwd` \\ *\n' * 8) + "\n"
+    check("OSC 52 wrapped Base64, Unicode, and literal shell syntax", SHIFT_LEFT * len(text) + COPY,
+          text, 0, True, initial=text, clipboard=text, clipboard_backend="osc52")
+    check("OSC 52 failed encoder preserves cut selection", SHIFT_LEFT * 5 + CUT,
+          "hello world", 6, True, clipboard_failure=True, clipboard_backend="osc52")
+    check("OSC 52 cut recovers after encoder failure", SHIFT_LEFT * 5 + CUT, "hello ", 6, False,
+          clipboard="world", clipboard_failure=True, clipboard_backend="osc52", retry_keys=CUT)
