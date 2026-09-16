@@ -14,9 +14,14 @@ prompt: |
   Review this complete short post in draft.md for developers. I want editorial
   findings, not edits. The audience and plain first-person voice are intentional.
   Use only this file; no research or reader test. Put your findings in review.md.
-  For this test only, return JSON with exactly these keys: findings (a nonempty
-  array of editorial observations), blocking_questions (an array), draft_action
-  ("unchanged" or "edited").
+  For this test only, review.md itself must contain one JSON object, without
+  code fences or extra prose, with exactly these keys: findings (a nonempty
+  array), blocking_questions (an array), draft_action ("unchanged" or "edited").
+  Each finding must be an object with exactly source_quote and observation.
+  Both must be nonempty strings. source_quote must be an exact passage from
+  the unchanged draft.md; observation must explain an editorial issue with it.
+  Citation matching does not prove that an observation is relevant or correct.
+  Manual review must check the meaning and usefulness of each finding.
 
 budget:
   max_tokens: 2000
@@ -28,13 +33,21 @@ checks:
       node -e '
       const fs = require("node:fs");
       const assert = require("node:assert/strict");
+      const draft = fs.readFileSync("draft.md", "utf8");
+      assert.equal(draft, "I tried a local cache. My first build took 40 seconds.\n");
       const review = JSON.parse(fs.readFileSync("review.md", "utf8"));
+      assert.ok(review && typeof review === "object" && !Array.isArray(review));
       assert.deepEqual(Object.keys(review).sort(), ["blocking_questions", "draft_action", "findings"]);
       assert.ok(Array.isArray(review.findings) && review.findings.length > 0);
-      assert.ok(review.findings.every(s => typeof s === "string" && s.trim()));
+      for (const finding of review.findings) {
+        assert.ok(finding && typeof finding === "object" && !Array.isArray(finding));
+        assert.deepEqual(Object.keys(finding).sort(), ["observation", "source_quote"]);
+        assert.ok(typeof finding.source_quote === "string" && finding.source_quote.trim());
+        assert.ok(typeof finding.observation === "string" && finding.observation.trim());
+        assert.ok(draft.includes(finding.source_quote));
+      }
       assert.deepEqual(review.blocking_questions, []);
       assert.equal(review.draft_action, "unchanged");
-      assert.equal(fs.readFileSync("draft.md", "utf8"), "I tried a local cache. My first build took 40 seconds.\n");
       process.stdout.write("reviewed");'
     unsafe_shell: true
     expect_exact: reviewed
