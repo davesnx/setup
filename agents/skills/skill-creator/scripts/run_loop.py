@@ -2,8 +2,9 @@
 """Run the eval + improve loop until all pass or max iterations reached.
 
 Combines run_eval.py and improve_description.py in a loop, tracking history
-and returning the best description found. Supports train/test split to prevent
-overfitting.
+and returning the best description found. Claude Code is the only runner.
+The held-out split selects the best iteration. It is a validation set, not an
+untouched final evaluation. JSON test_* keys are retained for saved reports.
 """
 
 import argparse
@@ -17,21 +18,21 @@ from pathlib import Path
 
 from scripts.generate_report import generate_html
 from scripts.improve_description import improve_description
-from scripts.run_eval import find_project_root, run_eval
-from scripts.utils import parse_skill_md
+from scripts.run_eval import run_eval
+from scripts.utils import parse_skill_md, validate_claude_model
 
 
 def split_eval_set(eval_set: list[dict], holdout: float, seed: int = 42) -> tuple[list[dict], list[dict]]:
-    """Split eval set into train and test sets, stratified by should_trigger."""
-    random.seed(seed)
+    """Split into training and selection validation sets by should_trigger."""
+    rng = random.Random(seed)
 
     # Separate by should_trigger
     trigger = [e for e in eval_set if e["should_trigger"]]
     no_trigger = [e for e in eval_set if not e["should_trigger"]]
 
     # Shuffle each group
-    random.shuffle(trigger)
-    random.shuffle(no_trigger)
+    rng.shuffle(trigger)
+    rng.shuffle(no_trigger)
 
     # Calculate split points
     n_trigger_test = max(1, int(len(trigger) * holdout))
@@ -59,8 +60,10 @@ def run_loop(
     live_report_path: Path | None = None,
     log_dir: Path | None = None,
 ) -> dict:
-    """Run the eval + improvement loop."""
-    project_root = find_project_root()
+    """Run Claude evaluation and improvement; abort on any evaluation error."""
+    validate_claude_model(model)
+    if max_iterations < 1 or not 0 <= holdout < 1:
+        raise ValueError("Iterations must be positive and holdout must be in [0, 1)")
     name, original_description, content = parse_skill_md(skill_path)
     current_description = description_override or original_description
 
@@ -68,10 +71,13 @@ def run_loop(
     if holdout > 0:
         train_set, test_set = split_eval_set(eval_set, holdout)
         if verbose:
-            print(f"Split: {len(train_set)} train, {len(test_set)} test (holdout={holdout})", file=sys.stderr)
+            print(f"Split: {len(train_set)} train, {len(test_set)} validation (holdout={holdout})", file=sys.stderr)
     else:
         train_set = eval_set
         test_set = []
+
+    if not train_set:
+        raise ValueError("Split has no training queries; add queries or disable holdout")
 
     history = []
     exit_reason = "unknown"
@@ -92,7 +98,6 @@ def run_loop(
             description=current_description,
             num_workers=num_workers,
             timeout=timeout,
-            project_root=project_root,
             runs_per_query=runs_per_query,
             trigger_threshold=trigger_threshold,
             model=model,
@@ -172,7 +177,7 @@ def run_loop(
 
             print_eval_stats("Train", train_results["results"], eval_elapsed)
             if test_summary:
-                print_eval_stats("Test ", test_results["results"], 0)
+                print_eval_stats("Validation", test_results["results"], 0)
 
         if train_summary["failed"] == 0:
             exit_reason = f"all_passed (iteration {iteration})"
@@ -213,7 +218,7 @@ def run_loop(
 
         current_description = new_description
 
-    # Find the best iteration by TEST score (or train if no test set)
+    # This split is used for selection, not a final untouched test.
     if test_set:
         best = max(history, key=lambda h: h["test_passed"] or 0)
         best_score = f"{best['test_passed']}/{best['test_total']}"
@@ -226,6 +231,9 @@ def run_loop(
         print(f"Best score: {best_score} (iteration {best['iteration']})", file=sys.stderr)
 
     return {
+        "runner": "claude",
+        "model": model,
+        "selection_split": "validation" if test_set else "train",
         "exit_reason": exit_reason,
         "original_description": original_description,
         "best_description": best["description"],
@@ -242,7 +250,7 @@ def run_loop(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run eval + improve loop")
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--eval-set", required=True, help="Path to eval set JSON file")
     parser.add_argument("--skill-path", required=True, help="Path to skill directory")
     parser.add_argument("--description", default=None, help="Override starting description")
@@ -251,12 +259,13 @@ def main():
     parser.add_argument("--max-iterations", type=int, default=5, help="Max improvement iterations")
     parser.add_argument("--runs-per-query", type=int, default=3, help="Number of runs per query")
     parser.add_argument("--trigger-threshold", type=float, default=0.5, help="Trigger rate threshold")
-    parser.add_argument("--holdout", type=float, default=0.4, help="Fraction of eval set to hold out for testing (0 to disable)")
-    parser.add_argument("--model", required=True, help="Model for improvement")
+    parser.add_argument("--holdout", type=float, default=0.4, help="Fraction used for selection validation, not final testing (0 to disable)")
+    parser.add_argument("--model", required=True, help="Claude model ID or sonnet/opus/haiku alias for both evaluation and improvement")
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
     parser.add_argument("--report", default="auto", help="Generate HTML report at this path (default: 'auto' for temp file, 'none' to disable)")
     parser.add_argument("--results-dir", default=None, help="Save all outputs (results.json, report.html, log.txt) to a timestamped subdirectory here")
     args = parser.parse_args()
+    validate_claude_model(args.model)
 
     eval_set = json.loads(Path(args.eval_set).read_text())
     skill_path = Path(args.skill_path)

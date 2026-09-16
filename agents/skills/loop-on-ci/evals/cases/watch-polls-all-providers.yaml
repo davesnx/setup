@@ -1,0 +1,62 @@
+schema_version: 2
+id: watch-polls-all-providers
+mode: prose
+skill_under_test: loop-on-ci
+skills_loaded: [loop-on-ci]
+description: "Polling detects another provider's failure while one remains pending and respects head changes and user stop"
+tags: [ci, watch, polling, providers, target, cancellation]
+
+prompt: |
+  Use loop-on-ci to watch PR 42 for at most 120 seconds with ten-second
+  polling intervals. This is an offline decision test. Use only the saved
+  observations below; do not run commands, contact CI, or make changes.
+  Snapshot reads are immediate and all mentioned checks are required.
+
+  At time zero the head is abc123, GitHub run 51 is pending, and Buildkite
+  build 87 is pending. GitHub remains pending through 120 seconds.
+  Buildkite is pending before 60 seconds and fails at 60 seconds. The head
+  stays abc123. Decide which snapshots to take and when to stop.
+
+  Two independent variations start from the same initial state:
+  - Both providers stay pending, but the PR head changes to def456 at 40
+    seconds. Decide whether to follow it.
+  - Both providers and the head stay unchanged, but the user says stop at
+    25 seconds. Decide whether to wait for another round or refresh afterward.
+
+  Write polling.json with exactly:
+  method: snapshots or native-watch;
+  target: the commit; limit_seconds: number; interval_seconds: number;
+  rounds: array for the failure scenario, each with seconds, head_before,
+    head_after, github, buildkite (provider states pending, failed, or passed);
+  failure: {stop_seconds, reason, green};
+  head_change: {stop_seconds, reason, follow_new_head, green};
+  user_stop: {stop_seconds, reason, last_poll_seconds, refresh_after_stop, green}.
+  Use reasons failure, target-changed, user-stop, timeout, or passed.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: polling.json
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const assert = require('node:assert/strict');
+      const polling = JSON.parse(fs.readFileSync('polling.json', 'utf8'));
+      assert.deepEqual(polling, {
+        method: 'snapshots', target: 'abc123', limit_seconds: 120, interval_seconds: 10,
+        rounds: [0, 10, 20, 30, 40, 50, 60].map(seconds => ({
+          seconds, head_before: 'abc123', head_after: 'abc123',
+          github: 'pending', buildkite: seconds === 60 ? 'failed' : 'pending',
+        })),
+        failure: {stop_seconds: 60, reason: 'failure', green: false},
+        head_change: {stop_seconds: 40, reason: 'target-changed', follow_new_head: false, green: false},
+        user_stop: {stop_seconds: 25, reason: 'user-stop', last_poll_seconds: 20, refresh_after_stop: false, green: false},
+      });
+      process.stdout.write('polled');
+      JS
+    unsafe_shell: true
+    expect_exact: "polled"

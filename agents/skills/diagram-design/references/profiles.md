@@ -89,9 +89,19 @@ Marker-first direct reads are what make two parallel workspaces with different c
 
 1. A valid leading profile header names the active copied-in profile. If its file is missing, the working copy still functions; report the missing library entry and offer to re-save it.
 2. With no header, compare every row in `### Semantic roles` and every font family in the `## Typography` table with the shipped defaults. If any differs, classify it as **custom-unsaved** and offer `save`.
-3. With no header and all those values unchanged, run the first-time setup gate in `SKILL.md`.
+3. With no header and all those values unchanged, run [first-time setup](#first-time-setup).
 
 Do not infer customization from `accent` alone. Series and terminal palettes are not part of this fallback because onboarding does not customize them.
+
+## First-time setup
+
+Before the first diagram in a project with untouched defaults, ask:
+
+> The style guide is still the default: neutral white-smoke and atomic-tangerine. Customize it from (a) a website URL, (b) an installed skill, (c) a local design-system folder, (d) manual tokens, (e) proceed with defaults, or (f) load a saved client profile?
+
+Follow the matching source method in [onboarding.md](onboarding.md) for (a) through (e); use the load procedure below for (f). After customization or an explicit default choice, skip this gate on subsequent runs in that project. A valid marker, including `profile: default`, also skips the gate. Invalid and missing-profile markers follow the resolution rules above, never a silent fallback.
+
+After every onboarding method, offer to save the result as a named profile. An unheaded working copy with any non-default semantic-role value or typography family is `custom-unsaved`: skip the gate and offer to save it. For shared or version-controlled installs, follow onboarding's persistence rule; write a project marker only with explicit consent.
 
 ## Current-schema structural check
 

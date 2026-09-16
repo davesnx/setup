@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.utils import parse_skill_md
+from scripts.utils import parse_skill_md, validate_claude_model
 
 
 def _call_claude(prompt: str, model: str | None, timeout: int = 300) -> str:
@@ -23,6 +23,7 @@ def _call_claude(prompt: str, model: str | None, timeout: int = 300) -> str:
     Prompt goes over stdin (not argv) because it embeds the full SKILL.md
     body and can easily exceed comfortable argv length.
     """
+    validate_claude_model(model)
     cmd = ["claude", "-p", "--output-format", "text"]
     if model:
         cmd.extend(["--model", model])
@@ -72,7 +73,7 @@ def improve_description(
     train_score = f"{eval_results['summary']['passed']}/{eval_results['summary']['total']}"
     if test_results:
         test_score = f"{test_results['summary']['passed']}/{test_results['summary']['total']}"
-        scores_summary = f"Train: {train_score}, Test: {test_score}"
+        scores_summary = f"Train: {train_score}, Selection validation: {test_score}"
     else:
         scores_summary = f"Train: {train_score}"
 
@@ -101,11 +102,11 @@ Current scores ({scores_summary}):
         prompt += "\n"
 
     if history:
-        prompt += "PREVIOUS ATTEMPTS (do NOT repeat these — try something structurally different):\n\n"
+        prompt += "PREVIOUS ATTEMPTS (keep useful boundaries; fix supported errors):\n\n"
         for h in history:
             train_s = f"{h.get('train_passed', h.get('passed', 0))}/{h.get('train_total', h.get('total', 0))}"
             test_s = f"{h.get('test_passed', '?')}/{h.get('test_total', '?')}" if h.get('test_passed') is not None else None
-            score_str = f"train={train_s}" + (f", test={test_s}" if test_s else "")
+            score_str = f"train={train_s}" + (f", validation={test_s}" if test_s else "")
             prompt += f'<attempt {score_str}>\n'
             prompt += f'Description: "{h["description"]}"\n'
             if "results" in h:
@@ -124,20 +125,13 @@ Skill content (for context on what the skill does):
 {skill_content}
 </skill_content>
 
-Based on the failures, write a new and improved description that is more likely to trigger correctly. When I say "based on the failures", it's a bit of a tricky line to walk because we don't want to overfit to the specific cases you're seeing. So what I DON'T want you to do is produce an ever-expanding list of specific queries that this skill should or shouldn't trigger for. Instead, try to generalize from the failures to broader categories of user intent and situations where this skill would be useful or not useful. The reason for this is twofold:
-
-1. Avoid overfitting
-2. The list might get loooong and it's injected into ALL queries and there might be a lot of skills, so we don't want to blow too much space on any given description.
-
-Concretely, your description should not be more than about 100-200 words, even if that comes at the cost of accuracy. There is a hard limit of 1024 characters — descriptions over that will be truncated, so stay comfortably under it.
-
-Here are some tips that we've found to work well in writing these descriptions:
-- The skill should be phrased in the imperative -- "Use this skill for" rather than "this skill does"
-- The skill description should focus on the user's intent, what they are trying to achieve, vs. the implementation details of how the skill works.
-- The description competes with other skills for Claude's attention — make it distinctive and immediately recognizable.
-- If you're getting lots of failures after repeated attempts, change things up. Try different sentence structures or wordings.
-
-I'd encourage you to be creative and mix up the style in different iterations since you'll have multiple opportunities to try different approaches and we'll just grab the highest-scoring one at the end.
+Write a concise description with exact triggers tied to the user's requested
+task. Preserve the skill's scope and explicit exclusions. State when to use it
+and, only where needed, distinguish nearby tasks that do not call for it.
+Do not expand scope just to catch more queries. Do not pressure the reader to
+use the skill or add a list of evaluation queries. Change only wording supported
+by the observed failures. Prefer the shortest accurate description, with no
+minimum word count. Stay under 1024 characters.
 
 Please respond with only the new description text in <new_description> tags, nothing else."""
 
@@ -192,13 +186,14 @@ Please respond with only the new description text in <new_description> tags, not
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Improve a skill description based on eval results")
+    parser = argparse.ArgumentParser(description="Improve a skill description with Claude Code only, not the host model")
     parser.add_argument("--eval-results", required=True, help="Path to eval results JSON (from run_eval.py)")
     parser.add_argument("--skill-path", required=True, help="Path to skill directory")
     parser.add_argument("--history", default=None, help="Path to history JSON (previous attempts)")
-    parser.add_argument("--model", required=True, help="Model for improvement")
+    parser.add_argument("--model", required=True, help="Claude model ID or sonnet/opus/haiku alias")
     parser.add_argument("--verbose", action="store_true", help="Print thinking to stderr")
     args = parser.parse_args()
+    validate_claude_model(args.model)
 
     skill_path = Path(args.skill_path)
     if not (skill_path / "SKILL.md").exists():

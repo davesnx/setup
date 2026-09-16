@@ -13,6 +13,9 @@ setup:
 prompt: |
   Simplify withdraw.mjs. Preserve its public function and all observable
   outcomes. Edit the file and write a short summary to cleanup.md.
+  No production incident has occurred. Authorization, finite positive amounts,
+  and sufficient funds are documented contract requirements, not speculative
+  checks. Keep the existing error representation.
 
 budget:
   max_tokens: 4000

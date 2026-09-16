@@ -1,35 +1,25 @@
 #!/usr/bin/env python3
-"""Run trigger evaluation for a skill description.
+"""Evaluate description triggers with Claude Code only, not the host model.
 
-Tests whether a skill's description causes Claude to trigger (read the skill)
-for a set of queries. Outputs results as JSON.
+Each attempt uses a native candidate skill and selection-only instructions.
+Only Skill is available, with a hook that rejects other skill names. A score
+requires a candidate-only advertised catalog and successful completion. Profiles
+with other advertised skills are unsupported, not measured misses. Authentication
+and existing hooks remain in place; no credentials or user settings are copied.
 """
 
 import argparse
 import json
 import os
-import select
+import shlex
 import subprocess
 import sys
-import time
+import tempfile
 import uuid
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
-from scripts.utils import parse_skill_md
-
-
-def find_project_root() -> Path:
-    """Find the project root by walking up from cwd looking for .claude/.
-
-    Mimics how Claude Code discovers its project root, so the command file
-    we create ends up where claude -p will look for it.
-    """
-    current = Path.cwd()
-    for parent in [current, *current.parents]:
-        if (parent / ".claude").is_dir():
-            return parent
-    return current
+from scripts.utils import parse_skill_md, validate_claude_model
 
 
 def run_single_query(
@@ -37,148 +27,114 @@ def run_single_query(
     skill_name: str,
     skill_description: str,
     timeout: int,
-    project_root: str,
     model: str | None = None,
 ) -> bool:
-    """Run a single query and return whether the skill was triggered.
-
-    Creates a command file in .claude/commands/ so it appears in Claude's
-    available_skills list, then runs `claude -p` with the raw query.
-    Uses --include-partial-messages to detect triggering early from
-    stream events (content_block_start) rather than waiting for the
-    full assistant message, which only arrives after tool execution.
-    """
-    unique_id = uuid.uuid4().hex[:8]
-    clean_name = f"{skill_name}-skill-{unique_id}"
-    project_commands_dir = Path(project_root) / ".claude" / "commands"
-    command_file = project_commands_dir / f"{clean_name}.md"
-
-    try:
-        project_commands_dir.mkdir(parents=True, exist_ok=True)
-        # Use YAML block scalar to avoid breaking on quotes in description
+    """Return a trigger only after successful completion; raise on runner errors."""
+    validate_claude_model(model)
+    if not skill_name or Path(skill_name).name != skill_name:
+        raise ValueError("Skill name must be a single filename component")
+    clean_name = f"{skill_name}-skill-{uuid.uuid4().hex[:8]}"
+    with tempfile.TemporaryDirectory(prefix="skill-trigger-") as context:
+        command_file = Path(context) / ".claude" / "skills" / clean_name / "SKILL.md"
+        command_file.parent.mkdir(parents=True)
         indented_desc = "\n  ".join(skill_description.split("\n"))
-        command_content = (
-            f"---\n"
-            f"description: |\n"
-            f"  {indented_desc}\n"
-            f"---\n\n"
-            f"# {skill_name}\n\n"
-            f"This skill handles: {skill_description}\n"
+        command_file.write_text(
+            f"---\nname: {clean_name}\ndescription: |\n  {indented_desc}\n---\n\n"
+            "Selection is complete. Reply SELECTED and stop. This is a description-only "
+            "selection test, not the full skill. Do not perform the user task, "
+            "load another skill, or search for files.\n"
         )
-        command_file.write_text(command_content)
-
+        settings = {
+            "disableBundledSkills": True,
+            "disableSkillShellExecution": True,
+            "skillOverrides": {"doctor": "off"},
+            "hooks": {"PreToolUse": [{
+                "matcher": "*",
+                "hooks": [{"type": "command", "command": shlex.join([
+                    sys.executable, str(Path(__file__).with_name("selection_guard.py").resolve()),
+                    clean_name,
+                ])}],
+            }]},
+        }
         cmd = [
-            "claude",
-            "-p", query,
-            "--output-format", "stream-json",
-            "--verbose",
-            "--include-partial-messages",
+            "claude", "-p", query, "--output-format", "stream-json", "--verbose",
+            "--tools", "Skill", "--allowedTools", f"Skill({clean_name})",
+            "--permission-mode", "dontAsk", "--strict-mcp-config",
+            "--mcp-config", '{"mcpServers":{}}', "--disallowedTools", "mcp__*",
+            "--no-session-persistence", "--include-hook-events", "--settings", json.dumps(settings),
+            "--append-system-prompt",
+            "This session measures skill selection only. Decide whether an available "
+            "skill is relevant to the user request. If relevant, invoke it with Skill. "
+            "Otherwise reply NO_SKILL. Do not perform the requested task. After a skill "
+            "returns, follow its completion instruction and stop. Do not search for other skills.",
         ]
         if model:
             cmd.extend(["--model", model])
-
-        # Remove CLAUDECODE env var to allow nesting claude -p inside a
-        # Claude Code session. The guard is for interactive terminal conflicts;
-        # programmatic subprocess usage is safe.
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            cwd=project_root,
-            env=env,
+        # communicate() drains both pipes and waits for exit, including buffered
+        # events after the last tool. Partial events are not needed for scoring.
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, cwd=context, env=env, timeout=timeout,
         )
+        if result.returncode != 0:
+            raise RuntimeError(f"claude -p exited {result.returncode}")
 
         triggered = False
-        start_time = time.time()
-        buffer = ""
-        # Track state for stream event detection
-        pending_tool_name = None
-        accumulated_json = ""
-
-        try:
-            while time.time() - start_time < timeout:
-                if process.poll() is not None:
-                    remaining = process.stdout.read()
-                    if remaining:
-                        buffer += remaining.decode("utf-8", errors="replace")
-                    break
-
-                ready, _, _ = select.select([process.stdout], [], [], 1.0)
-                if not ready:
-                    continue
-
-                chunk = os.read(process.stdout.fileno(), 8192)
-                if not chunk:
-                    break
-                buffer += chunk.decode("utf-8", errors="replace")
-
-                while "\n" in buffer:
-                    line, buffer = buffer.split("\n", 1)
-                    line = line.strip()
-                    if not line:
+        loaded = False
+        isolated = False
+        completed = False
+        for line in result.stdout.splitlines():
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise RuntimeError("Invalid Claude JSON transcript") from error
+            if not isinstance(event, dict):
+                raise RuntimeError("Invalid Claude transcript event")
+            if event.get("error") or event.get("type") == "error":
+                raise RuntimeError("Claude reported an error")
+            if event.get("type") == "system" and event.get("subtype") == "init":
+                if event.get("skills") != [clean_name]:
+                    raise RuntimeError(
+                        "Unsupported Claude catalog: expected only the evaluation candidate; "
+                        "installed, plugin, managed, or missing skills prevent isolated comparison"
+                    )
+                tools = event.get("tools", [])
+                if "Skill" not in tools or set(tools) - {"Skill", "EndConversation"} or event.get("mcp_servers") != []:
+                    raise RuntimeError("Unsupported Claude tool catalog for selection-only evaluation")
+                isolated = True
+            elif event.get("type") in ("assistant", "user"):
+                receipt = event.get("tool_use_result", {})
+                if receipt.get("success") and receipt.get("commandName") == clean_name:
+                    loaded = True
+                for block in event.get("message", {}).get("content", []):
+                    if not isinstance(block, dict):
                         continue
-
-                    try:
-                        event = json.loads(line)
-                    except json.JSONDecodeError:
+                    if block.get("type") == "tool_result" and block.get("is_error"):
+                        raise RuntimeError("Claude tool execution failed")
+                    if block.get("type") != "tool_use":
                         continue
-
-                    # Early detection via stream events
-                    if event.get("type") == "stream_event":
-                        se = event.get("event", {})
-                        se_type = se.get("type", "")
-
-                        if se_type == "content_block_start":
-                            cb = se.get("content_block", {})
-                            if cb.get("type") == "tool_use":
-                                tool_name = cb.get("name", "")
-                                if tool_name in ("Skill", "Read"):
-                                    pending_tool_name = tool_name
-                                    accumulated_json = ""
-                                else:
-                                    return False
-
-                        elif se_type == "content_block_delta" and pending_tool_name:
-                            delta = se.get("delta", {})
-                            if delta.get("type") == "input_json_delta":
-                                accumulated_json += delta.get("partial_json", "")
-                                if clean_name in accumulated_json:
-                                    return True
-
-                        elif se_type in ("content_block_stop", "message_stop"):
-                            if pending_tool_name:
-                                return clean_name in accumulated_json
-                            if se_type == "message_stop":
-                                return False
-
-                    # Fallback: full assistant message
-                    elif event.get("type") == "assistant":
-                        message = event.get("message", {})
-                        for content_item in message.get("content", []):
-                            if content_item.get("type") != "tool_use":
-                                continue
-                            tool_name = content_item.get("name", "")
-                            tool_input = content_item.get("input", {})
-                            if tool_name == "Skill" and clean_name in tool_input.get("skill", ""):
-                                triggered = True
-                            elif tool_name == "Read" and clean_name in tool_input.get("file_path", ""):
-                                triggered = True
-                            return triggered
-
-                    elif event.get("type") == "result":
-                        return triggered
-        finally:
-            # Clean up process on any exit path (return, exception, timeout)
-            if process.poll() is None:
-                process.kill()
-                process.wait()
-
+                    tool_input = block.get("input", {})
+                    if block.get("name") == "EndConversation":
+                        continue
+                    if block.get("name") != "Skill" or tool_input.get("skill") != clean_name:
+                        raise RuntimeError("Claude attempted an action outside candidate selection")
+                    triggered = True
+            elif event.get("type") == "result":
+                if event.get("is_error") or event.get("subtype") != "success":
+                    raise RuntimeError("Claude did not complete successfully")
+                if event.get("permission_denials"):
+                    raise RuntimeError("Claude tool permission denied")
+                completed = True
+        if not completed:
+            raise RuntimeError("Claude transcript has no successful completion")
+        if not isolated:
+            raise RuntimeError("Claude transcript has no candidate-only catalog evidence")
+        if triggered != loaded:
+            raise RuntimeError("Claude candidate invocation has no matching successful load")
         return triggered
-    finally:
-        if command_file.exists():
-            command_file.unlink()
 
 
 def run_eval(
@@ -187,77 +143,63 @@ def run_eval(
     description: str,
     num_workers: int,
     timeout: int,
-    project_root: Path,
     runs_per_query: int = 1,
     trigger_threshold: float = 0.5,
     model: str | None = None,
 ) -> dict:
-    """Run the full eval set and return results."""
-    results = []
-
+    """Score completed Claude attempts. Runner errors abort without a score."""
+    validate_claude_model(model)
+    if not eval_set or len({item["query"] for item in eval_set}) != len(eval_set):
+        raise ValueError("Evaluation queries must be nonempty and unique")
+    if num_workers < 1 or runs_per_query < 1 or timeout <= 0:
+        raise ValueError("Workers, runs per query, and timeout must be positive")
+    if not 0 < trigger_threshold <= 1:
+        raise ValueError("Trigger threshold must be greater than 0 and at most 1")
+    query_triggers: dict[str, list[bool]] = {item["query"]: [] for item in eval_set}
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        future_to_info = {}
+        future_to_query = {}
         for item in eval_set:
-            for run_idx in range(runs_per_query):
+            for _ in range(runs_per_query):
                 future = executor.submit(
-                    run_single_query,
-                    item["query"],
-                    skill_name,
-                    description,
-                    timeout,
-                    str(project_root),
-                    model,
+                    run_single_query, item["query"], skill_name, description, timeout, model,
                 )
-                future_to_info[future] = (item, run_idx)
-
-        query_triggers: dict[str, list[bool]] = {}
-        query_items: dict[str, dict] = {}
-        for future in as_completed(future_to_info):
-            item, _ = future_to_info[future]
-            query = item["query"]
-            query_items[query] = item
-            if query not in query_triggers:
-                query_triggers[query] = []
+                future_to_query[future] = item["query"]
+        for future in as_completed(future_to_query):
             try:
-                query_triggers[query].append(future.result())
-            except Exception as e:
-                print(f"Warning: query failed: {e}", file=sys.stderr)
-                query_triggers[query].append(False)
+                query_triggers[future_to_query[future]].append(future.result())
+            except Exception as error:
+                for pending in future_to_query:
+                    pending.cancel()
+                raise RuntimeError("Claude evaluation failed; no scores produced") from error
 
-    for query, triggers in query_triggers.items():
-        item = query_items[query]
+    results = []
+    for item in eval_set:
+        triggers = query_triggers[item["query"]]
         trigger_rate = sum(triggers) / len(triggers)
         should_trigger = item["should_trigger"]
-        if should_trigger:
-            did_pass = trigger_rate >= trigger_threshold
-        else:
-            did_pass = trigger_rate < trigger_threshold
+        did_pass = trigger_rate >= trigger_threshold if should_trigger else trigger_rate < trigger_threshold
         results.append({
-            "query": query,
+            "query": item["query"],
             "should_trigger": should_trigger,
             "trigger_rate": trigger_rate,
             "triggers": sum(triggers),
             "runs": len(triggers),
             "pass": did_pass,
         })
-
     passed = sum(1 for r in results if r["pass"])
-    total = len(results)
-
     return {
+        "runner": "claude",
+        "measurement": "isolated-description-selection",
+        "model": model,
         "skill_name": skill_name,
         "description": description,
         "results": results,
-        "summary": {
-            "total": total,
-            "passed": passed,
-            "failed": total - passed,
-        },
+        "summary": {"total": len(results), "passed": passed, "failed": len(results) - passed},
     }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run trigger evaluation for a skill description")
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--eval-set", required=True, help="Path to eval set JSON file")
     parser.add_argument("--skill-path", required=True, help="Path to skill directory")
     parser.add_argument("--description", default=None, help="Override description to test")
@@ -265,44 +207,29 @@ def main():
     parser.add_argument("--timeout", type=int, default=30, help="Timeout per query in seconds")
     parser.add_argument("--runs-per-query", type=int, default=3, help="Number of runs per query")
     parser.add_argument("--trigger-threshold", type=float, default=0.5, help="Trigger rate threshold")
-    parser.add_argument("--model", default=None, help="Model to use for claude -p (default: user's configured model)")
+    parser.add_argument("--model", default=None, help="Claude model ID or alias (default: Claude CLI configuration, not host model)")
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
     args = parser.parse_args()
+    validate_claude_model(args.model)
 
     eval_set = json.loads(Path(args.eval_set).read_text())
     skill_path = Path(args.skill_path)
-
     if not (skill_path / "SKILL.md").exists():
-        print(f"Error: No SKILL.md found at {skill_path}", file=sys.stderr)
-        sys.exit(1)
-
-    name, original_description, content = parse_skill_md(skill_path)
+        parser.error(f"No SKILL.md found at {skill_path}")
+    name, original_description, _ = parse_skill_md(skill_path)
     description = args.description or original_description
-    project_root = find_project_root()
-
-    if args.verbose:
-        print(f"Evaluating: {description}", file=sys.stderr)
-
     output = run_eval(
-        eval_set=eval_set,
-        skill_name=name,
-        description=description,
-        num_workers=args.num_workers,
-        timeout=args.timeout,
-        project_root=project_root,
-        runs_per_query=args.runs_per_query,
-        trigger_threshold=args.trigger_threshold,
+        eval_set=eval_set, skill_name=name, description=description,
+        num_workers=args.num_workers, timeout=args.timeout,
+        runs_per_query=args.runs_per_query, trigger_threshold=args.trigger_threshold,
         model=args.model,
     )
-
     if args.verbose:
         summary = output["summary"]
         print(f"Results: {summary['passed']}/{summary['total']} passed", file=sys.stderr)
         for r in output["results"]:
             status = "PASS" if r["pass"] else "FAIL"
-            rate_str = f"{r['triggers']}/{r['runs']}"
-            print(f"  [{status}] rate={rate_str} expected={r['should_trigger']}: {r['query'][:70]}", file=sys.stderr)
-
+            print(f"  [{status}] rate={r['triggers']}/{r['runs']} expected={r['should_trigger']}: {r['query'][:70]}", file=sys.stderr)
     print(json.dumps(output, indent=2))
 
 

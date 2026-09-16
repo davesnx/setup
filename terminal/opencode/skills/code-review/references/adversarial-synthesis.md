@@ -19,7 +19,8 @@ Use the full conversation and repository context that individual reviewers can l
 - Reject premature abstractions that add concepts without a second real use or a clear simplification.
 - Account for known constraints, staged migrations, temporary scaffolding, and established repository patterns.
 - Scrutinize correctness and security claims even when only one reviewer raised them.
-- Prefer a short, useful verdict over a padded list. An empty **Act On** section is valid.
+- Prefer a short, useful verdict over a padded list. Zero findings are valid;
+  omit empty judgment groups rather than filling a report template.
 
 Classify each candidate:
 

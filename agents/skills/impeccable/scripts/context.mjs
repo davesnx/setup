@@ -1,8 +1,6 @@
 /**
- * Context loader: prints PRODUCT.md (and DESIGN.md if present) as one
- * markdown block on stdout, or exits with empty stdout when no PRODUCT.md
- * is found anywhere. The skill keys off "empty stdout" to branch into the
- * init flow.
+ * Context loader: prints available PRODUCT.md and DESIGN.md content.
+ * Missing PRODUCT.md is advisory; the task can use supplied context and code.
  *
  * Path resolution (first match wins):
  *   1. Active project root, if PRODUCT.md or DESIGN.md is there
@@ -855,23 +853,12 @@ async function cli() {
   const ctx = loadContext(process.cwd(), cliOptions);
   const updateDirective = await computeUpdateDirective();
 
-  if (!ctx.hasProduct) {
-    // Direct stdout message instead of relying on empty output as a signal
-    // — cheap models miss the empty case more often than the explicit one.
-    const parts = [
-      'NO_PRODUCT_MD: This project has no PRODUCT.md yet. ' +
-      'Stop the current task, load reference/init.md, and follow its ' +
-      'instructions to write PRODUCT.md before resuming.',
-    ];
-    parts.push(buildResolvedContextDirective(ctx, cliOptions, { targetExists }));
-    if (shouldWarnMissingTarget(ctx, targetProvided, targetExists)) {
-      parts.push(buildMissingTargetDirective());
-    }
-    if (updateDirective) parts.push(updateDirective);
-    process.stdout.write(parts.join('\n\n---\n\n') + '\n');
-    process.exit(0);
-  }
-  const parts = [`# PRODUCT.md\n\n${ctx.product.trim()}`];
+  const parts = [ctx.hasProduct
+    ? `# PRODUCT.md\n\n${ctx.product.trim()}`
+    : 'NO_PRODUCT_MD: No PRODUCT.md was loaded. Continue with supplied user context ' +
+      'and relevant existing design code. Ask only blocking questions. ' +
+      'Load reference/init.md only if explicitly requested or necessary project context remains unresolved; ' +
+      'do not initialize solely because the file is missing.'];
   if (ctx.hasDesign) {
     parts.push(`# DESIGN.md\n\n${ctx.design.trim()}`);
   }
@@ -882,7 +869,7 @@ async function cli() {
   const register = extractRegister(ctx.product);
   const next = register
     ? `NEXT STEP: This project's register is \`${register}\`. You MUST now read \`reference/${register}.md\` before producing any design output.`
-    : `NEXT STEP: You MUST now read the matching register reference (\`reference/brand.md\` or \`reference/product.md\`) before producing any design output. Pick based on PRODUCT.md above.`;
+    : `NEXT STEP: You MUST now read the matching register reference (\`reference/brand.md\` or \`reference/product.md\`) before producing any design output. Pick based on the requested surface, supplied context, and existing design code.`;
   parts.push(next);
   if (updateDirective) parts.push(updateDirective);
   process.stdout.write(parts.join('\n\n---\n\n') + '\n');

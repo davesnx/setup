@@ -1,10 +1,10 @@
 {
   "craft": {
-    "description": "Full confirmed-brief-then-build flow. Runs multi-round shape discovery first, resolves visual probe and north-star mock gates when available, then builds and visually iterates. Use when building a new feature end-to-end.",
+    "description": "Full confirmed-brief-then-build flow. Uses supplied context and shape discovery for unresolved inputs, preserves visual probe and north-star mock approval gates when available, then builds and visually iterates. Use when building a new feature end-to-end.",
     "argumentHint": "[feature description]"
   },
   "init": {
-    "description": "Sets up a project for impeccable. Runs a multi-round discovery interview when context is missing and writes PRODUCT.md (strategic: users, brand, principles); offers DESIGN.md (visual: colors, typography, components) when code exists; pre-configures live mode; then recommends the best commands to run next. Every other command reads these files before doing work. Use once per project.",
+    "description": "Set up project context when explicitly requested or necessary context remains unresolved. Confirms strategic answers before writing PRODUCT.md, offers DESIGN.md, and configures live mode. Missing PRODUCT.md alone does not require init for other design tasks.",
     "argumentHint": ""
   },
   "document": {
@@ -84,7 +84,7 @@
     "argumentHint": "[target]"
   },
   "shape": {
-    "description": "Plan UX and UI before code. Runs a required multi-round discovery interview, uses visual probes when available, and produces a user-confirmed design brief for implementation.",
+    "description": "Plan UX and UI before code. Uses supplied context and discovery questions for unresolved inputs, uses visual probes when available, and produces a user-confirmed design brief for implementation.",
     "argumentHint": "[feature to shape]"
   },
   "typeset": {

@@ -18,7 +18,7 @@ Vertical stack, top to bottom, for one persona:
 
 ## Connector note
 
-The sentiment polyline is a **data curve**, not a connector between nodes — §6 rule 1 (mandatory orthogonal elbows) does not apply to it. This exemption covers the sentiment curve **only**; any other connector in a journey map (there normally are none) still follows the standard connector rules.
+The sentiment polyline is a **data curve**, not a connector between nodes — [connector rule 1](svg-primitives.md#mandatory-connector-rules) (mandatory orthogonal elbows) does not apply to it. This exemption covers the sentiment curve **only**; any other connector in a journey map (there normally are none) still follows the standard connector rules.
 
 ## Geometry
 

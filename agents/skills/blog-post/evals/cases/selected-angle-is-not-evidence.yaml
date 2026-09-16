@@ -9,7 +9,7 @@ tags: [prose, evidence, partial-draft]
 prompt: |
   Earlier in our collaboration you suggested the angle "How our migration
   halved build times" and I replied "yes, that angle". Now draft the post.
-  Skip the interview, outline approval, and reader test for this partial draft.
+  No reader test is needed for this partial draft.
   Audience: developers who know what a build is. Voice: plain first person.
   These are all the facts I have supplied: "I changed the build configuration
   on Tuesday. I have not run the comparison yet."

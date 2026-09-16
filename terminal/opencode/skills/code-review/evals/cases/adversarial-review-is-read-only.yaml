@@ -15,6 +15,15 @@ prompt: |
   Interrogate diff.patch with Code Review's Adversarial / Multi-model mode.
   Write the final review to review.md. Do not edit diff.patch or expected.patch.
 
+  Test protocol: write one JSON object without fences. Use fields intent,
+  reviewers (array of {id, lens, evidence, model}; model may be null),
+  limitation (string; explain if independent jobs or model selection are
+  unavailable), agreement (array of {claim, reviewers, resolution}), and
+  findings (array of {file, line, severity, decision, evidence, remedy}).
+  Decisions are act-on, consider, or dismissed. Evidence must cite the changed
+  source. Include only real reviewers and supported findings; empty arrays
+  are valid. This protocol tests evidence, not Markdown heading choices.
+
 budget:
   max_tokens: 6000
   max_seconds: 120
@@ -27,6 +36,41 @@ checks:
     unsafe_shell: true
     expect_exact: "unchanged"
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const section=h=>(s.match(new RegExp(\"^## \"+h+\"\\\\s*\\\\n([\\\\s\\\\S]*?)(?=^## |(?![\\\\s\\\\S]))\",\"mi\"))||[])[1]||\"\"; const evidence=section(\"Reviewer Evidence\"); const map=section(\"Agreement Map\"); const intent=section(\"Intent\").trim().length>0; const hasEvidence=/(reviewer|model|lens)/i.test(evidence)&&/(evidence|finding|checked|trace|line)/i.test(evidence); const handlesAgreement=/(consensus|agree)/i.test(map)&&/(disagree|diverg|lone)/i.test(map); const judgment=/^## Act On\\s*$/mi.test(s)&&/^## Consider\\s*$/mi.test(s)&&/^## Dismissed\\s*$/mi.test(s); process.stdout.write(intent&&hasEvidence&&handlesAgreement&&judgment?\"complete\":\"incomplete\")'"
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const r = JSON.parse(fs.readFileSync('review.md', 'utf8'));
+      const text = value => typeof value === 'string' && value.trim().length > 0;
+      assert.ok(text(r.intent));
+      assert.ok(Array.isArray(r.reviewers));
+      assert.equal(typeof r.limitation, 'string');
+      const ids = r.reviewers.map(reviewer => reviewer.id);
+      assert.equal(new Set(ids).size, ids.length);
+      for (const reviewer of r.reviewers) {
+        assert.ok([reviewer.id, reviewer.lens, reviewer.evidence].every(text));
+        assert.ok(reviewer.model === null || text(reviewer.model));
+      }
+      if (ids.length < 2 || r.reviewers.some(reviewer => reviewer.model === null)) {
+        assert.ok(text(r.limitation));
+      }
+      assert.ok(Array.isArray(r.agreement));
+      if (ids.length >= 2) assert.ok(r.agreement.length > 0);
+      for (const entry of r.agreement) {
+        assert.ok(text(entry.claim) && text(entry.resolution));
+        assert.ok(Array.isArray(entry.reviewers) && entry.reviewers.length > 0);
+        assert.ok(entry.reviewers.every(id => ids.includes(id)));
+      }
+      assert.ok(Array.isArray(r.findings));
+      for (const finding of r.findings) {
+        assert.ok(['act-on', 'consider', 'dismissed'].includes(finding.decision));
+        assert.ok(text(finding.evidence) && text(finding.remedy));
+      }
+      assert.ok(r.findings.some(f => f.file === 'users.py' && [10, 11].includes(f.line)
+        && ['high', 'critical'].includes(f.severity) && f.decision === 'act-on'
+        && /SELECT|connection\.execute/.test(f.evidence)
+        && /param|bind|bound/i.test(f.remedy)));
+      process.stdout.write('complete');
+      JS
     unsafe_shell: true
     expect_exact: "complete"

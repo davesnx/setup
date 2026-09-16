@@ -1,16 +1,19 @@
 ---
 name: loop-on-ci
-description: Inspect, plan, fix, and monitor failing CI across GitHub Actions, Buildkite, and other attached providers. Use when a user asks to debug CI, summarize a red build or PR, propose a CI fix plan, fix failing checks, retry a flaky job, or watch checks until they pass. Accepts a PR, branch, commit, build URL, or provider-specific build identifier.
+description: Use to inspect or debug CI, plan or fix failures, retry a job, or watch checks on a PR, branch, commit, or build. Supports GitHub Actions, Buildkite, and attached providers; each action needs its own authority.
 ---
 
 # Loop On CI
 
-Find failing checks, route them to the correct provider, diagnose root causes from logs, and either stop for plan approval or apply focused fixes until every required provider is green.
+Find checks, route them to the correct provider, and act only within the requested mode.
 
 ## Modes
 
 - **Inspect and plan**: Use when the user asks to debug, inspect, summarize, or propose a plan. Diagnose failures, present the smallest fix plan, and wait for explicit approval before editing files.
-- **Fix and loop**: Use when the user asks to fix, retry, loop, watch, or continue until green. Apply focused edits and keep checking until green or blocked. Commit and push only when explicitly requested.
+- **Watch**: Observe current checks without edits, retries, commits, or pushes. A watch request, including "watch until green", does not authorize fixes or require push authorization.
+- **Fix and loop**: A fix request authorizes focused local edits and checks, not publication or retries. An ambiguous "loop until green" request permits observation only until mutation authority is clear.
+- **Retry**: Retry only when requested or separately approved and supported by flake evidence. Retry authority does not authorize edits or publication.
+- **Publish**: Commit and push only when explicitly requested, after required local checks pass. Inspect, watch, fix, and retry authority do not imply publication authority.
 
 ## 1. Resolve The Target
 
@@ -52,23 +55,31 @@ Summarize each root cause with evidence. Treat repeated symptoms from one cause 
 
 Present the current provider status, root causes, and smallest fix plan. Wait for approval. After approval, apply the plan, run relevant local checks, and report which remote checks require a push or retry.
 
+### Watch
+
+Record the target commit, build IDs, and current check set. Observe only that target; do not silently follow a new PR head or newer build. Use one total time limit across providers: the requested limit, or ten minutes by default. Do not restart an expired watch without a new request.
+
+Poll immediately, then at short intervals (ten seconds by default). Each round rechecks target identity and fetches all recorded providers' build, job, and check states, including newly discovered checks for the same target. Recheck identity after those reads before accepting the round. A pending provider must not delay inspection of another provider. Run independent reads in parallel where supported; bound each round's reads by the shorter of the polling interval and remaining total time. Treat a read timeout as unavailable data, not a pending check. Use snapshot commands, not native blocking watches.
+
+Stop when required checks pass, a terminal failure or blocked state needs action, access fails, the target changes, the user stops the watch, or the limit expires. Check for user stop and deadline before each round and wait; cancel active reads and waits when stopped. Do not start a final refresh after stop or deadline. Report the last observed states and their time, marking incomplete rounds and stale data. Report pending, cancelled, skipped, missing, or unavailable checks as such, not as green. Watching needs no push authorization and must not trigger a retry or fix.
+
 ### Fix And Loop
 
 1. Apply one focused fix at a time.
 2. Run the repository's relevant local checks.
 3. If commit and push are authorized, publish the fix.
-4. Re-fetch the complete check set from every provider; the set can change after a push.
-5. Watch pending builds with each provider's native watch command.
+4. After an authorized push, resolve the new target and complete check set from every provider.
+5. Observe pending builds within the Watch bounds above.
 6. Repeat until all required checks pass or a concrete blocker prevents progress.
 
-Without push authorization, stop after local verification and explain that remote CI cannot rerun. Retry a failed job only when authorized and supported by flake evidence.
+Without push authorization, stop the fix path after local verification and report that the local fix has not reached remote CI. This does not prevent a separately requested watch of existing checks. Retry a failed job only when authorized and supported by flake evidence.
 
 ## Guardrails
 
 - Keep each fix scoped to one root cause when possible.
 - Never bypass hooks or required checks.
 - Do not add unrelated fixes for failures that already exist on the base branch.
-- Retry a suspected flake once, then report the evidence.
+- Retry an authorized suspected flake once, then report the evidence.
 - Never treat an unavailable provider as green.
 - Recheck all providers after every authorized push or retry.
 
@@ -79,4 +90,4 @@ Without push authorization, stop after local verification and explain that remot
 - Proposed plan or fixes applied
 - Local checks run
 - Retries and pushes performed
-- Final green state or exact blocker with provider URLs
+- Observed target, final check state, and stop reason with provider URLs; claim green only for verified required checks on that target

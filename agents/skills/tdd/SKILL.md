@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Use only when the user explicitly asks for TDD, test-first implementation, red-green-refactor, or integration tests as test-first work. Do not use for generic implementation, tests without a test-first request, bug fixes, or domain-modeling artifacts. If the user explicitly asks for both test-first work and domain modeling, load both skills.
+description: Use for explicit TDD, test-first, or red-green-refactor requests, including test-first integration tests. Not for generic implementation, bug fixes, tests alone, or domain artifacts. Load domain-modeling too only when explicitly requested.
 ---
 
 # TDD
@@ -26,11 +26,9 @@ See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking g
 
 A **seam** is the location where a module's interface lives and behavior can be observed or substituted without editing that location. Tests exercise behavior through the interface at the seam, not through implementation details.
 
-**Test only at pre-agreed seams.** Before writing any test, write down the seams under test and confirm them with the user. No test is written at an unconfirmed seam. You can't test everything — agreeing the seams up front is how testing effort lands on the critical paths and complex logic instead of every edge case.
+Use the user-specified or already agreed public interface. Check existing code and tests to locate it; state the interface under test and proceed without asking for approval again.
 
-Ask: "What's the public interface, and which seams should we test?"
-
-When the shape of that interface is itself in question, agree on the seam with the user before continuing. Do not broaden TDD into architecture work unless the user explicitly asks for it.
+Ask only when a material interface decision remains unresolved after checking the request, prior agreement, and code. Do not broaden TDD into architecture work unless the user explicitly asks for it.
 
 ## Anti-patterns
 
@@ -40,6 +38,6 @@ When the shape of that interface is itself in question, agree on the seam with t
 
 ## Rules of the loop
 
-- **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
-- **One slice at a time.** One seam, exactly one new failing behavior test, and one minimal implementation per cycle. Do not batch several tests or assertions into one RED phase. Keep later examples in a backlog until their cycle starts.
+- **Red before green.** Write and run the test; confirm it fails for the missing behavior before writing only enough code to pass it. Don't anticipate future tests or add speculative features.
+- **One slice at a time.** One seam, one new failing behavior test, and one minimal implementation per cycle. Multiple assertions can establish that single behavior. Keep separate behaviors and later examples in a backlog until their cycle starts.
 - **Refactor after green.** Improve names, duplication, interfaces, and structure only while the tests stay green. Do not add behavior during refactoring. After the full set of slices, review the changed behavior and tests directly. Load `code-review` only when the user asks for a code review.

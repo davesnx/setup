@@ -2,6 +2,22 @@
 
 This document defines the JSON schemas used by skill-creator.
 
+## Contents
+
+- [evals.json](#evalsjson)
+- [history.json](#historyjson)
+- [grading.json](#gradingjson)
+- [metrics.json](#metricsjson)
+- [timing.json](#timingjson)
+- [benchmark.json](#benchmarkjson)
+- [comparison.json](#comparisonjson)
+- [analysis.json](#analysisjson)
+
+Examples illustrate field shapes, not measured results. Populate metrics only
+from recorded evidence. Omit unavailable optional measurements and report the
+gap; never use example values, character counts, or generated zeros as measured
+tokens, timing, or cost. See [Evaluation](evaluation.md) for execution and review.
+
 ---
 
 ## evals.json
@@ -33,6 +49,10 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 - `evals[].expected_output`: Human-readable description of success
 - `evals[].files`: Optional list of input file paths (relative to skill root)
 - `evals[].expectations`: List of verifiable statements
+
+Per-case `eval_metadata.json` uses `eval_id`, `eval_name`, `prompt`, and
+`assertions`. Copy case `expectations` into metadata `assertions` and pass them
+to the grader as `expectations`; these field names are distinct contracts.
 
 ---
 
@@ -102,10 +122,10 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
     }
   ],
   "summary": {
-    "passed": 2,
+    "passed": 1,
     "failed": 1,
-    "total": 3,
-    "pass_rate": 0.67
+    "total": 2,
+    "pass_rate": 0.5
   },
   "execution_metrics": {
     "tool_calls": {
@@ -198,13 +218,17 @@ Output from the executor agent. Located at `<run-dir>/outputs/metrics.json`.
 
 Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
-**How to capture:** When a subagent task completes, the task notification includes `total_tokens` and `duration_ms`. Save these immediately — they are not persisted anywhere else and cannot be recovered after the fact.
+**How to capture:** If the host supplies `total_tokens` and `duration_ms` in a
+completion notification, save them immediately; some hosts do not retain that
+notification. Other hosts expose usage in saved events. Record the source and
+actual model. Derive seconds from measured milliseconds, not an estimate.
+Missing usage remains unavailable. Do not infer tokens from character counts.
 
 ```json
 {
   "total_tokens": 84852,
-  "duration_ms": 23332,
-  "total_duration_seconds": 23.3,
+  "duration_ms": 191000,
+  "total_duration_seconds": 191.0,
   "executor_start": "2026-01-15T10:30:00Z",
   "executor_end": "2026-01-15T10:32:45Z",
   "executor_duration_seconds": 165.0,
@@ -218,7 +242,9 @@ Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
 ## benchmark.json
 
-Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
+Output from aggregation. Located at `<workspace>/iteration-N/benchmark.json`,
+or `benchmarks/<timestamp>/benchmark.json` for a separate benchmark run.
+The aggregator also reads the legacy `runs/eval-N/` directory layout.
 
 ```json
 {
@@ -294,11 +320,11 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
 - `runs[]`: Individual run results
   - `eval_id`: Numeric eval identifier
   - `eval_name`: Human-readable eval name (used as section header in the viewer)
-  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
+  - `configuration`: The run directory's name: `"with_skill"` / `"without_skill"` for a new skill, or `"with_skill"` (also `"new_skill"`) / `"old_skill"` for a revision. Preserve names and place the candidate before its baseline.
   - `run_number`: Integer run number (1, 2, 3...)
   - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
 - `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
+  - Configuration keys matching `runs[].configuration`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
   - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
 - `notes`: Freeform observations from the analyzer
 

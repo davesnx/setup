@@ -1,12 +1,12 @@
 ---
 name: code-standards
-description: "Shared code quality bar for complexity, boundaries, failures, state and type models, modules, tests, and operations. Load when a change alters one of those areas, or when simplify or code-review needs the shared standards."
+description: "Consult shared code standards for a relevant design decision or an explicit standards reference request, not for every code change."
 ---
 
 # Code standards
 
-Use these standards when the task touches their subject. Apply them to new and
-refactored behavior. Keep unrelated old code unchanged.
+Consult the sections relevant to the design decision or reference request.
+Apply them within the task's scope. Keep unrelated old code unchanged.
 
 ## Decision order
 
@@ -36,12 +36,11 @@ refactored behavior. Keep unrelated old code unchanged.
 - Keep behavior local. A reader learns what a unit does by reading it, not by
   searching distant files.
 - Prefer one obvious path and one source of truth.
-- Add a guard, fallback, retry, or race handling only for a failure that a
-  runtime, log, test reproduction, persisted state, or user report proved. Fix
-  the smallest real failure at the boundary that owns it. One incident does
-  not justify a general defense system.
-- Justify complexity with an observed failure and its likelihood, never with
-  "could", "might", or "what if" alone.
+- Justify guards, fallbacks, retries, and race handling with documented contracts,
+  reachable failure paths, or observed failures. An incident is not required to
+  protect a known boundary or invariant. Use the smallest safeguard at its owner.
+- Weigh the failure's likelihood and impact against the safeguard's cost.
+  Speculation alone does not justify a general defense system.
 - Change internal call sites rather than preserve a bad interface.
 - Prefer less code, fewer names, fewer branches, and net-negative diffs when
   behavior permits. Remove a branch, helper, mode, or layer rather than
@@ -104,7 +103,7 @@ refactored behavior. Keep unrelated old code unchanged.
 - Push side effects to the edges; keep the core pure
 - Composition beats inheritance; functions compose better than objects.
 - What you can't express as a value, you can't test.
-- Errors are values, always.
+- Make failure outcomes explicit using the repository's error model (see Failures).
 
 ## Modules and dependencies
 
@@ -168,11 +167,13 @@ refactored behavior. Keep unrelated old code unchanged.
 
 - The type signature is the domain document. If the domain expert can't read it, the model is wrong.
 - Use the ubiquitous language in code — OrderId, not int; ValidatedOrder, not Order with a flag.
-- Wrap every primitive that means something. Primitive obsession is where domain bugs hide.
+- Use domain wrappers when they prevent a concrete mix-up or enforce an invariant;
+  keep ordinary primitives when a wrapper adds no safety or clarity.
 - Model choices as sum types, not as booleans or nullable fields.
 - States that differ in shape deserve different types, not one type with optional fields.
 - Constraints are types: EmailAddress, NonEmptyString, Quantity between 1 and 1000 — enforced at construction, trusted after.
-- The constructor is the gate. Smart constructors return Result, and the type is proof the check happened.
+- Constructors enforce constraints and report invalid input through the
+  repository's error model. A refined type records that the check happened.
 - Name construction by what it does: `parse` turns untrusted input into a
   result, `make` builds from already-typed pieces, `is` is a plain predicate. A
   function that returns a refined value parsed something, so do not call it

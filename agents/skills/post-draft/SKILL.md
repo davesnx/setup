@@ -1,13 +1,13 @@
 ---
 name: post-draft
-description: Fill the gaps in a sancho.dev blog draft by interviewing the author in rounds, then writing the missing prose into the draft using VOICE.md as a contextual reference. Use when a draft under src/content/ has a SKILLS block with state stub, outline or partial, or when the user asks to finish a draft, fill what is missing in a post, or be grilled about a post.
+description: Finish sancho.dev drafts with stub, outline, or partial SKILLS state. Fill gaps from evidence and ask for missing author decisions; supports post interviews.
 ---
 
 # Post draft
 
-Finish a draft the way `grilling` stress-tests a plan: map the gaps, ask
-the author only what only the author knows, write each answer into the
-post. Read `VOICE.md` at the repository root and the draft. Use the voice
+Finish a draft by mapping its gaps, finding evidence, and asking the author
+only for unresolved decisions. Write supported material into the post.
+Read `VOICE.md` at the repository root and the draft. Use the voice
 guide's relevant examples in context, not as a formula for every post.
 
 ## Gaps
@@ -32,15 +32,18 @@ environment: the repository, the linked issue, the benchmark script, the git
 history of the project the post is about. Find it yourself; use a sub-agent
 when independent research can run in parallel. A **decision** lives in the
 author's head: what happened, what it cost, what he would do differently,
-which of two stances he holds. Only decisions go to the author.
+which of two stances he holds. Only unresolved decisions go to the author;
+reuse decisions already supplied in the conversation or his linked notes.
 
 Done when every gap is listed with its location, its type, and, for a fact,
 where you will look.
 
 ## Rounds
 
-Work the decisions in rounds. The **frontier** is every decision whose
-prerequisites are settled. Ask the whole frontier at once, numbered:
+Work unresolved decisions in rounds, or use interviews when requested. If
+existing evidence resolves a gap, proceed to Writing without an interview.
+The **frontier** is every decision whose prerequisites are settled. Ask the
+whole frontier at once, numbered:
 
 ```
 **Q1** - **<gap, with the line or heading it sits under>**: <what the reader is owed there, and the question that gets it>
@@ -58,15 +61,17 @@ Each round's answers reshape the gap list. A "no" opens new questions. A
 link opens a fact to look up. Recompute the frontier and ask again.
 
 The interview is complete when no material gap needs an author answer.
-If an answer or source remains unavailable, pause with explicit outstanding
-questions and the source or author input needed. An empty frontier alone
-does not mean the draft is complete: unresolved facts can still block it.
+If an answer or source remains unavailable, write the supported parts first,
+then pause with explicit outstanding questions and the source or author input
+needed. An empty frontier alone does not mean the draft is complete:
+unresolved facts can still block it.
 
 ## Writing
 
-After each answered round, write the answered gaps into the draft at the
-spot each belongs, and nowhere else, without asking for separate permission
-to write. Write the supported parts even if other answers remain unavailable.
+Write resolved gaps into the draft as soon as confirmed answers or linked
+evidence support them, at the spot each belongs and nowhere else. No separate
+permission or answered interview round is needed. Do not invent an interview
+history to justify writing. Write supported parts even if other gaps remain.
 
 - Use the answer's own nouns and verbs, with enough context and evidence for
   the reader. Choose sentence and paragraph structure for this passage.
@@ -100,4 +105,4 @@ do not manufacture a conclusion to close the draft.
   look up.
 - A guess stays labelled a guess until he confirms it. Only confirmed
   answers and found facts enter the draft.
-- Prose is written after a round is answered, never before.
+- Write from confirmed answers or found evidence, not from unconfirmed guesses.

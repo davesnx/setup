@@ -11,7 +11,7 @@
 
 ## Connector style
 
-**Rounded right-angle (orthogonal) connectors are MANDATORY** for all non-horizontal/vertical connections — diagonal `<line>` between off-axis nodes is a hard fail (see SKILL.md §6 Mandatory connector rules). Two-bend elbow path with `r=8`:
+**Rounded right-angle (orthogonal) connectors are MANDATORY** for all non-horizontal/vertical connections — diagonal `<line>` between off-axis nodes is a hard fail (see [mandatory connector rules](svg-primitives.md#mandatory-connector-rules)). Two-bend elbow path with `r=8`:
 
 ```svg
 <!-- right+down: from (x1,y1) to (x2,y2), mid = (x1+x2)/2 -->

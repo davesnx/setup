@@ -1,6 +1,6 @@
 ---
 name: skill-vendor
-description: Keep the skills this repository publishes for other people, such as the mlx skills in ocaml-mlx/skills, in step with their upstream repository through the skill-vendor command. Use when the user says "vendor skills", "skill-vendor", "pull the mlx skills", "push the mlx skills upstream", or asks whether agents/skills/VENDOR is in sync. Not for moving skills between the Mac and nspawn; that is sync-skills.
+description: Check, import, or publish skills listed in agents/skills/VENDOR against their upstream repositories. Not Mac-to-nspawn skill synchronization.
 compatibility: Requires Git, SSH access to the upstream repository, and the setup checkout's terminal/bin/skill-vendor on PATH.
 ---
 

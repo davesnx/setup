@@ -1,0 +1,34 @@
+schema_version: 2
+id: code-standards-contract-safeguards
+mode: deterministic
+skill_under_test: code-standards
+skills_loaded: [code-standards]
+description: "Design guidance allows preventive safeguards and preserves the repository error model"
+tags: [contracts, safety, errors, types]
+prompt: |
+  Consult Code Standards for these design decisions. Do not implement code.
+  A documented queue contract permits duplicate delivery. A reachable handler
+  charges a customer, but no duplicate has occurred yet. Should it deduplicate
+  charges now? This repository uses typed exceptions: should a validated input
+  constructor adopt a Result framework just for these standards? A local string
+  label has no invariant or confusion risk: must it get a domain wrapper?
+  Write decisions.json with boolean fields deduplicate_now, adopt_result,
+  wrap_label, and a reasons array explaining the evidence for each decision.
+budget:
+  max_tokens: 2500
+  max_seconds: 60
+checks:
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const r = JSON.parse(require('node:fs').readFileSync('decisions.json', 'utf8'));
+      assert.equal(r.deduplicate_now, true);
+      assert.equal(r.adopt_result, false);
+      assert.equal(r.wrap_label, false);
+      assert.ok(Array.isArray(r.reasons) && r.reasons.length === 3);
+      assert.ok(r.reasons.every(reason => typeof reason === 'string' && reason.trim()));
+      process.stdout.write('compatible');
+      JS
+    unsafe_shell: true
+    expect_exact: "compatible"

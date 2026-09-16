@@ -1,0 +1,37 @@
+schema_version: 2
+id: reflect-completion-is-not-trigger
+mode: deterministic
+skill_under_test: reflect
+skills_loaded: [reflect]
+description: "Completed work gets only the requested sentence, with no reflection or tools"
+tags: [manual-only, routing]
+prompt: |
+  The task is complete after eight tool calls and a correction to the command.
+  Tests passed. Give only a one-sentence completion summary. No further work.
+  Use exactly: The task is complete and all tests passed.
+budget:
+  max_tokens: 1000
+  max_seconds: 30
+checks:
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      // Run and regrade keep the transcript beside the candidate workdir.
+      const events = fs.readFileSync('../transcript.jsonl', 'utf8')
+        .split('\n').filter(line => line.trim()).map(line => JSON.parse(line));
+      assert.ok(events.length > 0);
+      for (const event of events) {
+        assert.ok(['step_start', 'step_finish', 'text', 'reasoning'].includes(event.type));
+        assert.ok(!event.part?.tool && event.part?.type !== 'tool');
+      }
+      const text = events.filter(event => event.type === 'text').map(event => {
+        assert.equal(typeof event.part?.text, 'string');
+        return event.part.text;
+      }).join('').trim();
+      assert.equal(text, 'The task is complete and all tests passed.');
+      process.stdout.write('completion-only');
+      JS
+    unsafe_shell: true
+    expect_exact: "completion-only"

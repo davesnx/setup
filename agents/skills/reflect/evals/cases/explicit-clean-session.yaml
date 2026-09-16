@@ -1,0 +1,31 @@
+schema_version: 2
+id: reflect-explicit-clean-session
+mode: deterministic
+skill_under_test: reflect
+skills_loaded: [reflect]
+description: "Explicit reflection can return zero findings without delegation or edits"
+tags: [manual-only, zero-findings, read-only, privacy]
+prompt: |
+  Reflect on this complete synthetic session digest only; do not locate real
+  transcripts. Opening request: explain 2 + 2. Response: 4. The user accepted
+  it. There were no tool calls, corrections, or skills used. Do not edit any
+  skills or rules. Write result.json with findings (array), proposals (array),
+  and reason (string). A short result is enough.
+budget:
+  max_tokens: 2000
+  max_seconds: 60
+checks:
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const r = JSON.parse(require('node:fs').readFileSync('result.json', 'utf8'));
+      assert.deepEqual(r.findings, []);
+      assert.deepEqual(r.proposals, []);
+      assert.ok(typeof r.reason === 'string' && r.reason.trim());
+      process.stdout.write('no-findings');
+      JS
+    unsafe_shell: true
+    expect_exact: "no-findings"
+  - kind: output_not_contains
+    value: '"name":"skill-creator"'

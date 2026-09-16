@@ -74,7 +74,7 @@ Work from the digest, not from coordinates. In order:
 
 ## Step 5 — Redraw
 
-Fresh layout on the 4px grid, per the type reference and SKILL.md §6–§7. Explicitly:
+Fresh layout on the 4px grid, per the type reference and [SVG primitives](svg-primitives.md). Explicitly:
 
 - **Discard source coordinates.** draw.io positions are hand-dragged and land on odd pixels. Lay out from scratch: dominant flow left→right (or top→bottom), zones aligned, even gaps.
 - **Discard source colors.** Map them to semantic roles instead:
@@ -89,7 +89,7 @@ Fresh layout on the 4px grid, per the type reference and SKILL.md §6–§7. Exp
 | `#f5f5f5` / grey | infrastructure / background | Store/State, or a zone container |
 | no fill | unstyled | Backend/API |
 
-  Source color is a *signal about role*, not a color to keep. Six fill colors in the source do not become six fills in the output — the palette is one accent plus the ink ramp (SKILL.md §5).
+  Source color is a *signal about role*, not a color to keep. Six fill colors in the source do not become six fills in the output — the palette is one accent plus the ink ramp ([style guide](style-guide.md#semantic-roles)).
 
 - **Map shapes to treatments**, not to lookalikes:
 
@@ -104,13 +104,13 @@ Fresh layout on the 4px grid, per the type reference and SKILL.md §6–§7. Exp
 | `image` (custom PNG/vendor logo) | Nearest icon, or a labeled box. Never re-embed the source image. |
 | `text` (floating label) | Drop, or fold into a zone label |
 
-- **Reroute every connector.** Source waypoints are dead weight — the digest reports a waypoint count so you know how tangled the original was, not so you can reproduce it. Rounded orthogonal elbows, fanned attach points, no overlaps: SKILL.md §6 rules 1–5, no exceptions for imported content.
+- **Reroute every connector.** Source waypoints are dead weight — the digest reports a waypoint count so you know how tangled the original was, not so you can reproduce it. Rounded orthogonal elbows, fanned attach points, no overlaps: all six [connector rules](svg-primitives.md#mandatory-connector-rules), no exceptions for imported content.
 - **Set the `viewBox` from the size preset**, then lay out inside it — don't draw first and crop after.
 
 ## Step 6 — Deliver
 
 1. Write the `.html`.
-2. Run the SKILL.md §9 taste gate **and** the [`output-spec.md` §6](output-spec.md) checklist.
+2. Run the [pre-output checklist](../SKILL.md#pre-output-checklist) **and** the [`output-spec.md` §6](output-spec.md#6-checklist) checklist.
 3. Produce `svg` / `png` if the format dial asked for them — via [`export.md`](export.md), from the HTML.
 4. Report the fidelity ledger ([`output-spec.md` §5](output-spec.md)). Every import gets one; the user knows the source and will notice what's gone.
 
@@ -131,7 +131,7 @@ What the run decided, and why:
 | `#dae8fc` / `#d5e8d4` / `#e1d5e7` fills | White services, ink-tint stores, one accent | Source color signals role; roles map to the design system |
 | API Gateway (degree 4, the digest's top hub) | The one accent node | Highest-degree node was also the story's pivot |
 
-12 source nodes → 8 drawn, inside the standard §7 budget even at a level that allows 12.
+12 source nodes → 8 drawn, inside the [standard budget](visual-types.md#complexity-budget) even at a detail level whose ceiling is 12.
 
 ---
 
@@ -168,4 +168,4 @@ Default is page 0. When the file has several pages:
 | Re-embedding vendor logos from the source | Breaks the self-contained rule and the monochrome icon system |
 | Silently dropping components | The user knows the source. Always ship the fidelity ledger. |
 | Inventing components to fill a layout | An import is bounded by its source. Gaps get asked about, not filled. |
-| Preserving draw.io diagonal connectors | Orthogonal elbows are mandatory (SKILL.md §6 rule 1) regardless of origin |
+| Preserving draw.io diagonal connectors | Orthogonal elbows are mandatory ([connector rule 1](svg-primitives.md#mandatory-connector-rules)) regardless of origin |

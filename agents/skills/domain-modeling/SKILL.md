@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-description: Use only when the user explicitly asks to model a domain, establish ubiquitous language, create or update a glossary or CONTEXT.md, map contexts, or create or revise an ADR. Do not use for TDD, test-first implementation, red-green-refactor, or integration tests alone. If the user explicitly asks for both domain modeling and test-first work, load both skills.
+description: Use for explicit domain modeling, ubiquitous language, glossary or CONTEXT.md, context maps, or ADR work. Not for TDD, test-first, red-green-refactor, or integration tests alone. Load tdd too only when test-first work is explicitly requested.
 ---
 
 # Domain Modeling
