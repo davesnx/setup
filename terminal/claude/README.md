@@ -17,6 +17,9 @@ The script links:
   each machine keeps its own copy.
 - `agents/AGENTS.md` to `~/.claude/CLAUDE.md`.
 - `agents/skills` to `~/.claude/skills`.
+- `.mcp.json` to `~/.mcp.json`. `mcp.ts` renders that file from the shared
+  `agents/mcp.json` first, so edits belong in the shared file. See
+  [`agents/README.md`](../../agents/README.md#mcp-servers).
 
 It also creates `~/.claude/hooks` and links two hooks with guards:
 
@@ -35,9 +38,10 @@ it points to this repository's former hook. The hook requires Node 22.18 or late
 Existing files at any other link target move to a timestamped directory under
 `~/.local/state/setup/backups` before the new link is created.
 
-Browser control uses the shared `playwright-cli` skill, not an MCP server.
-`settings.json` lists `playwright-cli *` in the sandbox's excluded commands so
-it can reach Brave. See [`agents/README.md`](../../agents/README.md#browser-control).
+Browser control uses the shared `playwright-cli` skill and the `chrome-devtools`
+MCP server from `agents/mcp.json`. `settings.json` lists `playwright-cli *` in
+the sandbox's excluded commands so it can reach Brave. See
+[`agents/README.md`](../../agents/README.md#mcp-servers).
 
 Start a new shell and restart Claude Code after installation.
 

@@ -7,6 +7,8 @@ need npm
 
 link_path "$DOTFILES_PATH/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 link_path "$DOTFILES_PATH/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
+bun "$DOTFILES_PATH/terminal/claude/mcp.ts"
+link_path "$DOTFILES_PATH/terminal/claude/.mcp.json" "$HOME/.mcp.json"
 
 if [ -f "$DOTFILES_PATH/terminal/claude/settings.local.json" ]; then
   link_path "$DOTFILES_PATH/terminal/claude/settings.local.json" "$HOME/.claude/settings.local.json"

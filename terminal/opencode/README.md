@@ -25,6 +25,10 @@ under `~/.local/state/setup/backups`.
 `terminal/zsh/.zprofile` exports `OPENCODE_CONFIG` when the selected `host.jsonc`
 link exists. Start a new login shell after installation.
 
+MCP servers come from the shared `agents/mcp.json`, linked to
+`~/.config/opencode/opencode.json`. OpenCode merges that file with
+`opencode.jsonc`. See [`agents/README.md`](../../agents/README.md#mcp-servers).
+
 ## Model selection
 
 OpenCode uses Astra for the main session and the `general` subagent, as configured
@@ -175,8 +179,9 @@ after changing the deployed config or plugin.
 
 ## Browser tools
 
-Both profiles use the shared `playwright-cli` skill. Neither registers a
-browser MCP server. See [`agents/README.md`](../../agents/README.md#browser-control).
+Both profiles use the shared `playwright-cli` skill and the `chrome-devtools`
+MCP server from `agents/mcp.json`. See
+[`agents/README.md`](../../agents/README.md#mcp-servers).
 
 ## Eval harness
 

@@ -187,33 +187,5 @@
     "auto": true,
     "tail_turns": 20,
   },
-  "mcp": {
-    "notion": {
-      "type": "remote",
-      "enabled": true,
-      "url": "https://mcp.notion.com/mcp",
-    },
-    "ahrefs": {
-      "type": "remote",
-      "enabled": false,
-      "url": "https://api.ahrefs.me/mcp/mcp",
-    },
-    "sequential-thinking": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking",
-      ],
-    },
-    "linear": {
-      "type": "remote",
-      "enabled": true,
-      "url": "https://mcp.linear.app/mcp",
-      "oauth": {
-        "callbackPort": 25123,
-      },
-    },
-  },
+  // MCP servers live in agents/mcp.json, linked in as opencode.json and merged with this file.
 }

@@ -23,6 +23,7 @@ zsh "$root/terminal/core/test.sh"
 /bin/bash "$root/terminal/bin/git-extras/test.sh"
 bash "$root/terminal/bin/git-extras/test.sh"
 bun test "$root/terminal/core/utils/docopts.test.ts"
+bun test "$root/terminal/claude/mcp.test.ts"
 sh "$root/terminal/zsh/tests/agent-link.sh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
 

@@ -35,6 +35,7 @@ for name in agents skills themes vendor; do
 done
 
 link_path "$DOTFILES_PATH/agents/AGENTS.md" "$CONFIG_HOME/AGENTS.md"
+link_path "$DOTFILES_PATH/agents/mcp.json" "$CONFIG_HOME/opencode.json"
 
 link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc"
 

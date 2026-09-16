@@ -1,0 +1,55 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "notion": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "ahrefs": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://api.ahrefs.me/mcp/mcp"
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "linear": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.linear.app/mcp",
+      "oauth": {
+        "callbackPort": 25123
+      }
+    },
+    "strava": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@r-huijts/strava-mcp-server"]
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@1.8.0",
+        "--executable-path=/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+        "--user-data-dir=/Users/davesnx/.cache/chrome-devtools-mcp/brave-profile",
+        "--no-usage-statistics",
+        "--no-performance-crux",
+        "--redact-network-headers"
+      ]
+    },
+    "context7": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    }
+  }
+}
