@@ -36,6 +36,20 @@ Installer tests use temporary homes and stub system-changing commands. The npm
 tests use an offline fixture and temporary manifests. These checks do not install
 the dotfiles or replace the current machine's application settings.
 
+## Module checks
+
+`check.sh` runs the shared setup checks above. When you change these modules,
+also run their documented checks:
+
+- [Claude Code hooks](terminal/claude/hooks/README.md#checks).
+- [Eval harness](terminal/bin/eval-harness/README.md#test).
+- [Skill eval runner](terminal/bin/skill-evals/README.md#development-checks).
+- [Writing eval contracts](agents/skills/blog-post/evals/README.md).
+
+These module checks are not part of the root command or its CI jobs.
+Shell syntax selection also excludes `.zimrc`; after editing it, run
+`zsh -n terminal/zsh/.zimrc` separately.
+
 ## Check on nspawn
 
 nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, and rsync, but no `shfmt`

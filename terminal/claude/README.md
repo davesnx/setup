@@ -56,28 +56,19 @@ Start a new shell and restart Claude Code after installation.
 
 Claude Code slash commands are not shipped from this repository. Shared
 instructions live only as skills, under
-[`agents/skills/`](../../agents/README.md).
+[`agents/skills/`](../../agents/skills/).
 
 ## Model selection
 
-`settings.json` keeps Fable 5.1 for Claude's main work. Its
-`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` settings
-select Sonnet for subagents, teammates, and workflow agents, including those with
-their own model overrides. The force setting requires Claude Code 2.1.257 or
-later. The Sonnet alias follows the version selected by the provider.
+[`settings.json`](settings.json) owns the configured model values. Edit model
+settings there.
 
 Restart Claude Code after changing these settings.
 
 ## Automatic improvement reviews
 
-See [`agents/README.md`](../../agents/README.md#automatic-improvement-reviews)
-for the shared contract implemented by the Claude Code hook.
+See the [shared overview](../../agents/README.md#automatic-improvement-reviews)
+and the [hook reference](hooks/README.md) for scheduling, state, and disabling
+automatic reviews.
 
-Run the TypeScript checks from the repository root:
-
-```sh
-npm ci --prefix terminal/claude/hooks
-npm test --prefix terminal/claude/hooks
-npm run typecheck --prefix terminal/claude/hooks
-npm run format:check --prefix terminal/claude/hooks
-```
+Run the [hook checks](hooks/README.md#checks) from the repository root.

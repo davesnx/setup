@@ -26,6 +26,15 @@ timeout.
 The state is saved before the review is sent. A crash between those steps
 can skip a review, but cannot repeat it.
 
+## Disable automatic reviews
+
+In [`terminal/claude/settings.json`](../settings.json), remove the command
+entry that runs `auto-improve.ts` from both `hooks.UserPromptSubmit` and
+`hooks.Stop`. Keep all other hook entries. Restart Claude Code to load the
+change.
+
+## Checks
+
 Install development dependencies and run checks from the repository root:
 
 ```sh

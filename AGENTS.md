@@ -1,10 +1,9 @@
 # Setup repository
 
-Dotfiles for the Mac and the nspawn host. The repository is self-contained:
-every global setting a machine needs lives here, and a module `install.sh`
-links it into place. Edit the source here and rerun that installer. Never edit
-the linked copy under `~`, and never let another tool write through a link into
-this repository.
+Dotfiles and tool configuration for the Mac and the nspawn host. Each module's
+`install.sh` links its managed files into place. Edit the source here and rerun
+that installer. Never edit the linked copy under `~`, and never let another tool
+write through a link into this repository.
 
 ## Where things go
 
@@ -15,7 +14,7 @@ the first two levels. `->` names the link an installer creates.
 ```text
 install.sh                Full machine setup. Runs each module install.sh in order.
 prelude.sh                Installer helpers: need, link_path, one backup dir per run.
-check.sh                  Every repository check. Run before committing. See TESTING.md.
+check.sh                  Shared setup checks. Run before committing. See TESTING.md.
 shellcheck.sh             ShellCheck and Zsh syntax pass, called by check.sh.
 TESTING.md                What check.sh covers, and what needs a real smoke test.
 CLAUDE.md                 One line, @AGENTS.md. Claude Code does not read AGENTS.md.
@@ -32,7 +31,7 @@ agents/skills/.skill-lock.json  Versions of skills installed with npx skills -> 
 agents/mcp.json           Every MCP server once, in the common format. Never linked.
 agents/mcp.ts             Reads and validates mcp.json for the two renderers below.
 agents/main.sh            npx skills wrapper, sourced at shell start.
-agents/README.md          MCP details.
+agents/README.md          MCP setup and shared automatic-review overview.
 
 terminal/                 Shell and CLI tools. Mac and nspawn.
 terminal/zsh/             .zshenv .zshrc .zprofile .zimrc -> ~/. .zshrc sources every main.sh.

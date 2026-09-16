@@ -22,9 +22,10 @@ nspawn.
 
 `chrome-devtools` does not launch a browser. It attaches to the Brave that the
 Raycast command **Open Brave Agent**, `mac/raycast/raycast-open-chrome-agent.sh`,
-starts with CDP on `127.0.0.1:9222`. On nspawn the same address works because
-`~/.ssh/config` must contain the forwards that port from the Mac, so one shared entry serves
-both machines. Start Brave that way before using the browser tools.
+starts with CDP on `127.0.0.1:9222`. To reach that address from nspawn, configure
+a `RemoteForward` in the Mac's `~/.ssh/config` to that port on the Mac.
+One shared MCP entry then serves both machines. Start Brave that way before
+using the browser tools.
 
 Neither tool reads `mcp.json`. Each has a renderer, and the rendered files are
 tracked so that `git pull` updates both tools on nspawn:
@@ -64,27 +65,41 @@ Tokens are per tool and per machine, and stay out of Git: OpenCode keeps them
 in its data directory, Claude Code in the macOS Keychain or in
 `~/.claude/.credentials.json` on Linux. Each machine logs in once per tool.
 From nspawn the login has two legs. The authorization URL opens in the Mac
-browser through the opener socket that `ssh/nspawn.conf` forwards. The
-provider then redirects that browser to `http://localhost:<port>/callback`,
-which `ssh/nspawn.conf` forwards back to nspawn with `LocalForward`, one line
-per port pinned in `hosts.ssh`. On the Mac the ports stay unpinned so they
-never collide with those forwards. OpenCode reads the port from the profile:
+browser through a forwarded opener socket. The provider then redirects that
+browser to `http://localhost:<port>/callback`. Configure the socket forward
+and the callback `LocalForward` entries in the Mac's `~/.ssh/config`, which
+is managed outside this repository. Use one `LocalForward` for each
+`hosts.ssh.<server>.oauth.callbackPort` declared in [`mcp.json`](mcp.json).
+The Mac profile leaves callback ports unpinned. OpenCode reads the port from
+the rendered SSH profile:
 
 ```sh
 opencode mcp auth linear
 ```
 
-Claude Code takes it as a flag, with the same ports:
+The Claude Code renderer omits the `oauth` settings. For Claude Code over SSH,
+use the manual login flow:
 
 ```sh
-claude mcp login linear --callback-port 25123
+claude mcp login linear --no-browser
 ```
 
-Without a forward, `claude mcp login <name> --no-browser` prints the URL and
-accepts the final callback URL pasted back.
+Open the printed authorization URL in the Mac browser. Paste the final
+redirect URL back when prompted. This flow does not need a callback forward.
 
 Both links resolve into this repository, so every MCP server either tool
 loads traces back to `mcp.json`. A server that appears anywhere else came
 from an external installer replacing a link. In January 2026
 `npx vibeship-spawner-skills` wrote a `spawner` server into `~/.mcp.json`
 that way.
+
+## Automatic improvement reviews
+
+Both hosts use the shared [`auto-improve` skill](skills/auto-improve/SKILL.md)
+for read-only reviews of the current session and relevant setup files. Reviews
+propose changes to skills, hooks, scripts, or rules. Applying a proposal needs
+user approval.
+
+Each host owns its review scheduling, state, and disable controls. See the
+[Claude Code hook reference](../terminal/claude/hooks/README.md) and
+[OpenCode review reference](../terminal/opencode/README.md#automatic-improvement-reviews).

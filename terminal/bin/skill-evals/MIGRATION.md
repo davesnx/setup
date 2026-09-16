@@ -34,7 +34,7 @@ fresh verification of every legacy feature on this machine.
 3. Verify the required execution environment, including nspawn and Docker if
    retained. Match timeouts, cleanup, and failure exit behavior.
 4. Move shared test dependencies out of the legacy runner's install directory.
-5. Put the adopted agent tooling under `agents/`, as the repository rules require.
+5. Place the adopted tooling according to [the repository layout](../../../AGENTS.md#where-things-go).
 6. Update the root installer, command links, checks, and documentation in one
    deliberate cutover. Retire the old package and patches only after that passes.
 

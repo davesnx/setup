@@ -14,11 +14,14 @@ and initial plan authoring.
    - `git diff --binary`
    - `git diff --cached --binary`
    - the path and content hash of each existing untracked, non-ignored file
-3. Read the full plan and its index. Extract the planned-at commit, dependencies,
-   in-scope and out-of-scope files, current-state excerpts, steps, verification
-   commands, done criteria, and STOP conditions. This plan schema is defined by
-   improve-codebase-architecture's `references/plan-template.md`; change the two
-   files together.
+3. Read the full plan and its index at the user-supplied or linked paths. Extract
+   the planned-at commit, dependencies, in-scope and out-of-scope files,
+   current-state excerpts, steps, verification commands, done criteria, and STOP
+   conditions. The audit skill's [plan template](../../improve-codebase-architecture/references/plan-template.md)
+   owns the plan and index schemas; keep this reader aligned when they change.
+   Follow index and dependency links rather than deriving paths from identifiers.
+   Preserve existing plans' locations, names, and path conventions; do not require
+   a move, rename, or schema rewrite.
 4. Confirm the planned-at commit exists. Check each dependency against the index
    and current code, not only its status label.
 5. Run the plan's drift check as a read-only command. Compare its current-state

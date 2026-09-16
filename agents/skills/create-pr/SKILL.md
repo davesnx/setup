@@ -9,6 +9,10 @@ Own branch readiness and the remote PR operation. Load `github` for Git and
 GitHub operations, and `write-pr-body` for the title and body. Preparing a PR
 does not authorize publishing it.
 
+Read the global [Green Build Gate](../../AGENTS.md#green-build-gate) and
+[Working Style](../../AGENTS.md#working-style) before checking readiness.
+They own validation, hook protection, and isolation of unrelated work.
+
 ## 1. Resolve the branch and destination
 
 1. Read repository instructions, contribution guidance, and the PR template.
@@ -55,20 +59,15 @@ hiding it in a broad description.
 
 ## 3. Establish readiness
 
-Run repository-required formatting, lint, build/typecheck, and relevant tests
-against the exact final candidate tree. Checks against a dirty tree do not prove
-the committed tree passes. Use an isolated checkout when needed, without moving
-or changing the user's uncommitted work.
+Apply the Green Build Gate to the final candidate and every outgoing commit.
+Check the committed tree, not a working tree with additional edits.
 
 Confirm regression coverage for a bug fix. If coverage is missing, identify the
 gap and return to implementation rather than quietly adding code during PR
-preparation. Any source edit invalidates the affected checks. Before pushing,
-confirm every outgoing commit satisfies the repository's validation rules.
+preparation.
 
-If a required check fails, cannot run, or its command cannot be determined,
-stop before pushing or creating the PR. Report the blocker to the user. Do not
-bypass hooks, weaken tests, suppress failures, or use draft status to bypass
-this gate.
+Create the PR only after the gate passes, including for drafts. Do not weaken
+tests or suppress failures to pass it.
 
 ## 4. Write the title and body
 
