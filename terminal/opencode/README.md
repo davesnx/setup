@@ -111,10 +111,9 @@ hook leaves permissions unchanged: only Plan can call `submit_plan`, and Plan
 edits are denied by default. The local plugin only repairs Writer's Bash rules.
 
 In `~/workplace` or below it, agents first read `~/workplace/AGENTS.md`.
-Project plans use `<project-root>/.workplace/plans/<task>_PLAN.md`. Shared tasks
-use `~/workplace/plans/<task>_PLAN.md`. Outside workplace, plans use
-`plans/<descriptive-name>_PLAN.md` at the repository root, with `plans/` ignored
-by Git. This repository already ignores `/plans/`.
+Plans use `<repository-root>/.workplace/plans/<task>_PLAN.md` everywhere. Shared
+workplace tasks use `~/workplace/plans/<task>_PLAN.md`. The global Git ignore
+file in `git/.gitignore_global` excludes `.workplace/`.
 
 Plan permits `plans/*_PLAN.md` and `*/plans/*_PLAN.md`. It also retains the
 legacy permissions `docs/tasks/*/plan.md` and `*/docs/tasks/*/plan.md`, not all

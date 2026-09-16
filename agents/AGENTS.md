@@ -20,9 +20,9 @@
 
 - When working in `$HOME/workplace` or below it, first read
   `$HOME/workplace/AGENTS.md`. Use its shared or project task plan location.
-- Outside `$HOME/workplace`, when asked to create a plan, write it to
-  `plans/<descriptive-name>_PLAN.md` at the repository root. Create `plans/` if
-  it does not exist, and ensure Git ignores that directory.
+- Otherwise, when asked to create a plan, write it to
+  `.workplace/plans/<descriptive-name>_PLAN.md` at the repository root. The
+  global Git ignore file excludes `.workplace/`.
 - For planned rewrites and migrations, define the intended end state and
   verification boundaries. Allow temporary breakage only within declared,
   scoped, reversible phases. Keep checks for affected areas running; avoid

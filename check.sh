@@ -27,6 +27,28 @@ bun test "$root/terminal/claude/mcp.test.ts"
 sh "$root/terminal/zsh/tests/agent-link.sh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
 
+# Layout: AGENTS.md names only paths that exist, every tracked directory in
+# the first two levels has a row, and no tracked symlink is absolute.
+tree=$(awk '/^```text/ { inside = 1; next } /^```/ { inside = 0 } inside && /^[^ `]/ { print $1 }' "$root/AGENTS.md")
+for path in $tree; do
+  if [[ ! -e "$root/$path" ]]; then
+    printf 'AGENTS.md names a missing path: %s\n' "$path" >&2
+    exit 1
+  fi
+done
+while IFS= read -r dir; do
+  if ! grep -q "^$dir/" <<<"$tree"; then
+    printf 'Directory has no row in AGENTS.md: %s\n' "$dir" >&2
+    exit 1
+  fi
+done < <(git -C "$root" ls-files | awk -F/ 'NF > 1 { print $1 } NF > 2 { print $1 "/" $2 }' | sort -u)
+while IFS= read -r link; do
+  if [[ "$(readlink "$root/$link")" == /* ]]; then
+    printf 'Absolute symlink: %s\n' "$link" >&2
+    exit 1
+  fi
+done < <(git -C "$root" ls-files -s | awk '$1 == "120000" { print $4 }')
+
 if [[ "$(uname -s)" == Darwin ]]; then
   sh "$root/mac/tests/install.sh"
   sh "$root/mac/choosy/test.sh"

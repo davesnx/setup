@@ -23,12 +23,45 @@ It checks:
 - Command-line help parsing, Zsh startup, SSH agent links, and PATH inheritance.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
+- Repository layout against `AGENTS.md`: every path in its tree exists, every
+  tracked directory in the first two levels has a row, and no tracked symlink
+  is absolute.
 - On macOS, installer ordering, reruns, backups, failure recovery, native Node
   selection, and Choosy settings restoration.
 
 Installer tests use temporary homes and stub system-changing commands. The npm
 tests use an offline fixture and temporary manifests. These checks do not install
 the dotfiles or replace the current machine's application settings.
+
+## Check on nspawn
+
+nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, and rsync, but no `shfmt`
+and no `bun`, so `check.sh` cannot run there. Before each commit, copy the
+working tree to a scratch directory on nspawn and run the checks that can:
+
+```sh
+rsync -a --delete --exclude node_modules --exclude .venv --exclude .cache \
+  --exclude .npm --exclude __pycache__ \
+  -e 'ssh -o ClearAllForwardings=yes' ./ nspawn:.cache/setup-check/
+ssh -o ClearAllForwardings=yes nspawn bash -s <<'EOF'
+cd ~/.cache/setup-check
+bash terminal/core/test.sh && zsh terminal/core/test.sh
+sh terminal/zsh/tests/agent-link.sh
+zsh terminal/node/tests/npm-wrapper.zsh
+EOF
+```
+
+The copy includes `.git`, so it carries uncommitted changes and Git-based
+scripts work. Its ShellCheck is older than the version the Mac and CI use and
+reports notes they do not, so ShellCheck findings count only from the Mac or
+CI. `terminal/bin/git-extras/test.sh` needs `bun` and cannot run there.
+
+After pushing, update the real checkout, rerun the installer of each changed
+module, and open a new shell:
+
+```sh
+ssh nspawn 'cd ~/workplace/davesnx/setup && git pull --ff-only origin main && sh terminal/<module>/install.sh'
+```
 
 ## Changes that need a real smoke test
 
