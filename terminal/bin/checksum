@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 source "$DOTFILES_PATH/terminal/core/main.sh"
 
@@ -10,4 +10,4 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 
 docs::parse "$@"
 
-curl -sL $1 | sha512sum
+curl -sL "$1" | sha512sum
