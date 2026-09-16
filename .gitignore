@@ -8,6 +8,9 @@
 # Python bytecode
 __pycache__/
 
+# Skills downloaded by Claude Desktop
+/agents/skills/synced/
+
 # Private Stuff
 /**/**/private-*
 
