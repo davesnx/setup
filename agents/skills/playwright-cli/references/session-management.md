@@ -18,7 +18,7 @@ browser unless they agree. Ask them to start Brave with CDP on the Mac, either
 with "Open Brave Agent" in Raycast or by running
 `mac/raycast/raycast-open-chrome-agent.sh` from the setup checkout in a Mac
 shell. On nspawn, the SSH session must also carry the 9222 forward from
-`ssh/nspawn.conf`; if Brave is already running, ask them to reconnect SSH.
+`~/.ssh/config`; if Brave is already running, ask them to reconnect SSH.
 Retry the common path's named `attach` command after they confirm.
 
 Without Brave, `playwright-cli open` needs `--browser=chromium` or a config

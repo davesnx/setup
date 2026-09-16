@@ -76,7 +76,6 @@ mac/chrome-extensions.md  Browser extension list.
 mac/vimium-options.json   Vimium settings.
 
 git/                      .gitconfig .gitignore_global .gitattributes -> ~/. forgit.zsh.
-ssh/nspawn.conf           SSH config for the nspawn host. Not linked by an installer.
 local/                    Machine-specific overrides. Git-ignored except README, install.sh,
                           main.sh. *.zsh files are sourced at shell start. local/bin holds
                           machine-only commands.

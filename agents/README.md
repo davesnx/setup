@@ -23,7 +23,7 @@ nspawn.
 `chrome-devtools` does not launch a browser. It attaches to the Brave that the
 Raycast command **Open Brave Agent**, `mac/raycast/raycast-open-chrome-agent.sh`,
 starts with CDP on `127.0.0.1:9222`. On nspawn the same address works because
-`ssh/nspawn.conf` forwards that port from the Mac, so one shared entry serves
+`~/.ssh/config` must contain the forwards that port from the Mac, so one shared entry serves
 both machines. Start Brave that way before using the browser tools.
 
 Neither tool reads `mcp.json`. Each has a renderer, and the rendered files are
