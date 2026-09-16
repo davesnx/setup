@@ -49,6 +49,22 @@
 
 ## Verification
 
+- Do not claim completion, a fix, or passing checks without fresh evidence from
+  the final changed state. This applies to progress updates, task completion,
+  and commit or PR claims. Before making a claim:
+  1. Identify the complete command that can prove it.
+  2. Run that command against the final changed state.
+  3. Inspect the full output, exit code, and failure count.
+  4. Compare the evidence with the claim and its scope.
+  5. Report the actual result with evidence, or state the blocker.
+- Tests, lint, and builds prove only what they check. Lint does not prove that
+  a build passes. Confidence and statements such as "should pass" are not
+  evidence.
+- For a bug fix, verify the original symptom. For a regression test, prove it
+  fails before the fix and passes after it. Use an isolated baseline for the
+  failure check; never revert user work.
+- Verify each requirement directly. Passing tests alone do not prove that all
+  requirements are met.
 - Before declaring done, check the actual result directly. For code, build it
   and exercise the changed path from input to output; test integrations
   end-to-end. Compilation alone does not prove behavior.
@@ -57,6 +73,8 @@
   method before changing the system.
 - Prefer repeatable scripted checks. Keep their output available for review,
   and state what could not be verified.
+
+Adapted from [Verification Before Completion](https://www.skills.sh/obra/superpowers/verification-before-completion).
 
 ## Working Style
 
