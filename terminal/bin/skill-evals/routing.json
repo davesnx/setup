@@ -1,0 +1,14 @@
+[
+  {"id":"review-direct","prompt":"Review diff.patch for bugs introduced by this change. Do not edit it.","fixture":"review-sql","required":["code-review"],"allowed":["code-review","code-standards"]},
+  {"id":"review-paraphrase","prompt":"Before I merge this diff.patch, check whether it could break callers or expose user data. Report your findings without edits.","fixture":"review-sql","required":["code-review"],"allowed":["code-review","code-standards"]},
+  {"id":"review-clean","prompt":"Code review this diff.patch; it renames a private function while keeping the exported name. Flag only real regressions.","fixture":"review-clean","required":["code-review"],"allowed":["code-review","code-standards"]},
+  {"id":"simplify-direct","prompt":"Simplify sloppy.mjs. Its input is trusted number[]. Preserve observable behavior.","fixture":"simplify-behavior","required":["simplify"],"allowed":["simplify","code-standards"]},
+  {"id":"simplify-paraphrase","prompt":"Remove the needless defensive code and error swallowing in sloppy.mjs. The input is guaranteed to be number[]. Keep the public function and its behavior.","fixture":"simplify-behavior","required":["simplify"],"allowed":["simplify","code-standards"]},
+  {"id":"simplify-readonly","prompt":"Use Simplify to assess bloated.mjs, but make no source edits. Explain which abstraction could be removed.","fixture":"simplify-readonly","required":["simplify"],"allowed":["simplify","code-review","code-standards"]},
+  {"id":"prose-direct","prompt":"Use Unslop to rewrite this paragraph without changing its claim: Our groundbreaking solution seamlessly leverages innovative synergies to empower teams to schedule meetings.","required":["unslop"],"allowed":["unslop"]},
+  {"id":"prose-paraphrase","prompt":"Remove the AI-written padding from this sentence: We are thrilled to announce a revolutionary, game-changing tool that lets you export a CSV. Return only the revised sentence.","required":["unslop"],"allowed":["unslop"]},
+  {"id":"negative-word-review","prompt":"What does the phrase annual performance review mean? Give a one-sentence definition.","required":[],"allowed":[]},
+  {"id":"negative-word-simplify","prompt":"Simplify the fraction 12/18 and return only the fraction.","required":[],"allowed":[]},
+  {"id":"negative-command","prompt":"What does pwd print on a Unix system? Explain in one sentence.","required":[],"allowed":[]},
+  {"id":"negative-json","prompt":"Return exactly this JSON object: {\"ready\":true}","required":[],"allowed":[]}
+]

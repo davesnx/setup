@@ -1,0 +1,23 @@
+task_id: simplify-behavior
+description: Simplify a trusted numeric operation without changing its results or inputs.
+tags: [behavior, simplify]
+initial_prompt: |
+  Simplify sloppy.mjs. Its trusted input contract is number[]. Preserve
+  observable behavior and its public export. Edit only sloppy.mjs and write
+  a concise summary to cleanup.md. Remove needless checks and error swallowing
+  on this trusted path. Keep the implementation readable.
+pre_run:
+  - command: cp "$SETUP_ROOT/terminal/opencode/skills/simplify/evals/fixtures/sloppy.mjs" sloppy.mjs
+success_criteria:
+  - type: run_command
+    description: outcome:preserved-behavior
+    command: node "$SKILL_EVALS_ROOT/check.mjs" simplify-behavior
+  - type: run_command
+    description: quality:removed-complexity
+    command: node "$SKILL_EVALS_ROOT/check.mjs" simplify-shape
+    weight: 0
+  - type: skill_triggered
+    description: activation:simplify
+    skill_name: simplify
+    expected_skill: simplify
+    weight: 0

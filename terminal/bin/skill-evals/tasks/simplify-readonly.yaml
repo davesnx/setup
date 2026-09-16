@@ -1,0 +1,18 @@
+task_id: simplify-readonly
+description: Identify the redundant abstraction while respecting a review-only request.
+tags: [behavior, simplify, manual-review]
+initial_prompt: |
+  Review bloated.mjs for avoidable complexity. Do not edit source files.
+  Write concise, evidence-based findings to review.md, including the existing
+  abstraction and a simpler equivalent when one exists.
+pre_run:
+  - command: cp "$SETUP_ROOT/terminal/opencode/skills/simplify/evals/fixtures/bloated.mjs" bloated.mjs
+success_criteria:
+  - type: run_command
+    description: outcome:readonly
+    command: node "$SKILL_EVALS_ROOT/check.mjs" simplify-readonly
+  - type: skill_triggered
+    description: activation:simplify
+    skill_name: simplify
+    expected_skill: simplify
+    weight: 0

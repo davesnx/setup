@@ -1,0 +1,8 @@
+[
+  {"skill":"code-standards","case":"contract-safeguards","manual_review":false,"kind":"decision","support":[]},
+  {"skill":"comment-purge","case":"preserve-unresolved-warning","manual_review":false,"kind":"execution","support":[]},
+  {"skill":"tdd","case":"supplied-interface-no-reapproval","manual_review":false,"kind":"decision","support":[]},
+  {"skill":"blog-post","case":"direct-complete-review","manual_review":true,"kind":"writing","support":["unslop","writing-shape"]},
+  {"skill":"post-draft","case":"source-resolved-gaps","manual_review":true,"kind":"writing","support":["unslop","writing-shape"]},
+  {"skill":"to-spec","case":"draft-no-interview","manual_review":true,"kind":"decision","support":[]}
+]

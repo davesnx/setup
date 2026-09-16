@@ -39,9 +39,11 @@ terminal/zsh/             .zshenv .zshrc .zprofile .zimrc -> ~/. .zshrc sources 
 terminal/core/            Shell helpers for scripts: args, log, platform, collections.
 terminal/_aliases/        Aliases and shell functions.
 terminal/bin/             Commands on PATH. Extensionless, ShellCheck clean, test beside them.
-                          Not agent tooling. That goes under agents/.
+                          Skill eval tooling lives here too, each tool in its own directory.
 terminal/bin/git-extras/  git-<name> subcommands and their test.sh.
-terminal/bin/eval-harness/  Skill eval runner. Predates the agents/ rule. Move when touched.
+terminal/bin/eval-harness/  Skill eval runner on @nano-step/eval-harness. Cases stay with skills.
+terminal/bin/skill-evals/  Skill evaluation pilot on Coder Eval. Python, uv-managed, own README
+                          and unittest suite. Cases stay in agents/skills/<name>/evals.
 terminal/node/            Node via fnm and shared CLIs in package.json. npm i -g writes here.
                           Never add Node tools to the Brewfile.
 terminal/claude/          Claude Code only. settings.json -> ~/.claude/settings.json,

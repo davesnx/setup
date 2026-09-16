@@ -1,0 +1,19 @@
+task_id: review-clean
+description: Accept a complete private rename without inventing a defect.
+tags: [behavior, code-review]
+initial_prompt: |
+  Review diff.patch in Standard mode. The exported public name remains cwd.
+  Do not edit the input. Write review.json containing an object with action
+  ("approve" or "block") and findings (an array of issues with file, line,
+  and explanation). An empty findings array means no findings.
+pre_run:
+  - command: cp "$SETUP_ROOT/terminal/opencode/skills/code-review/evals/fixtures/trivial-rename.diff" diff.patch
+success_criteria:
+  - type: run_command
+    description: outcome:clean-review
+    command: node "$SKILL_EVALS_ROOT/check.mjs" review-clean
+  - type: skill_triggered
+    description: activation:code-review
+    skill_name: code-review
+    expected_skill: code-review
+    weight: 0
