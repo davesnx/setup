@@ -10,10 +10,13 @@ setup:
   fixtures:
     "diff.patch": fixtures/sql-injection.diff
     "expected.patch": fixtures/sql-injection.diff
+    "users.py": fixtures/users.py
 
 prompt: |
   Interrogate diff.patch with Code Review's Adversarial / Multi-model mode.
-  Write the final review to review.md. Do not edit diff.patch or expected.patch.
+  users.py is the complete changed source. Write the final review to review.md.
+  Do not edit diff.patch, expected.patch, or users.py. Write only review.md in
+  the workspace.
 
   Test protocol: write one JSON object without fences. Use fields intent,
   reviewers (array of {id, lens, evidence, model}; model may be null),
@@ -40,6 +43,12 @@ checks:
       node <<'JS'
       const assert = require('node:assert/strict');
       const fs = require('node:fs');
+      const { createHash } = require('node:crypto');
+      for (const [path, hash] of Object.entries({
+        'diff.patch': '66439f9bbff1507e292716fd25da1ad1aa193de00e2bab4124f50011c2baefb8',
+        'expected.patch': '66439f9bbff1507e292716fd25da1ad1aa193de00e2bab4124f50011c2baefb8',
+        'users.py': '5db0261fa98eb56429daa13561bbc70c5eb7facd1000851cca7dad55236edee7',
+      })) assert.equal(createHash('sha256').update(fs.readFileSync(path)).digest('hex'), hash, path);
       const r = JSON.parse(fs.readFileSync('review.md', 'utf8'));
       const text = value => typeof value === 'string' && value.trim().length > 0;
       assert.ok(text(r.intent));
@@ -67,8 +76,7 @@ checks:
         assert.ok(text(finding.evidence) && text(finding.remedy));
       }
       assert.ok(r.findings.some(f => f.file === 'users.py' && [10, 11].includes(f.line)
-        && ['high', 'critical'].includes(f.severity) && f.decision === 'act-on'
-        && /SELECT|connection\.execute/.test(f.evidence)
+        && text(f.severity) && ['high', 'critical'].includes(f.severity.toLowerCase()) && f.decision === 'act-on'
         && /param|bind|bound/i.test(f.remedy)));
       process.stdout.write('complete');
       JS

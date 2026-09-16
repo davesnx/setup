@@ -9,10 +9,12 @@ tags: [security, correctness, standard-review]
 setup:
   fixtures:
     "diff.patch": fixtures/sql-injection.diff
+    "users.py": fixtures/users.py
 
 prompt: |
   Review diff.patch in Standard mode. Write the final review to review.md.
-  This is an evaluation fixture, so do not edit the diff or repository.
+  users.py is the complete changed source. This is an evaluation fixture,
+  so do not edit the diff or source. Write only review.md in the workspace.
 
   Test protocol: review.md must contain one JSON object, without code fences
   or extra prose. Use exactly these fields:
@@ -39,6 +41,11 @@ checks:
       node <<'JS'
       const assert = require('node:assert/strict');
       const fs = require('node:fs');
+      const { createHash } = require('node:crypto');
+      for (const [path, hash] of Object.entries({
+        'diff.patch': '66439f9bbff1507e292716fd25da1ad1aa193de00e2bab4124f50011c2baefb8',
+        'users.py': '5db0261fa98eb56429daa13561bbc70c5eb7facd1000851cca7dad55236edee7',
+      })) assert.equal(createHash('sha256').update(fs.readFileSync(path)).digest('hex'), hash, path);
       const review = JSON.parse(fs.readFileSync('review.md', 'utf8'));
       assert.deepEqual(Object.keys(review).sort(), ['action', 'findings']);
       assert.equal(review.action, 'block');

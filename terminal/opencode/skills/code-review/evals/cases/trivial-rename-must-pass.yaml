@@ -3,29 +3,48 @@ id: trivial-rename-must-pass
 mode: deterministic
 skill_under_test: code-review
 skills_loaded: [code-review]
-description: "Standard review must not invent blockers for a complete rename"
-tags: [false-positive, calibration]
+description: "Standard review stays lean and approves a complete rename without changing source"
+tags: [false-positive, calibration, standard-review, read-only, trace-review]
 
 setup:
   fixtures:
     "diff.patch": fixtures/trivial-rename.diff
+    "paths.ts": fixtures/paths.ts
 
 prompt: |
   Review diff.patch in Standard mode. Write the final review to review.md.
-  This is an evaluation fixture, so do not edit the diff or repository.
+  paths.ts is the complete changed source. This is an evaluation fixture,
+  so do not edit the diff or source. Write only review.md in the workspace.
   All callers use the unchanged public export cwd. There are no other changed
   files or requirements. Keep the report short; empty sections are not needed.
+
+  Test protocol: review.md must contain one JSON object without fences, with
+  action ("approve" or "block"), findings (array), and checked (non-empty string
+  describing the behavior and boundaries checked). An empty findings array
+  means no findings. This protocol tests the verdict, not heading choices.
 
 budget:
   max_tokens: 4000
   max_seconds: 90
 
 checks:
-  - kind: output_not_contains
-    value: '"name":"code-standards"'
   - kind: file_exists
     path: review.md
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.md\",\"utf8\"); const clean=/no findings|no blocking|pass|clean/i.test(s); const blocker=/sql injection|security issue|data loss|breaking change/i.test(s); process.stdout.write(clean&&!blocker?\"clean\":\"blocked\")'"
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const { createHash } = require('node:crypto');
+      for (const [path, hash] of Object.entries({
+        'diff.patch': '4dcd9a95c2c2ee1a79928a62dcc3f4a10fde57a8ffb8bea43c6f7aac9f3b27b3',
+        'paths.ts': '472d5612164cab023d50a445472bdc532b76a5d6ff6af605a89eb783649eeb34',
+      })) assert.equal(createHash('sha256').update(fs.readFileSync(path)).digest('hex'), hash, path);
+      const review = JSON.parse(fs.readFileSync('review.md', 'utf8'));
+      assert.equal(review.action, 'approve');
+      assert.deepEqual(review.findings, []);
+      assert.ok(typeof review.checked === 'string' && review.checked.trim().length > 0);
+      process.stdout.write('clean');
+      JS
     unsafe_shell: true
     expect_exact: "clean"

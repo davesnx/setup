@@ -1,0 +1,50 @@
+schema_version: 2
+id: verification-in-report
+mode: deterministic
+skill_under_test: simplify
+skills_loaded: [simplify]
+description: Preserve behavior, verify the final edit, and include actual check results in the summary.
+tags: [verification, reporting, behavior-preservation]
+setup:
+  fixtures:
+    sloppy.mjs: fixtures/sloppy.mjs
+    package.json: fixtures/verification-package.json
+    verify.mjs: fixtures/verify.mjs
+    AGENTS.md: fixtures/verification-rules.md
+prompt: |
+  Simplify sloppy.mjs for its trusted number[] input contract. Preserve its public
+  export and observable behavior. Follow this fixture's AGENTS.md. Edit only
+  sloppy.mjs, and write cleanup.md in one to three sentences naming the removed
+  complexity, preserved behavior, and actual verification command and result.
+  Let the test generate verification.json. Do not edit the verifier or package.
+budget:
+  max_tokens: 5000
+  max_seconds: 120
+checks:
+  - kind: shell
+    cmd: |
+      node --input-type=module <<'JS'
+      import assert from 'node:assert/strict';
+      import { createHash } from 'node:crypto';
+      import { readFileSync } from 'node:fs';
+      import { firstPositive } from './sloppy.mjs';
+      const source = readFileSync('sloppy.mjs', 'utf8');
+      assert.equal(createHash('sha256').update(readFileSync('verify.mjs')).digest('hex'),
+        '80a79bc3b81fa476658f17d52434913441cdd7644cf23e7abb5ea472868714b7');
+      assert.deepEqual(JSON.parse(readFileSync('package.json', 'utf8')),
+        { private: true, scripts: { test: 'node verify.mjs' } });
+      const record = JSON.parse(readFileSync('verification.json', 'utf8'));
+      assert.deepEqual(record, {
+        source_sha256: createHash('sha256').update(source).digest('hex'),
+        cases: 7, passed: true,
+      });
+      assert.equal(firstPositive([-1, 4, 2]), 4);
+      assert.equal(firstPositive([NaN, -0]), undefined);
+      assert.doesNotMatch(source, /Array\.isArray|typeof value|catch\s*\(/);
+      const summary = readFileSync('cleanup.md', 'utf8');
+      assert.match(summary, /npm test/);
+      assert.match(summary, /pass(?:ed)?/i);
+      process.stdout.write('verified-and-reported');
+      JS
+    unsafe_shell: true
+    expect_exact: verified-and-reported

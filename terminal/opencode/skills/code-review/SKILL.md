@@ -12,8 +12,8 @@ Review changed code, trace its effects beyond the diff, and prove the safety cla
 Choose one review mode from the request:
 
 - **Standard**: Default review. Apply every lens in one lead pass and report findings without edits.
-- **Deep**: Use for an explicit deep or thermonuclear review request. Use the shared parallel review pass, then synthesize and verify its strongest claims.
-- **Adversarial / Multi-model**: Use for "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", or "tear this apart". Use the same parallel pass as Deep, prefer different available models, and add an agreement map and explicit lead judgment. This is not a second fan-out workflow.
+- **Deep**: Use for an explicit deep or thermonuclear review request. Read [advanced modes](references/advanced-modes.md) before execution.
+- **Adversarial / Multi-model**: Use for "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", or "tear this apart". Read [advanced modes](references/advanced-modes.md) before execution.
 - **Blast radius**: Use for "blast radius", "what could this break", or a small change whose downstream effects are unclear. Focus the report on transitive risk and executable proof.
 
 Ship and Canvas modify the selected review mode:
@@ -68,40 +68,14 @@ reviewed from the code and repository rules without loading all four files.
 
 Apply all four lenses yourself. Trace each candidate finding until it is confirmed or cleared. Run a focused test or script for the most important safety fact when practical.
 
-### Shared Parallel Pass
+### Independent Investigation
 
-Use independent reviewers for Deep or Adversarial / Multi-model requests, or
-when separate risks justify independent investigation. Otherwise review in the
-lead pass. Select useful jobs, not a fixed reviewer count:
-
-1. A correctness and security reviewer using `references/correctness-security.md`.
-2. A maintainability reviewer using `references/maintainability.md`.
-3. A standards reviewer using the Standards section of `references/standards-spec.md`.
-4. A spec reviewer using the Spec section of `references/standards-spec.md`; skip it when no spec exists.
-
-Give each reviewer the same diff command, commit list, and intent, plus context
-paths and reference details for its primary lens. Additional references require
-a relevant risk; do not require every child to load all four. Permit critical
-cross-lens findings. Ask for prioritized findings with `file:line`, an execution
-path, impact, concrete remedy, and proof or missing evidence. Require high
-conviction and no cosmetic padding. Reviewers must not edit, publish, or perform
-Git writes. Further delegation needs a genuine separate question.
-
-Run selected independent jobs in one parallel batch. Deep and Adversarial modes
-share this pass; do not launch a second group for an Adversarial request. If jobs
-are unavailable in either mode, state the limit and perform the lead review.
-
-For Adversarial mode, select different available models for the reviewers when the agent runner supports model selection. Do not name or depend on hard-coded model IDs. If model selection is unavailable, use the same independent read-only reviewer jobs without selecting models and state in the final review that run independence, not confirmed model diversity, supplied the adversarial signal. If independent reviewer jobs are unavailable, state that limitation and perform a Standard review; do not invent reviewer evidence.
-
-### Deep
-
-When results return, deduplicate them and resolve disagreements with direct repository evidence. Agreement raises confidence but does not replace verification. Apply the blast-radius lens yourself and run the cheapest proof that can falsify the highest-risk safety claim.
-
-### Adversarial / Multi-model
-
-Read [Adversarial synthesis and lead judgment](references/adversarial-synthesis.md). Build the agreement map before deciding the verdict. Treat consensus as a reason to verify a claim first, not as proof. Investigate lone correctness or security findings on their merits. Resolve explicit disagreements with repository evidence and state any disagreement that remains unresolved.
-
-Act as the lead reviewer, not a vote counter. Put every candidate finding in **Act On**, **Consider**, or **Dismissed**, with a short reason and the reviewers that raised it. Do not auto-apply any suggestion.
+For Deep or Adversarial modes, or when separate risks justify independent
+investigation, read and follow [advanced modes](references/advanced-modes.md).
+Otherwise keep Standard in the lead pass without loading advanced details.
+Use one parallel batch, with read-only reviewers and no Git writes or publishing.
+Preserve actual reviewer evidence; never invent jobs, results, or model identities.
+If jobs are unavailable, state the limit and perform the Standard lead review.
 
 ### Blast Radius
 

@@ -23,6 +23,9 @@ It checks:
 - Command-line help parsing, Zsh startup, SSH agent links, and PATH inheritance.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
+- Skill workflow graders: protected comments, final-source verification records,
+  review evidence fields, read-only targets, and reference links. These use Bun's
+  YAML parser locally and Ruby/Psych with Node on nspawn.
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
   tracked directory in the first two levels has a row, and no tracked symlink
   is absolute.
@@ -35,7 +38,7 @@ the dotfiles or replace the current machine's application settings.
 
 ## Check on nspawn
 
-nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, and rsync, but no `shfmt`
+nspawn has ShellCheck 0.9, Node, npm, Python 3, Ruby, Zsh, and rsync, but no `shfmt`
 and no `bun`, so `check.sh` cannot run there. Before each commit, copy the
 working tree to a scratch directory on nspawn and run the checks that can:
 
@@ -48,6 +51,9 @@ cd ~/.cache/setup-check
 bash terminal/core/test.sh && zsh terminal/core/test.sh
 sh terminal/zsh/tests/agent-link.sh
 zsh terminal/node/tests/npm-wrapper.zsh
+EVAL_YAML_PARSER=ruby node --test agents/skills/comment-purge/evals/workflow.test.cjs \
+  terminal/opencode/skills/simplify/evals/workflow.test.cjs \
+  terminal/opencode/skills/code-review/evals/workflow.test.cjs
 EOF
 ```
 

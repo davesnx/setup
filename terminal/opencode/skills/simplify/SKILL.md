@@ -122,21 +122,11 @@ behavior or public contracts.
 
 ## 5. Verify and report
 
-After the final edit, run the repository's formatters, linters, and tests for
-the preserved behavior, and introduce no new warnings. Inspect the diff for
-unrelated changes and confirm it still satisfies AGENTS.md and other repository
-policies.
+After the final edit, run the required repository format, lint, build/typecheck,
+and relevant behavior checks. Introduce no new warnings. Inspect the final diff
+for scope, contract preservation, and repository-rule compliance; reuse captured
+evidence when it is current and sufficient.
 
-Report in one to three sentences: what was removed or reused, what stayed
-unchanged, and which checks passed or could not run. No bullet points, no
-emojis, no extended explanation. Mention rejected or deferred candidates only
-when they explain an important tradeoff.
-
-Example:
-
-> Removed redundant input checks and log-and-rethrow blocks added in this
-> branch, and inlined single-use helpers to match existing style. No functional
-> behavior changes beyond the intended diff; all edits were confined to the
-> branch's modified hunks.
-
-Complete when checks pass and the summary contains only verified claims.
+Report in one to three sentences what was removed or reused, what behavior and
+scope were preserved, and the actual check commands and results or blockers.
+Do not claim that unrun checks passed.

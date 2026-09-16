@@ -1,0 +1,34 @@
+schema_version: 2
+id: straightforward-cleanup
+mode: deterministic
+skill_under_test: comment-purge
+skills_loaded: [comment-purge]
+description: Remove clear narration directly while retaining protected comments and code.
+tags: [comments, scope, direct-execution]
+setup:
+  fixtures:
+    format.mjs: fixtures/format.mjs
+prompt: |
+  Use Comment Purge on format.mjs only. Remove comments that merely repeat the
+  code. Keep its legal notice, public API contract, formatting directive, and
+  executable code unchanged. There are no disputed warnings or suppressions.
+  Write a brief cleanup.md with changes and any verification performed.
+  No code changes, Git operations, or network access are authorized.
+budget:
+  max_tokens: 4000
+  max_seconds: 90
+checks:
+  - kind: shell
+    cmd: |
+      node --input-type=module <<'JS'
+      import assert from 'node:assert/strict';
+      import { readFileSync } from 'node:fs';
+      import { format } from './format.mjs';
+      const source = readFileSync('format.mjs', 'utf8');
+      assert.equal(source, '// Copyright 2026 Example Authors. MIT License.\n/** Returns the trimmed display text. */\n// prettier-ignore\nexport function format(value) {\n  return value.trim();\n}\n');
+      assert.equal(format('  Alice  '), 'Alice');
+      assert.ok(readFileSync('cleanup.md', 'utf8').trim());
+      process.stdout.write('preserved');
+      JS
+    unsafe_shell: true
+    expect_exact: preserved

@@ -49,36 +49,25 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 
 ## Workflow
 
-1. Use an available independent reviewer when supported. Pass the exact scope,
-   existing-change baseline, and all deletion and review rules in this skill.
-   Otherwise use separate comment-edit and review passes yourself. The initial
-   reviewer edits comments only, never application code, and reports touched
-   files, deleted comment count, action flags with evidence, and skips.
-2. The parent reviews the report and diff. Reject application-code edits, scope
-   escapes, protected deletions, unsupported flags, and missed suppressions.
-   Check evidence for deleted warnings and restore any removed without sufficient
-   evidence. Keep explanations while their constraint or refactor is unresolved.
-   Delete refuted warnings only when the evidence establishes safe removal.
-   Preserve valid action flags for internal surprises.
-3. For a rejected pass, undo only that pass's rejected edits, preserving the
-   baseline and concurrent user changes. Name the failure and allow one corrected
-   pass. If it is rejected again, remove its rejected edits, report the work open,
-   and stop with failure. Ask if edits cannot be separated safely.
-4. Within the authorized scope, the parent fixes accepted trivial causes: remove
-   a dead path, drop an unused parameter, or use the correct API. For larger
-   refactors, first sketch
-   the proposed structure using surrounding code, then make the smallest in-scope
-   root-cause fix. Remove the named workarounds, not just their explanations.
-   Do not add symptom guards. If a cause is outside scope, make only a sound
-   in-scope fix and report the remaining work; do not widen scope to finish it.
-5. Retain proven external constraint comments. For unprotected constraints such
-   as wording freezes or approval warnings, offer the cheapest in-scope type,
-   runtime check, test, or CI rule. Ask before encoding it; unattended execution
-   needs explicit caller pre-approval, never implied consent. If approved, encode
-   and verify the constraint before deleting a now-redundant comment. Otherwise
-   preserve the warning and report the remaining unenforced constraint. Sketch
-   out-of-scope work only.
-6. After the final edit, run required repository formatting, lint, build/typecheck,
+1. Make clear, bounded comment-only deletions directly. Use an independent
+   read-only reviewer when a disputed warning, suppression, or distinct contract
+   needs separate investigation. Preserving an unresolved warning does not require
+   delegation. Give a reviewer the exact scope, existing-change baseline, and
+   applicable rules; ask for evidence, not edits. If no reviewer is available,
+   do a separate review pass yourself.
+2. Inspect the resulting diff against the deletion rules. Restore your own
+   unsupported deletions and reject unauthorized code changes or scope expansion.
+   Preserve baseline and concurrent user changes; ask if they cannot be separated.
+   Allow one corrected pass. If it fails again, remove only its rejected edits
+   and report the work incomplete. Keep explanations while their constraints
+   remain unresolved.
+3. Fix exposed code problems only when authorized. Use the smallest root-cause
+   change within scope; sketch larger refactors first. Do not widen the scope or
+   add symptom guards. Offer a type, runtime check, test, or CI rule for an
+   unenforced constraint when useful. Encoding requires explicit approval, including
+   in unattended runs. Preserve its warning until approved encoding is verified.
+   Proven external-constraint comments remain protected.
+4. After the final edit, run required repository formatting, lint, build/typecheck,
    and relevant test commands from repository instructions and CI configuration.
    Review the final diff for scope, protected comments, directives, and user work.
    Fix in-scope failures; report failed, unavailable, or unknown required checks
@@ -87,7 +76,7 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 
 ## Report
 
-Report touched files, deleted comment count, restored comments with exceptions,
-corrected passes, refactor sketches, fixes, encoding offers and approvals,
-completed encodings, unenforced constraints, skips, and other open work.
-Include check commands and results. Distinguish completed cleanup from blockers.
+Briefly report changed files, removed comments, and check commands and results.
+Mention preserved warnings, skips, corrections, approvals, or other open work
+when they occurred. Distinguish completed cleanup from unresolved constraints
+and blockers; omit empty report categories.

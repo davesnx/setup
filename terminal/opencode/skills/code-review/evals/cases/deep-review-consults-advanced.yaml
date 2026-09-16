@@ -1,0 +1,66 @@
+schema_version: 2
+id: deep-review-consults-advanced
+mode: deterministic
+skill_under_test: code-review
+skills_loaded: [code-review]
+description: "Deep review consults advanced instructions and verifies a blocking SQL finding without source edits"
+tags: [deep-review, security, read-only, trace-review]
+
+setup:
+  fixtures:
+    "diff.patch": fixtures/sql-injection.diff
+    "users.py": fixtures/users.py
+
+prompt: |
+  Give diff.patch a Deep code review. users.py is the complete changed source.
+  Write the final review to review.md. Do not edit the diff or source.
+  Write only review.md in the workspace.
+
+  Test protocol: review.md must contain one JSON object without fences. Use
+  action ("approve" or "block"), findings (array of {file, line, severity,
+  evidence, remedy}), checks (array of {command, result}), reviewers (array
+  of {id, lens, evidence, model}; model may be null), and limitation (string).
+  Report only checks and reviewer jobs that actually ran. Use an empty
+  reviewers array and explain the limit if independent jobs are unavailable.
+  Evidence must cite source code; do not substitute reviewer agreement for
+  verification. This protocol tests outcomes, not Markdown heading choices.
+
+budget:
+  max_tokens: 6000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: review.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const { createHash } = require('node:crypto');
+      for (const [path, hash] of Object.entries({
+        'diff.patch': '66439f9bbff1507e292716fd25da1ad1aa193de00e2bab4124f50011c2baefb8',
+        'users.py': '5db0261fa98eb56429daa13561bbc70c5eb7facd1000851cca7dad55236edee7',
+      })) assert.equal(createHash('sha256').update(fs.readFileSync(path)).digest('hex'), hash, path);
+      const review = JSON.parse(fs.readFileSync('review.md', 'utf8'));
+      const text = value => typeof value === 'string' && value.trim().length > 0;
+      assert.equal(review.action, 'block');
+      assert.ok(Array.isArray(review.findings));
+      assert.ok(review.findings.some(f => f.file === 'users.py' && [10, 11].includes(f.line)
+        && text(f.severity) && ['high', 'critical'].includes(f.severity.toLowerCase()) && text(f.evidence)
+        && text(f.remedy) && /param|bind|bound/i.test(f.remedy)));
+      assert.ok(Array.isArray(review.checks));
+      for (const check of review.checks) assert.ok(text(check.command) && text(check.result));
+      assert.ok(Array.isArray(review.reviewers));
+      assert.equal(typeof review.limitation, 'string');
+      const ids = review.reviewers.map(r => r.id);
+      assert.equal(new Set(ids).size, ids.length);
+      if (ids.length === 0) assert.ok(text(review.limitation));
+      for (const reviewer of review.reviewers) {
+        assert.ok([reviewer.id, reviewer.lens, reviewer.evidence].every(text));
+        assert.ok(reviewer.model === null || text(reviewer.model));
+      }
+      process.stdout.write('blocked');
+      JS
+    unsafe_shell: true
+    expect_exact: "blocked"
