@@ -20,6 +20,8 @@ if [ ! -f "$PROFILE_FILE" ]; then
   exit 1
 fi
 
+need bun
+
 CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}/opencode
 
 for name in opencode.jsonc tui.json instructions.md package.json agent-permission-boundaries.mjs auto-improve.mjs; do
@@ -45,9 +47,7 @@ if [ ! -e "$PLUGIN_HOME" ] && command -v git >/dev/null 2>&1; then
   git clone --depth 1 https://github.com/davesnx/opencode-notify.git "$PLUGIN_HOME"
 fi
 
-if command -v npm >/dev/null 2>&1; then
-  npm install --prefix "$CONFIG_HOME" --no-audit --no-fund
-fi
+bun install --cwd "$CONFIG_HOME"
 
 printf 'Installed OpenCode profile: %s\n' "$PROFILE"
 printf 'Backups, when needed: %s\n' "$SETUP_BACKUP_ROOT"

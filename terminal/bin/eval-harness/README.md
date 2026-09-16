@@ -6,7 +6,8 @@ tests. Skill cases and baselines stay with their skills.
 
 ## Install
 
-Install with Node.js, npm, Git, and Bash available. From the repository root:
+Install with Bun, Node.js, Git, and Bash available. No npm command is needed.
+From the repository root:
 
 ```sh
 sh terminal/bin/eval-harness/install.sh
@@ -15,7 +16,8 @@ sh terminal/bin/eval-harness/install.sh
 
 The root setup installer also runs this installer. Dependencies go into this
 directory's ignored `node_modules/`, not the OpenCode config directory. The
-installer uses `npm ci` with the committed lockfile, then links
+installer uses `bun install --frozen-lockfile --force --backend=copyfile` with the
+committed Bun lockfile, then links
 `~/.local/bin/eval-harness` to the runner. The shell configuration already
 includes `~/.local/bin` in `PATH`.
 
@@ -26,11 +28,15 @@ in that directory are left unchanged.
 
 Installation applies `patches/eval-harness-0.4.2.patch`, then
 `patches/eval-harness-gaps.patch`, then `patches/eval-harness-workflows.patch`
-to the pinned dependency. The npm postinstall
+to the pinned dependency. The postinstall
 hook checks the full patch sequence on a temporary copy before changing the
 package. It rejects version or source drift and supports repeated installation.
 Do not edit the installed package by hand. Run the installer to replace an older
 installed patch version.
+
+Each installation restores clean package files before patching. The copy backend
+keeps those patches out of Bun's shared cache. Bun and Node must be on `PATH`
+before the installer changes files.
 
 ## Run
 
@@ -256,19 +262,19 @@ enforce a dollar cap. Do not use it as a spending limit.
 After installation, run the local tests and the patched dependency's tests:
 
 ```sh
-npm --prefix terminal/bin/eval-harness test
-npm --prefix terminal/bin/eval-harness run test:upstream
+bun run --cwd terminal/bin/eval-harness test
+bun run --cwd terminal/bin/eval-harness test:upstream
 ```
 
 These tests use temporary files and model stubs. They do not make live model
 requests. The local suite requires Chromium. The upstream command runs every
 upstream shell test with guards against unintended model/network commands.
 
-`npm test` also runs checker counterexamples, corpus integrity tests, and the
+`bun run test` also runs checker counterexamples, corpus integrity tests, and the
 workflow runner with fake candidates. To run only workflow checks:
 
 ```sh
-npm --prefix terminal/bin/eval-harness run test:workflows
+bun run --cwd terminal/bin/eval-harness test:workflows
 ```
 
 The SQL-review and blog-collection regression cases now require structured JSON

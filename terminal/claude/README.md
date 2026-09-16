@@ -4,6 +4,9 @@ Claude Code settings, hooks, and status line.
 
 ## Install
 
+Have Bun and Node 22.18 or later on `PATH`. No npm command is needed.
+From the repository root:
+
 ```sh
 ./terminal/claude/install.sh
 ```
@@ -28,9 +31,13 @@ It also creates `~/.claude/hooks` and links two hooks with guards:
   that path makes the installer refuse and exit with status 73, rather than
   overwrite it.
 
-The installer uses npm to install the hook's locked production dependencies
+The installer uses Bun to install the hook's locked production dependencies
 before creating its link. It then removes the old Python hook link only if
-it points to this repository's former hook. The hook requires Node 22.18 or later.
+it points to this repository's former hook. Node runs the hook.
+
+The root `install.sh` requires Node before it starts. On macOS, its Homebrew
+phase installs Bun. On other hosts, install Bun first. The root installer checks
+for Bun after the Mac phase and before changing shared configuration.
 
 Existing files at any other link target move to a timestamped directory under
 `~/.local/state/setup/backups` before the new link is created.
@@ -63,8 +70,8 @@ for the shared contract implemented by the Claude Code hook.
 Run the TypeScript checks from the repository root:
 
 ```sh
-npm ci --prefix terminal/claude/hooks
-npm test --prefix terminal/claude/hooks
-npm run typecheck --prefix terminal/claude/hooks
-npm run format:check --prefix terminal/claude/hooks
+bun install --cwd terminal/claude/hooks --frozen-lockfile
+bun run --cwd terminal/claude/hooks test
+bun run --cwd terminal/claude/hooks typecheck
+bun run --cwd terminal/claude/hooks format:check
 ```

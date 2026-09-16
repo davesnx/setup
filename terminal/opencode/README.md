@@ -4,6 +4,7 @@ OpenCode configuration, agents, and OpenCode-only skills.
 
 ## Install
 
+Have Bun and Node.js on `PATH`. No npm command is needed for installation.
 Clone this repository, then select the profile for the machine:
 
 ```sh
@@ -20,6 +21,10 @@ shared `code-standards` skill from `agents/skills`. The OpenCode-only skills
 live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
 which only OpenCode reads. Existing files move to a timestamped directory
 under `~/.local/state/setup/backups`.
+
+The installer requires Bun before changing files and runs `bun install` in the
+installed config directory on every run. A dependency installation failure stops
+the installer with a nonzero exit status.
 
 `terminal/zsh/.zprofile` exports `OPENCODE_CONFIG` when the selected `host.jsonc`
 link exists. Start a new login shell after installation.

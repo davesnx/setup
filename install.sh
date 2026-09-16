@@ -21,7 +21,7 @@ if [ ! -x /bin/bash ]; then
 fi
 need zsh
 need git
-need npm
+need node
 
 echo "👉 dotfiles path: '$setup_path'"
 
@@ -31,6 +31,8 @@ if [ "$(uname -s)" = Darwin ]; then
   echo ""
   sh "$setup_path/mac/install.sh" "$setup_path"
 fi
+
+need bun
 
 sh "$setup_path/git/install.sh"
 sh "$setup_path/local/install.sh"

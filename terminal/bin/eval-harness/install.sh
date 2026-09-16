@@ -12,7 +12,15 @@ if [ -e "$BIN_HOME/eval-harness" ] && [ ! -L "$BIN_HOME/eval-harness" ]; then
   exit 73
 fi
 
-npm ci --prefix "$ROOT" --no-audit --no-fund
+for command in bun node; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    printf '%s is required.\n' "$command" >&2
+    exit 69
+  fi
+done
+
+# Restore clean package files before patching without changing Bun's cache.
+bun install --cwd "$ROOT" --frozen-lockfile --force --backend=copyfile
 
 mkdir -p "$BIN_HOME"
 ln -sfn "$ROOT/eval-harness" "$BIN_HOME/eval-harness"

@@ -4,7 +4,7 @@ setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
 . "$setup_path/prelude.sh"
 
 need bun
-need npm
+need node
 
 link_path "$setup_path/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 link_path "$setup_path/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
@@ -32,7 +32,7 @@ elif [ -e "$auto_improve_hook" ] || [ -L "$auto_improve_hook" ]; then
   exit 73
 fi
 
-npm ci --prefix "$setup_path/terminal/claude/hooks" --omit=dev --no-audit --no-fund
+bun install --cwd "$setup_path/terminal/claude/hooks" --frozen-lockfile --production
 
 if [ ! -L "$auto_improve_hook" ]; then
   ln -s "$auto_improve_source" "$auto_improve_hook"

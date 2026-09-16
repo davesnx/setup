@@ -29,13 +29,12 @@ import koffi from "koffi";
 const ROOT = resolve(import.meta.dirname, "../../..");
 const HOOK = join(ROOT, "terminal/claude/hooks/auto-improve.ts");
 const OLD_HOOK = join(ROOT, "terminal/claude/hooks/auto-improve.py");
-const NPM_ARGS = [
-  "ci",
-  "--prefix",
+const BUN_ARGS = [
+  "install",
+  "--cwd",
   join(ROOT, "terminal/claude/hooks"),
-  "--omit=dev",
-  "--no-audit",
-  "--no-fund",
+  "--frozen-lockfile",
+  "--production",
 ];
 const LIBC =
   process.platform === "darwin" ? "/usr/lib/libSystem.B.dylib" : "libc.so.6";
@@ -63,8 +62,8 @@ describe("Claude auto-improve", () => {
     const bin = join(home, "bin");
     mkdirSync(bin);
     writeFileSync(
-      join(bin, "npm"),
-      '#!/bin/sh\nprintf "%s\\n" "$@" >> "$NPM_TEST_LOG"\nexit "${NPM_TEST_EXIT_CODE:-0}"\n',
+      join(bin, "bun"),
+      '#!/bin/sh\nprintf "%s\\n" "$@" >> "$BUN_TEST_LOG"\nexit "${BUN_TEST_EXIT_CODE:-0}"\n',
       { mode: 0o700 },
     );
     stateRoot = join(home, "state");
@@ -72,10 +71,12 @@ describe("Claude auto-improve", () => {
     env = {
       ...process.env,
       HOME: home,
+      XDG_CONFIG_HOME: join(home, ".config"),
       XDG_STATE_HOME: stateRoot,
+      SETUP_BACKUP_ROOT: join(home, "backups"),
       PATH: `${bin}:${dirname(process.execPath)}:${process.env.PATH ?? ""}`,
-      NPM_TEST_LOG: join(home, "npm-args"),
-      NPM_TEST_EXIT_CODE: "0",
+      BUN_TEST_LOG: join(home, "bun-args"),
+      BUN_TEST_EXIT_CODE: "0",
     };
   });
 
@@ -572,16 +573,16 @@ describe("Claude auto-improve", () => {
     assert.equal(readFileSync(dcg, "utf8"), "Puppet-managed wrapper");
     assert.equal(lstatSync(dcg).isSymbolicLink(), false);
     assert.deepEqual(
-      readFileSync(join(home, "npm-args"), "utf8").trimEnd().split("\n"),
-      [...NPM_ARGS, ...NPM_ARGS],
+      readFileSync(join(home, "bun-args"), "utf8").trimEnd().split("\n"),
+      [...BUN_ARGS, ...BUN_ARGS],
     );
   });
 
-  test("npm failure preserves the managed old link until retry succeeds", async () => {
+  test("Bun failure preserves the managed old link until retry succeeds", async () => {
     const oldDestination = join(hookDirectory, "auto-improve.py");
     symlinkSync(OLD_HOOK, oldDestination);
     const before = lstatSync(oldDestination, { bigint: true });
-    env.NPM_TEST_EXIT_CODE = "42";
+    env.BUN_TEST_EXIT_CODE = "42";
     for (let attempt = 0; attempt < 2; attempt++) {
       assert.equal((await installHook()).exitCode, 42);
       assert.equal(
@@ -591,7 +592,7 @@ describe("Claude auto-improve", () => {
       assert.equal(readlinkSync(oldDestination), OLD_HOOK);
       assert.equal(lstatSync(oldDestination, { bigint: true }).ino, before.ino);
     }
-    env.NPM_TEST_EXIT_CODE = "0";
+    env.BUN_TEST_EXIT_CODE = "0";
     assert.equal((await installHook()).exitCode, 0);
     assert.equal(readlinkSync(installedHook), HOOK);
     assert.equal(
@@ -599,8 +600,8 @@ describe("Claude auto-improve", () => {
       undefined,
     );
     assert.deepEqual(
-      readFileSync(join(home, "npm-args"), "utf8").trimEnd().split("\n"),
-      [...NPM_ARGS, ...NPM_ARGS, ...NPM_ARGS],
+      readFileSync(join(home, "bun-args"), "utf8").trimEnd().split("\n"),
+      [...BUN_ARGS, ...BUN_ARGS, ...BUN_ARGS],
     );
   });
 

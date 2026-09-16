@@ -2,14 +2,14 @@
 
 `auto-improve.ts` runs directly with Node 22.18 or later from Claude's
 `UserPromptSubmit` and `Stop` hooks. Node must be on Claude's `PATH`.
-Bun and Python are not required.
+Bun is required for installation, not for running the hook. Python is not required.
 
 Koffi provides native file locking on macOS and glibc Linux. Version 2.16.3 is
 pinned because 3.2.1 crashed during `flock` calls with Intel Node on this
 Apple Silicon Mac. Its prebuilt binary avoids a local native build.
 
-`terminal/claude/install.sh` installs the locked production dependencies, then links
-the script to `~/.claude/hooks/auto-improve.ts`.
+`terminal/claude/install.sh` uses Bun to install the locked production dependencies,
+then links the script to `~/.claude/hooks/auto-improve.ts`.
 It removes an old Python link only when that link points to this repository's
 former hook. It preserves unrelated files and links.
 
@@ -29,8 +29,8 @@ can skip a review, but cannot repeat it.
 Install development dependencies and run checks from the repository root:
 
 ```sh
-npm ci --prefix terminal/claude/hooks
-npm test --prefix terminal/claude/hooks
-npm run typecheck --prefix terminal/claude/hooks
-npm run format:check --prefix terminal/claude/hooks
+bun install --cwd terminal/claude/hooks --frozen-lockfile
+bun run --cwd terminal/claude/hooks test
+bun run --cwd terminal/claude/hooks typecheck
+bun run --cwd terminal/claude/hooks format:check
 ```

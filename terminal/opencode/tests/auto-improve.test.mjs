@@ -763,7 +763,7 @@ test("configuration enables the plugin", async () => {
 })
 
 test("installer links the plugin and remains idempotent", async () => {
-  // Use the real installer without git or npm in PATH.
+  // Use the real installer without network commands in PATH.
   const home = await mkdtemp(join(tmpdir(), "opencode-install-"))
   try {
     const bin = join(home, "bin")
@@ -771,12 +771,14 @@ test("installer links the plugin and remains idempotent", async () => {
     for (const name of ["sh", "mkdir", "ln", "readlink", "mv", "rm", "dirname", "date"]) {
       await symlink(execFileSync("sh", ["-c", `command -v ${name}`], { encoding: "utf8" }).trim(), join(bin, name))
     }
+    await writeFile(join(bin, "bun"), '#!/bin/sh\nprintf "%s\\n" "$*" >>"$HOME/bun.log"\n', { mode: 0o755 })
     const env = { HOME: home, PATH: bin, XDG_CONFIG_HOME: join(home, ".config"), SETUP_BACKUP_ROOT: join(home, "backups") }
     const installer = fileURLToPath(new URL("../install.sh", import.meta.url))
     for (let run = 0; run < 2; run++) {
       const result = spawnSync("sh", [installer, "ssh"], { env, encoding: "utf8" })
       assert.equal(result.status, 0, result.stderr)
     }
+    assert.equal(await readFile(join(home, "bun.log"), "utf8"), `install --cwd ${home}/.config/opencode\n`.repeat(2))
     const plugin = fileURLToPath(new URL("../auto-improve.mjs", import.meta.url))
     assert.equal(await readlink(join(home, ".config/opencode/auto-improve.mjs")), plugin)
     assert.ok((await stat(plugin)).isFile())

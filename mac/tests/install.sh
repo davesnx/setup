@@ -9,12 +9,14 @@ trap 'rm -rf "$work"' EXIT HUP INT TERM
 test_bin="$work/bin"
 command_log="$work/commands.log"
 brew_template="$work/brew"
+bun_template="$work/bun"
 apple_silicon_brew="$work/fallback/apple-silicon/brew"
 mkdir -p "$test_bin"
 
 export COMMAND_LOG="$command_log"
 export TEST_BIN="$test_bin"
 export BREW_TEMPLATE="$brew_template"
+export BUN_TEMPLATE="$bun_template"
 BREW_SEARCH_PATHS="$apple_silicon_brew $work/fallback/intel/brew"
 export BREW_SEARCH_PATHS
 
@@ -29,6 +31,9 @@ printf '%s\n' "$count" >"$TEST_BIN/brew-count"
 printf 'brew:%s\n' "$*" >>"$COMMAND_LOG"
 if [ "${FAIL_BREW_CALL:-0}" -eq "$count" ]; then
   exit 42
+fi
+if [ "${INSTALL_BUN:-0}" -eq 1 ]; then
+  cp "$BUN_TEMPLATE" "$TEST_BIN/bun"
 fi
 EOF
 chmod +x "$brew_template"
@@ -118,14 +123,9 @@ if [ "$1" = clone ]; then
 fi
 EOF
 
-# Stubbed because the real npm would clone the github: dependency through the
-# fake git stub above and fail; whether npm is even on the base PATH differs per host.
-cat >"$test_bin/npm" <<'EOF'
+cat >"$test_bin/node" <<'EOF'
 #!/bin/sh
-printf 'npm:%s\n' "$*" >>"$COMMAND_LOG"
-if [ "${FAIL_NPM:-0}" -eq 1 ]; then
-  exit 45
-fi
+exit 0
 EOF
 
 cat >"$test_bin/trash" <<'EOF'
@@ -138,9 +138,12 @@ cat >"$test_bin/diff-so-fancy" <<'EOF'
 printf 'diff-so-fancy:%s\n' "$*" >>"$COMMAND_LOG"
 EOF
 
-cat >"$test_bin/bun" <<'EOF'
+cat >"$bun_template" <<'EOF'
 #!/bin/sh
 printf 'bun:%s\n' "$*" >>"$COMMAND_LOG"
+if [ "${FAIL_BUN_CWD:-}" = "$3" ]; then
+  exit 45
+fi
 EOF
 
 cat >"$test_bin/herdr" <<'EOF'
@@ -154,11 +157,16 @@ cat >"$test_bin/jq" <<'EOF'
 printf 'jq:%s\n' "$*" >>"$COMMAND_LOG"
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun" "$test_bin/herdr" "$test_bin/jq"
-PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/node" "$test_bin/trash" "$test_bin/diff-so-fancy" "$bun_template" "$test_bin/herdr" "$test_bin/jq"
+# Use an allowlist so host npm, npx, and package managers cannot leak into tests.
+for name in cat chmod cmp cp date dirname env grep id mkdir mktemp mv readlink rm sh touch yes; do
+  ln -s "$(command -v "$name")" "$test_bin/$name"
+done
+PATH="$test_bin"
 export PATH
 
 prepare_home() {
+  unset XDG_CONFIG_HOME XDG_STATE_HOME XDG_DATA_HOME SETUP_BACKUP_ROOT
   HOME="$work/home"
   export HOME
   rm -rf "$HOME"
@@ -170,7 +178,8 @@ prepare_home() {
   : >"$command_log"
   rm -rf "$work/fallback"
   rm -f "$test_bin/brew" "$test_bin/brew-count"
-  unset FAIL_BREW_CALL INSTALL_BREW FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
+  cp "$bun_template" "$test_bin/bun"
+  unset FAIL_BREW_CALL INSTALL_BREW INSTALL_BUN FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_BUN_CWD || true
 }
 
 install_brew_stub() {
@@ -247,16 +256,60 @@ expect_exit 66 /bin/sh "$root/mac/install.sh" "$work/missing"
 printf 'PASS: invalid setup path stops before commands\n'
 
 prepare_home
-minimal_bin="$work/no-npm-bin"
+minimal_bin="$work/no-node-bin"
 mkdir -p "$minimal_bin"
 for name in dirname date curl zsh git; do
   ln -s "$(command -v "$name")" "$minimal_bin/$name"
 done
-: > "$command_log"
+: >"$command_log"
 expect_exit 69 env PATH="$minimal_bin" /bin/sh "$root/install.sh"
-grep -Fxq 'npm is required.' "$work/stderr"
+grep -Fxq 'node is required.' "$work/stderr"
 [ ! -s "$command_log" ]
-printf 'PASS: missing npm stops the root installer before mutation\n'
+printf 'PASS: missing Node stops the root installer before mutation\n'
+
+prepare_home
+rm "$test_bin/bun"
+FAKE_UNAME=Linux
+export FAKE_UNAME
+expect_exit 69 /bin/sh "$root/install.sh"
+grep -Fxq 'bun is required.' "$work/stderr"
+[ ! -e "$HOME/.gitconfig" ]
+[ ! -e "$HOME/.agents" ]
+printf 'PASS: missing Bun stops the root installer before shared mutations\n'
+
+for installer in terminal/claude terminal/opencode; do
+  expect_exit 69 /bin/sh "$root/$installer/install.sh"
+  grep -Fxq 'bun is required.' "$work/stderr"
+done
+[ ! -e "$HOME/.claude" ]
+[ ! -e "$HOME/.config/opencode" ]
+printf 'PASS: standalone Claude and OpenCode require Bun before mutations\n'
+
+prepare_home
+mv "$test_bin/node" "$work/node"
+expect_exit 69 /bin/sh "$root/terminal/claude/install.sh"
+grep -Fxq 'node is required.' "$work/stderr"
+[ ! -e "$HOME/.claude" ]
+mv "$work/node" "$test_bin/node"
+printf 'PASS: standalone Claude requires Node before mutations\n'
+
+prepare_home
+install_brew_stub
+rm "$test_bin/bun"
+expect_exit 69 /bin/sh "$root/install.sh"
+grep -Fxq 'bun is required.' "$work/stderr"
+[ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
+[ ! -e "$HOME/.gitconfig" ]
+printf 'PASS: Mac setup checks Bun after Brew and before shared mutations\n'
+
+prepare_home
+install_brew_stub
+rm "$test_bin/bun"
+INSTALL_BUN=1
+export INSTALL_BUN
+expect_exit 0 /bin/sh "$root/install.sh"
+[ -L "$HOME/.local/bin/eval-harness" ]
+printf 'PASS: root installer uses Bun installed by the Mac phase\n'
 
 prepare_home
 FAKE_UNAME=Linux
@@ -362,30 +415,30 @@ prepare_home
 install_brew_stub
 mkdir -p "$HOME/.claude/hooks"
 ln -s "$root/terminal/claude/hooks/auto-improve.py" "$HOME/.claude/hooks/auto-improve.py"
-FAIL_NPM=1
-export FAIL_NPM
+FAIL_BUN_CWD="$root/terminal/claude/hooks"
+export FAIL_BUN_CWD
 expect_exit 45 /bin/sh "$root/install.sh"
-[ "$(grep -c '^npm:' "$command_log")" -eq 1 ]
-grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+[ "$(grep -c '^bun:' "$command_log")" -eq 1 ]
+grep -Fxq "bun:install --cwd $root/terminal/claude/hooks --frozen-lockfile --production" "$command_log"
 [ ! -e "$HOME/.claude/hooks/auto-improve.ts" ]
 [ ! -L "$HOME/.claude/hooks/auto-improve.ts" ]
 [ "$(readlink "$HOME/.claude/hooks/auto-improve.py")" = "$root/terminal/claude/hooks/auto-improve.py" ]
-if grep -q '^npm:.*eval-harness' "$command_log"; then
+if grep -q '^bun:.*eval-harness' "$command_log"; then
   exit 1
 fi
-printf 'PASS: failed hook npm install stops before publishing and preserves the old hook\n'
+printf 'PASS: failed hook Bun install stops before publishing and preserves the old hook\n'
 
-unset FAIL_NPM
+unset FAIL_BUN_CWD
 : >"$command_log"
 yes y | expect_exit 0 /bin/sh "$root/install.sh"
-grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+grep -Fxq "bun:install --cwd $root/terminal/claude/hooks --frozen-lockfile --production" "$command_log"
 [ "$(readlink "$HOME/.claude/hooks/auto-improve.ts")" = "$root/terminal/claude/hooks/auto-improve.ts" ]
 [ ! -L "$HOME/.claude/hooks/auto-improve.py" ]
 printf 'PASS: retry installs the new hook and removes the old managed link\n'
 
 : >"$command_log"
 yes y | expect_exit 0 /bin/sh "$root/install.sh"
-grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
+grep -Fxq "bun:install --cwd $root/terminal/claude/hooks --frozen-lockfile --production" "$command_log"
 [ "$(readlink "$HOME/.claude/hooks/auto-improve.ts")" = "$root/terminal/claude/hooks/auto-improve.ts" ]
 if grep -q '^ln:.*auto-improve.ts' "$command_log"; then
   exit 1
@@ -398,10 +451,10 @@ mkdir -p "$HOME/.claude/hooks"
 printf 'custom hook\n' >"$HOME/.claude/hooks/auto-improve.ts"
 expect_exit 73 /bin/sh "$root/install.sh"
 grep -qx 'custom hook' "$HOME/.claude/hooks/auto-improve.ts"
-if grep -q '^npm:' "$command_log"; then
+if grep -q '^bun:' "$command_log"; then
   exit 1
 fi
-printf 'PASS: unexpected hook destination stops before npm\n'
+printf 'PASS: unexpected hook destination stops before Bun\n'
 
 prepare_home
 install_brew_stub
@@ -414,6 +467,12 @@ printf 'PASS: failed shell change stops Zim installation\n'
 prepare_home
 install_brew_stub
 expect_exit 0 /bin/sh "$root/install.sh"
+[ -z "$(command -v npm)" ]
+[ -z "$(command -v npx)" ]
+grep -Fxq "bun:install --cwd $root/terminal/claude/hooks --frozen-lockfile --production" "$command_log"
+grep -Fxq "bun:install --cwd $HOME/.config/opencode" "$command_log"
+grep -Fxq "bun:install --cwd $root/terminal/bin/eval-harness --frozen-lockfile --force --backend=copyfile" "$command_log"
+[ -L "$HOME/.local/bin/eval-harness" ]
 [ -L "$HOME/.zshenv" ]
 grep -q '^chsh:' "$command_log"
 grep -q '^zsh:' "$command_log"
@@ -422,7 +481,43 @@ grep -q '^git:clone .* https://github.com/o0th/tmux-nova.git ' "$command_log"
 [ -d "$HOME/.tmux/plugins/tmux-nova" ]
 [ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
 cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-printf 'PASS: successful Mac phase reaches root phases\n'
+printf 'PASS: root installation completes without npm or npx in PATH\n'
+
+for name in npm npx; do
+  cat >"$test_bin/$name" <<'EOF'
+#!/bin/sh
+printf 'poison:%s\n' "$0" >>"$COMMAND_LOG"
+exit 99
+EOF
+  chmod +x "$test_bin/$name"
+done
+prepare_home
+FAKE_UNAME=Linux
+export FAKE_UNAME
+expect_exit 0 /bin/sh "$root/install.sh"
+grep -Fxq "bun:install --cwd $HOME/.config/opencode" "$command_log"
+grep -Fxq "bun:install --cwd $root/terminal/bin/eval-harness --frozen-lockfile --force --backend=copyfile" "$command_log"
+[ -L "$HOME/.local/bin/eval-harness" ]
+if grep -q '^poison:' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: root installation never calls poison npm or npx\n'
+
+prepare_home
+FAIL_BUN_CWD="$HOME/.config/opencode"
+export FAIL_BUN_CWD
+expect_exit 45 /bin/sh "$root/terminal/opencode/install.sh" ssh
+grep -Fxq "bun:install --cwd $HOME/.config/opencode" "$command_log"
+[ "$(readlink "$HOME/.config/opencode/host.jsonc")" = "$root/terminal/opencode/hosts/ssh.jsonc" ]
+unset FAIL_BUN_CWD
+: >"$command_log"
+expect_exit 0 /bin/sh "$root/terminal/opencode/install.sh" ssh
+expect_exit 0 /bin/sh "$root/terminal/opencode/install.sh" ssh
+[ "$(grep -c '^bun:' "$command_log")" -eq 2 ]
+if grep -q '^ln:' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: OpenCode reports Bun failure and retries without replacing links\n'
 
 prepare_home
 install_brew_stub
