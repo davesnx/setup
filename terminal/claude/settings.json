@@ -156,6 +156,12 @@
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       }
+    },
+    "i-have-adhd": {
+      "source": {
+        "source": "github",
+        "repo": "ayghri/i-have-adhd"
+      }
     }
   },
   "spinnerVerbs": {
@@ -174,7 +180,8 @@
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "enabledPlugins": {
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "i-have-adhd@i-have-adhd": true
   },
   "plansDirectory": ".workplace/plans",
   "teammateDefaultModel": "sonnet",

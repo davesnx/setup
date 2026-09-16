@@ -40,7 +40,7 @@ assert_contains "$output" plain
 output=$("$BASH" "$effort" 'space name')
 assert_contains "$output" 'space name'
 [[ "$output" != *plain* ]]
-output=$("$BASH" "$effort" -- --since=2026-01-02)
+output=$("$BASH" "$effort" -- --since=2026-01-02T00:00:00Z)
 assert_contains "$output" plain
 [[ "$output" != *'space name'* ]]
 if "$BASH" "$effort" --above invalid >"$work/error" 2>&1; then exit 1; fi
