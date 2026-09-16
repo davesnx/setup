@@ -8,6 +8,6 @@
     "@th0rgal/ralph-wiggum": "1.0.9",
     "pilcrow-ink": "0.15.0",
     "vercel": "56.5.0",
-    "wrangler": "4.59.2"
+    "wrangler": "4.132.0"
   }
 }
