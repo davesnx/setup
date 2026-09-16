@@ -1,16 +1,15 @@
 #!/bin/sh
 
-setup_path=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-. "$setup_path/prelude.sh"
+. "$DOTFILES_PATH/prelude.sh"
 
 need zsh
 need trash
 zsh_path=$(command -v zsh)
 
-link_path "$setup_path/terminal/zsh/.zshenv" "$HOME/.zshenv"
-link_path "$setup_path/terminal/zsh/.zshrc" "$HOME/.zshrc"
-link_path "$setup_path/terminal/zsh/.zprofile" "$HOME/.zprofile"
-link_path "$setup_path/terminal/zsh/.zimrc" "$HOME/.zimrc"
+link_path "$DOTFILES_PATH/terminal/zsh/.zshenv" "$HOME/.zshenv"
+link_path "$DOTFILES_PATH/terminal/zsh/.zshrc" "$HOME/.zshrc"
+link_path "$DOTFILES_PATH/terminal/zsh/.zprofile" "$HOME/.zprofile"
+link_path "$DOTFILES_PATH/terminal/zsh/.zimrc" "$HOME/.zimrc"
 
 # Change default terminal to ZSH
 chsh -s "$zsh_path"

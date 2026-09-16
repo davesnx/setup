@@ -7,7 +7,7 @@ Saved browser rules and preferences, without the license key, update history, or
 Quit Choosy, then run from the setup repository:
 
 ```sh
-sh mac/choosy/install.sh
+DOTFILES_PATH="$PWD" sh mac/choosy/install.sh
 ```
 
 This is deliberately separate from the main installer so routine setup does not overwrite changes made in Choosy. It copies the rules, imports the saved preferences, and backs up existing settings under the setup backup directory printed by the command. It does not read, copy, or replace `~/Library/Application Support/Choosy/.key`.

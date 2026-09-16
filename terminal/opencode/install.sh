@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
 
-ROOT=$(CDPATH='' cd "$(dirname "$0")" && pwd)
-setup_path=$(CDPATH='' cd "$ROOT/../.." && pwd)
-. "$setup_path/prelude.sh"
+. "$DOTFILES_PATH/prelude.sh"
+ROOT="$DOTFILES_PATH/terminal/opencode"
 PROFILE=${1:-}
 
 if [ -z "$PROFILE" ]; then
@@ -35,7 +34,7 @@ for name in agents skills themes; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name"
 done
 
-link_path "$setup_path/agents/AGENTS.md" "$CONFIG_HOME/AGENTS.md"
+link_path "$DOTFILES_PATH/agents/AGENTS.md" "$CONFIG_HOME/AGENTS.md"
 
 link_path "$PROFILE_FILE" "$CONFIG_HOME/host.jsonc"
 

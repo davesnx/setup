@@ -1,0 +1,13 @@
+{
+  "name": "setup-node-tools",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@googleworkspace/cli": "0.4.4",
+    "@playwright/cli": "0.1.19",
+    "@th0rgal/ralph-wiggum": "1.0.9",
+    "pilcrow-ink": "0.15.0",
+    "vercel": "56.5.0",
+    "wrangler": "4.59.2"
+  }
+}

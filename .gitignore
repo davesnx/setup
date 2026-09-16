@@ -32,6 +32,9 @@ __pycache__/
 # Eval harness dependencies
 /terminal/bin/eval-harness/node_modules/
 
+# Shared Node CLI dependencies (normally installed outside the repo)
+/terminal/node/node_modules/
+
 # Machine-specific overrides
 /local/*
 !/local/README.md

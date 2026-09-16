@@ -62,6 +62,10 @@ autoload -U history-substring-search-up history-substring-search-down
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
+# Option+Up/Down send modified arrow sequences.
+bindkey '^[[1;3A' history-substring-search-up
+bindkey '^[[1;3B' history-substring-search-down
+
 # Bind up and down keys
 zmodload -F zsh/terminfo +p:terminfo
 if [[ -n ${terminfo[kcuu1]} && -n ${terminfo[kcud1]} ]]; then
@@ -86,6 +90,7 @@ setopt promptsubst # allow substitution in PS1
 export GPG_TTY=/dev/tty
 
 source "$DOTFILES_PATH/terminal/_aliases/main.sh"
+source "$DOTFILES_PATH/terminal/node/npm.zsh"
 source "$DOTFILES_PATH/agents/main.sh"
 
 # Restore SSH identities after a restart without blocking shell startup (macOS keychain).

@@ -1,7 +1,7 @@
 # shellcheck shell=sh
-# Every install.sh sources this first, right after computing setup_path:
+# Installers use DOTFILES_PATH exported by .zshenv or the root install.sh:
 #
-#   . "$setup_path/prelude.sh"
+#   . "$DOTFILES_PATH/prelude.sh"
 #
 # It stops on errors and unset variables, picks one backup directory per
 # install run (root install.sh exports it to every folder installer), and

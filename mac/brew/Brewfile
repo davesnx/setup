@@ -1,4 +1,5 @@
 tap "jonahsnider/tap"
+tap "oven-sh/bun"
 
 brew "sqlite"
 brew "openssl"
@@ -8,7 +9,7 @@ brew "fzf"
 brew "gcc"
 brew "git"
 brew "htop" # https://hisham.hm/htop/
-brew "herdr" # Ghostty multiplexer trial; tmux remains available for rollback
+brew "herdr"
 brew "jq"
 brew "enpass-cli"
 brew "make"
@@ -44,7 +45,6 @@ brew "pinentry-mac"
 brew "direnv"
 brew "gh"
 brew "opencode"
-brew "playwright-cli" # https://github.com/microsoft/playwright-cli
 brew "hyperfine"
 brew "mycli"
 brew "bun" # Runs terminal/claude/statusline.ts
@@ -69,7 +69,7 @@ cask "notion"
 cask "slack"
 mas "The Unarchiver", id: 425424353
 mas "Amphetamine", id: 937984704
-mas "Enpass", id: 732710998
+cask "enpass"
 cask "discord"
 cask "flux-app" # https://justgetflux.com/
 cask "kap" # https://getkap.co/

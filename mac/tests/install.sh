@@ -3,18 +3,21 @@
 set -eu
 
 root=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
+export DOTFILES_PATH="$root"
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 
 test_bin="$work/bin"
+node_bin="$work/node/bin"
 command_log="$work/commands.log"
 brew_template="$work/brew"
 apple_silicon_brew="$work/fallback/apple silicon/bin/brew"
 intel_brew="$work/fallback/intel/bin/brew"
-mkdir -p "$test_bin"
+mkdir -p "$test_bin" "$node_bin"
 
 export COMMAND_LOG="$command_log"
 export TEST_BIN="$test_bin"
+export NODE_BIN="$node_bin"
 export BREW_TEMPLATE="$brew_template"
 # Restrict fallback discovery as well as PATH so tests never run host Homebrew.
 BREW_SEARCH_PATHS="${apple_silicon_brew%/brew}:${intel_brew%/brew}"
@@ -46,7 +49,10 @@ chmod +x "$brew_template"
 cat >"$test_bin/uname" <<'EOF'
 #!/bin/sh
 printf 'uname:%s\n' "$*" >>"$COMMAND_LOG"
-printf '%s\n' "${FAKE_UNAME:-Darwin}"
+case "$1" in
+  -m) printf '%s\n' "${FAKE_ARCH:-arm64}" ;;
+  *) printf '%s\n' "${FAKE_UNAME:-Darwin}" ;;
+esac
 EOF
 
 cat >"$test_bin/curl" <<'EOF'
@@ -138,12 +144,45 @@ EOF
 
 # Stubbed because the real npm would clone the github: dependency through the
 # fake git stub above and fail; whether npm is even on the base PATH differs per host.
-cat >"$test_bin/npm" <<'EOF'
+cat >"$node_bin/npm" <<'EOF'
 #!/bin/sh
 printf 'npm:%s\n' "$*" >>"$COMMAND_LOG"
-if [ "${FAIL_NPM:-0}" -eq 1 ]; then
-  exit 45
+if [ "$1" = ci ]; then
+  if [ "$3" = "$HOME/.local/share/node-tools" ]; then
+    [ "${FAIL_NODE_NPM:-0}" -eq 0 ] || exit 49
+  elif [ "${FAIL_NPM:-0}" -eq 1 ]; then
+    exit 45
+  fi
 fi
+EOF
+
+cat >"$test_bin/fnm" <<'EOF'
+#!/bin/sh
+printf 'fnm:%s\n' "$*" >>"$COMMAND_LOG"
+case "$1" in
+  env)
+    [ "${FAIL_NODE_ENV:-0}" -eq 0 ] || exit 46
+    printf 'export PATH="%s:$PATH"\n' "$NODE_BIN"
+    ;;
+  install) [ "${FAIL_NODE_INSTALL:-0}" -eq 0 ] || exit 47 ;;
+  use|default) ;;
+  *) exit 2 ;;
+esac
+EOF
+
+cat >"$node_bin/node" <<'EOF'
+#!/bin/sh
+printf 'node:%s\n' "$*" >>"$COMMAND_LOG"
+case "$1" in
+  -e) [ "${FAIL_NODE_ARCH:-0}" -eq 0 ] || exit 1 ;;
+  *) exit 2 ;;
+esac
+EOF
+
+cat >"$node_bin/corepack" <<'EOF'
+#!/bin/sh
+printf 'corepack:%s\n' "$*" >>"$COMMAND_LOG"
+[ "${FAIL_COREPACK:-0}" -eq 0 ] || exit 48
 EOF
 
 cat >"$test_bin/trash" <<'EOF'
@@ -172,7 +211,7 @@ cat >"$test_bin/jq" <<'EOF'
 printf 'jq:%s\n' "$*" >>"$COMMAND_LOG"
 EOF
 
-chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$test_bin/npm" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun" "$test_bin/herdr" "$test_bin/jq"
+chmod +x "$test_bin/uname" "$test_bin/curl" "$test_bin/chsh" "$test_bin/zsh" "$test_bin/ln" "$test_bin/launchctl" "$test_bin/git" "$node_bin/npm" "$test_bin/fnm" "$node_bin/node" "$node_bin/corepack" "$test_bin/trash" "$test_bin/diff-so-fancy" "$test_bin/bun" "$test_bin/herdr" "$test_bin/jq"
 PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH
 
@@ -189,6 +228,7 @@ prepare_home() {
   rm -rf "$work/fallback"
   rm -f "$test_bin/brew" "$test_bin/brew-count"
   unset FAIL_BREW_CALL INSTALL_BREW FAIL_BREW_DOWNLOAD FAIL_BOOTSTRAP TEST_BREW_SHELLENV FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
+  unset FAKE_ARCH FAIL_NODE_ENV FAIL_NODE_INSTALL FAIL_NODE_ARCH FAIL_NODE_NPM FAIL_COREPACK || true
   BREW_INSTALL_PATH="$apple_silicon_brew"
   export BREW_INSTALL_PATH
 }
@@ -257,38 +297,38 @@ grep -qx 'original' "$HOME/backups/.config/herdr/config.toml"
 printf 'PASS: Herdr installer recovers from failed linking without losing the backup\n'
 
 prepare_home
-expect_exit 64 /bin/sh "$root/mac/install.sh"
+expect_exit 64 env -u DOTFILES_PATH /bin/sh "$root/mac/install.sh"
 [ ! -s "$command_log" ]
 printf 'PASS: missing setup path stops before commands\n'
 
 prepare_home
-expect_exit 66 /bin/sh "$root/mac/install.sh" "$work/missing"
+expect_exit 66 env DOTFILES_PATH="$work/missing" /bin/sh "$root/mac/install.sh"
 [ ! -s "$command_log" ]
 printf 'PASS: invalid setup path stops before commands\n'
 
 prepare_home
-minimal_bin="$work/no-npm-bin"
+minimal_bin="$work/no-fnm-bin"
 mkdir -p "$minimal_bin"
-for name in dirname date curl zsh git; do
+for name in dirname date curl zsh git uname sh; do
   ln -s "$(command -v "$name")" "$minimal_bin/$name"
 done
-: > "$command_log"
-expect_exit 69 env PATH="$minimal_bin" /bin/sh "$root/install.sh"
-grep -Fxq 'npm is required.' "$work/stderr"
-[ ! -s "$command_log" ]
-printf 'PASS: missing npm stops the root installer before mutation\n'
+: >"$command_log"
+expect_exit 69 env FAKE_UNAME=Linux PATH="$minimal_bin" /bin/sh "$root/install.sh"
+grep -Fxq 'fnm is required.' "$work/stderr"
+[ ! -e "$HOME/.zshenv" ]
+printf 'PASS: non-Mac hosts require fnm before npm-dependent phases\n'
 
 prepare_home
 FAKE_UNAME=Linux
 export FAKE_UNAME
-expect_exit 69 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 69 /bin/sh "$root/mac/install.sh"
 [ ! -e "$HOME/.hushlogin" ]
 printf 'PASS: unsupported host stops before mutation\n'
 
 prepare_home
 missing_home="$work/missing-home"
 rm -rf "$missing_home"
-expect_exit 69 /usr/bin/env HOME="$missing_home" /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 69 /usr/bin/env HOME="$missing_home" /bin/sh "$root/mac/install.sh"
 [ ! -e "$missing_home" ]
 printf 'PASS: invalid HOME stops before mutation\n'
 
@@ -298,15 +338,25 @@ rm -rf "$preflight_bin"
 mkdir -p "$preflight_bin"
 cp "$test_bin/uname" "$preflight_bin/uname"
 ln -s "$(command -v date)" "$preflight_bin/date"
-expect_exit 69 /usr/bin/env PATH="$preflight_bin" /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 69 /usr/bin/env PATH="$preflight_bin" /bin/sh "$root/mac/install.sh"
 [ ! -e "$HOME/.hushlogin" ]
 printf 'PASS: missing curl stops before mutation\n'
 
 prepare_home
 install_brew_stub
+FAIL_BREW_CALL=1
+export FAIL_BREW_CALL
+expect_exit 42 /bin/sh "$root/mac/install.sh"
+if grep -Eq '^brew:(trust|bundle)' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: failed Brew shell initialization stops before trust and bundle\n'
+
+prepare_home
+install_brew_stub
 FAIL_BREW_CALL=2
 export FAIL_BREW_CALL
-expect_exit 42 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 42 /bin/sh "$root/mac/install.sh"
 grep -q '^brew:trust --tap jonahsnider/tap oven-sh/bun$' "$command_log"
 if grep -q '^brew:bundle ' "$command_log"; then
   exit 1
@@ -317,7 +367,7 @@ prepare_home
 install_brew_stub
 FAIL_BREW_CALL=3
 export FAIL_BREW_CALL
-expect_exit 42 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 42 /bin/sh "$root/mac/install.sh"
 [ ! -e "$HOME/.hushlogin" ]
 printf 'PASS: failed bundle stops the Mac installer\n'
 
@@ -334,7 +384,7 @@ printf 'PASS: failed Mac phase stops the root installer\n'
 
 prepare_home
 install_brew_stub
-expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 0 /bin/sh "$root/mac/install.sh"
 [ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
 [ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
 if grep -q '^curl:' "$command_log"; then
@@ -345,7 +395,7 @@ printf 'PASS: installer initializes Brew on PATH before bundling without bootstr
 prepare_home
 INSTALL_BREW=1
 export INSTALL_BREW
-expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 0 /bin/sh "$root/mac/install.sh"
 [ "$(grep -c '^bootstrap$' "$command_log")" -eq 1 ]
 [ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
 [ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
@@ -356,7 +406,7 @@ for fallback_brew in "$apple_silicon_brew" "$intel_brew"; do
   mkdir -p "$(dirname "$fallback_brew")"
   cp "$brew_template" "$fallback_brew"
   chmod +x "$fallback_brew"
-  expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+  expect_exit 0 /bin/sh "$root/mac/install.sh"
   [ "$(grep -c '^brew:shellenv sh$' "$command_log")" -eq 1 ]
   [ "$(grep -c '^brew:bundle ' "$command_log")" -eq 2 ]
   if grep -q '^curl:' "$command_log"; then
@@ -366,9 +416,17 @@ done
 printf 'PASS: installer finds Apple Silicon and Intel Brew outside PATH\n'
 
 prepare_home
+mkdir -p "${apple_silicon_brew%/brew}" "${intel_brew%/brew}"
+cp "$brew_template" "$apple_silicon_brew"
+printf '#!/bin/sh\nexit 99\n' >"$intel_brew"
+chmod +x "$apple_silicon_brew" "$intel_brew"
+expect_exit 0 env PATH="${intel_brew%/brew}:$PATH" /bin/sh "$root/mac/install.sh"
+printf 'PASS: Apple Silicon Brew takes precedence over a legacy Brew on PATH\n'
+
+prepare_home
 FAIL_BREW_DOWNLOAD=1
 export FAIL_BREW_DOWNLOAD
-expect_exit 22 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 22 /bin/sh "$root/mac/install.sh"
 if grep -Eq '^(bootstrap|brew:)' "$command_log"; then
   exit 1
 fi
@@ -378,7 +436,7 @@ printf 'PASS: failed Brew download never executes partial installer output\n'
 prepare_home
 FAIL_BOOTSTRAP=1
 export FAIL_BOOTSTRAP
-expect_exit 41 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 41 /bin/sh "$root/mac/install.sh"
 grep -qx 'bootstrap' "$command_log"
 if grep -q '^brew:' "$command_log"; then
   exit 1
@@ -390,30 +448,16 @@ prepare_home
 install_brew_stub
 cursor_projects="$HOME/Library/Application Support/Cursor/User/globalStorage/alefragnani.project-manager/projects.json"
 [ ! -d "$(dirname "$cursor_projects")" ]
-expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 0 /bin/sh "$root/mac/install.sh"
 [ -L "$cursor_projects" ]
 [ "$(readlink "$cursor_projects")" = "$root/mac/editors/vscode/projects.json" ]
 cmp "$root/mac/editors/vscode/projects.json" "$cursor_projects"
 printf 'PASS: installer creates the Cursor Project Manager directory and links projects\n'
 
 prepare_home
-install_brew_stub
-expect_exit 0 /bin/sh "$root/mac/install.sh" "$root"
-[ -L "$HOME/.local/bin/ghostty-remote-tmux" ]
-[ "$(readlink "$HOME/.local/bin/ghostty-remote-tmux")" = "$root/terminal/bin/ghostty-remote-tmux" ]
-printf 'PASS: installer links ghostty-remote-tmux\n'
-
-prepare_home
-install_brew_stub
-mkdir -p "$HOME/.local/bin"
-: >"$HOME/.local/bin/ghostty-remote-tmux"
-expect_exit 73 /bin/sh "$root/mac/install.sh" "$root"
-printf 'PASS: installer refuses to replace a non-symlink ghostty-remote-tmux\n'
-
-prepare_home
 INSTALL_BREW=0
 export INSTALL_BREW
-expect_exit 69 /bin/sh "$root/mac/install.sh" "$root"
+expect_exit 69 /bin/sh "$root/mac/install.sh"
 [ ! -e "$HOME/.hushlogin" ]
 printf 'PASS: missing Brew stops after bootstrap\n'
 
@@ -435,7 +479,7 @@ ln -s "$root/terminal/claude/hooks/auto-improve.py" "$HOME/.claude/hooks/auto-im
 FAIL_NPM=1
 export FAIL_NPM
 expect_exit 45 /bin/sh "$root/install.sh"
-[ "$(grep -c '^npm:' "$command_log")" -eq 1 ]
+[ "$(grep -c '^npm:ci.*terminal/claude/hooks' "$command_log")" -eq 1 ]
 grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --no-fund" "$command_log"
 [ ! -e "$HOME/.claude/hooks/auto-improve.ts" ]
 [ ! -L "$HOME/.claude/hooks/auto-improve.ts" ]
@@ -468,10 +512,10 @@ mkdir -p "$HOME/.claude/hooks"
 printf 'custom hook\n' >"$HOME/.claude/hooks/auto-improve.ts"
 expect_exit 73 /bin/sh "$root/install.sh"
 grep -qx 'custom hook' "$HOME/.claude/hooks/auto-improve.ts"
-if grep -q '^npm:' "$command_log"; then
+if grep -q '^npm:ci.*terminal/claude/hooks' "$command_log"; then
   exit 1
 fi
-printf 'PASS: unexpected hook destination stops before npm\n'
+printf 'PASS: unexpected hook destination stops before hook npm install\n'
 
 prepare_home
 install_brew_stub
@@ -483,7 +527,7 @@ printf 'PASS: failed shell change stops Zim installation\n'
 
 prepare_home
 install_brew_stub
-expect_exit 0 /bin/sh "$root/install.sh"
+expect_exit 0 env -u DOTFILES_PATH /bin/sh "$root/install.sh"
 [ -L "$HOME/.zshenv" ]
 grep -q '^chsh:' "$command_log"
 grep -q '^zsh:' "$command_log"
@@ -492,16 +536,56 @@ grep -q '^git:clone .* https://github.com/o0th/tmux-nova.git ' "$command_log"
 [ -d "$HOME/.tmux/plugins/tmux-nova" ]
 [ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
 cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-printf 'PASS: successful Mac phase reaches root phases\n'
+printf 'PASS: root exports DOTFILES_PATH on a fresh installation and reaches all phases\n'
+
+grep -Fxq 'fnm:install --arch arm64 22.22.3' "$command_log"
+grep -Fxq 'fnm:default 22.22.3' "$command_log"
+grep -Fxq 'fnm:use default' "$command_log"
+grep -Fxq 'corepack:prepare pnpm@10.30.3 --activate' "$command_log"
+grep -Fxq "npm:ci --prefix $HOME/.local/share/node-tools --omit=dev --no-audit --no-fund" "$command_log"
+[ "$(readlink "$HOME/.local/share/node-tools/package.json")" = "$root/terminal/node/package.json" ]
+[ "$(readlink "$HOME/.local/share/node-tools/package-lock.json")" = "$root/terminal/node/package-lock.json" ]
+printf 'PASS: root provisions native Node and CLIs before npm-dependent phases\n'
+
+: >"$command_log"
+expect_exit 0 /bin/sh "$root/terminal/node/install.sh"
+grep -Fxq "npm:ci --prefix $HOME/.local/share/node-tools --omit=dev --no-audit --no-fund" "$command_log"
+if grep -q '^ln:.*node-tools' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: reinstalling shared CLIs keeps the manifest links unchanged\n'
+
+for failure in FAIL_NODE_ENV:46 FAIL_NODE_INSTALL:47 FAIL_NODE_ARCH:1 FAIL_COREPACK:48 FAIL_NODE_NPM:49; do
+  prepare_home
+  install_brew_stub
+  expect_exit "${failure#*:}" env "${failure%:*}=1" /bin/sh "$root/install.sh"
+  [ ! -e "$HOME/.zshenv" ]
+  if grep -q '^npm:ci.*terminal/claude/hooks' "$command_log"; then
+    exit 1
+  fi
+done
+printf 'PASS: Node environment, install, architecture, and package failures stop later phases\n'
+
+prepare_home
+expect_exit 0 env FAKE_ARCH=x86_64 /bin/sh "$root/terminal/node/install.sh"
+grep -Fxq 'fnm:install --arch x64 22.22.3' "$command_log"
+printf 'PASS: Node provisioning selects native x64 on Intel hosts\n'
+
+prepare_home
+expect_exit 69 env FAKE_ARCH=unsupported /bin/sh "$root/terminal/node/install.sh"
+if grep -q '^fnm:' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: unsupported architecture stops before Node installation\n'
 
 prepare_home
 install_brew_stub
 mkdir -p "$HOME/.tmux/plugins/tmux-nova"
-expect_exit 0 /bin/sh "$root/install.sh"
+expect_exit 0 env DOTFILES_PATH="$work/missing" /bin/sh "$root/install.sh"
 if grep -q 'tmux-nova' "$command_log"; then
   exit 1
 fi
-printf 'PASS: installed tmux-nova plugin is not cloned again\n'
+printf 'PASS: root replaces stale DOTFILES_PATH and does not clone installed tmux-nova again\n'
 
 prepare_home
 install_brew_stub

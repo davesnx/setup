@@ -1,9 +1,10 @@
 #! /usr/bin/env sh
 
-setup_path="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
+DOTFILES_PATH="$(CDPATH='' cd "$(dirname "$0")" && pwd)"
+export DOTFILES_PATH
 
-if [ ! -f "$setup_path/mac/brew/Brewfile" ]; then
-  echo "Invalid setup path: $setup_path" >&2
+if [ ! -f "$DOTFILES_PATH/mac/brew/Brewfile" ]; then
+  echo "Invalid setup path: $DOTFILES_PATH" >&2
   exit 66
 fi
 
@@ -12,7 +13,7 @@ if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
   exit 69
 fi
 
-. "$setup_path/prelude.sh"
+. "$DOTFILES_PATH/prelude.sh"
 
 need curl
 if [ ! -x /bin/bash ]; then
@@ -21,27 +22,35 @@ if [ ! -x /bin/bash ]; then
 fi
 need zsh
 need git
-need npm
 
-echo "👉 dotfiles path: '$setup_path'"
+echo "👉 dotfiles path: '$DOTFILES_PATH'"
 
 if [ "$(uname -s)" = Darwin ]; then
   echo ""
   echo "Installing custom packages"
   echo ""
-  sh "$setup_path/mac/install.sh" "$setup_path"
+  sh "$DOTFILES_PATH/mac/install.sh"
+  PATH="${BREW_SEARCH_PATHS:-/opt/homebrew/bin:/usr/local/bin}:$PATH"
 fi
 
-sh "$setup_path/git/install.sh"
-sh "$setup_path/local/install.sh"
-sh "$setup_path/terminal/zsh/install.sh"
-sh "$setup_path/terminal/tmux/install.sh"
-sh "$setup_path/terminal/herdr/install.sh"
-sh "$setup_path/terminal/htop/install.sh"
+sh "$DOTFILES_PATH/terminal/node/install.sh"
+# The Node installer runs in a child shell; activate its default here too.
+fnm_env=$(fnm env --shell bash)
+eval "$fnm_env"
+fnm use default
+need npm
+PATH="$HOME/.local/share/node-tools/node_modules/.bin:$PATH"
+
+sh "$DOTFILES_PATH/git/install.sh"
+sh "$DOTFILES_PATH/local/install.sh"
+sh "$DOTFILES_PATH/terminal/zsh/install.sh"
+sh "$DOTFILES_PATH/terminal/tmux/install.sh"
+sh "$DOTFILES_PATH/terminal/herdr/install.sh"
+sh "$DOTFILES_PATH/terminal/htop/install.sh"
 
 # Shared agent rules and skills first; Claude Code and OpenCode link into them.
-sh "$setup_path/agents/install.sh"
-sh "$setup_path/terminal/claude/install.sh"
-sh "$setup_path/terminal/opencode/install.sh"
+sh "$DOTFILES_PATH/agents/install.sh"
+sh "$DOTFILES_PATH/terminal/claude/install.sh"
+sh "$DOTFILES_PATH/terminal/opencode/install.sh"
 
-sh "$setup_path/terminal/bin/eval-harness/install.sh"
+sh "$DOTFILES_PATH/terminal/bin/eval-harness/install.sh"

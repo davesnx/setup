@@ -3,6 +3,8 @@
 set -eu
 
 source_dir=$(CDPATH='' cd "$(dirname "$0")" && pwd)
+DOTFILES_PATH=$(CDPATH='' cd "$source_dir/../.." && pwd)
+export DOTFILES_PATH
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 HOME="$work/home with spaces & symbols"

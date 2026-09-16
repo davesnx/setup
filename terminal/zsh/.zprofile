@@ -22,7 +22,7 @@ paths=(
   "$DOTFILES_PATH/terminal/bin/fs"
   "$HOME/bin"
   "$HOME/.local/bin"
-  "$HOME/.npm/node_modules/bin"
+  "$HOME/.local/share/node-tools/node_modules/.bin"
   "$HOME/.deno/bin"
   "$HOME/.cargo/bin"
   "$BUN_INSTALL/bin"

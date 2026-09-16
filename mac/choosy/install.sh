@@ -2,14 +2,12 @@
 
 set -eu
 
-source_dir=$(CDPATH='' cd "$(dirname "$0")" && pwd)
-
 if [ "$(uname -s)" != Darwin ] || [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
   printf 'Choosy restore requires macOS and an existing HOME directory.\n' >&2
   exit 69
 fi
 
-. "$source_dir/../../prelude.sh"
+. "$DOTFILES_PATH/prelude.sh"
 
 need plutil
 need defaults
@@ -23,7 +21,7 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 for name in behaviours preferences; do
   file="$work/$name.plist"
-  cp "$source_dir/$name.plist" "$file"
+  cp "$DOTFILES_PATH/mac/choosy/$name.plist" "$file"
   plutil -lint "$file"
   case "$name" in
   behaviours)

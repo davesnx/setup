@@ -4,7 +4,7 @@ The root installer links `config.toml` to `~/.config/herdr/config.toml`.
 To install only this configuration, run from the repository root:
 
 ```sh
-sh terminal/herdr/install.sh
+DOTFILES_PATH="$PWD" sh terminal/herdr/install.sh
 ```
 
 Existing configuration is backed up through `prelude.sh`. Repeated runs leave

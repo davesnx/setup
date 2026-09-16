@@ -41,6 +41,12 @@ echo "PASS: never points the link at itself"
 echo "PASS: does nothing outside an SSH session"
 
 zsh_bin=$(command -v zsh)
+actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -c 'printenv DOTFILES_PATH')
+[ "$actual" = "$root" ] || fail "non-login shell did not export DOTFILES_PATH"
+actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -c 'sh -c '\''printenv DOTFILES_PATH'\''')
+[ "$actual" = "$root" ] || fail "child sh did not inherit DOTFILES_PATH"
+echo "PASS: non-login shells export DOTFILES_PATH to child sh processes"
+
 actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -c 'printenv PATH')
 [ "$actual" = "$work/.local/bin:/usr/bin:/bin" ] || fail "non-login shell PATH misses local binaries"
 echo "PASS: non-login shells prepend local binaries to inherited PATH"
@@ -56,7 +62,7 @@ actual=$(env -i HOME="$work" PATH="$inherited" "$zsh_bin" -c 'printenv PATH')
 echo "PASS: local bin matching uses whole PATH entries"
 
 mkdir -p "$work/.local/bin"
-ln -s /bin/true "$work/.local/bin/setup-path-probe"
+ln -s /usr/bin/true "$work/.local/bin/setup-path-probe"
 env -i HOME="$work" PATH=/usr/bin:/bin SSH_CONNECTION=x "$zsh_bin" -c \
   'setup-path-probe' || fail "non-login SSH command could not find local binaries"
 echo "PASS: non-login SSH commands can run local binaries"

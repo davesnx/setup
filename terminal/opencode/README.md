@@ -4,9 +4,10 @@ OpenCode configuration, agents, and OpenCode-only skills.
 
 ## Install
 
-Clone this repository, then select the profile for the machine:
+From the repository root, select the profile for the machine:
 
 ```sh
+export DOTFILES_PATH="$PWD"
 ./terminal/opencode/install.sh local
 ./terminal/opencode/install.sh ssh
 ```
@@ -181,7 +182,7 @@ browser MCP server. See [`agents/README.md`](../../agents/README.md#browser-cont
 
 The command, dependencies, patches, shims, tests, and installer live in
 [`terminal/bin/eval-harness`](../bin/eval-harness/README.md). Run
-`sh terminal/bin/eval-harness/install.sh` from the repository root to install it.
+`DOTFILES_PATH="$PWD" sh terminal/bin/eval-harness/install.sh` from the repository root to install it.
 The OpenCode installer no longer installs the harness.
 
 ## Keep private

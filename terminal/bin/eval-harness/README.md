@@ -9,7 +9,7 @@ tests. Skill cases and baselines stay with their skills.
 Install with Node.js, npm, Git, and Bash available. From the repository root:
 
 ```sh
-sh terminal/bin/eval-harness/install.sh
+DOTFILES_PATH="$PWD" sh terminal/bin/eval-harness/install.sh
 ~/.local/bin/eval-harness --help
 ```
 
