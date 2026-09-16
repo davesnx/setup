@@ -30,7 +30,7 @@ if [ -L "$CONFIG_HOME/pstack-models.md" ] &&
   rm "$CONFIG_HOME/pstack-models.md"
 fi
 
-for name in agents skills themes; do
+for name in agents skills themes vendor; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name"
 done
 
