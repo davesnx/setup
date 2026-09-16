@@ -31,6 +31,12 @@ It also creates `~/.claude/hooks` and links two hooks with guards:
   that path makes the installer refuse and exit with status 73, rather than
   overwrite it.
 
+Two more SessionStart hooks run commands inline from `settings.json`. One runs
+`~/.claude/hooks/herdr-agent-state.sh` when that file exists; Herdr installs and
+updates it, and it is not part of this repository. The other prints a warning
+into the session when `~/.claude/CLAUDE.md` or the skills link is missing, which
+means the installers have not run since the linked sources moved.
+
 The installer uses npm to install the hook's locked production dependencies
 before creating its link. It then removes the old Python hook link only if
 it points to this repository's former hook. The hook requires Node 22.18 or later.
