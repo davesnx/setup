@@ -17,8 +17,9 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 docs::parse "$@"
 
 # Create temporary files with proper extensions
-temp_ml=$(mktemp).ml
-trap "rm -f $temp_ml" EXIT
+temp_dir=$(mktemp -d)
+trap 'rm -rf -- "$temp_dir"' EXIT
+temp_ml="$temp_dir/input.ml"
 
 # Check if input is coming from stdin
 if [ -t 0 ]; then
@@ -33,8 +34,7 @@ if [ -t 0 ]; then
 else
   # Input is from stdin
   if [[ "$1" == "--reason" ]]; then
-    temp_re=$(mktemp).re
-    trap "rm -f $temp_re $temp_ml" EXIT
+    temp_re="$temp_dir/input.re"
 
     cat > "$temp_re"
     refmt --parse re --assume-explicit-arity --print ml "$temp_re" > "$temp_ml"

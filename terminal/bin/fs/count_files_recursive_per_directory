@@ -12,4 +12,8 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 
 docs::parse "$@"
 
-ls -d */ | xargs -I _ sh -c "find \"_\" -type f | wc -l | xargs echo _"
+for directory in ./*/; do
+  [[ -d "$directory" ]] || continue
+  count=$(find "$directory" -type f -print0 | tr -cd '\0' | wc -c)
+  printf '%s %d\n' "${directory#./}" "$count"
+done

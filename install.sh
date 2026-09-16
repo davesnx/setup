@@ -16,10 +16,7 @@ fi
 . "$DOTFILES_PATH/prelude.sh"
 
 need curl
-if [ ! -x /bin/bash ]; then
-  echo "/bin/bash is required." >&2
-  exit 69
-fi
+need /bin/bash
 need zsh
 need git
 

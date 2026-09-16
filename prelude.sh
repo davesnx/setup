@@ -20,15 +20,19 @@ need() {
   fi
 }
 
+need_source() {
+  if [ ! -e "$1" ]; then
+    printf 'Missing setup source: %s\n' "$1" >&2
+    exit 1
+  fi
+}
+
 # link_path SOURCE TARGET: nothing happens when TARGET already links to SOURCE,
 # so reruns are silent. Any other existing TARGET moves into the backup
 # directory, keyed by its path under HOME, so two files with the same name
 # cannot collide.
 link_path() {
-  if [ ! -e "$1" ]; then
-    printf 'Missing setup source: %s\n' "$1" >&2
-    exit 1
-  fi
+  need_source "$1"
   if [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]; then
     return
   fi
@@ -46,10 +50,7 @@ link_path() {
 # file or directory there stops the installer with status 73, an old link is
 # replaced, and nothing is moved.
 link_path_guarded() {
-  if [ ! -e "$1" ]; then
-    printf 'Missing setup source: %s\n' "$1" >&2
-    exit 1
-  fi
+  need_source "$1"
   if [ -e "$2" ] && [ ! -L "$2" ]; then
     printf 'Cannot replace %s: it is not a link\n' "$2" >&2
     exit 73

@@ -185,13 +185,10 @@ alias listen="lsof -n | grep LISTEN"
 alias ghostty="/Applications/Terminal.app/Contents/MacOS/ghostty"
 
 function _calcram() {
-  local sum
-  sum=0
-  for i in `\ps aux | grep -i "$1" | grep -v "grep" | awk '{print $6}'`; do
-    sum=$(($i + $sum))
-  done
-  sum=$(echo "scale=0; $sum / 1024.0" | bc)
-  echo $sum
+  local pid
+  while IFS= read -r pid; do
+    ps -o rss= -p "$pid"
+  done < <(pgrep -if -- "$1") | awk '{sum += $1} END {print int(sum / 1024)}'
 }
 
 function ram() {
@@ -203,11 +200,11 @@ function ram() {
   fi
 
   while true; do
-    sum=$(_calcram $app)
+    sum=$(_calcram "$app")
     if [[ $sum != "0" ]]; then
-      echo -en "${fg[blue]}${app}${reset_color} uses ${fg[green]}${sum}${reset_color} MB of RAM\r"
+      printf '\033[34m%s\033[0m uses \033[32m%s\033[0m MB of RAM\r' "$app" "$sum"
     else
-      echo -en "No active processes matching pattern '${fg[blue]}${app}${reset_color}'\r"
+      printf "No active processes matching pattern '\033[34m%s\033[0m'\r" "$app"
     fi
     sleep 1
   done

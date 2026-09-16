@@ -6,9 +6,8 @@ echoerr() {
 
 _export_colors() {
    if ! ${DOT_COLORS_EXPORTED:-false}; then
-      if [ -z ${TERM:-} ] || [ $TERM = "dumb" ]; then
+      if [ -z "${TERM:-}" ] || [ "$TERM" = "dumb" ]; then
          bold=""
-         underline=""
          freset=""
          purple=""
          red=""
@@ -17,7 +16,6 @@ _export_colors() {
          blue=""
       else
          bold=$(tput bold)
-         underline=$(tput sgr 0 1)
          freset=$(tput sgr0)
          purple=$(tput setaf 171)
          red=$(tput setaf 1)
@@ -45,9 +43,9 @@ _export_colors() {
 
 log::color() {
    _export_colors
-   local bg=false
-   case "$@" in
-      *reset*) echo "\e[0m"; exit 0 ;;
+   local bg=false color mod
+   case "$*" in
+      *reset*) printf '\033[0m\n'; return 0 ;;
       *black*) color=$log_black ;;
       *red*) color=$log_red ;;
       *green*) color=$log_green ;;
@@ -57,50 +55,54 @@ log::color() {
       *cyan*) color=$log_cyan ;;
       *white*) color=$log_white ;;
    esac
-   case "$@" in
+   case "$*" in
       *regular*) mod=$log_regular ;;
       *bold*) mod=$log_bold ;;
       *underline*) mod=$log_underline ;;
    esac
-   case "$@" in
+   case "$*" in
       *background*) bg=true ;;
       *bg*) bg=true ;;
    esac
 
    if $bg; then
-      echo "\e[${color}m"
+      printf '\033[%sm\n' "$color"
    else
-      echo "\e[${mod:-$log_regular};${color}m"
+      printf '\033[%s;%sm\n' "${mod:-$log_regular}" "$color"
    fi
 }
 
 if [ -z ${LOG_FILE+x} ]; then
-   readonly LOG_FILE="/tmp/$(basename "$0").log"
+   LOG_FILE="/tmp/$(basename "$0").log"
+   readonly LOG_FILE
 fi
 
 _log() {
-   local template=$1
+   local prefix=$1 message
+   local messages=()
    shift
+   for message in "$@"; do
+      messages+=("${prefix}${message}${freset}")
+   done
    if ${log_to_file:-false}; then
-      echoerr -e $(printf "$template" "$@") | tee -a "$LOG_FILE" >&2
+      printf '%s\n' "${messages[@]}" | tee -a "$LOG_FILE" >&2
    else
-      echoerr -e $(printf "$template" "$@")
+      printf '%s\n' "${messages[@]}" >&2
    fi
 }
 
 _header() {
-   local TOTAL_CHARS=60
-   local total=$TOTAL_CHARS-2
+   local total=58
    local size=${#1}
-   local left=$((($total - $size) / 2))
-   local right=$(($total - $size - $left))
-   printf "%${left}s" '' | tr ' ' =
-   printf " $1 "
-   printf "%${right}s" '' | tr ' ' =
+   local left=$(((total - size) / 2))
+   local right=$((total - size - left))
+   printf '%*s' "$left" '' | tr ' ' =
+   printf ' %s ' "$1"
+   printf '%*s' "$right" '' | tr ' ' =
 }
 
-log::header() { _export_colors && _log "\n${bold}${purple}$(_header "$1")${freset}\n"; }
-log::success() { _export_colors && _log "${green}✔ %s${freset}\n" "$@"; }
-log::error() { _export_colors && _log "${red}✖ %s${freset}\n" "$@"; }
-log::warning() { _export_colors && _log "${tan}➜ %s${freset}\n" "$@"; }
-log::note() { _export_colors && _log "${blue}%s${freset}\n" "$@"; }
+log::header() { _export_colors && _log "" "$(printf '\n%s%s' "${bold}${purple}" "$(_header "$1")")"; }
+log::success() { _export_colors && _log "${green}✔ " "$@"; }
+log::error() { _export_colors && _log "${red}✖ " "$@"; }
+log::warning() { _export_colors && _log "${tan}➜ " "$@"; }
+log::note() { _export_colors && _log "$blue" "$@"; }

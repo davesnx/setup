@@ -6,10 +6,9 @@ coll::is_empty() {
 }
 
 coll::contains_element() {
-   elements="${@:2}"
-   element="${1}"
-
-   for e in ${elements[@]}; do
+   local element=$1 e
+   shift
+   for e in "$@"; do
       if [[ "$e" == "${element}" ]]; then
          return 1
       fi

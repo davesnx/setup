@@ -12,4 +12,8 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 
 docs::parse "$@"
 
-git log --reverse --branches --since=$(if [[ "Mon" == "$(date +%a)" ]]; then echo "last friday"; else echo "yesterday"; fi) --author=$(git config --get user.email) --format=format:'%C(cyan) %ad %C(yellow)%h %Creset %s %Cgreen%d' --date=local
+since=yesterday
+if [[ "Mon" == "$(date +%a)" ]]; then
+  since='last friday'
+fi
+git log --reverse --branches --since="$since" --author="$(git config --get user.email)" --format=format:'%C(cyan) %ad %C(yellow)%h %Creset %s %Cgreen%d' --date=local

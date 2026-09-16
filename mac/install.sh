@@ -23,10 +23,7 @@ fi
 . "$DOTFILES_PATH/prelude.sh"
 
 need curl
-if [ ! -x /bin/bash ]; then
-  echo "/bin/bash is required." >&2
-  exit 69
-fi
+need /bin/bash
 
 PATH="${BREW_SEARCH_PATHS:-/opt/homebrew/bin:/usr/local/bin}:$PATH"
 if ! command -v brew >/dev/null 2>&1; then
