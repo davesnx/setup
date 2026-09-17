@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { createHash, randomBytes } from "node:crypto";
+import { spawn } from "node:child_process";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import {
   closeSync,
   fsyncSync,
@@ -16,17 +17,62 @@ import {
 import { homedir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
-const REVIEW =
-  "Automatic, one-per-session auto-improve checkpoint. Do not run the review in " +
-  "this conversation. Start it as a background fork with the Agent tool " +
-  "(subagent_type fork), then end the turn so the user can keep working. The " +
-  "fork loads the auto-improve skill, inspects the current session and relevant " +
-  "setup files read-only, does the work itself without further subagents, and " +
-  "returns at most 3 concrete, evidence-backed proposals for skills, hooks, " +
-  "scripts, or rules, or reports that none is useful. Make no setup or code " +
-  "edits, commits, or external calls to publish. When the fork result arrives, " +
-  "relay the proposals in a short list and ask which to apply, or finish " +
-  "quietly. Do not issue another automatic review in this session.";
+// Positional args only ($1..$7, plus the inherited $DOTFILES_PATH env var):
+// never interpolated, so a prompt or path can hold anything without
+// touching the script text.
+const REVIEWER_SCRIPT = `
+dir=$1
+uuid=$2
+session_id=$3
+cwd=$4
+transcript=$5
+date=$6
+prompt=$7
+tmp="$dir/$uuid.report.md.tmp"
+err="$dir/$uuid.err"
+{
+  echo "# auto-improve report"
+  echo "source_session: $session_id"
+  echo "cwd: $cwd"
+  echo "transcript: $transcript"
+  echo "resume: claude --resume $uuid"
+  echo "date: $date"
+  echo ""
+} > "$tmp"
+if [ -n "$DOTFILES_PATH" ]; then
+  claude -p "$prompt" --session-id "$uuid" --permission-mode plan --add-dir "$DOTFILES_PATH" >> "$tmp" 2> "$err"
+else
+  claude -p "$prompt" --session-id "$uuid" --permission-mode plan >> "$tmp" 2> "$err"
+fi
+status=$?
+if [ "$status" -eq 0 ]; then
+  [ -s "$err" ] || rm -f "$err"
+  mv "$tmp" "$dir/$uuid.report.md"
+else
+  cat "$err" >> "$tmp"
+  rm -f "$err"
+  mv "$tmp" "$dir/$uuid.failed.md"
+fi
+`;
+
+function buildPrompt(transcriptPath: string, cwd: string): string {
+  return (
+    "Automatic, one-per-session auto-improve checkpoint for another Claude " +
+    "Code session. Load the auto-improve skill with the Skill tool and " +
+    `follow it. Evidence: that session's transcript at ${transcriptPath} ` +
+    "(JSONL; read all of it, and only that transcript) with working " +
+    `directory ${cwd}. Inspect the relevant skills, hooks, scripts, and ` +
+    "rules read-only. Do the work yourself without subagents. Return at " +
+    "most 3 concrete, evidence-backed proposals for skills, hooks, scripts, " +
+    "or rules, each with its evidence, target path, change, and " +
+    "verification, or state that none is useful. This run is read-only: " +
+    "make no edits, commits, or external calls. Plan mode is only the " +
+    "read-only guard: do not write a plan file, do not start Explore or Plan " +
+    "agents, and do not call ExitPlanMode; answer with the proposals " +
+    "directly. The user may resume this session later; apply a proposal " +
+    "only when they ask for it then."
+  );
+}
 
 type State = {
   current_prompt_id: string | null;
@@ -83,6 +129,7 @@ function parseState(value: unknown): State {
 }
 
 async function main() {
+  if (process.env.AUTO_IMPROVE_REVIEWER) return;
   let phase = "input";
   try {
     const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
@@ -171,18 +218,42 @@ async function main() {
         rmSync(temporary, { force: true });
       }
 
-      // Persist first: a crash before output may skip a review, never repeat it.
+      // Persist first: a crash before the spawn may skip a review, never repeat it.
       if (state.issued) {
-        phase = "output";
-        writeSync(
-          1,
-          JSON.stringify({
-            hookSpecificOutput: {
-              hookEventName: "Stop",
-              additionalContext: REVIEW,
-            },
-          }) + "\n",
+        phase = "spawn";
+        const cwdField = event.cwd;
+        const cwd =
+          typeof cwdField === "string" && !isFalsy(cwdField)
+            ? cwdField
+            : process.cwd();
+        const transcriptField = event.transcript_path;
+        const transcriptPath =
+          typeof transcriptField === "string" && !isFalsy(transcriptField)
+            ? transcriptField
+            : "unknown";
+        const reviewId = randomUUID();
+        const child = spawn(
+          "sh",
+          [
+            "-c",
+            REVIEWER_SCRIPT,
+            "sh",
+            directory,
+            reviewId,
+            sessionKey,
+            cwd,
+            transcriptPath,
+            new Date().toISOString(),
+            buildPrompt(transcriptPath, cwd),
+          ],
+          {
+            detached: true,
+            stdio: "ignore",
+            env: { ...process.env, AUTO_IMPROVE_REVIEWER: "1" },
+            cwd,
+          },
         );
+        child.unref();
       }
     } finally {
       closeSync(lock);
