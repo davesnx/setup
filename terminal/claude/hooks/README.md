@@ -13,18 +13,31 @@ the script to `~/.claude/hooks/auto-improve.ts`.
 It removes an old Python link only when that link points to this repository's
 former hook. It preserves unrelated files and links.
 
-The hook requests one read-only review after three completed prompts in a
-session. Duplicate events, subagents, and hook continuations do not count.
-It keeps the existing JSON state and locks under
-`${XDG_STATE_HOME:-$HOME/.local/state}/auto-improve/claude`.
+After three completed prompts in a session, the `Stop` hook starts one
+detached, headless reviewer: `claude -p` in `--permission-mode plan`, given
+that session's transcript path as evidence. It runs independently of the
+working session; nothing is injected into it, and the hook's own process
+exits immediately after starting the reviewer. Duplicate events, subagents,
+and hook continuations do not count toward the three prompts.
+
+The hook keeps its JSON state and locks under
+`${XDG_STATE_HOME:-$HOME/.local/state}/auto-improve/claude`. Reports land in
+that same directory as `<uuid>.report.md`; a run that fails leaves
+`<uuid>.failed.md` instead. The
+[statusline](../statusline.ts) shows how many unread reports exist. Read one
+with `cat`, then apply a proposal by running `claude --resume <uuid>` (leave
+plan mode first if the resumed session is still in it). Delete the report
+file to dismiss it. The reviewer's own hooks stay quiet, since it runs with
+`AUTO_IMPROVE_REVIEWER=1` in its environment.
+
 Script errors produce a diagnostic without a review and exit successfully.
 Both configured commands also use `|| true`, so missing Node, a missing
 script, syntax errors, nonzero exits, and process crashes do not block a
 prompt. Diagnostics remain visible. The hooks retain their five-second
 timeout.
 
-The state is saved before the review is sent. A crash between those steps
-can skip a review, but cannot repeat it.
+The state is saved before the reviewer is started. A crash between those
+steps can skip a review, but cannot repeat it.
 
 ## Disable automatic reviews
 

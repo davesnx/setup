@@ -14,6 +14,7 @@ import {
   readFileSync,
   readdirSync,
   readlinkSync,
+  realpathSync,
   rmSync,
   statSync,
   symlinkSync,
@@ -50,6 +51,7 @@ describe("Claude auto-improve", () => {
   let installedHook: string;
   let stateRoot: string;
   let directory: string;
+  let bin: string;
   let env: Record<string, string | undefined>;
 
   beforeEach(() => {
@@ -60,11 +62,20 @@ describe("Claude auto-improve", () => {
     hookDirectory = join(home, ".claude/hooks");
     installedHook = join(hookDirectory, "auto-improve.ts");
     mkdirSync(hookDirectory, { recursive: true });
-    const bin = join(home, "bin");
+    bin = join(home, "bin");
     mkdirSync(bin);
     writeFileSync(
       join(bin, "npm"),
       '#!/bin/sh\nprintf "%s\\n" "$@" >> "$NPM_TEST_LOG"\nexit "${NPM_TEST_EXIT_CODE:-0}"\n',
+      { mode: 0o700 },
+    );
+    // A stub so an issued review never shells out to the real Claude Code CLI.
+    writeFileSync(
+      join(bin, "claude"),
+      `#!/bin/sh
+printf 'stub report\n'
+exit 0
+`,
       { mode: 0o700 },
     );
     stateRoot = join(home, "state");
@@ -76,11 +87,31 @@ describe("Claude auto-improve", () => {
       PATH: `${bin}:${dirname(process.execPath)}:${process.env.PATH ?? ""}`,
       NPM_TEST_LOG: join(home, "npm-args"),
       NPM_TEST_EXIT_CODE: "0",
+      // terminal/claude/install.sh reads this rather than recomputing it; an
+      // ambient value from the caller's own shell would install symlinks
+      // that point outside this checkout.
+      DOTFILES_PATH: ROOT,
+      // A worktree's node_modules here is a symlink to another checkout's.
+      // Loading koffi's native addon through that symlink, after this
+      // process has already read stdin once, resolves to a build missing
+      // its exports on this Node version; preserving symlinks avoids the
+      // realpath lookup that triggers it.
+      NODE_OPTIONS: "--preserve-symlinks",
     };
   });
 
-  afterEach(() => {
-    rmSync(temporary, { recursive: true, force: true });
+  afterEach(async () => {
+    // A detached reviewer from this test may still be writing its report;
+    // retry past the transient ENOTEMPTY that races with it.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        rmSync(temporary, { recursive: true, force: true });
+        return;
+      } catch (error) {
+        if (attempt >= 20) throw error;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+    }
   });
 
   function event(
@@ -184,32 +215,30 @@ describe("Claude auto-improve", () => {
     return JSON.parse(readFileSync(statePath(), "utf8"));
   }
 
-  function assertReview(output: string) {
-    const response = JSON.parse(output);
-    assert.deepEqual(Object.keys(response), ["hookSpecificOutput"]);
-    const specific = response.hookSpecificOutput;
-    assert.deepEqual(Object.keys(specific).sort(), [
-      "additionalContext",
-      "hookEventName",
-    ]);
-    assert.equal(specific.hookEventName, "Stop");
-    for (const text of [
-      "auto-improve",
-      "one-per-session",
-      "Do not run the review in this",
-      "background fork",
-      "end the turn",
-      "read-only",
-      "at most 3",
-      "evidence-backed",
-      "ask which to apply",
-      "Make no setup or code edits",
-      "commits",
-      "external calls to publish",
-      "finish quietly",
-      "Do not issue another automatic review",
-    ]) {
-      assert.ok(specific.additionalContext.includes(text), text);
+  function names(): Set<string> {
+    try {
+      return new Set(readdirSync(directory));
+    } catch {
+      return new Set(); // Not created yet: no session has completed a prompt.
+    }
+  }
+
+  // Report generation is async and detached; poll for it instead of a fixed wait.
+  async function waitForNew(
+    predicate: (name: string) => boolean,
+    before: Set<string>,
+    timeoutMs = 5000,
+  ): Promise<string> {
+    const deadline = Date.now() + timeoutMs;
+    for (;;) {
+      const match = readdirSync(directory).find(
+        (name) => predicate(name) && !before.has(name),
+      );
+      if (match) return match;
+      if (Date.now() > deadline) {
+        throw new Error("timed out waiting for a new matching file");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 20));
     }
   }
 
@@ -220,7 +249,7 @@ describe("Claude auto-improve", () => {
   test("three completions and continuation", async () => {
     assert.equal(await complete("p1"), "");
     assert.equal(await complete("p2"), "");
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
     await quiet(event("Stop", "p3", "session", { stop_hook_active: true }));
     await quiet(event("Stop", "p3"));
     assert.equal(state().issued, true);
@@ -229,8 +258,9 @@ describe("Claude auto-improve", () => {
   test("pending or declined review never repeats after restart", async () => {
     await complete("p1");
     await complete("p2");
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
     const issued = readFileSync(statePath());
+    assert.equal(JSON.parse(issued.toString()).issued, true);
     for (let prompt = 4; prompt < 12; prompt++) {
       assert.equal(await complete(String(prompt)), "");
     }
@@ -246,14 +276,19 @@ describe("Claude auto-improve", () => {
     await quiet(event("Stop", "p1"));
     await quiet(event("Stop", "p2"));
     assert.equal(state().completed_prompt_ids.length, 2);
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
+    assert.equal(state().issued, true);
   });
 
   test("fresh session is independent", async () => {
     for (const session of ["session", "fresh-session"]) {
       assert.equal(await complete("p1", session), "");
       assert.equal(await complete("p2", session), "");
-      assertReview(await complete("p3", session));
+      assert.equal(await complete("p3", session), "");
+      assert.equal(
+        JSON.parse(readFileSync(statePath(session), "utf8")).issued,
+        true,
+      );
     }
     assert.equal(
       readdirSync(directory).filter((name) => name.endsWith(".json")).length,
@@ -262,7 +297,7 @@ describe("Claude auto-improve", () => {
   });
 
   test("identical text with distinct IDs and private state", async () => {
-    let output = "";
+    const before = names();
     for (const prompt of ["p1", "p2", "p3"]) {
       await quiet(
         event("UserPromptSubmit", prompt, "../SECRET-session", {
@@ -273,9 +308,13 @@ describe("Claude auto-improve", () => {
       const result = await invoke(event("Stop", prompt, "../SECRET-session"));
       assert.equal(result.exitCode, 0);
       assert.equal(result.stderr, "");
-      output = result.stdout;
+      assert.equal(result.stdout, "");
     }
-    assertReview(output);
+    // The reviewer artifacts land in the same directory; wait for them too.
+    await waitForNew(
+      (name) => name.endsWith(".report.md") || name.endsWith(".failed.md"),
+      before,
+    );
     for (const name of readdirSync(directory)) {
       const path = join(directory, name);
       assert.doesNotMatch(name, /SECRET/);
@@ -291,7 +330,8 @@ describe("Claude auto-improve", () => {
     await quiet(event("Stop", "interrupted"));
     await quiet(event("Stop", "p1"));
     assert.equal(await complete("p2"), "");
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
+    assert.equal(state().issued, true);
   });
 
   test("stop requires matching submission", async () => {
@@ -325,20 +365,29 @@ describe("Claude auto-improve", () => {
     assert.deepEqual(readFileSync(statePath()), original);
   });
 
-  test("eight concurrent duplicate stops emit once", async () => {
+  test("eight concurrent duplicate stops spawn the reviewer once", async () => {
     await complete("p1");
     await complete("p2");
     await quiet(event("UserPromptSubmit", "p3"));
+    const before = names();
     const results = await Promise.all(
       Array.from({ length: 8 }, () => invoke(event("Stop", "p3"))),
     );
-    const outputs = results.map((result) => result.stdout).filter(Boolean);
-    assert.equal(outputs.length, 1);
-    assertReview(outputs[0]);
     for (const result of results) {
       assert.equal(result.exitCode, 0);
+      assert.equal(result.stdout, "");
       assert.doesNotMatch(result.stderr, /SECRET/);
     }
+    await waitForNew(
+      (name) => name.endsWith(".report.md") || name.endsWith(".failed.md"),
+      before,
+    );
+    const spawned = readdirSync(directory).filter(
+      (name) =>
+        (name.endsWith(".report.md") || name.endsWith(".failed.md")) &&
+        !before.has(name),
+    );
+    assert.equal(spawned.length, 1);
     await quiet(event("Stop", "p3"));
   });
 
@@ -359,7 +408,10 @@ describe("Claude auto-improve", () => {
       closeSync(fd);
       libc.unload();
     }
-    assertReview((await invoke(event("Stop", "p3"))).stdout);
+    const retry = await invoke(event("Stop", "p3"));
+    assert.equal(retry.stdout, "");
+    assert.equal(retry.exitCode, 0);
+    assert.equal(state().issued, true);
   });
 
   test("process death releases a native flock and retry recovers", async () => {
@@ -409,7 +461,10 @@ describe("Claude auto-improve", () => {
     assert.equal(child.signalCode, "SIGKILL");
     assert.equal(await stderr, "");
     assert.equal(statSync(lockPath(), { bigint: true }).ino, lockBefore.ino);
-    assertReview((await invoke(event("Stop", "p3"))).stdout);
+    const retry = await invoke(event("Stop", "p3"));
+    assert.equal(retry.stdout, "");
+    assert.equal(retry.exitCode, 0);
+    assert.equal(state().issued, true);
     await quiet(event("Stop", "p3"));
   });
 
@@ -426,7 +481,7 @@ describe("Claude auto-improve", () => {
     const result = await invoke(event("Stop", "p3"));
     assert.equal(result.exitCode, 0);
     assert.equal(result.stderr, "");
-    assertReview(result.stdout);
+    assert.equal(result.stdout, "");
     assert.deepEqual(state(), {
       current_prompt_id: null,
       completed_prompt_ids: [hash("p1"), hash("p2"), hash("p3")],
@@ -469,14 +524,17 @@ describe("Claude auto-improve", () => {
       assert.equal(result.stderr, "auto-improve: state failed; no review.\n");
       assert.deepEqual(readFileSync(statePath()), before);
     }
-    assertReview((await invoke(event("Stop", "p3"))).stdout);
+    const retry = await invoke(event("Stop", "p3"));
+    assert.equal(retry.stdout, "");
+    assert.equal(retry.exitCode, 0);
+    assert.equal(state().issued, true);
     await quiet(event("Stop", "p3"));
   });
 
   test("corrupt committed state is never reset", async () => {
     await complete("p1");
     await complete("p2");
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
     const issued = state();
     for (const payload of [
       "{SECRET",
@@ -504,7 +562,8 @@ describe("Claude auto-improve", () => {
     await complete("p2");
     const orphan = join(directory, `${hash("session")}.partial.tmp`);
     writeFileSync(orphan, '{"issued":');
-    assertReview(await complete("p3"));
+    assert.equal(await complete("p3"), "");
+    assert.equal(state().issued, true);
     assert.equal(readFileSync(orphan, "utf8"), '{"issued":');
     await quiet(event("Stop", "p3"));
   });
@@ -531,7 +590,10 @@ describe("Claude auto-improve", () => {
       } finally {
         chmodSync(directory, 0o700);
       }
-      assertReview((await invoke(event("Stop", "p3"))).stdout);
+      const retry = await invoke(event("Stop", "p3"));
+      assert.equal(retry.stdout, "");
+      assert.equal(retry.exitCode, 0);
+      assert.equal(state().issued, true);
       await quiet(event("Stop", "p3"));
     },
   );
@@ -755,12 +817,152 @@ describe("Claude auto-improve", () => {
         const result = await invokeSettings(name, event(name, prompt));
         assert.equal(result.exitCode, 0);
         assert.equal(result.stderr, "");
-        if (name === "Stop" && prompt === "p3") {
-          assertReview(result.stdout);
-        } else {
-          assert.equal(result.stdout, "");
-        }
+        assert.equal(result.stdout, "");
       }
     }
+    assert.equal(state().issued, true);
+  });
+
+  test("issued review spawns a detached headless reviewer", async () => {
+    const argvLog = join(home, "claude-argv.log");
+    writeFileSync(
+      join(bin, "claude"),
+      `#!/bin/sh
+for arg in "$@"; do
+  printf '%s\n' "$arg" >> "$FAKE_CLAUDE_ARGV_LOG"
+done
+printf '%s\n' "---ENV---" >> "$FAKE_CLAUDE_ARGV_LOG"
+printf 'AUTO_IMPROVE_REVIEWER=%s\n' "$AUTO_IMPROVE_REVIEWER" >> "$FAKE_CLAUDE_ARGV_LOG"
+printf 'cwd=%s\n' "$(pwd)" >> "$FAKE_CLAUDE_ARGV_LOG"
+printf 'PROPOSALS'
+`,
+      { mode: 0o700 },
+    );
+    env.FAKE_CLAUDE_ARGV_LOG = argvLog;
+    delete env.DOTFILES_PATH;
+    const reviewerCwd = join(home, "project");
+    mkdirSync(reviewerCwd);
+
+    await complete("p1");
+    await complete("p2");
+    await quiet(event("UserPromptSubmit", "p3"));
+    const before = names();
+    const result = await invoke(
+      event("Stop", "p3", "session", {
+        cwd: reviewerCwd,
+        transcript_path: "/transcripts/session.jsonl",
+      }),
+    );
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.stdout, "");
+    assert.equal(result.stderr, "");
+
+    const reportName = await waitForNew(
+      (name) => name.endsWith(".report.md"),
+      before,
+    );
+    const uuid = reportName.slice(0, -".report.md".length);
+    const report = readFileSync(join(directory, reportName), "utf8");
+    const lines = report.split("\n");
+    assert.equal(lines[0], "# auto-improve report");
+    assert.equal(lines[1], `source_session: ${hash("session")}`);
+    assert.equal(lines[2], `cwd: ${reviewerCwd}`);
+    assert.equal(lines[3], "transcript: /transcripts/session.jsonl");
+    assert.equal(lines[4], `resume: claude --resume ${uuid}`);
+    assert.match(lines[5], /^date: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    assert.equal(lines[6], "");
+    assert.ok(report.endsWith("PROPOSALS"), report);
+
+    const log = readFileSync(argvLog, "utf8").split("\n");
+    const envIndex = log.indexOf("---ENV---");
+    const argv = log.slice(0, envIndex);
+    assert.equal(argv[0], "-p");
+    assert.match(argv[1], /transcripts\/session\.jsonl/);
+    assert.ok(argv[1].includes(reviewerCwd), argv[1]);
+    assert.equal(argv[2], "--session-id");
+    assert.equal(argv[3], uuid);
+    assert.equal(argv[4], "--permission-mode");
+    assert.equal(argv[5], "plan");
+    assert.equal(argv.length, 6);
+    const envLines = log.slice(envIndex + 1);
+    assert.ok(envLines.includes("AUTO_IMPROVE_REVIEWER=1"));
+    // The child's own shell reports getcwd(3)'s resolved path, which can
+    // differ textually from reviewerCwd when a tmp dir is reached via a
+    // symlink (e.g. macOS /tmp -> /private/tmp).
+    assert.ok(envLines.includes(`cwd=${realpathSync(reviewerCwd)}`));
+
+    const after = readdirSync(directory);
+    assert.ok(!after.some((name) => name.endsWith(".tmp")));
+    assert.ok(!after.some((name) => name.endsWith(".err")));
+  });
+
+  test("DOTFILES_PATH controls --add-dir", async () => {
+    const argvLog = join(home, "claude-argv.log");
+    writeFileSync(
+      join(bin, "claude"),
+      `#!/bin/sh
+for arg in "$@"; do
+  printf '%s\n' "$arg" >> "$FAKE_CLAUDE_ARGV_LOG"
+done
+printf 'PROPOSALS'
+`,
+      { mode: 0o700 },
+    );
+    env.FAKE_CLAUDE_ARGV_LOG = argvLog;
+
+    env.DOTFILES_PATH = "/repo/setup";
+    await complete("p1", "with-dotfiles");
+    await complete("p2", "with-dotfiles");
+    await quiet(event("UserPromptSubmit", "p3", "with-dotfiles"));
+    let before = names();
+    await invoke(event("Stop", "p3", "with-dotfiles"));
+    await waitForNew((name) => name.endsWith(".report.md"), before);
+    let argv = readFileSync(argvLog, "utf8").split("\n");
+    assert.ok(argv.includes("--add-dir"));
+    assert.ok(argv.includes("/repo/setup"));
+
+    rmSync(argvLog);
+    delete env.DOTFILES_PATH;
+    await complete("p1", "without-dotfiles");
+    await complete("p2", "without-dotfiles");
+    await quiet(event("UserPromptSubmit", "p3", "without-dotfiles"));
+    before = names();
+    await invoke(event("Stop", "p3", "without-dotfiles"));
+    await waitForNew((name) => name.endsWith(".report.md"), before);
+    argv = readFileSync(argvLog, "utf8").split("\n");
+    assert.ok(!argv.includes("--add-dir"));
+  });
+
+  test("failing reviewer leaves a failed report and no tmp or err", async () => {
+    writeFileSync(
+      join(bin, "claude"),
+      `#!/bin/sh
+printf 'boom' >&2
+exit 1
+`,
+      { mode: 0o700 },
+    );
+    await complete("p1");
+    await complete("p2");
+    await quiet(event("UserPromptSubmit", "p3"));
+    const before = names();
+    await invoke(event("Stop", "p3"));
+    const failedName = await waitForNew(
+      (name) => name.endsWith(".failed.md"),
+      before,
+    );
+    assert.match(readFileSync(join(directory, failedName), "utf8"), /boom/);
+    const after = readdirSync(directory);
+    assert.ok(
+      !after.some((name) => name.endsWith(".report.md") && !before.has(name)),
+    );
+    assert.ok(!after.some((name) => name.endsWith(".tmp")));
+    assert.ok(!after.some((name) => name.endsWith(".err")));
+  });
+
+  test("reviewer guard silences the hook inside a headless review", async () => {
+    env.AUTO_IMPROVE_REVIEWER = "1";
+    await quiet(event("UserPromptSubmit", "p1"));
+    assert.equal(existsSync(directory), false);
   });
 });

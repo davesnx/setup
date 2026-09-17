@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import { readdirSync } from "node:fs";
+
 // Type for the optional local module
 type GetModelDisplayName = (displayName: string | undefined) => string;
 
@@ -223,6 +225,22 @@ function formatRateLimits(
   return segments.join(" / ");
 }
 
+// Count unread auto-improve reports, matching where the hook writes them
+// (terminal/claude/hooks/auto-improve.ts). Missing dir or any read error: hidden.
+function formatAutoImproveReports(): string {
+  const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+  const stateRoot = process.env.XDG_STATE_HOME || `${homeDir}/.local/state`;
+  try {
+    const count = readdirSync(`${stateRoot}/auto-improve/claude`).filter(
+      (name) => name.endsWith(".report.md")
+    ).length;
+    if (count === 0) return "";
+    return `auto-improve: ${count} report${count === 1 ? "" : "s"}`;
+  } catch {
+    return "";
+  }
+}
+
 function getGitDiffStats(): { additions: number; deletions: number } {
   try {
     const result = Bun.spawnSync(["git", "diff", "--numstat"], {
@@ -347,6 +365,7 @@ async function main() {
   const claudeVersion = getClaudeVersion();
   const outputStyle = data.output_style?.name || "";
   const rateLimits = formatRateLimits(data.rate_limits, modelName);
+  const autoImprove = formatAutoImproveReports();
 
   process.stdout.write(
     `\x1b[0m${colorize(`  ${modelName}`, colors.brightYellow)} | ${colorize(
@@ -362,7 +381,7 @@ async function main() {
       `  ${usageCostUsd}`,
       colors.brightMagenta
     )}${outputStyle && outputStyle !== "default" ? ` | ${colorize(` ${outputStyle}`, colors.cyan)}` : ""
-    }${rateLimits ? ` | ${rateLimits}` : ""}${claudeVersion ? ` | ${colorize(`v${claudeVersion}`, colors.white)}` : ""}\x1b[0m `
+    }${rateLimits ? ` | ${rateLimits}` : ""}${autoImprove ? ` | ${colorize(autoImprove, colors.brightCyan)}` : ""}${claudeVersion ? ` | ${colorize(`v${claudeVersion}`, colors.white)}` : ""}\x1b[0m `
   );
 }
 

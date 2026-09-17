@@ -114,9 +114,10 @@ that way.
 ## Automatic improvement reviews
 
 Claude Code uses the shared [`auto-improve` skill](skills/auto-improve/SKILL.md)
-for read-only reviews of the current session and relevant setup files. Reviews
-propose changes to skills, hooks, scripts, or rules. Applying a proposal needs
-user approval.
+for read-only reviews of a session's transcript and relevant setup files.
+Reviews run in a separate, headless Claude Code session and land as report
+files, proposing changes to skills, hooks, scripts, or rules. Applying a
+proposal means resuming that reviewer session and approving the change there.
 
 The [Claude Code hook reference](../terminal/claude/hooks/README.md) owns the
 review scheduling, state, and disable controls.
