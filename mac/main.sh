@@ -1,7 +1,3 @@
-if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
 # Ghostty is renamed to Terminal.app; Homebrew still links to Ghostty.app.
 ghostty_completion=/Applications/Terminal.app/Contents/Resources/zsh/site-functions/_ghostty
 ghostty_completion_link=${HOMEBREW_PREFIX:-/opt/homebrew}/share/zsh/site-functions/_ghostty
@@ -11,6 +7,9 @@ fi
 unset ghostty_completion ghostty_completion_link
 
 # Homebrew config
+export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+export HOMEBREW_REPOSITORY="/opt/homebrew"
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 export HOMEBREW_NO_ENV_HINTS=1
 export HOMEBREW_NO_ANALYTICS=1

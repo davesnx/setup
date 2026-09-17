@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env zsh
 
 # Remove all aliases
 unalias -m '*'
@@ -126,9 +126,6 @@ alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
 
 # Open a HTTP server on port 8000 with the current directory exposed
 alias serve="python3 -m http.server"
-
-# Test zsh startup time
-alias testzsh="TIMEFMT=$'real %E\tuser %U\tsys %S'; repeat 25 {time ZSH_BENCHMARK=1 zsh -l -i -c exit}"
 
 # Improved CLIs
 alias copy="pbcopy"
