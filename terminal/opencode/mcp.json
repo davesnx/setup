@@ -11,15 +11,6 @@
       "enabled": true,
       "url": "https://api.ahrefs.com/mcp/mcp"
     },
-    "sequential-thinking": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
-    },
     "linear": {
       "type": "remote",
       "enabled": true,

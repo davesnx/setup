@@ -8,13 +8,6 @@
       "type": "http",
       "url": "https://api.ahrefs.com/mcp/mcp"
     },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
-    },
     "linear": {
       "type": "http",
       "url": "https://mcp.linear.app/mcp"
