@@ -204,7 +204,12 @@ EOF
 cat >"$test_bin/herdr" <<'EOF'
 #!/bin/sh
 printf 'herdr:%s\n' "$*" >>"$COMMAND_LOG"
-[ "$*" = 'config check' ] && [ -f "$HERDR_CONFIG_PATH" ]
+case "$*" in
+  'config check') [ -f "$HERDR_CONFIG_PATH" ] ;;
+  'plugin list') [ ! -f "$TEST_BIN/herdr-plugins" ] || cat "$TEST_BIN/herdr-plugins" ;;
+  'plugin install '*) printf -- '- hunk enabled [github:%s@%s]\n' "$3" "$5" >>"$TEST_BIN/herdr-plugins" ;;
+  *) exit 2 ;;
+esac
 EOF
 
 cat >"$test_bin/jq" <<'EOF'
@@ -227,7 +232,7 @@ prepare_home() {
     "$HOME/.config/ghostty"
   : >"$command_log"
   rm -rf "$work/fallback"
-  rm -f "$test_bin/brew" "$test_bin/brew-count"
+  rm -f "$test_bin/brew" "$test_bin/brew-count" "$test_bin/herdr-plugins"
   unset FAIL_BREW_CALL INSTALL_BREW FAIL_BREW_DOWNLOAD FAIL_BOOTSTRAP TEST_BREW_SHELLENV FAIL_ZIM_DOWNLOAD FAKE_UNAME FAIL_CHSH FAIL_LN_TARGET FAIL_NPM || true
   unset FAKE_ARCH FAIL_NODE_ENV FAIL_NODE_INSTALL FAIL_NODE_ARCH FAIL_NODE_NPM FAIL_COREPACK || true
   BREW_INSTALL_PATH="$apple_silicon_brew"
@@ -257,7 +262,9 @@ prepare_home
 expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
 [ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
 cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-printf 'PASS: Herdr installer creates and links its config directory\n'
+grep -q '^herdr:plugin install jhochenbaum/herdr-hunk-diff --ref [0-9a-f]\{40\} --yes$' "$command_log"
+grep -q '^herdr:plugin install nikok6/herdr-mirror --ref [0-9a-f]\{40\} --yes$' "$command_log"
+printf 'PASS: Herdr installer links its config directory and installs the pinned plugins\n'
 
 : >"$command_log"
 expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
@@ -265,7 +272,11 @@ expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
 if grep -q '^ln:' "$command_log"; then
   exit 1
 fi
-printf 'PASS: repeated Herdr installation leaves its link unchanged\n'
+grep -Fxq 'herdr:plugin list' "$command_log"
+if grep -q '^herdr:plugin install' "$command_log"; then
+  exit 1
+fi
+printf 'PASS: repeated Herdr installation leaves its link and installed plugins unchanged\n'
 
 prepare_home
 mkdir -p "$HOME/.config/herdr"

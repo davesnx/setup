@@ -396,6 +396,33 @@ workspace=$(printf '%s\n' "$workspaces" |
   "$HERDR_BIN_PATH" workspace focus "$workspace"
 '''
 
+# herdr-hunk-diff, installed by install.sh. Its `setup-keys` action would write
+# these through the config link, so they live here. The plugin default for
+# review, prefix+shift+h, is swap_pane_left.
+[[keys.command]]
+key = "prefix+shift+r"
+type = "plugin_action"
+command = "jhochenbaum.hunkdiff.review"
+description = "hunk: review changes"
+
+[[keys.command]]
+key = "prefix+shift+s"
+type = "plugin_action"
+command = "jhochenbaum.hunkdiff.send-review"
+description = "hunk: send review to agent"
+
+[[keys.command]]
+key = "prefix+shift+c"
+type = "plugin_action"
+command = "jhochenbaum.hunkdiff.review:commit"
+description = "hunk: review the last commit"
+
+[[keys.command]]
+key = "prefix+shift+a"
+type = "plugin_action"
+command = "jhochenbaum.hunkdiff.review:staged"
+description = "hunk: review staged changes"
+
 # Legacy indexed shortcuts are parsed for compatibility. Prefer switch_tab,
 # switch_workspace, and focus_agent in new configurations.
 # [keys.indexed]

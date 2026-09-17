@@ -146,6 +146,11 @@ Confirm that only `world` appears. Then press Cmd+X in the shell. Confirm that
 terminal multiplexer. OSC 52 has no write acknowledgement, so a successful
 shell test does not prove desktop delivery.
 
+After changing `terminal/herdr/`, rerun its installer and confirm that
+`herdr plugin list` shows `jhochenbaum.hunkdiff` and `mirror` as enabled. From
+an agent pane, press `prefix+shift+r`; a hunk review pane opens beside it. With
+a host in `~/.config/herdr-mirror/hosts.toml`, `herdr-mirror status` lists it.
+
 ## Changes that need a real smoke test
 
 Tests cannot prove that external apps, downloads, or future package versions work.
