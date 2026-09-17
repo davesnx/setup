@@ -105,7 +105,6 @@ local/                    Machine-specific overrides. Git-ignored except README,
   Puppet owns `~/.claude/hooks/dcg`. Before each commit, confirm the change
   works there: no `/Users/`, `/opt/homebrew`, or `/Applications` path and no
   Mac-only command such as `brew`, `open`, `pbcopy`, or `trash` outside `mac/`.
-  Then run the nspawn checks described in TESTING.md.
 - Run `bash check.sh` before committing. It also checks this file: every path
   in the tree exists, every tracked directory in the first two levels has a
   row, and no tracked symlink is absolute.

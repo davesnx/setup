@@ -87,35 +87,7 @@ check, run `terminal/bin/testzsh`, `terminal/bin/testzsh --profile`, and
 and can update its normal startup caches. See the [command reference](terminal/bin/README.md#measure-zsh-startup)
 for the measurement and shutdown boundaries.
 
-## Check on nspawn
-
-nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, jq, and rsync, but no `shfmt`
-and no `bun`, so the full `bash check.sh` cannot run there. The focused
-`bash check.sh --shell-only` command can run with those tools. Before each commit,
-copy the working tree to a scratch directory on nspawn and run the checks that can:
-
-```sh
-rsync -a --delete --exclude node_modules --exclude .venv --exclude .cache \
-  --exclude .npm --exclude __pycache__ \
-  -e 'ssh -o ClearAllForwardings=yes' ./ nspawn:.cache/setup-check/
-ssh -o ClearAllForwardings=yes nspawn bash -s <<'EOF'
-cd ~/.cache/setup-check
-bash terminal/core/test.sh && zsh terminal/core/test.sh
-bash terminal/bin/testzsh.test.sh
-sh terminal/zsh/tests/agent-link.sh
-zsh terminal/zsh/tests/cached-init.zsh
-bash terminal/zsh/tests/syntax-selection.sh
-zsh terminal/bin/scripts.test.zsh
-sh mac/tests/shell-startup.sh
-node agents/mcp.ts browser-url
-zsh terminal/node/tests/npm-wrapper.zsh
-EOF
-```
-
-The copy includes `.git`, so it carries uncommitted changes and Git-based
-scripts work. Its ShellCheck is older than the version the Mac and CI use and
-reports notes they do not, so ShellCheck findings count only from the Mac or
-CI. `terminal/bin/git-extras/test.sh` needs `bun` and cannot run there.
+## Update nspawn
 
 After pushing, update the real checkout, rerun the installer of each changed
 module, and open a new shell:
