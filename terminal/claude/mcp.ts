@@ -6,9 +6,9 @@
 // `type: "http"`, and `${NAME}` secrets. It has no `enabled` or `oauth`, so
 // disabled servers are left out and OAuth stays with Claude Code's own login
 // flow; agents/README.md covers the callback port on nspawn.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { isMain, profiles, readDeclaration } from "../../agents/mcp.ts";
+import { isMain, profiles, readDeclaration, writeIfChanged } from "../../agents/mcp.ts";
 import type { Server } from "../../agents/mcp.ts";
 
 type StdioServer = { command: string; args: string[]; env?: Record<string, string> };
@@ -48,6 +48,6 @@ if (isMain(import.meta.url)) {
   const declaration = readDeclaration();
   mkdirSync(hostsDir, { recursive: true });
   for (const profile of profiles) {
-    writeFileSync(hostTarget(profile), render({ ...declaration.servers, ...declaration.hosts[profile] }));
+    writeIfChanged(hostTarget(profile), render({ ...declaration.servers, ...declaration.hosts[profile] }));
   }
 }

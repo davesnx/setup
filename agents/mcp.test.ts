@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test";
-import { readDeclaration, validate } from "./mcp.ts";
+import { mkdtempSync, readFileSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { readDeclaration, validate, writeIfChanged } from "./mcp.ts";
 
 test("the checked-in declaration validates", () => {
   const { servers, hosts } = readDeclaration();
@@ -37,4 +40,14 @@ test("host overrides merge over the shared entry and must complete it", () => {
   expect(() => validate({ servers: {}, hosts: { ssh: { c: { oauth: { callbackPort: 1 } } } } })).toThrow(
     "hosts.ssh.c: type",
   );
+});
+
+test("writeIfChanged creates, skips an identical file, and rewrites a changed one", () => {
+  const path = join(mkdtempSync(join(tmpdir(), "mcp-write-")), "out.json");
+  expect(writeIfChanged(path, "a\n")).toBe(true);
+  const written = statSync(path, { bigint: true }).mtimeNs;
+  expect(writeIfChanged(path, "a\n")).toBe(false);
+  expect(statSync(path, { bigint: true }).mtimeNs).toBe(written);
+  expect(writeIfChanged(path, "b\n")).toBe(true);
+  expect(readFileSync(path, "utf8")).toBe("b\n");
 });

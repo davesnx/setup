@@ -5,9 +5,8 @@
 // file on its own, so a profile carries complete entries, not partial patches.
 // OpenCode keeps `{env:NAME}` secrets as written and requires `enabled` on
 // every server, so the mapping is a copy with that default filled in.
-import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isMain, profiles, readDeclaration } from "../../agents/mcp.ts";
+import { isMain, profiles, readDeclaration, writeIfChanged } from "../../agents/mcp.ts";
 import type { Server } from "../../agents/mcp.ts";
 
 export type OpenCodeConfig = { $schema: string; mcp: Record<string, Server & { enabled: boolean }> };
@@ -29,6 +28,6 @@ export function render(servers: Record<string, Server>): string {
 
 if (isMain(import.meta.url)) {
   const declaration = readDeclaration();
-  writeFileSync(target, render(declaration.servers));
-  for (const profile of profiles) writeFileSync(hostTarget(profile), render(declaration.hosts[profile]));
+  writeIfChanged(target, render(declaration.servers));
+  for (const profile of profiles) writeIfChanged(hostTarget(profile), render(declaration.hosts[profile]));
 }

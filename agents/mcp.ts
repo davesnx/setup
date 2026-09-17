@@ -7,7 +7,7 @@
 // `servers` apply on every machine. `hosts.<profile>` holds per-machine
 // additions and overrides, merged over the shared entry of the same name; a
 // profile is one of the OpenCode host profiles in terminal/opencode/hosts.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -121,4 +121,13 @@ export function readServers(): Record<string, Server> {
 export function isMain(moduleUrl: string): boolean {
   const script = process.argv[1];
   return script !== undefined && resolve(script) === fileURLToPath(moduleUrl);
+}
+
+// The installers run the renderers on every install. An identical rewrite is
+// still a write, and Claude Code's sandbox refuses it for the file that
+// ~/.mcp.json links to, so an unchanged render must not open the file.
+export function writeIfChanged(path: string, content: string): boolean {
+  if (existsSync(path) && readFileSync(path, "utf8") === content) return false;
+  writeFileSync(path, content);
+  return true;
 }
