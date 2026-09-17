@@ -22,10 +22,28 @@ nspawn.
 
 `chrome-devtools` does not launch a browser. It attaches to the Brave that the
 Raycast command **Open Brave Agent**, `mac/raycast/raycast-open-chrome-agent.sh`,
-starts with CDP on `127.0.0.1:9222`. To reach that address from nspawn, configure
-a `RemoteForward` in the Mac's `~/.ssh/config` to that port on the Mac.
+starts with CDP at the `--browser-url` endpoint in
+`servers.chrome-devtools.command`. To reach that address from nspawn, configure
+a `RemoteForward` in the Mac's `~/.ssh/config` to the declared port on the Mac.
 One shared MCP entry then serves both machines. Start Brave that way before
 using the browser tools.
+
+The launcher reads the declaration relative to its source file with macOS
+`plutil`; it needs neither Node nor jq. Playwright reads the same endpoint with:
+
+```sh
+CDP_URL=$(node "${DOTFILES_PATH:?}/agents/mcp.ts" browser-url) &&
+  playwright-cli -s=task attach --cdp="$CDP_URL"
+```
+
+Use an unused task session name. The reader prints only the URL on success;
+errors go to stderr and prevent attachment. Both readers require exactly one
+`--browser-url=http://127.0.0.1:<port>` argument, with port 1–65535, no leading
+zeros, and no path. Effective host overrides must use the same endpoint, even
+when disabled. `CHROME_AGENT_PORT` is rejected, including an empty value, because
+it changed only the browser. Edit the shared command and rerun both renderers
+below to change the endpoint; update the SSH forward to match.
+`CHROME_AGENT_PROFILE` and `CHROME_AGENT_APP` still select the profile and app.
 
 Neither tool reads `mcp.json`. Each has a renderer, and the rendered files are
 tracked so that `git pull` updates both tools on nspawn:

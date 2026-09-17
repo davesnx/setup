@@ -7,14 +7,17 @@ bash check.sh
 ```
 
 Requirements: Git, Bash, Zsh, ShellCheck 0.11+, shfmt, Bun 1.3.14,
-Node 22.22.3 with npm, and Python 3. On macOS, `brew install bash shellcheck
-shfmt` provides the check tools alongside the system Bash 3.2 and Zsh.
+Node 22.22.3 with npm, Python 3, and jq. On macOS, `brew install bash shellcheck
+shfmt jq` provides the check tools alongside the system Bash 3.2 and Zsh.
 
 The same command runs on Linux and macOS for every GitHub push and pull request.
 It checks:
 
 - ShellCheck findings, including extensionless commands and local imports, plus
-  Zsh syntax. Run only this part with `bash shellcheck.sh`.
+  Zsh syntax, including `.zimrc` and Zsh startup filenames without shebangs.
+  Run only this part with `bash check.sh --shell-only`. This mode needs only
+  Git, Bash, ShellCheck, Zsh, and base system utilities. Shell validation failures
+  stop the full command before formatting and other checks.
 - Formatting of the check scripts, Git effort command, and `testzsh`.
 - Argument handling, collections, and logging in both system and PATH Bash,
   plus shared helpers in Zsh.
@@ -31,11 +34,18 @@ It checks:
   backwards clock detection, repeated cleanup, and history/logout suppression
   after completed startup. A Zsh wrapper checks the generated bootstrap syntax
   and simulates a preceding DEBUG trap, redirected `ZDOTDIR`, and a lost report.
+- Default and custom-XDG profile lookup through the installer and login shell;
+  OpenCode alias arguments; Brew prefix selection and repeated startup with stubs.
+- Direct and sourced script selection, help, version, errors, cancellation,
+  exact npm arguments, caller history, and shell-state preservation.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
-- MCP declaration: `agents/mcp.json` validates, the rendered files match it,
+- MCP declaration: `agents/mcp.json` rejects unknown root keys, the rendered files match it,
   and OpenCode accepts the shared file merged with each host profile when
   `opencode` is installed.
+- The browser endpoint reader and guarded Playwright examples use the declaration.
+  On macOS, the Raycast launcher uses native JSON parsing with no Node or jq on
+  its test PATH. Browser calls are stubbed, including failed launches and retries.
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
   tracked directory in the first two levels has a row, and no tracked symlink
   is absolute.
@@ -57,8 +67,6 @@ also run their documented checks:
 - [Writing eval contracts](agents/skills/blog-post/evals/README.md).
 
 These module checks are not part of the root command or its CI jobs.
-Shell syntax selection also excludes `.zimrc`; after editing it, run
-`zsh -n terminal/zsh/.zimrc` separately.
 
 Run the focused `testzsh` checks without installing tools or touching your home:
 
@@ -81,9 +89,10 @@ for the measurement and shutdown boundaries.
 
 ## Check on nspawn
 
-nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, and rsync, but no `shfmt`
-and no `bun`, so `check.sh` cannot run there. Before each commit, copy the
-working tree to a scratch directory on nspawn and run the checks that can:
+nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, jq, and rsync, but no `shfmt`
+and no `bun`, so the full `bash check.sh` cannot run there. The focused
+`bash check.sh --shell-only` command can run with those tools. Before each commit,
+copy the working tree to a scratch directory on nspawn and run the checks that can:
 
 ```sh
 rsync -a --delete --exclude node_modules --exclude .venv --exclude .cache \
@@ -95,6 +104,10 @@ bash terminal/core/test.sh && zsh terminal/core/test.sh
 bash terminal/bin/testzsh.test.sh
 sh terminal/zsh/tests/agent-link.sh
 zsh terminal/zsh/tests/cached-init.zsh
+bash terminal/zsh/tests/syntax-selection.sh
+zsh terminal/bin/scripts.test.zsh
+sh mac/tests/shell-startup.sh
+node agents/mcp.ts browser-url
 zsh terminal/node/tests/npm-wrapper.zsh
 EOF
 ```
@@ -158,6 +171,11 @@ After changing installation or app integration, check the affected feature on a
 disposable machine or account: run setup, run it again, open a fresh terminal,
 and launch the affected app or CLI. Check both ARM64 and x64 when changing native
 runtime selection.
+
+After a browser endpoint change, rerun both MCP renderers, restart the tools,
+and update the external SSH forward. Launch **Open Brave Agent** from Raycast
+and attach with the command in the [MCP guide](agents/README.md#mcp-servers).
+The stubbed checks do not prove real browser startup or SSH forwarding.
 
 To make CI a merge gate, configure a GitHub branch ruleset for `main` that requires
 both `Check (ubuntu-latest)` and `Check (macos-latest)` and pull requests. The

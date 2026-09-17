@@ -1,25 +1,73 @@
-#! /bin/bash
+#!/usr/bin/env zsh
 
-source "$DOTFILES_PATH/terminal/core/main.sh"
+() {
+    emulate -L zsh
 
-##? Run scripts from package.json
-#?? 1.1.0
-##?
-##? Usage:
-##?    scripts
+    local -r version=1.1.0
+    local help='Run a script from package.json.
 
-docs::parse "$@"
+Usage:
+    scripts [-h | --help | --version]
 
-if cat package.json > /dev/null 2>&1; then
-    selected_script=$(cat package.json | jq .scripts | sed '1d;$d' | fzf --cycle --height 80% --header="Press ENTER to run the script. ESC to quit.");
+Select a script with ENTER. Press ESC to cancel.'
 
-    if [[ -n "$selected_script" ]]; then
-        script_name=$(echo "$selected_script" | awk -F ': ' '{gsub(/"/, "", $1); print $1}' | awk '{$1=$1};1')
-        print -s "npm run $script_name";
-        npm run "$script_name";
-    else
-        echo "Exit: You haven't selected any script"
+    if (( $# == 1 )) && [[ $1 == -h || $1 == --help ]]; then
+        print -r -- "$help"
+        return 0
     fi
-else
-    echo "Error: There's no package.json"
-fi
+    if (( $# == 1 )) && [[ $1 == --version ]]; then
+        print -r -- "$version"
+        return 0
+    fi
+    if (( $# != 0 )); then
+        print -ru2 -- 'Error: unexpected arguments.'
+        print -ru2 -- "$help"
+        return 64
+    fi
+
+    if [[ ! -f package.json || ! -r package.json ]]; then
+        print -ru2 -- 'Error: package.json is missing or unreadable.'
+        return 1
+    fi
+
+    local script_names selected_script
+    local -i picker_status
+    # NUL separators preserve whitespace and punctuation in JSON keys.
+    if ! script_names=$(jq -js '
+        if length == 1 and (.[0] | type) == "object" then
+            .[0].scripts | if . == null then {} else . end
+        else error("expected one package object") end
+        | if type == "object" and all(.[]; type == "string") then
+            keys_unsorted[]
+            | if contains("\u0000") then error("script names cannot contain NUL")
+              else ., "\u0000" end
+          else error("scripts must be an object of strings") end
+    ' package.json); then
+        print -ru2 -- 'Error: could not read scripts from package.json with jq.'
+        return 1
+    fi
+    if [[ -z $script_names ]]; then
+        print -ru2 -- 'Error: package.json has no scripts.'
+        return 1
+    fi
+
+    selected_script=$(print -rn -- "$script_names" |
+        fzf --read0 --print0 --no-multi --cycle --height 80% \
+            --header='Press ENTER to run the script. ESC to quit.')
+    picker_status=$?
+    case $picker_status in
+        0) ;;
+        1|130) return 0 ;;
+        *)
+            print -ru2 -- "Error: fzf failed (status $picker_status)."
+            return "$picker_status"
+            ;;
+    esac
+    [[ -n $selected_script ]] || return 0
+    selected_script=${selected_script%$'\0'}
+
+    if [[ -o interactive ]]; then
+        print -sr -- "npm run ${(q)selected_script}"
+    fi
+    npm run "$selected_script"
+} "$@"

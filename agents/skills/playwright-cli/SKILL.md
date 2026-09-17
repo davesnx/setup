@@ -1,7 +1,7 @@
 ---
 name: playwright-cli
 description: Control or inspect Brave through CDP; automate web interactions and run, debug, or generate Playwright tests.
-allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*)
+allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*) Bash(node:*)
 ---
 
 # Playwright CLI
@@ -40,9 +40,14 @@ Brave on the Mac, attach through CDP (forwarded from the Mac on nspawn):
 
 ```bash
 playwright-cli list
-playwright-cli -s=task attach --cdp=http://127.0.0.1:9222
+CDP_URL=$(node "${DOTFILES_PATH:?}/agents/mcp.ts" browser-url) &&
+  playwright-cli -s=task attach --cdp="$CDP_URL"
 playwright-cli -s=task tab-list
 ```
+
+The Node command reads the shared endpoint from `agents/mcp.json`. The Node
+grant is for this reader. If the reader or attach fails, stop before tab commands
+and report the error; do not reuse an earlier URL or guess a port.
 
 Only when the task needs an isolated browser, use
 `playwright-cli -s=task open --browser=chromium` **instead of attach**.

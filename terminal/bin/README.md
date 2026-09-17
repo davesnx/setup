@@ -1,3 +1,21 @@
+# Run package scripts
+
+Run `scripts` in a directory with `package.json` to select a script with fzf.
+The `r` alias sources the same command in Zsh and adds the selected npm command
+to interactive history. Both forms require jq and fzf. Use `scripts --help`
+for controls and `scripts --version` for the version number.
+
+Cancellation returns successfully without running npm. Invalid package data
+and picker failures return an error. Once a script is selected, its exact name
+is passed to npm and npm's exit status is returned. Sourcing preserves the
+caller's variables and shell options.
+
+# Count files
+
+`count_files_recursive` counts regular files beneath the current directory,
+including names with newlines. `count_files_recursive_per_directory` uses the
+same counter for each non-hidden subdirectory and prints its name and count.
+
 # Transfer files over SSH
 
 Use `ssh-transfer` from your Mac to copy files to or from nspawn. Both `push`

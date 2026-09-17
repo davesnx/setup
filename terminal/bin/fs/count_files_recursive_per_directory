@@ -4,7 +4,7 @@ set -euo pipefail
 
 source "$DOTFILES_PATH/terminal/core/main.sh"
 
-##? Count files recursives in the current direcory disgregated per subdirectory
+##? Count regular files recursively in each non-hidden subdirectory.
 #?? 1.0.0
 ##?
 ##? Usage:
@@ -14,6 +14,6 @@ docs::parse "$@"
 
 for directory in ./*/; do
   [[ -d "$directory" ]] || continue
-  count=$(find "$directory" -type f -print0 | tr -cd '\0' | wc -c)
+  count=$(cd "$directory" && "$BASH" "$DOTFILES_PATH/terminal/bin/fs/count_files_recursive")
   printf '%s %d\n' "${directory#./}" "$count"
 done

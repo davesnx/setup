@@ -15,7 +15,6 @@ the first two levels. `->` names the link an installer creates.
 install.sh                Full machine setup. Runs each module install.sh in order.
 prelude.sh                Installer helpers: need, link_path, one backup dir per run.
 check.sh                  Shared setup checks. Run before committing. See TESTING.md.
-shellcheck.sh             ShellCheck and Zsh syntax pass, called by check.sh.
 TESTING.md                What check.sh covers, and what needs a real smoke test.
 CLAUDE.md                 One line, @AGENTS.md. Claude Code does not read AGENTS.md.
 .github/workflows/check.yml  CI. Runs check.sh on Linux and macOS.

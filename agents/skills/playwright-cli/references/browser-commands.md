@@ -258,7 +258,8 @@ playwright-cli attach --cdp=chrome
 playwright-cli attach --cdp=msedge
 
 # Connect to a running browser via CDP endpoint
-playwright-cli attach --cdp=http://localhost:9222
+CDP_URL=$(node "${DOTFILES_PATH:?}/agents/mcp.ts" browser-url) &&
+  playwright-cli attach --cdp="$CDP_URL"
 
 # Start with config file
 playwright-cli open --config=my-config.json

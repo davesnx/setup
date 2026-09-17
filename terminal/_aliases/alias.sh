@@ -25,8 +25,8 @@ alias d="docker"
 alias j="__zoxide_z"
 alias jj="__zoxide_zi"
 
-alias oc="/opt/homebrew/bin/opencode"
-alias occ="/opt/homebrew/bin/opencode --continue"
+alias oc="command opencode"
+alias occ="command opencode --continue"
 alias cla="command claude"
 alias ccc="command claude --continue"
 

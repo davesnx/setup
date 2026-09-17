@@ -67,7 +67,71 @@ env -i HOME="$work" PATH=/usr/bin:/bin SSH_CONNECTION=x "$zsh_bin" -c \
   'setup-path-probe' || fail "non-login SSH command could not find local binaries"
 echo "PASS: non-login SSH commands can run local binaries"
 
-ln -s "$root/terminal/zsh/.zprofile" "$work/.zprofile"
-env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -lc \
+cat >"$work/.zprofile" <<'EOF'
+OSTYPE=linux-gnu
+source "$DOTFILES_PATH/terminal/zsh/.zprofile"
+EOF
+env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -dlc \
   'setup-path-probe' || fail "login shell PATH misses local binaries"
 echo "PASS: login shells can run local binaries"
+
+mkdir -p "$work/stubs"
+for name in node npm; do
+  printf '#!/bin/sh\nexit 0\n' >"$work/stubs/$name"
+  chmod +x "$work/stubs/$name"
+done
+
+for config_home in "$work/.config" "$work/custom config"; do
+  mkdir -p "$config_home/opencode/plugins/opencode-notify"
+  env -i HOME="$work" PATH="$work/stubs:/usr/bin:/bin" DOTFILES_PATH="$root" \
+    XDG_CONFIG_HOME="$config_home" sh "$root/terminal/opencode/install.sh" ssh >"$work/install.log"
+  [ "$(readlink "$config_home/opencode/host.jsonc")" = "$root/terminal/opencode/hosts/ssh.jsonc" ] || fail "profile was not installed"
+done
+
+profile_seen() {
+  env -i HOME="$work" PATH=/usr/bin:/bin "$@" "$zsh_bin" -dls <<'EOF'
+print -r -- "${OPENCODE_CONFIG-unset}"
+source ~/.zprofile
+print -r -- "${OPENCODE_CONFIG-unset}"
+EOF
+}
+
+expect_profile() {
+  expected=$1
+  shift
+  actual=$(profile_seen "$@")
+  [ "$actual" = "$(printf '%s\n%s' "$expected" "$expected")" ] || fail "profile lookup expected $expected, got $actual"
+}
+
+expect_profile "$work/.config/opencode/host.jsonc"
+expect_profile "$work/.config/opencode/host.jsonc" XDG_CONFIG_HOME=
+echo "PASS: default profile lookup survives repeated startup"
+expect_profile "$work/custom config/opencode/host.jsonc" XDG_CONFIG_HOME="$work/custom config"
+expect_profile "$work/custom config/opencode/host.jsonc" XDG_CONFIG_HOME="$work/custom config" OPENCODE_CONFIG=explicit.jsonc
+echo "PASS: custom XDG profile takes precedence, including over inherited OPENCODE_CONFIG"
+expect_profile unset XDG_CONFIG_HOME="$work/absent"
+expect_profile explicit.jsonc XDG_CONFIG_HOME="$work/absent" OPENCODE_CONFIG=explicit.jsonc
+rm "$work/.config/opencode/host.jsonc"
+expect_profile unset
+expect_profile explicit.jsonc OPENCODE_CONFIG=explicit.jsonc
+echo "PASS: absent profiles leave OPENCODE_CONFIG unchanged"
+
+cat >"$work/.local/bin/opencode" <<'EOF'
+#!/bin/sh
+printf 'opencode'
+printf ' <%s>' "$@"
+printf '\n'
+EOF
+chmod +x "$work/.local/bin/opencode"
+actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -ds <<'EOF'
+source "$DOTFILES_PATH/terminal/_aliases/alias.sh"
+for name in oc occ; do
+  [[ "${aliases[$name]}" != /* ]] || { print -u2 "FAIL: $name uses an absolute executable"; exit 1; }
+done
+opencode() { print "wrong function"; }
+oc "two words"
+occ "two words"
+EOF
+)
+[ "$actual" = "$(printf '%s\n%s' 'opencode <two words>' 'opencode <--continue> <two words>')" ] || fail "oc/occ did not use the PATH executable: $actual"
+echo "PASS: oc and occ find OpenCode on PATH and preserve arguments"
