@@ -19,13 +19,13 @@ Do not run cosmetic variations of the same idea in one batch. When several candi
 
 ## 2. Create isolated worktrees
 
-Create each candidate from the current best commit in a unique path under `/tmp/autoresearch-<session>/batch-<N>/candidate-<M>`. Use detached worktrees so failed candidates leave no branches:
+Create each candidate from the current best commit in a unique path. When the host rules name a worktree location (workplace: `.workplace/worktrees/<task>/`), use it; otherwise use `/tmp/autoresearch-<session>/batch-<N>/candidate-<M>`. Use detached worktrees so failed candidates leave no branches:
 
 ```bash
 git worktree add --detach "<candidate-path>" "<best-commit>"
 ```
 
-Before creation, verify `/tmp` exists and record every path created by this run. Never reuse a worktree from another batch.
+Before creation, verify the parent directory exists and record every path created by this run. Never reuse a worktree from another batch. A worktree nested inside another checkout confuses tools that search upward for a project root; for dune, export `DUNE_ROOT` or pass `--root .` in every command the coordinator and workers run there.
 
 ## 3. Implement candidates in parallel
 
@@ -36,14 +36,16 @@ Each worker must:
 1. Work only in its assigned worktree.
 2. Implement only its assigned hypothesis.
 3. Run the fast rejection check.
-4. Confirm that only files in scope changed. Stage intent for new files with `git add -N`, then write `git diff --binary HEAD` to a unique patch file outside the worktree under the recorded batch artifact directory.
-5. Return the patch path, its SHA-256, and the changed-file list.
+4. Confirm that only files in scope changed. Stage intent for new files with `git add -N`, then write the patch with `git diff --binary HEAD --output=<patch-path>` to a unique file outside the worktree under the recorded batch artifact directory. Use git's `--output`, not a shell redirect: redirect-guard hooks block `>` to paths under the home directory, and writing the diff through an editor tool normalizes whitespace and corrupts the patch.
+5. Return the patch path, its SHA-256, the changed-file list, and every instruction in the brief it did not follow, with the reason.
 
 Workers do not commit. This keeps throwaway candidates outside the repository's commit gate. They must not run resource-sensitive benchmarks concurrently unless the benchmark is proven independent. They must not choose winners or write shared state.
 
 ## 4. Measure candidates
 
-The coordinator measures candidate worktrees one at a time by default. Run measurements concurrently only when they cannot compete for CPU, memory, ports, caches, quotas, or shared services.
+The coordinator measures candidate worktrees one at a time by default. Run measurements concurrently only when they cannot compete for CPU, memory, ports, caches, quotas, or shared services. Do not measure while workers are still building or running.
+
+On a shared or noisy host (other users' load, frequency scaling, a container on a big box), absolute numbers drift between minutes, so a candidate run and a best run taken at different times do not compare. Alternate current best and candidate on one pinned core in the same window, at least three rounds, and decide from the paired medians. A lone run of either is not a decision.
 
 In each candidate worktree:
 
@@ -106,7 +108,7 @@ Update the `Key Insights` and `Next Ideas` sections when evidence changes them. 
 
 ## 8. Clean up
 
-After all candidate results and patches are durable, reverse each candidate patch inside its own worktree and confirm `git status --short` is empty. Then remove only the detached worktrees recorded for this batch with `git worktree remove <path>`. If cleanup or removal fails, preserve the worktree and report its path. Do not use `git clean`, force removal, or broad filesystem deletion for cleanup.
+After all candidate results and patches are durable, reverse each candidate patch inside its own worktree and confirm `git status --short` is empty. Then remove only the detached worktrees recorded for this batch with `git worktree remove <path>`. When the host rules require asking before a worktree is removed (workplace: record its result in the plan, then ask), leave the worktrees in place, list their paths in the plan, and ask at stop instead. If cleanup or removal fails, preserve the worktree and report its path. Do not use `git clean`, force removal, or broad filesystem deletion for cleanup.
 
 ## Decision and Stop Rules
 

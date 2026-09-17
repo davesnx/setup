@@ -108,6 +108,12 @@ hook protection, and isolation of unrelated work.
    If the edits cannot be separated with confidence, stop and ask. Do not use
    `git add -A` or `git commit -a` to collect changes from a dirty worktree.
 
+   The index may already hold more than you staged: `git apply --3way`,
+   `git apply --index`, a merge, or a cherry-pick stage their hunks. After any
+   of those, commit with an explicit pathspec (`git commit -m "<subject>" --
+   <paths>`), which commits only those paths whatever else is staged, and
+   leave the rest staged for its own commit.
+
    Inspect the selected index with `git diff --cached --stat` and
    `git diff --cached` before committing. Stop if it contains unrelated
    changes, generated artifacts that were not reviewed, or secrets.
