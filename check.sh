@@ -13,7 +13,8 @@ done
 bash "$root/shellcheck.sh"
 shfmt -d -i 2 -ci "$root/check.sh" "$root/shellcheck.sh" \
   "$root/terminal/core/test.sh" "$root/terminal/bin/git-extras/test.sh" \
-  "$root/terminal/bin/git-extras/git-effort"
+  "$root/terminal/bin/git-extras/git-effort" \
+  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh"
 git -C "$root" diff --check
 git -C "$root" diff --cached --check
 
@@ -22,11 +23,14 @@ bash "$root/terminal/core/test.sh"
 zsh "$root/terminal/core/test.sh"
 /bin/bash "$root/terminal/bin/git-extras/test.sh"
 bash "$root/terminal/bin/git-extras/test.sh"
+/bin/bash "$root/terminal/bin/testzsh.test.sh"
+bash "$root/terminal/bin/testzsh.test.sh"
 bun test "$root/terminal/core/utils/docopts.test.ts"
 bun test "$root/agents/mcp.test.ts"
 bun test "$root/terminal/claude/mcp.test.ts"
 bun test "$root/terminal/opencode/mcp.test.ts"
 sh "$root/terminal/zsh/tests/agent-link.sh"
+zsh "$root/terminal/zsh/tests/cached-init.zsh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
 
 # Layout: AGENTS.md names only paths that exist, every tracked directory in

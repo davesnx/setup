@@ -22,19 +22,21 @@ zmodule zsh-users/zsh-completions --fpath src
 if [[ -d /opt/homebrew/share/zsh ]] && [[ $(uname) == Darwin ]] && [[ $(uname -m) == arm64 ]] ; then
     zmodule /opt/homebrew/share/zsh/site-functions --fpath .
 fi
-zmodule completion
+# Only the zimfw completion function. terminal/zsh/completion.zsh replaces the
+# module init, which stats every completion file on each start.
+zmodule completion --fpath functions
 
 # Fish-like autosuggestions for Zsh. -d keeps the clone installed and updated by
 # zimfw without sourcing it; .zshrc sources it through zsh-defer for faster startup.
 zmodule zsh-users/zsh-autosuggestions -d
 
-# Fish-like history search (up arrow) for Zsh
-# zsh-users/zsh-history-substring-search must be sourced after zsh-users/zsh-syntax-highlighting
-zmodule zsh-users/zsh-history-substring-search
+# Fish-like history search (up arrow) for Zsh. -d installs it without sourcing;
+# .zshrc sources it through zsh-defer after zsh-syntax-highlighting.
+zmodule zsh-users/zsh-history-substring-search -d
 
-# Fish-like syntax highlighting for Zsh
-# Must be sourced after completion
-zmodule zsh-users/zsh-syntax-highlighting
+# Fish-like syntax highlighting for Zsh. -d installs it without sourcing;
+# .zshrc sources it through zsh-defer after completion.
+zmodule zsh-users/zsh-syntax-highlighting -d
 
 # Defer loading of modules until after compinit
 zmodule romkatv/zsh-defer -d

@@ -4,6 +4,11 @@
 export DOTFILES_PATH="${${(%):-%N}:A:h:h:h}"
 export ZIM_HOME="$HOME/.zim"
 
+# macOS /etc/zprofile and /etc/zshrc fork path_helper and locale on every
+# start. .zprofile rebuilds PATH, Ghostty sets MANPATH, and .zshrc keeps the
+# two /etc/zshrc settings that nothing else replaces.
+[[ "$OSTYPE" == darwin* ]] && unsetopt GLOBAL_RCS
+
 # SSH remote commands do not read .zprofile, where the rest of PATH is set.
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   export PATH="$HOME/.local/bin:$PATH"

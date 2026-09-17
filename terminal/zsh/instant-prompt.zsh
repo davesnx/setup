@@ -24,20 +24,20 @@ typeset -gi _INSTANT_PROMPT_ACTIVE=1
 # Compute the short pwd inline (same logic as prompt_short_pwd)
 _instant_prompt_pwd() {
   if [[ $PWD == $HOME ]]; then
-    print -n "~"
+    REPLY='~'
   else
-    print -n ${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h}}#(|.)[^.]}}/${PWD:t}}//\/~/\~}/\/\//\/}
+    REPLY=${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h}}#(|.)[^.]}}/${PWD:t}}//\/~/\~}/\/\//\/}
   fi
 }
 
 # Print the instant prompt (without git info - that loads later)
 () {
   local prompt_char="→"
-  local pwd_str="$(_instant_prompt_pwd)"
+  _instant_prompt_pwd
 
   # Print the prompt immediately
   # Format: yellow path, newline, green arrow
-  print -Pn "%F{yellow}${pwd_str}%f\n%F{green}${prompt_char}%f "
+  print -Pn "%F{yellow}${REPLY}%f\n%F{green}${prompt_char}%f "
 }
 
 # Function called after .zshrc finishes to "finalize" the prompt

@@ -142,3 +142,84 @@ Rules:
 
 The `skill-vendor` skill under `agents/skills/` gives agents this procedure. Its
 test is `agents/skills/skill-vendor/tests/skill-vendor.sh`.
+
+# Measure Zsh startup
+
+`testzsh` starts login, interactive Zsh shells with `ZSH_BENCHMARK=1`. It needs
+Bash 3.2 or newer and Zsh on `PATH`. Setup adds `terminal/bin` to `PATH`.
+
+```sh
+testzsh
+testzsh --profile
+testzsh --trace
+```
+
+An existing `testzsh` shell function takes precedence over the executable.
+Run `unfunction testzsh` or start a new shell after this update.
+
+| Option | Output |
+| --- | --- |
+| None | 25 `real`, `user`, and `sys` timing lines on stderr, with an `s` suffix on each value. |
+| `--profile` | One startup's Zsh `zprof` function report on stdout. |
+| `--trace` | One startup's file totals and top 20 source locations on stdout, sorted by elapsed time. Each row has milliseconds, event count, and an escaped source label. |
+| `--help` | Command syntax and options. |
+
+Unknown options, an empty argument, or multiple arguments return status 2.
+A failed or incomplete run returns status 1 with a fixed error message.
+Startup stdout and stderr are discarded in all modes. Diagnostics write through
+separate descriptors into private temporary files and print only a completed
+report. Temporary files are removed when the command exits.
+
+## Startup and shutdown boundaries
+
+The executable cannot inherit an unexported `ZDOTDIR`. Run `export ZDOTDIR`
+first if you use one. The temporary `ZDOTDIR/.zshenv` bootstrap restores its
+exported value exactly, including unset and empty states. It enables diagnostics
+and sources the real user `.zshenv` at top level. Zsh loads system and user
+`.zprofile`, `.zshrc`, and `.zlogin` files under normal startup rules. Changes
+to `ZDOTDIR` apply to subsequent files. Empty `ZDOTDIR` does not use `HOME`.
+
+Mandatory `/etc/zshenv` runs before the bootstrap. Default timing includes it;
+diagnostic function and line measurements do not. Other system startup files
+remain enabled. Bypassing the bootstrap causes a failure, not a partial report.
+
+After startup, a fixed command unsets `HISTFILE` and disables `RCS` before the
+shell exits. Completed runs therefore exclude history saving and logout files.
+This changes the old default benchmark, which ended with `exit` and could run
+logout work. Startup itself can still update caches or write files. If startup
+calls `exit` or `exec` before this boundary, the command reports failure, but it
+cannot prevent shutdown actions that startup already selected.
+
+## Read the diagnostics
+
+`--profile` uses `zsh/zprof`. It measures functions, including functions called
+from profile and login files. It does not measure top-level commands.
+
+`--trace` uses `zsh/datetime` and a `TRAPDEBUG` function with `DEBUG_BEFORE_CMD`.
+Each event assigns the elapsed interval since the preceding command to that
+command's source filename and line. The final startup interval is included.
+File totals are exclusive: time inside a sourced file or function belongs to
+the source location that runs it, rather than also being added to its caller.
+Subshell commands are skipped. The parent's wait, including a command
+substitution, belongs to the parent command.
+
+The trace stores times and source locations in memory without reading command
+text or using `xtrace`. It omits assignments, arguments, evaluated source, and
+startup errors. Source labels are escaped shell strings. Anonymous locations
+use `(unknown)` instead of an empty filename, retaining the line number.
+Filenames remain visible, but control characters cannot create extra report
+lines. The profiler also escapes control characters in function reports.
+
+These are elapsed wall-clock intervals, not CPU samples. They include process
+waits and some tracing overhead. The clock sample is taken at the end of each
+trap to reduce that overhead. A backwards clock interval invalidates the report.
+An existing DEBUG trap is rejected. A replaced trap or disabled
+`DEBUG_BEFORE_CMD` at the report boundary also invalidates the trace. Startup
+that temporarily removes and restores the same trap can leave undetected gaps.
+
+Neither diagnostic runs a prompt or the interactive editor. Deferred work that
+waits for them is outside the measurement. Use default timing for whole-process
+comparisons and the diagnostics to find startup work to inspect.
+
+Run `bash terminal/bin/testzsh.test.sh` for the isolated tests on macOS or nspawn.
+See [Setup checks](../../TESTING.md) for the full verification commands.

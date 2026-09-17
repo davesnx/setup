@@ -13,6 +13,7 @@ if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
   exit 69
 fi
 
+# shellcheck disable=SC1091
 . "$DOTFILES_PATH/prelude.sh"
 
 need curl

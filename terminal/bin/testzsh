@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  printf 'Usage: testzsh [--profile | --trace | --help]\n'
+  printf '  no option   Time 25 login, interactive Zsh startups.\n'
+  printf '  --profile   Report startup function costs with zprof.\n'
+  printf '  --trace     Report file costs and the top 20 source locations.\n'
+}
+
+mode=timing
+if [[ $# -gt 1 ]]; then
+  usage >&2
+  exit 2
+fi
+case ${1-} in
+  '') [[ $# -eq 0 ]] || {
+    usage >&2
+    exit 2
+  } ;;
+  --profile) mode=profile ;;
+  --trace) mode=trace ;;
+  --help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
+
+zsh_bin=$(type -P zsh) || {
+  printf 'testzsh: zsh is required.\n' >&2
+  exit 1
+}
+umask 077
+scratch=$(mktemp -d "${TMPDIR:-/tmp}/testzsh.XXXXXXXX")
+trap 'rm -rf -- "$scratch"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+# A separate descriptor proves that the fixed end command actually ran.
+check_report() {
+  local result
+  result=$(<"$scratch/status")
+  case $result in
+    complete) return 0 ;;
+    debug-conflict)
+      printf 'testzsh: cannot trace an existing, replaced, or disabled DEBUG trap.\n' >&2
+      ;;
+    clock-backwards)
+      printf 'testzsh: the wall clock moved backwards; trace discarded.\n' >&2
+      ;;
+    *) printf 'testzsh: startup failed or did not reach the bootstrap/report boundary.\n' >&2 ;;
+  esac
+  return 1
+}
+
+if [[ $mode == timing ]]; then
+  TIMEFORMAT=$'real %3Rs\tuser %3Us\tsys %3Ss'
+  for ((run = 0; run < 25; run++)); do
+    if { time ZSH_BENCHMARK=1 "$zsh_bin" -l -i -c \
+      'builtin unset HISTFILE; builtin unsetopt rcs; builtin print -r -- complete >&4' \
+      >/dev/null 2>/dev/null 4>"$scratch/status"; }; then
+      check_report || exit 1
+    else
+      printf 'testzsh: startup failed.\n' >&2
+      exit 1
+    fi
+  done
+  exit 0
+fi
+
+cat >"$scratch/.zshenv" <<'ZSH'
+if [[ $_TESTZSH_ZDOTDIR_SET == yes ]]; then
+  builtin export ZDOTDIR="$_TESTZSH_ZDOTDIR"
+else
+  builtin unset ZDOTDIR
+fi
+builtin typeset -g _testzsh_mode=$_TESTZSH_MODE
+builtin typeset -g _testzsh_bootstrap=${(%):-%x}
+builtin unset _TESTZSH_ZDOTDIR_SET _TESTZSH_ZDOTDIR _TESTZSH_MODE
+
+_testzsh_report() {
+  local debug_before=$options[debugbeforecmd]
+  emulate -L zsh
+  local key file line
+  if [[ $_testzsh_mode == profile ]]; then
+    while IFS= read -r line; do
+      print -r -- "${(V)line}" >&3
+    done < <(zprof)
+  else
+    if [[ ${functions[TRAPDEBUG]-} != "$_testzsh_debug_body" || $debug_before != on ]]; then
+      print -r -- debug-conflict >&4
+      return 1
+    fi
+    unfunction TRAPDEBUG
+    if (( _testzsh_clock_backwards )); then
+      print -r -- clock-backwards >&4
+      return 1
+    fi
+    print -r -- trace-v1 >&3
+    local -A file_ms file_events
+    for key in "${(@k)_testzsh_ms}"; do
+      file=${key%:*}
+      file_ms[$file]=$(( ${file_ms[$file]:-0} + _testzsh_ms[$key] ))
+      file_events[$file]=$(( ${file_events[$file]:-0} + _testzsh_events[$key] ))
+      printf 'line\t%.3f\t%d\t%s\n' "${_testzsh_ms[$key]}" "${_testzsh_events[$key]}" "${(qqqq)key}" >&3
+    done
+    for file in "${(@k)file_ms}"; do
+      printf 'file\t%.3f\t%d\t%s\n' "${file_ms[$file]}" "${file_events[$file]}" "${(qqqq)file}" >&3
+    done
+  fi
+  print -r -- complete >&4
+}
+
+if [[ $_testzsh_mode == profile ]]; then
+  zmodload zsh/zprof || exit 1
+else
+  # List-style traps are not present in the functions associative array.
+  if (( ${+functions[TRAPDEBUG]} )) || [[ "$(builtin trap)" == *' DEBUG'(|$'\n'*) ]]; then
+    builtin print -r -- debug-conflict >&4
+    exit 1
+  fi
+  zmodload zsh/datetime || exit 1
+  builtin typeset -gA _testzsh_ms _testzsh_events
+  builtin typeset -g _testzsh_previous='' _testzsh_stop=0 _testzsh_clock_backwards=0
+  builtin typeset -gF _testzsh_started=0
+  setopt debugbeforecmd
+  TRAPDEBUG() {
+    local -F now=$EPOCHREALTIME
+    emulate -L zsh
+    (( ZSH_SUBSHELL == 0 && ! _testzsh_stop )) || return 0
+    local location=${funcfiletrace[1]}
+    [[ -n ${location%:*} ]] || location="(unknown)$location"
+    local -F elapsed
+    if [[ -n $_testzsh_previous && $_testzsh_previous != "$_testzsh_bootstrap":* ]]; then
+      elapsed=$(( (now - _testzsh_started) * 1000 ))
+      if (( elapsed < 0 )); then
+        _testzsh_clock_backwards=1
+        elapsed=0
+      fi
+      _testzsh_ms[$_testzsh_previous]=$(( ${_testzsh_ms[$_testzsh_previous]:-0} + elapsed ))
+      _testzsh_events[$_testzsh_previous]=$(( ${_testzsh_events[$_testzsh_previous]:-0} + 1 ))
+    fi
+    _testzsh_previous=$location
+    _testzsh_started=$EPOCHREALTIME
+    # Zsh restores the preceding status when a function DEBUG trap returns zero.
+    return 0
+  }
+  builtin typeset -g _testzsh_debug_body=$functions[TRAPDEBUG]
+fi
+
+# Source only the displaced user .zshenv, at top level. Zsh loads the rest.
+if [[ -r ${ZDOTDIR-$HOME}/.zshenv ]]; then
+  builtin source "${ZDOTDIR-$HOME}/.zshenv"
+fi
+ZSH
+
+zdotdir_set=no
+[[ ${ZDOTDIR+x} ]] && zdotdir_set=yes
+original_zdotdir=${ZDOTDIR-}
+status=0
+ZSH_BENCHMARK=1 _TESTZSH_MODE=$mode \
+  _TESTZSH_ZDOTDIR_SET=$zdotdir_set _TESTZSH_ZDOTDIR=$original_zdotdir \
+  ZDOTDIR=$scratch "$zsh_bin" -l -i -c \
+  '_testzsh_stop=1; builtin unset HISTFILE; builtin unsetopt rcs; _testzsh_report' \
+  >/dev/null 2>/dev/null 3>"$scratch/report" 4>"$scratch/status" || status=$?
+check_report || exit 1
+if [[ $status -ne 0 || ! -s $scratch/report ]]; then
+  printf 'testzsh: startup failed or produced no report.\n' >&2
+  exit 1
+fi
+
+if [[ $mode == profile ]]; then
+  cat "$scratch/report"
+else
+  printf 'Exclusive file totals (ms, events, escaped source file)\n'
+  LC_ALL=C awk -F '\t' '$1 == "file" {sub(/^[^\t]*\t/, ""); print}' "$scratch/report" | LC_ALL=C sort -k1,1nr
+  printf '\nTop 20 source locations (ms, events, escaped filename:line)\n'
+  LC_ALL=C awk -F '\t' '$1 == "line" {sub(/^[^\t]*\t/, ""); print}' "$scratch/report" | LC_ALL=C sort -k1,1nr | awk 'NR <= 20'
+fi

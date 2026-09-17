@@ -15,12 +15,22 @@ It checks:
 
 - ShellCheck findings, including extensionless commands and local imports, plus
   Zsh syntax. Run only this part with `bash shellcheck.sh`.
-- Formatting of the check scripts and rewritten Git effort command.
+- Formatting of the check scripts, Git effort command, and `testzsh`.
 - Argument handling, collections, and logging in both system and PATH Bash,
   plus shared helpers in Zsh.
 - Git effort counts, filtering, unusual filenames, command failure, and temporary
   file cleanup; filesystem counts and Monday's standup date handling.
-- Command-line help parsing, Zsh startup, SSH agent links, and PATH inheritance.
+- Command-line help parsing, Zsh startup, SSH agent links, PATH inheritance, and
+  cached direnv and zoxide hooks.
+- `testzsh` timing, profiling, and source-line tracing in system and PATH Bash.
+  The adjacent test uses real Zsh with `env -i` and temporary homes. It checks
+  25 timing lines, startup order through `.zlogin`, login/interactive flags,
+  function costs, source and subshell timing, the final startup interval,
+  escaped filenames, secret-free output, status preservation, and exported
+  `ZDOTDIR` states. It also checks failed startups, changed DEBUG traps,
+  backwards clock detection, repeated cleanup, and history/logout suppression
+  after completed startup. A Zsh wrapper checks the generated bootstrap syntax
+  and simulates a preceding DEBUG trap, redirected `ZDOTDIR`, and a lost report.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
 - MCP declaration: `agents/mcp.json` validates, the rendered files match it,
@@ -50,6 +60,25 @@ These module checks are not part of the root command or its CI jobs.
 Shell syntax selection also excludes `.zimrc`; after editing it, run
 `zsh -n terminal/zsh/.zimrc` separately.
 
+Run the focused `testzsh` checks without installing tools or touching your home:
+
+```sh
+bash -n terminal/bin/testzsh && bash -n terminal/bin/testzsh.test.sh
+shellcheck terminal/bin/testzsh terminal/bin/testzsh.test.sh
+shfmt -d -i 2 -ci terminal/bin/testzsh terminal/bin/testzsh.test.sh
+/bin/bash terminal/bin/testzsh.test.sh
+bash terminal/bin/testzsh.test.sh
+```
+
+The tests need Bash, Zsh, and standard Unix tools. They do not need Bun or Node.
+Timing checks use broad ranges. A heavily loaded host can exceed those ranges.
+They exercise the host's actual system startup files but do not edit them or
+prove the behavior of another host's system configuration. For a real startup
+check, run `terminal/bin/testzsh`, `terminal/bin/testzsh --profile`, and
+`terminal/bin/testzsh --trace`. These commands load your installed configuration
+and can update its normal startup caches. See the [command reference](terminal/bin/README.md#measure-zsh-startup)
+for the measurement and shutdown boundaries.
+
 ## Check on nspawn
 
 nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, and rsync, but no `shfmt`
@@ -63,7 +92,9 @@ rsync -a --delete --exclude node_modules --exclude .venv --exclude .cache \
 ssh -o ClearAllForwardings=yes nspawn bash -s <<'EOF'
 cd ~/.cache/setup-check
 bash terminal/core/test.sh && zsh terminal/core/test.sh
+bash terminal/bin/testzsh.test.sh
 sh terminal/zsh/tests/agent-link.sh
+zsh terminal/zsh/tests/cached-init.zsh
 zsh terminal/node/tests/npm-wrapper.zsh
 EOF
 ```
