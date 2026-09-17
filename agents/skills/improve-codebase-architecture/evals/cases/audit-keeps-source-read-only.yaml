@@ -3,7 +3,7 @@ id: improve-codebase-audit-keeps-source-read-only
 mode: deterministic
 skill_under_test: improve-codebase-architecture
 skills_loaded: [improve-codebase-architecture]
-description: "An audit may write its report and plans but must not edit source"
+description: "An explicitly requested HTML review and plan preserve the source-read-only boundary"
 tags: [audit, read-only, boundary]
 
 setup:

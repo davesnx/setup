@@ -1,8 +1,14 @@
 # Adversarial Synthesis And Lead Judgment
 
-Adversarial reviewers produce candidate findings. The lead reviewer must verify, filter, and decide rather than count votes.
+Adversarial review produces candidate findings. Verify, filter, and decide from
+evidence. Independent reviewers can challenge assumptions, but votes do not
+establish truth. In a direct review, apply the lead judgment below to the
+competing explanations you tested.
 
 ## Agreement Map
+
+Use this only when independent reviewers contributed. No reviewer count or
+agreement entry is required for a direct review.
 
 - Merge duplicate findings before measuring agreement.
 - Treat a finding raised independently by two or more reviewers as consensus. Consensus increases its verification priority, not its truth.
@@ -28,4 +34,6 @@ Classify each candidate:
 - **Consider**: Valid concerns for which impact, timing, or remedy cost does not clearly justify blocking.
 - **Dismissed**: Incorrect, unreachable, preference-only, duplicated, or cleared by stronger context. Give the reason so the user can challenge the decision.
 
-For each retained or dismissed finding, name the reviewers that raised it and cite the lead reviewer's confirming or clearing evidence.
+For each material retained or dismissed candidate, cite confirming or clearing
+evidence and name the contributing reviewers when present. Keep the decision
+without forcing a separate category or listing every discarded style suggestion.

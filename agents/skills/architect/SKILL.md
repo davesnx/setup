@@ -1,15 +1,13 @@
 ---
 name: architect
-description: "Design production modules, interfaces, seams, types, signatures, and dependency structure before implementation. Use ONLY when the requested result is a production code shape or integration contract, such as 'architect this' or 'design this module'. Do not use for throwaway HTML experiments that test state, transition, policy, scheduling, or algorithm behavior."
+description: "Design production modules and integration contracts from caller usage, types, constraints, and evidence. Use for module or interface design before implementation. For disposable interactive logic experiments, use logic-prototype."
 ---
 
 # Architect
 
-Design the production contract before implementation. Sketch caller usage, types,
-function signatures, module boundaries, seams, and dependency direction with
-`not implemented` bodies or brief pseudocode where needed. Synthesize across
-multiple model perspectives, then hand the chosen design to the implementation
-workflow.
+Design the production contract before implementation. Default to one grounded
+design, developed directly. The caller's usage, core types, constraints, and
+evidence determine the shape; a comparison workflow is optional.
 
 ## Boundary
 
@@ -18,52 +16,57 @@ workflow.
   works. Route by the requested deliverable, not by the subject. A production
   state-machine interface belongs here; an interactive state-machine experiment
   does not.
-- Architect ends with a design package. Do not write production implementation
-  as part of this skill.
+- Architect ends with a design. Do not edit production source or implement
+  sketched bodies. If implementation was also requested, hand the design to the
+  normal implementation workflow after this design step.
 
-## Start
+## Design discipline
 
-Open a todolist with one entry per phase before starting. Autonomous mode without checkpoints needs the list to show phase position and keep phases from silently disappearing.
+Trace the relevant callers, data flow, ownership, tests, and constraints before
+choosing a shape. Cite the code or supplied requirements that drive each material
+decision. For greenfield work, state assumptions and integration constraints.
+Inspect history and design records when changing established ownership or layering.
 
-1. Ground
-2. Explore and synthesize
-3. Deliver and hand off
+Write a realistic caller usage sketch first, then derive types and signatures.
+Trace the dominant access patterns through those types. Show validation, errors,
+invariants, and dependency direction where they affect correct use. Encode
+invariants in types where practical and keep one source of truth per invariant.
 
-## Phase A: Ground the problem
+For shared state, trace concurrent writers, repeated operations, and failure
+halfway through a transition. Explain how ownership and recovery preserve the
+contract. Prefer a small interface that hides real complexity; add seams only for
+demonstrated variation. Use declarations, `not implemented` bodies, or brief
+pseudocode to make the design traceable without implementing it.
 
-Build a real mental model of every system the new code touches. Trace the relevant entry points, data flow, ownership, boundaries, and callers directly. Critique the current structure when it constrains the design.
+Check that the proposed usage agrees with the types and the existing callers.
+Show how the important success and failure paths can be verified through the
+interface. Distinguish checks performed from checks proposed for implementation.
 
-Read `references/codebase-design.md` and use its module, interface, depth, seam, adapter, leverage, and locality vocabulary throughout. For dependency-heavy restructuring, also read `references/deepening.md`.
+## When to expand
 
-Naming a file isn't grounding. Produce a traced model of the relevant subsystem. If the design redefines ownership or layering, inspect commit history, architecture docs, and nearby decisions so the existing rationale becomes a constraint, not a guess.
+- For module depth, seam placement, or restructuring, read
+  [codebase-design.md](references/codebase-design.md). For dependency-heavy
+  deepening, also read [deepening.md](references/deepening.md).
+- Compare whole-shape alternatives when the user requests them, or when a real
+  unresolved tradeoff or hard-to-reverse risk could change the recommendation.
+  Read [design-it-twice.md](references/design-it-twice.md) for that workflow.
+  Parallel candidates earn their cost through independent questions, not model
+  availability. Respect explicit requests for parallel work; if tools cannot
+  support them, state the limit rather than claiming independent results.
+- Use [rationale-template.md](references/rationale-template.md) when a larger
+  design needs a durable explanation. Use only the sections the decision needs.
 
-Skip Phase A only when the work is genuinely greenfield with no surrounding system to integrate.
+## Deliver
 
-## Phase B: Explore and synthesize
+For a small change, the response can contain the usage, type sketch, short
+rationale, and first implementation step. If a saved sketch is useful or
+requested, one small file can hold both design and rationale. Add a module map,
+comparison, or separate documents only when scope or the requested handoff needs
+them. Record real rejected alternatives, not invented contenders to fill a template.
 
-Launch one read-only design runner per available configured model in parallel. Give every runner the Phase A grounding artifacts, `references/codebase-design.md`, and `references/runner-prompt.md`. Each candidate produces a design package shaped per `references/rationale-template.md`: the caller's usage written first, then the type sketch, function signatures, module map, and prose rationale derived from it. Use `references/design-it-twice.md` when the interface needs deliberately different shapes rather than variations of one design. If model selection is unavailable, use independent runners and state that the candidates do not prove model diversity.
+Finish when callers, types, constraints, and verification paths agree. State any
+unresolved decision and its effect. User feedback or later implementation evidence
+can reopen the affected decision without restarting an unrelated workflow.
 
-Explore whole-shape alternatives, not point fixes inside one shape.
-
-Compare the candidates, select the strongest package as the base, and graft in compatible strengths from the others. Record what was selected, adapted, and rejected in the rationale's "Synthesis decision" section.
-
-## Phase C: Deliver and hand off
-
-Present the synthesized design as the final Architect result. Include the
-caller's usage, type and signature sketch, module map, seam and adapter choices,
-invariants, tradeoffs, rejected alternatives, open questions, and the first
-implementation step.
-
-Do not edit production source files or fill in the sketched bodies. If the user
-also requested implementation, make the completed design the input to the
-normal implementation workflow. Changes discovered during later implementation
-are new evidence and can trigger another Architect pass.
-
-If the human rejects the shape, treat that response as Phase A evidence,
-re-ground, and run Phase B again. For adversarial pressure before handoff, run
-an adversarial review of the synthesized sketch where the harness offers one
-(in OpenCode, the code-review skill's Adversarial mode).
-
-## Outputs
-
-The caller's usage is written first and the type sketch derived from it. One file with new types and signatures for small changes; module map plus type definitions for larger work. The rationale ships alongside, shaped per `references/rationale-template.md`, including the usage sketch and the synthesis decision.
+Once required design decisions are settled, recommend `/implement` with the
+completed design and agreed scope.

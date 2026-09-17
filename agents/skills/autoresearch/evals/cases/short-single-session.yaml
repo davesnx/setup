@@ -1,0 +1,58 @@
+schema_version: 2
+id: short-single-session
+mode: deterministic
+skill_under_test: autoresearch
+skills_loaded: [autoresearch]
+description: One bounded sequential optimization uses existing commands and preserves output identity, order, duplicates, absence and repeated-call behavior.
+setup:
+  fixtures:
+    lookup.mjs: fixtures/lookup.mjs
+    lookup.expected.mjs: fixtures/lookup.mjs
+    bench.mjs: fixtures/bench.mjs
+    bench.expected.mjs: fixtures/bench.mjs
+    check.mjs: fixtures/check.mjs
+    check.expected.mjs: fixtures/check.mjs
+prompt: |
+  Use autoresearch for one short, single-session experiment on lookup.mjs.
+  Reduce idReads from `node bench.mjs`; lower is better. This deterministic
+  count measures item-id reads on 2000 items and 500 queries, not wall time.
+  Use `node check.mjs` for correctness. The trusted contract uses arrays of
+  objects with stable string ids and arrays of string query ids. Preserve
+  first-match object identity, query order, duplicate queries, missing matches,
+  unchanged input arrays, and behavior across repeated calls.
+  Only lookup.mjs is in implementation scope. Preserve the benchmark, checker,
+  and *.expected.mjs files. Budget: one candidate, stop after its comparison
+  and final verification. Keep baseline recovery evidence. Write one concise
+  result to experiment.json with baseline_id_reads, candidate_id_reads,
+  correctness (passed or failed), decision (keep or reject), and stop_reason.
+  This disposable directory has no Git repository. Finish using the existing
+  commands and supplied constraints without asking follow-up questions.
+checks:
+  - kind: file_exists
+    path: experiment.json
+  - kind: shell
+    cmd: |
+      node check.mjs
+    unsafe_shell: true
+    expect_exact: correctness-passed
+  - kind: shell
+    cmd: |
+      node --input-type=module <<'JS'
+      import assert from 'node:assert/strict';
+      import fs from 'node:fs';
+      import { execFileSync } from 'node:child_process';
+      for (const file of ['bench', 'check']) assert.equal(fs.readFileSync(`${file}.mjs`, 'utf8'), fs.readFileSync(`${file}.expected.mjs`, 'utf8'));
+      assert.equal(fs.readFileSync('lookup.expected.mjs', 'utf8'), 'export function findRequested(items, ids) {\n  return ids.map(id => items.find(item => item.id === id));\n}\n');
+      const record = JSON.parse(fs.readFileSync('experiment.json', 'utf8'));
+      const metric = JSON.parse(execFileSync(process.execPath, ['bench.mjs'], {encoding:'utf8'}));
+      assert.equal(record.baseline_id_reads, 937750);
+      assert.equal(record.candidate_id_reads, metric.idReads);
+      assert.ok(metric.idReads < record.baseline_id_reads);
+      assert.equal(record.correctness, 'passed');
+      assert.equal(record.decision, 'keep');
+      assert.ok(typeof record.stop_reason === 'string' && record.stop_reason.trim());
+      for (const name of fs.readdirSync('.')) assert.ok(!/campaign|dashboard|worklog|\.html$|^\.git$/.test(name), name);
+      process.stdout.write('bounded-correct-improvement');
+      JS
+    unsafe_shell: true
+    expect_exact: bounded-correct-improvement

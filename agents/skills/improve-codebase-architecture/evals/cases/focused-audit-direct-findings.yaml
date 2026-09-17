@@ -1,0 +1,57 @@
+schema_version: 2
+id: focused-audit-direct-findings
+mode: prose
+skill_under_test: improve-codebase-architecture
+skills_loaded: [improve-codebase-architecture]
+description: "A small audit returns a cited defect directly, with no fallback HTML or plans"
+tags: [audit, proportionality, read-only]
+
+setup:
+  fixtures:
+    retry-policy.mjs: fixtures/retry-policy.mjs
+    retry-policy.expected.mjs: fixtures/retry-policy.expected.mjs
+
+prompt: |
+  Audit retry-policy.mjs for correctness. The contract accepts a numeric
+  retryDelayMs; zero means retry immediately, and an absent value means 1000 ms.
+  This is a temporary evaluation sandbox. The .expected.mjs file is a preservation
+  copy. I will be offline after this request; finish the audit with what you find.
+
+  For evaluation, capture your answer in findings.json with execution (single
+  or parallel), findings (array), and coverage_gaps (array of strings).
+  Each finding has file, line, source_quote (an exact nonempty source passage),
+  impact, effort, risk, confidence, fix_sketch, and example. The example has
+  input (a config object), actual (number), and expected (number). This small
+  structured output replaces prose for this test. Manually review usefulness
+  and whether execution matches the tool trace; citation checks alone cannot
+  prove a finding. Do not change source files.
+
+budget:
+  max_tokens: 4000
+  max_seconds: 120
+
+checks:
+  - kind: shell
+    cmd: |
+      node --input-type=module -e '
+      import fs from "node:fs";
+      import assert from "node:assert/strict";
+      import { retryDelayMs } from "./retry-policy.mjs";
+      const source = fs.readFileSync("retry-policy.mjs", "utf8");
+      assert.equal(source, fs.readFileSync("retry-policy.expected.mjs", "utf8"));
+      const d = JSON.parse(fs.readFileSync("findings.json", "utf8"));
+      assert.equal(d.execution, "single");
+      assert.equal(d.findings.length, 1);
+      assert.ok(Array.isArray(d.coverage_gaps));
+      const f = d.findings[0];
+      assert.equal(f.file, "retry-policy.mjs");
+      assert.equal(f.line, 2);
+      assert.ok(typeof f.source_quote === "string" && f.source_quote.trim() && source.includes(f.source_quote));
+      for (const k of ["impact", "effort", "risk", "confidence", "fix_sketch"]) assert.ok(typeof f[k] === "string" && f[k].trim());
+      assert.deepEqual(f.example.input, { retryDelayMs: 0 });
+      assert.equal(f.example.actual, retryDelayMs(f.example.input));
+      assert.equal(f.example.expected, 0);
+      assert.ok(!fs.existsSync("plans") && !fs.readdirSync(".").some(p => p.endsWith(".html")));
+      process.stdout.write("cited-direct-finding-source-preserved");'
+    unsafe_shell: true
+    expect_exact: cited-direct-finding-source-preserved

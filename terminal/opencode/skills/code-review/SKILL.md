@@ -7,18 +7,28 @@ description: Review code changes, commits, or PRs on request, including deep, ad
 
 Review changed code, trace its effects beyond the diff, and prove the safety claims that matter. Report only issues introduced or exposed by the change.
 
+Review directly by default. Add independent reviewers only when the user asks
+for them or distinct risks justify the coordination cost. Depth means stronger
+investigation and evidence, not a fixed reviewer count. A complete direct review
+is sufficient when extra reviewers would repeat the same work.
+
+Review alone is report-only. Preserve source files and user changes. Reviewer findings
+do not authorize fixes, commits, pushes, or external comments. Use temporary
+files for ad hoc proof scripts; a requested report file is an output, not
+permission to change the code under review.
+
 ## Modes
 
 Choose one review mode from the request:
 
-- **Standard**: Default review. Apply every lens in one lead pass and report findings without edits.
-- **Deep**: Use for an explicit deep or thermonuclear review request. Use the shared parallel review pass, then synthesize and verify its strongest claims.
-- **Adversarial / Multi-model**: Use for "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", or "tear this apart". Use the same parallel pass as Deep, prefer different available models, and add an agreement map and explicit lead judgment. This is not a second fan-out workflow.
-- **Blast radius**: Use for "blast radius", "what could this break", or a small change whose downstream effects are unclear. Focus the report on transitive risk and executable proof.
+- **Standard**: Default review. Check the relevant risks directly and report findings without edits.
+- **Deep**: For an explicit deep or thermonuclear review, read [advanced review](references/advanced-review.md). Trace high-risk boundaries and challenge the strongest safety claims.
+- **Adversarial / Multi-model**: For "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", or "tear this apart", read [advanced review](references/advanced-review.md). Test competing explanations and give an evidence-based lead judgment. Honor explicit requests for independent reviewers or multiple models.
+- **Blast radius**: For "blast radius", "what could this break", or unclear downstream effects, read [blast radius and proof](references/blast-radius.md). Focus on transitive risk and executable proof.
 
 Ship and Canvas modify the selected review mode:
 
-- **Ship**: Use only when the user asks to review and ship, commit, push, or open or update a PR. Review first, then fix and publish only what the request authorizes. Never treat reviewer suggestions as permission to edit.
+- **Ship**: When the user asks to review and fix, ship, commit, push, or open or update a PR, read [authorized follow-through](references/ship.md). Each action remains limited to the request; publishing authority alone does not authorize source fixes.
 - **Canvas output**: Use when the user asks for a review canvas, visual PR review, interactive walkthrough, or HTML review. Complete the selected review mode first, then render the result with `references/canvas.md`.
 
 ## 1. Define The Scope
@@ -31,7 +41,7 @@ Select one review target:
 
 Resolve a user-supplied short branch name before the review. If `git rev-parse` does not resolve it, search local and remote branches for a unique suffix match. Do not guess when more than one branch matches.
 
-When the `diff_review` tool is available and the review target is the current checkout, call it with `raw: "--base <comparison-base>"`. The `--base` value is the branch to compare against, not the branch being reviewed. The tool does not accept a positional review target. For a branch that is not checked out, use the explicit `git diff` workflow instead.
+If using `diff_review` for the current checkout, pass `raw: "--base <comparison-base>"`. The base is the branch to compare against, not the branch being reviewed; the tool does not accept a positional target. Use explicit `git diff` for another branch. Do not duplicate an already sufficient diff read just because another tool is available.
 
 Fail early on an invalid reference or empty diff. Record the exact diff command so every reviewer uses the same scope.
 
@@ -64,48 +74,16 @@ reviewed from the code and repository rules without loading all four files.
 
 ## 4. Execute The Review
 
-### Standard
+Trace each candidate finding until it is confirmed or cleared. Check the other
+side of API, configuration, caller, or persistence boundaries when available.
+Run the smallest focused test or script that can falsify a material safety claim
+when practical. If it cannot run, state the missing evidence and limit the claim.
 
-Apply all four lenses yourself. Trace each candidate finding until it is confirmed or cleared. Run a focused test or script for the most important safety fact when practical.
-
-### Shared Parallel Pass
-
-Use independent reviewers for Deep or Adversarial / Multi-model requests, or
-when separate risks justify independent investigation. Otherwise review in the
-lead pass. Select useful jobs, not a fixed reviewer count:
-
-1. A correctness and security reviewer using `references/correctness-security.md`.
-2. A maintainability reviewer using `references/maintainability.md`.
-3. A standards reviewer using the Standards section of `references/standards-spec.md`.
-4. A spec reviewer using the Spec section of `references/standards-spec.md`; skip it when no spec exists.
-
-Give each reviewer the same diff command, commit list, and intent, plus context
-paths and reference details for its primary lens. Additional references require
-a relevant risk; do not require every child to load all four. Permit critical
-cross-lens findings. Ask for prioritized findings with `file:line`, an execution
-path, impact, concrete remedy, and proof or missing evidence. Require high
-conviction and no cosmetic padding. Reviewers must not edit, publish, or perform
-Git writes. Further delegation needs a genuine separate question.
-
-Run selected independent jobs in one parallel batch. Deep and Adversarial modes
-share this pass; do not launch a second group for an Adversarial request. If jobs
-are unavailable in either mode, state the limit and perform the lead review.
-
-For Adversarial mode, select different available models for the reviewers when the agent runner supports model selection. Do not name or depend on hard-coded model IDs. If model selection is unavailable, use the same independent read-only reviewer jobs without selecting models and state in the final review that run independence, not confirmed model diversity, supplied the adversarial signal. If independent reviewer jobs are unavailable, state that limitation and perform a Standard review; do not invent reviewer evidence.
-
-### Deep
-
-When results return, deduplicate them and resolve disagreements with direct repository evidence. Agreement raises confidence but does not replace verification. Apply the blast-radius lens yourself and run the cheapest proof that can falsify the highest-risk safety claim.
-
-### Adversarial / Multi-model
-
-Read [Adversarial synthesis and lead judgment](references/adversarial-synthesis.md). Build the agreement map before deciding the verdict. Treat consensus as a reason to verify a claim first, not as proof. Investigate lone correctness or security findings on their merits. Resolve explicit disagreements with repository evidence and state any disagreement that remains unresolved.
-
-Act as the lead reviewer, not a vote counter. Put every candidate finding in **Act On**, **Consider**, or **Dismissed**, with a short reason and the reviewers that raised it. Do not auto-apply any suggestion.
-
-### Blast Radius
-
-Start from the key safety fact. Trace effects through boundaries that symbol search misses, then run the cheapest focused proof. Still check correctness, maintainability, standards, and intent, but keep the output centered on confirmed downstream risk, cleared cases, and proof level.
+Use the selected mode's reference for deeper investigation. If independent
+coverage is justified in Standard mode, read the coordination section of
+[advanced review](references/advanced-review.md). Do not assign a reviewer to
+each lens by default. Combine overlapping work and verify the resulting claims
+against the repository; agreement alone is not proof.
 
 ## 5. Calibrate And Verify
 
@@ -118,7 +96,8 @@ Never present unfinished research as a finding. Check the other side of an API, 
 
 ## 6. Report
 
-For Standard, Deep, and Blast Radius reviews, lead with findings ordered by severity. For Adversarial reviews, state the intent and reviewer evidence first, then give the lead judgment on each candidate. Each finding must include:
+Lead with the findings or verdict in the layout that best fits the scope. Order
+findings by severity. Each finding must include:
 
 - `file:line`
 - the failure or degradation
@@ -135,24 +114,10 @@ when they help; omit empty or irrelevant sections.
 
 If there are no findings, say so explicitly and name the important risks and boundaries that were checked. Do not hide a clean review behind a long summary.
 
-For Adversarial reviews, include reviewer identifiers, models when known, primary
-lenses, and verified evidence or checked scope. Explain consensus, lone findings,
-and disagreements when present, including unresolved claims and runner or model
-limits. Preserve the Act On / Consider / Dismissed decisions and their evidence,
-but omit empty groups. A compact report is valid; fixed headings are not required.
+For Deep or Adversarial reviews, preserve the material challenged claims,
+decisions, and evidence described in the selected reference. Report only real
+reviewer contributions; a direct review does not need an empty reviewer table.
 
 When Canvas output is selected, read [references/canvas.md](references/canvas.md) and render the completed report after the Markdown findings. Preserve the same severity, evidence, and cleared-risk conclusions in both outputs.
-
-## 7. Modification Policy
-
-Without the Ship modifier, Standard, Deep, Adversarial, and Blast Radius modes are report-only. Put ad hoc proof scripts under `/tmp`; do not modify the repository to produce evidence. Offer to fix confirmed Critical, High, or Medium findings after presenting the review.
-
-In Ship mode:
-
-1. Run the repository's required format, lint, typecheck, build, and relevant tests.
-2. Fix only lead-confirmed blockers within the requested scope and rerun affected checks. Do not apply raw reviewer suggestions.
-3. Load `github` Commit mode before committing. Stage only intended files and do not bypass hooks.
-4. Push and open or update a PR only when explicitly requested.
-5. Report findings, changes, checks, and the PR URL when one exists.
 
 For large diffs, prioritize risky files and boundaries, but do not silently omit files from the declared scope.

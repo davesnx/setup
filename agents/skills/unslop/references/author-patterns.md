@@ -4,9 +4,8 @@ David writes English as a second language (Spanish first). These are the
 habits an edit pass fixes in his prose and the ones it leaves alone. Based
 on the diff of sancho.dev PR #753, with suggested alternatives for the
 context-dependent cases below. The alternatives are not a record of
-author-approved wording. Apply
-after the generic catalogue in `SKILL.md`, on any text he wrote: sancho.dev
-posts, docs, READMEs, messages. The standard the edit serves is
+author-approved wording. Read before applying generic preferences to text he
+wrote: sancho.dev posts, docs, READMEs, messages. The standard the edit serves is
 `VOICE.md` in the sancho.dev repository. These edits are contextual examples,
 not universal grammar rules or targets for future posts. Preserve uncertainty,
 scope, speaker, and meaning when applying a correction.
@@ -25,7 +24,7 @@ list before touching it.
 - "Aside," as a paragraph opener when it introduces an aside. It is his
   "Aparte,". Judge its function, not how often it appears.
 - "actually" when it corrects: "what actually works", "cram tests are nice,
-  actually". This overrides pattern 43 in `SKILL.md`.
+  actually". This overrides pattern 43 in [patterns.md](patterns.md#plain-speech).
 - "very", "a bit", "a little", "kind of", "some stuff here and there" when
   they carry a reaction, degree, or uncertainty. Cut repetition only when it
   adds no meaning; a count alone is not a reason to edit.
@@ -71,7 +70,7 @@ list before touching it.
 
 ## Editing pass
 
-Check in this order; edit only when the passage needs it. Each edit subtracts
+Use the relevant checks below; edit only when the passage needs it. Each edit subtracts
 or sharpens without imposing a sentence pattern. Nothing is
 added: no fact, name, number, first-person aside, joke, or fragment the
 draft did not contain. A missing fact gets `[Q: ...]` in its place.

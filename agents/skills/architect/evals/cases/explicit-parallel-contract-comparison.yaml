@@ -1,0 +1,50 @@
+schema_version: 2
+id: explicit-parallel-contract-comparison
+mode: prose
+skill_under_test: architect
+skills_loaded: [architect]
+description: "An explicit parallel comparison retains distinct designs; manually verify runner evidence and design tradeoffs"
+tags: [design, parallel, alternatives, read-only]
+
+prompt: |
+  Design a production job-dispatch contract. Two workers can claim the same job,
+  workers may crash after sending it, and the external sender supports an
+  idempotency key. Callers need to submit jobs and inspect their delivery status.
+  Compare two designs with parallel read-only design runners: one with a small
+  submit/status interface that owns retries, and one with an explicit lease and
+  acknowledgement interface for existing workers. Keep caller usage, state
+  ownership, crash recovery, and the source of each idempotency key visible.
+  Recommend one using these constraints. This is design only.
+
+  Put the comparison in comparison.json. Use execution (parallel or unavailable),
+  limitation (null if parallel, otherwise the actual tool limitation), candidates
+  (two objects with id, usage, types, ownership, recovery, tradeoff), selected
+  (one candidate id), and reason (nonempty recommendation rationale).
+  Each candidate field is a nonempty string. If runners are unavailable, state
+  that and still compare the two shapes directly. Manual review must verify
+  actual runner calls or the stated tool limit, distinct interfaces, and whether
+  either design wrongly promises exactly-once delivery without sender cooperation.
+
+budget:
+  max_tokens: 9000
+  max_seconds: 240
+
+checks:
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("node:fs"), assert = require("node:assert/strict");
+      const d = JSON.parse(fs.readFileSync("comparison.json", "utf8"));
+      assert.ok(["parallel", "unavailable"].includes(d.execution));
+      if (d.execution === "parallel") assert.equal(d.limitation, null);
+      else assert.ok(typeof d.limitation === "string" && d.limitation.trim());
+      assert.equal(d.candidates.length, 2);
+      for (const c of d.candidates) for (const k of ["id", "usage", "types", "ownership", "recovery", "tradeoff"]) assert.ok(typeof c[k] === "string" && c[k].trim());
+      assert.equal(new Set(d.candidates.map(c => c.id)).size, 2);
+      assert.notEqual(d.candidates[0].types, d.candidates[1].types);
+      assert.notEqual(d.candidates[0].usage, d.candidates[1].usage);
+      assert.ok(d.candidates.some(c => c.id === d.selected));
+      assert.ok(typeof d.reason === "string" && d.reason.trim());
+      process.stdout.write("comparison-recorded-needs-manual-review");'
+    unsafe_shell: true
+    expect_exact: comparison-recorded-needs-manual-review

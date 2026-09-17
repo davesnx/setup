@@ -1,12 +1,17 @@
 # Running Experiment Batches
 
-Read this before planning or running a batch, selecting winners, handling user messages, or stopping. Read [state.md](state.md) before state access and [dashboard.md](dashboard.md) before result reporting. On resume, first follow [recovery.md](recovery.md).
+Use this for the resumable campaign workflow. Read [state.md](state.md) before
+state access. On resume, first follow [recovery.md](recovery.md). Read
+[dashboard.md](dashboard.md) only when generating that optional view.
 
 The coordinator owns the main autoresearch branch and every state artifact. Worker agents only edit code in isolated worktrees. They never edit `autoresearch.jsonl`, the dashboard, the worklog, or the experiment definition.
 
 ## 1. Plan the batch
 
-Read the current best commit, worklog, ideas backlog, source, and available profiling data. Generate 6-12 distinct hypotheses, then select up to `parallelExperiments` candidates with the best expected information gain.
+Read the current best commit, recorded results, source, and available profiling
+data. Consult the worklog or ideas backlog when present. Generate hypotheses from
+that evidence, then select up to `parallelExperiments` useful candidates. One
+strong hypothesis is enough; leave unsupported ideas out.
 
 For each selected hypothesis, record:
 
@@ -27,11 +32,21 @@ git worktree add --detach "<candidate-path>" "<best-commit>"
 
 Before creation, verify the parent directory exists and record every path created by this run. Never reuse a worktree from another batch. A worktree nested inside another checkout confuses tools that search upward for a project root; for dune, export `DUNE_ROOT` or pass `--root .` in every command the coordinator and workers run there.
 
-## 3. Implement candidates in parallel
+Check that the recorded benchmark and correctness commands can run against each
+candidate. Uncommitted coordinator support is not in the best commit. Use the
+immutable external support recorded during [setup](setup.md) when required, and
+check its hashes before measurement. Keep its scripts and fixtures out of
+candidate changes and patches. Missing support is a setup failure, not permission
+to skip correctness checks.
 
-Launch one worker per worktree in one parallel tool call. Give each worker the absolute worktree path, one hypothesis, the files in scope, and the constraints from `autoresearch.md`.
+## 3. Implement candidates
 
-Each worker must:
+Implement a single candidate directly when coordination adds no value. Use
+workers when independent hypotheses justify parallel implementation or the user
+requests it. Give each worker the absolute worktree path, one hypothesis, the
+files in scope, and the constraints from `autoresearch.md`.
+
+For each candidate, whether implemented directly or by a worker:
 
 1. Work only in its assigned worktree.
 2. Implement only its assigned hypothesis.
@@ -49,9 +64,9 @@ On a shared or noisy host (other users' load, frequency scaling, a container on 
 
 In each candidate worktree:
 
-1. Run `./autoresearch.sh` and parse every `METRIC name=value` line.
+1. Run the benchmark command from `autoresearch.md` in its recorded candidate working directory and parse the declared metric output, including every `METRIC name=value` line when that format is used.
 2. Mark a non-zero exit as `crash`.
-3. If the benchmark passes and `autoresearch.checks.sh` exists, run it. Mark a failure as `checks_failed`.
+3. If the benchmark passes, run the recorded correctness command unless the definition establishes that the benchmark itself proves correctness or the target cannot affect correctness. Mark a failure as `checks_failed`; do not infer that no gate is needed from an absent wrapper file.
 4. Capture secondary metrics and diagnostics.
 5. Re-run a possible improvement when it is within 1 MAD of the current best. Use the median result for the decision.
 
@@ -87,11 +102,9 @@ Log combinations that regress as evidence. Do not combine candidates with overla
 
 The coordinator writes one JSONL result for every candidate and combination through the atomic write function. Write state before presenting a results table in chat.
 
-After each result:
-
-1. Verify the JSONL write.
-2. Regenerate `autoresearch-dashboard.md` using [dashboard.md](dashboard.md).
-3. Append a concise entry to `experiments/worklog.md`:
+Verify each JSONL write. Its description records the result's useful conclusion.
+For a longer decision that needs separate explanation, optionally append an
+entry to `experiments/worklog.md`, creating its parent directory only when needed:
 
 ```markdown
 ### Run N, batch B: <hypothesis> - <primary_metric>=<value> (<STATUS>)
@@ -104,7 +117,11 @@ After each result:
 - Next: <next experiment suggested by this result>
 ```
 
-Update the `Key Insights` and `Next Ideas` sections when evidence changes them. Once a secondary metric appears, include it in every later result.
+Update optional `Key Insights` and `Next Ideas` sections when evidence changes
+them. A worklog is commentary, not a second result ledger. Once a secondary
+metric appears, include it in every later JSONL result. Regenerate a dashboard
+when requested, when its overview helps selection, or when refreshing an existing
+dashboard at handoff; not after every write.
 
 ## 8. Clean up
 
@@ -133,9 +150,9 @@ A batch with no confirmed winner increments the plateau counter. A confirmed imp
 At stop:
 
 1. Run correctness checks and one final benchmark on the best coordinator commit.
-2. Verify JSONL and worklog consistency using [recovery.md](recovery.md) if they disagree.
-3. Regenerate the dashboard with the stop reason.
-4. Update `autoresearch.md` and the ideas backlog.
+2. Verify the JSONL record. Resolve conflicting evidence using [recovery.md](recovery.md); a shorter worklog or absent dashboard is not a conflict.
+3. Refresh an existing or requested dashboard with the stop reason.
+4. Update `autoresearch.md` and any existing ideas backlog with significant conclusions.
 5. Report the baseline, best result, confidence, kept commits, failed constraints, untested ideas, elapsed time, and stop reason.
 
 Do not ask whether to continue before a configured stop condition. The user can start a new segment with a new budget or target.

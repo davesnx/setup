@@ -1,6 +1,8 @@
 # JSONL State Protocol
 
-Read this before initializing, re-initializing, reading, or writing experiment state. Use [recovery.md](recovery.md) when state is missing or records disagree.
+Read this before accessing resumable campaign state. A single-session loop does
+not need this protocol. Use [recovery.md](recovery.md) when campaign state is
+missing or records disagree.
 
 All experiment state lives in `autoresearch.jsonl`. This is the source of truth for resuming across sessions.
 
@@ -9,7 +11,7 @@ All experiment state lives in `autoresearch.jsonl`. This is the source of truth 
 The first line (and any re-initialization line) is a config header:
 
 ```json
-{"type":"config","name":"<session name>","metricName":"<primary metric name>","metricUnit":"<unit>","bestDirection":"lower|higher","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":3}
+{"type":"config","name":"<session name>","metricName":"<primary metric name>","metricUnit":"<unit>","bestDirection":"lower|higher","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":1}
 ```
 
 Rules:
@@ -47,7 +49,7 @@ Fields:
 To initialize, write the config header through a temporary file and rename it atomically:
 
 ```bash
-entry='{"type":"config","name":"<name>","metricName":"<metric>","metricUnit":"<unit>","bestDirection":"<lower|higher>","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":3}'
+entry='{"type":"config","name":"<name>","metricName":"<metric>","metricUnit":"<unit>","bestDirection":"<lower|higher>","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":1}'
 tmp="autoresearch.jsonl.tmp.$$"
 printf '%s\n' "$entry" > "$tmp" && mv "$tmp" autoresearch.jsonl
 ```
@@ -55,7 +57,7 @@ printf '%s\n' "$entry" > "$tmp" && mv "$tmp" autoresearch.jsonl
 To re-initialize, add a new config header through `write_jsonl_entry`:
 
 ```bash
-write_jsonl_entry '{"type":"config","name":"<name>","metricName":"<metric>","metricUnit":"<unit>","bestDirection":"<lower|higher>","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":3}'
+write_jsonl_entry '{"type":"config","name":"<name>","metricName":"<metric>","metricUnit":"<unit>","bestDirection":"<lower|higher>","target":null,"maxExperiments":30,"plateauBatches":3,"timeBudgetMinutes":120,"parallelExperiments":1}'
 ```
 
 ## Data Integrity Protocol

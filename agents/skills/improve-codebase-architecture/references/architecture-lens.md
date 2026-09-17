@@ -22,7 +22,8 @@ Apply the deletion test: if deleting a suspected module makes complexity disappe
 
 ## Architecture Finding Format
 
-In addition to the general finding fields, include:
+In addition to the general finding fields, include the details needed to explain
+the proposed change. Select from:
 
 - current modules and interfaces
 - where locality or leverage is lost
@@ -32,4 +33,7 @@ In addition to the general finding fields, include:
 - ADR conflicts or decisions that must be revisited
 - recommendation strength: Strong, Worth exploring, or Speculative
 
-Do not design the full replacement during the audit. Show the opportunity and evidence. Use `grilling`, `domain-modeling`, and the `architect` design-it-twice reference only after the user selects it.
+Show the opportunity and evidence during the audit, not a full replacement design.
+When the user requests a design or plan, use the relevant domain or design
+discipline. Use `architect`'s design-it-twice reference only for requested
+alternatives or unresolved tradeoffs; selection alone does not require comparison.

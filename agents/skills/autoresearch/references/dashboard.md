@@ -1,8 +1,12 @@
 # Dashboard
 
-Read this before reporting results or assessing noise. If JSONL and worklog counts disagree, follow [recovery.md](recovery.md) before new experiments.
+Read this when a requested report or a growing campaign benefits from an
+overview. Use the JSONL as its source. For conflicting records, follow
+[recovery.md](recovery.md); a shorter worklog is expected.
 
-After each experiment, regenerate `autoresearch-dashboard.md`:
+Generate `autoresearch-dashboard.md` on request or when the overview helps
+decisions. Refresh it at handoff if it exists; it need not update after every
+experiment:
 
 ```markdown
 # Autoresearch Dashboard: <name>
@@ -31,7 +35,7 @@ After 3+ experiments in a segment, compute a **confidence score**: how the best 
 
 - Use Median Absolute Deviation (MAD) of all metric values in the current segment as a robust noise estimator.
 - Confidence = `|best_improvement| / MAD`. A score of 2.0x means the best improvement is twice the noise floor.
-- Include in the dashboard after each result.
+- Include when generating the dashboard.
 - **Advisory only**: never auto-discards. Re-run experiments when confidence is low to confirm.
 
 | Confidence | Meaning |

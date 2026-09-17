@@ -1,6 +1,8 @@
 # Design It Twice
 
-When the user wants to explore alternative interfaces for a chosen deepening candidate, use this parallel sub-agent pattern. Based on "Design It Twice" (Ousterhout) — your first idea is unlikely to be the best.
+Use this comparison workflow for requested alternatives or when unresolved
+constraints or hard-to-reverse risks could change the design. A direct design is
+enough when evidence already determines the shape.
 
 Uses the vocabulary in [codebase-design.md](codebase-design.md) — **module**, **interface**, **seam**, **adapter**, **leverage**.
 
@@ -8,31 +10,37 @@ Uses the vocabulary in [codebase-design.md](codebase-design.md) — **module**, 
 
 ### 1. Frame the problem space
 
-Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:
+Name the decision the comparison must resolve, then share a brief containing:
 
 - The constraints any new interface would need to satisfy
-- The dependencies it would rely on, and which category they fall into (see [deepening.md](deepening.md))
+- The relevant callers, evidence, and dependencies (see [deepening.md](deepening.md) when dependencies control the design)
 - A rough illustrative code sketch to ground the constraints — not a proposal, just a way to make the constraints concrete
 
-Show this to the user, then immediately proceed to Step 2. The user reads and thinks while the sub-agents work in parallel.
+Use the same evidence and acceptance criteria for every candidate.
 
-### 2. Spawn sub-agents
+### 2. Develop distinct candidates
 
-Spawn 3+ sub-agents in parallel. Each must produce a **radically different** interface for the deepened module.
+Choose only as many candidates as there are meaningful competing shapes; two
+often suffice. An explicit request for multiple alternatives requires distinct
+alternatives, even if one looks strongest early.
 
-Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [deepening.md](deepening.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
+Use parallel read-only runners when explicitly requested or when independent
+design questions justify the extra work. Otherwise compare directly. Give runners
+[runner-prompt.md](runner-prompt.md), the shared brief, and one distinct constraint
+each. For example, compare a minimal interface with one optimized for a proven
+extension need. Do not invent flexibility requirements to make candidates differ.
 
-- Agent 1: "Minimize the interface — aim for 1–3 entry points max. Maximise leverage per entry point."
-- Agent 2: "Maximise flexibility — support many use cases and extension."
-- Agent 3: "Optimise for the most common caller — make the default case trivial."
-- Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
+Use available models only as needed for those questions. If parallel tools or
+requested models are unavailable, state the limit and compare directly; do not
+label sequential reasoning as independent model evidence.
 
-Include both [codebase-design.md](codebase-design.md) vocabulary and CONTEXT.md vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
+Use the project's domain vocabulary and the relevant terms from
+[codebase-design.md](codebase-design.md).
 
-Each sub-agent outputs:
+Each candidate includes:
 
-1. Interface (types, methods, params — plus invariants, ordering, error modes)
-2. Usage example showing how callers use it
+1. Usage example showing how callers use it
+2. Interface (types, methods, params — plus invariants, ordering, error modes)
 3. What the implementation hides behind the seam
 4. Dependency strategy and adapters (see [deepening.md](deepening.md))
 5. Trade-offs — where leverage is high, where it's thin

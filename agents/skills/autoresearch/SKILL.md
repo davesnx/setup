@@ -7,27 +7,62 @@ argument-hint: "<metric or target> [constraints]"
 
 # Autoresearch
 
-Run measured experiments in bounded parallel batches. Keep improvements, discard failures, and leave a durable record that a fresh agent can resume.
+Improve a declared metric through bounded experiments without breaking required
+behavior. Choose the smallest experiment that can resolve the current hypothesis.
 
-## Route the Work
+## Measured loop
 
-Read the reference for the current step before acting. Do not load every reference at once.
+1. Establish the workload, benchmark command, metric and direction, correctness
+   checks, files in scope, constraints, and stop budget. Infer these from the
+   request and repository; ask only about material gaps. Reuse existing commands.
+2. Measure the baseline. Repeat noisy measurements under comparable conditions;
+   an apparent gain within measurement noise needs confirmation.
+3. Choose an evidence-backed hypothesis. Change only what tests that hypothesis,
+   then run the benchmark and correctness checks. Failed checks reject a gain.
+4. Record the candidate, measurements, check results, and decision. Keep a change
+   only after confirming improvement against the current best. Preserve enough
+   evidence to explain rejected attempts and reproduce the comparison.
+5. Continue until the target, budget, plateau, lack of viable hypotheses, or user
+   stop request ends the run. Verify the best final state and report the change,
+   evidence, tradeoffs, and stop reason.
 
-1. **New session or changed benchmark/checks:** read [setup](references/setup.md). Define the goal, command, metric and direction, scope, constraints, and stop conditions before running experiments.
-2. **Resume, missing state, or inconsistent records:** read [recovery](references/recovery.md). Restore context and resolve missing-state choices or unsupported records before starting new work.
-3. **Initialize, read, or write state:** read [state](references/state.md). Preserve the JSONL schema, segment rules, atomic writes, verification, and backups.
-4. **Plan, run, select, combine, clean up, or stop:** read [execution](references/execution.md). Complete the batch and stop procedures, including final checks and the report.
-5. **Report results or assess noise:** read [dashboard](references/dashboard.md). Regenerate the dashboard after every result; confidence is advisory only.
+Work sequentially by default. Use independent candidates or workers when they
+offer useful alternatives or the user requests them. Parallel implementation does
+not justify simultaneous measurements that compete for resources. Generate as
+many hypotheses as the evidence supports; do not fill a quota.
 
-## Boundaries
+Unless the user sets limits, stop at 30 experiments, three consecutive rounds
+without improvement, or two hours, whichever comes first. One sequential
+experiment is one round. Do not ask to continue within the agreed budget.
 
-- Default limits: 3 parallel experiments per batch, 30 total experiments, 3 consecutive batches without improvement, and 2 hours elapsed. Stop at the first limit. Use lower concurrency or sequential runs when resources interfere.
-- Work on a dedicated `autoresearch/*` branch, never main. Create each candidate from the recorded best commit in an isolated worktree. Preserve unrelated user changes.
-- The coordinator alone writes shared state and selects winners. Workers edit only their assigned candidate scope and do not commit. Keep experiment-state files out of candidate and combination patches.
-- Keep a result only after measured improvement and passing correctness checks. Create `autoresearch.checks.sh` whenever the benchmark does not prove required behavior; document any other correctness check. Full repository checks and coordinator remeasurement precede a kept commit.
-- Write JSONL atomically and verify each write. Back up state before user-confirmable actions. Update `autoresearch.md` every 5-10 experiments or after breakthroughs.
-- Follow user and repository permissions for Git writes, installs, external actions, and publication. This skill does not grant permission. If a required action is not authorized, stop at that boundary and ask rather than bypass it.
-- On a stop request, start no pending candidates. Make completed results durable, clean up only recorded worktrees, and report. On changed direction, finish active measurements and save results before replanning.
+## Choose the workflow
+
+A bounded single-session task can use an existing benchmark, a reversible patch,
+and one concise results record. It does not require a setup commit, worker agents,
+dashboard, or a second worklog. Keep the baseline recoverable and identify each
+candidate by its diff or revision. Isolate concurrent work and preserve unrelated
+changes; use a separate worktree when the checkout is dirty or shared.
+
+For a resumable campaign, or when candidates need coordinated isolation, use the
+existing campaign workflow. Read only the reference needed for the current step:
+
+- [Setup](references/setup.md): campaign definition, isolated branch, and benchmark
+  wrappers when existing commands need adaptation.
+- [Execution](references/execution.md): candidate batches, winner selection,
+  combination tests, and cleanup.
+- [State](references/state.md): the campaign's authoritative JSONL record and
+  verified atomic writes.
+- [Recovery](references/recovery.md): resume a campaign or resolve missing or
+  conflicting records before new experiments.
+- [Dashboard](references/dashboard.md): generate a requested report or use an
+  overview when the results have become hard to inspect directly.
+
+Keep correctness checks separate from the metric when optimizing it could break
+required behavior. Existing checks are sufficient; create a wrapper only when it
+makes repeated execution reliable. Git writes, installs, and publication still
+require their normal authority and checks. An optimization request alone does not
+authorize a commit. On a stop request, start no pending candidates, preserve
+completed evidence, and report any active work.
 
 ## Skill Checks
 

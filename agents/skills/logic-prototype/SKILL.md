@@ -36,5 +36,6 @@ version of production code.
 ## Handoff
 
 Keep the artifact throwaway. When the question is settled, use Architect if a
-production contract still needs design. Use the normal implementation workflow
-to write and test production code.
+production contract still needs design. Once the production design is ready,
+recommend `/implement` with the settled decisions and agreed scope to write
+and test production code.

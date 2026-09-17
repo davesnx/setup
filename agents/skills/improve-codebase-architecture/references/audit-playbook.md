@@ -1,6 +1,8 @@
 # Audit Playbook
 
-What to look for, per category. Each subagent (or direct audit pass) gets the relevant section plus the **Finding format** at the bottom. Adapt depth to repo size — a 2K-line CLI gets a lighter pass than a 500K-line monorepo.
+Use the sections relevant to the requested scope and observed risks, plus the
+**Finding format** below. These lenses support direct audits and parallel
+exploration; they do not require either a broad pass or one agent per category.
 
 A finding is only a finding with evidence. "Probably has N+1 queries somewhere" is not a finding; `orders/api.ts:142 issues one query per order item inside a loop` is.
 
@@ -57,7 +59,7 @@ The goal is not a percentage — it's *which untested code is dangerous*.
 - Modules with high churn (git log) + no tests = top refactor risk; flag as "characterization tests first" candidates.
 - Existing test quality: tests that assert nothing meaningful, heavy mocking that tests the mocks, snapshot tests nobody reads, flaky patterns (real timers, real network, order dependence).
 - Missing test layers: unit-only suites with zero integration coverage on API boundaries, or the inverse (slow E2E for what a unit test would catch).
-- Verification infrastructure: is there a one-command way to know the codebase works? If not, that's finding #1 and a prerequisite plan for any risky change.
+- Verification infrastructure: can the relevant behavior be checked reliably? If not, explain the gap and its cost; recommend a baseline when it is needed for risky work.
 
 ## 5. Tech Debt & Architecture
 
@@ -82,7 +84,7 @@ The goal is not a percentage — it's *which untested code is dangerous*.
 - Missing or broken: typecheck script, lint config, formatter, pre-commit hooks, editorconfig.
 - Slow feedback loops: dev-server or test startup measured in minutes, no watch mode, CI without caching.
 - Onboarding friction: README setup steps that are wrong/incomplete, undocumented required env vars, no `.env.example`.
-- Missing `CLAUDE.md`/`AGENTS.md` — for repos where agents will execute the plans, this is high-leverage: recommend one and include its outline as a plan.
+- Agent guidance: flag missing instructions when that causes a concrete execution problem; recommend the needed guidance without creating an unrequested plan.
 - Error messages/logging: unstructured logs on services, missing request IDs/correlation, debugging requiring code changes.
 
 ## 8. Docs
@@ -109,16 +111,17 @@ Direction findings use the standard format with two adaptations: **Impact** is p
 
 ## Finding format
 
-Every finding, from every category and every subagent, comes back in this shape:
+Retain these fields for accepted findings; combine them into a few lines for
+small audits. Use only as many citations as the claim needs.
 
 ```markdown
 ### [CATEGORY-NN] Short imperative title
 
-- **Evidence**: `path/file.ts:123` — one-sentence description of what's there. (Repeat per location; 2–5 strongest locations, note "and ~N similar sites" if widespread.)
+- **Evidence**: `path/file.ts:123` — what the code does. Cite further locations when needed to establish reachability or scope.
 - **Impact**: What goes wrong / what's being paid because of this. Concrete: "every order-list render issues 1+N queries", not "suboptimal".
 - **Effort**: S (hours) / M (a day-ish) / L (multi-day) — for the *fix*, including tests.
 - **Risk**: What the fix could break; LOW/MED/HIGH plus one line why.
-- **Confidence**: HIGH (read the code, certain) / MED (strong signal, needs verification) / LOW (smell, needs investigation). LOW-confidence findings may be reported but get an "investigate" plan, not a "fix" plan.
+- **Confidence**: HIGH (read the code, certain) / MED (strong signal, needs verification) / LOW (needs investigation). If the user requests a plan for a LOW-confidence finding, scope it as investigation before a fix.
 - **Fix sketch**: 1–3 sentences. Not the plan — just enough to judge effort honestly.
 ```
 

@@ -1,0 +1,56 @@
+schema_version: 2
+id: small-contract-direct-design
+mode: prose
+skill_under_test: architect
+skills_loaded: [architect]
+description: "A bounded extraction gets one grounded design; manually review design quality and transcript execution"
+tags: [design, proportionality, read-only]
+
+setup:
+  fixtures:
+    retry-consumer.ts: fixtures/retry-consumer.ts
+    retry-consumer.expected.ts: fixtures/retry-consumer.ts
+
+prompt: |
+  Design the production contract for extracting retry-delay validation from
+  retry-consumer.ts into a pure function. Keep its existing behavior and
+  RetryConfig type. This is a small design handoff, before implementation.
+  The helper has no I/O, mutable state, or other integration requirements.
+  Read the caller and give the usage, exported signature, and short rationale.
+
+  For evaluation, put the result in design.json with these fields:
+  execution (single or parallel), candidates (array of objects with id, usage,
+  types, rationale), evidence (array of exact source passages), and checks
+  (array of objects with input, outcome, and value). For checks, input is one
+  of absent, zero, negative, infinite; outcome is return or throw; value is the
+  returned number or null for a throw. These checks describe the proposed
+  contract, not code you have implemented. All candidate fields are nonempty
+  strings. The .expected.ts file is a preservation copy, not a second caller.
+  Manual review will check whether usage, types, and rationale agree with the
+  source and whether the declared execution matches the tool trace.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 120
+
+checks:
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("node:fs"), assert = require("node:assert/strict");
+      const source = fs.readFileSync("retry-consumer.ts", "utf8");
+      assert.equal(source, fs.readFileSync("retry-consumer.expected.ts", "utf8"));
+      const d = JSON.parse(fs.readFileSync("design.json", "utf8"));
+      assert.equal(d.execution, "single");
+      assert.equal(d.candidates.length, 1);
+      for (const key of ["id", "usage", "types", "rationale"]) assert.ok(typeof d.candidates[0][key] === "string" && d.candidates[0][key].trim());
+      assert.ok(d.evidence.length > 0);
+      for (const quote of d.evidence) assert.ok(typeof quote === "string" && quote.trim() && source.includes(quote));
+      assert.equal(d.checks.length, 4);
+      const expected = { absent: ["return", 1000], zero: ["return", 0], negative: ["throw", null], infinite: ["throw", null] };
+      assert.deepEqual(d.checks.map(c => c.input).sort(), Object.keys(expected).sort());
+      for (const c of d.checks) assert.deepEqual([c.outcome, c.value], expected[c.input]);
+      assert.ok(!fs.existsSync("plans") && !fs.readdirSync(".").some(p => p.endsWith(".html")));
+      process.stdout.write("grounded-direct-design");'
+    unsafe_shell: true
+    expect_exact: grounded-direct-design

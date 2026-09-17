@@ -1,10 +1,11 @@
 # Handoff Plan Template
 
-Every plan is written for an executor model that has **zero context**: it has not seen the advisor session, the audit, the other plans, or any prior conversation. It may be a smaller/cheaper model. Assume it is competent at following explicit instructions and weak at filling gaps, recovering from ambiguity, or knowing when to stop.
+Use only for new plans the user requests or agrees to. Write each for an executor
+with no access to the advisor session. Keep the detail proportional to the selected
+work while retaining the context and verification needed to act independently.
 
-This template owns the plan and index schemas read by the executor's
-[closing-the-loop reference](../../execute-codebase-plan/references/closing-the-loop.md).
-Keep that reader aligned when these schemas change.
+This template owns the plan and optional index schemas. Creating a plan does not
+authorize its execution or updates to existing plans.
 
 Three properties make a plan executable by a weaker model:
 
@@ -13,11 +14,11 @@ Three properties make a plan executable by a weaker model:
 3. **Hard boundaries and escape hatches** — explicit out-of-scope list, and "STOP and report" conditions instead of letting the model improvise when reality doesn't match the plan.
 
 Use the directory, filename policy, and index path resolved in the audit skill's
-[recon step](../SKILL.md#resolve-plan-paths). Assign each plan an `NNN` identifier
+[path resolution](../SKILL.md#resolve-plan-paths). Assign each plan an `NNN` identifier
 in recommended execution order. Include it in the filename only when the naming
 policy permits. Keep required suffixes. The identifier does not define a path.
 
-In generated plans, write dependency and index links relative to the plan file.
+In generated plans, write any dependency and index links relative to the plan file.
 In the index, link each identifier to its actual plan filename relative to the
 index file. Replace path placeholders below with those resolved links.
 
@@ -158,8 +159,9 @@ For the human/agent who owns this code after the change lands:
 
 ## Index template
 
-Write once at the resolved index path after all plans. Use a distinct name for
-this audit; do not overwrite an existing index.
+Write an index when several plans need dependency navigation or the user requests
+one. A single plan can stand alone. Use a distinct name at the resolved index path;
+do not overwrite an existing index.
 
 ```markdown
 # Implementation Plans

@@ -3,8 +3,8 @@ id: adversarial-review-is-read-only
 mode: deterministic
 skill_under_test: code-review
 skills_loaded: [code-review]
-description: "Adversarial review synthesizes independent evidence and lead judgment without editing its target"
-tags: [adversarial, multi-model, synthesis, read-only]
+description: "Adversarial review tests competing explanations without a reviewer quota or source edits"
+tags: [adversarial, synthesis, read-only, method-selection]
 
 setup:
   fixtures:
@@ -12,17 +12,24 @@ setup:
     "expected.patch": fixtures/sql-injection.diff
 
 prompt: |
-  Interrogate diff.patch with Code Review's Adversarial / Multi-model mode.
+  Interrogate diff.patch with Code Review's Adversarial mode.
   Write the final review to review.md. Do not edit diff.patch or expected.patch.
 
   Test protocol: write one JSON object without fences. Use fields intent,
+  method (object with kind: "direct" or "independent", and rationale: string),
   reviewers (array of {id, lens, evidence, model}; model may be null),
-  limitation (string; explain if independent jobs or model selection are
-  unavailable), agreement (array of {claim, reviewers, resolution}), and
+  limitation (string; explain unavailable requested or attempted methods),
+  challenges (array of {claim, counterargument, resolution, evidence}),
+  agreement (array of {claim, reviewers, resolution}), and
   findings (array of {file, line, severity, decision, evidence, remedy}).
+  Use lowercase severity values: critical, high, medium, or low. In each
+  material SQL challenge and finding, quote the changed SELECT statement or
+  connection.execute call in its evidence field, alongside the observed impact.
   Decisions are act-on, consider, or dismissed. Evidence must cite the changed
-  source. Include only real reviewers and supported findings; empty arrays
-  are valid. This protocol tests evidence, not Markdown heading choices.
+  source. Include only real reviewers and supported findings. A direct review
+  has empty reviewers and agreement arrays. Test the strongest competing
+  explanation even when working directly. This protocol tests evidence and
+  method selection, not Markdown heading choices or reviewer count.
 
 budget:
   max_tokens: 6000
@@ -43,6 +50,8 @@ checks:
       const r = JSON.parse(fs.readFileSync('review.md', 'utf8'));
       const text = value => typeof value === 'string' && value.trim().length > 0;
       assert.ok(text(r.intent));
+      assert.ok(['direct', 'independent'].includes(r.method.kind));
+      assert.ok(text(r.method.rationale));
       assert.ok(Array.isArray(r.reviewers));
       assert.equal(typeof r.limitation, 'string');
       const ids = r.reviewers.map(reviewer => reviewer.id);
@@ -51,11 +60,19 @@ checks:
         assert.ok([reviewer.id, reviewer.lens, reviewer.evidence].every(text));
         assert.ok(reviewer.model === null || text(reviewer.model));
       }
-      if (ids.length < 2 || r.reviewers.some(reviewer => reviewer.model === null)) {
+      if (r.method.kind === 'direct') assert.equal(ids.length, 0);
+      else assert.ok(ids.length > 0);
+      if (r.reviewers.some(reviewer => reviewer.model === null)) {
         assert.ok(text(r.limitation));
       }
+      assert.ok(Array.isArray(r.challenges) && r.challenges.length > 0);
+      for (const challenge of r.challenges) {
+        assert.ok([challenge.claim, challenge.counterargument,
+          challenge.resolution, challenge.evidence].every(text));
+      }
+      assert.ok(r.challenges.some(c => /SELECT|connection\.execute/.test(c.evidence)));
       assert.ok(Array.isArray(r.agreement));
-      if (ids.length >= 2) assert.ok(r.agreement.length > 0);
+      if (r.method.kind === 'direct') assert.equal(r.agreement.length, 0);
       for (const entry of r.agreement) {
         assert.ok(text(entry.claim) && text(entry.resolution));
         assert.ok(Array.isArray(entry.reviewers) && entry.reviewers.length > 0);

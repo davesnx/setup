@@ -1,0 +1,58 @@
+schema_version: 2
+id: explicit-parallel-audit
+mode: prose
+skill_under_test: improve-codebase-architecture
+skills_loaded: [improve-codebase-architecture]
+description: "An explicit parallel audit covers independent scopes and vets both findings without automatic plans"
+tags: [audit, parallel, evidence, read-only]
+
+setup:
+  fixtures:
+    retry-policy.mjs: fixtures/retry-policy.mjs
+    retry-policy.expected.mjs: fixtures/retry-policy.expected.mjs
+    webhook-handler.mjs: fixtures/webhook-handler.mjs
+    webhook-handler.expected.mjs: fixtures/webhook-handler.mjs
+
+prompt: |
+  Audit both modules in this temporary sandbox with two parallel read-only
+  explorers, then check their evidence yourself. One explorer owns retry-policy.mjs:
+  zero must mean retry immediately, an absent value means 1000 ms. The other owns
+  webhook-handler.mjs: for concurrent calls with the same event ID in one process,
+  deliver must run only once while the first delivery is pending. The modules are
+  independent. The .expected.mjs files are preservation copies. If parallel tools
+  are unavailable, report that limit and still cover both modules directly.
+
+  Put findings in review.json with execution (parallel or unavailable), limitation
+  (null if parallel, otherwise the actual tool limitation), and findings (array).
+  Each finding has file, line, source_quote (exact nonempty source passage), impact,
+  fix_sketch, effort, risk, and confidence. This structured result replaces prose
+  for the evaluation. Manual review must verify actual runner calls or the stated
+  limit, parent inspection of both files, and whether each impact follows from its
+  cited code. Keep source unchanged.
+
+budget:
+  max_tokens: 8000
+  max_seconds: 240
+
+checks:
+  - kind: shell
+    cmd: |
+      node -e '
+      const fs = require("node:fs"), assert = require("node:assert/strict");
+      const files = ["retry-policy.mjs", "webhook-handler.mjs"];
+      for (const file of files) assert.equal(fs.readFileSync(file, "utf8"), fs.readFileSync(file.replace(".mjs", ".expected.mjs"), "utf8"));
+      const d = JSON.parse(fs.readFileSync("review.json", "utf8"));
+      assert.ok(["parallel", "unavailable"].includes(d.execution));
+      if (d.execution === "parallel") assert.equal(d.limitation, null);
+      else assert.ok(typeof d.limitation === "string" && d.limitation.trim());
+      assert.deepEqual([...new Set(d.findings.map(f => f.file))].sort(), files);
+      for (const f of d.findings) {
+        const source = fs.readFileSync(f.file, "utf8");
+        assert.ok(Number.isInteger(f.line) && f.line > 0 && f.line <= source.trimEnd().split("\n").length);
+        assert.ok(typeof f.source_quote === "string" && f.source_quote.trim() && source.includes(f.source_quote));
+        for (const k of ["impact", "fix_sketch", "effort", "risk", "confidence"]) assert.ok(typeof f[k] === "string" && f[k].trim());
+      }
+      assert.ok(!fs.existsSync("plans") && !fs.readdirSync(".").some(p => p.endsWith(".html")));
+      process.stdout.write("parallel-audit-recorded-needs-manual-review");'
+    unsafe_shell: true
+    expect_exact: parallel-audit-recorded-needs-manual-review

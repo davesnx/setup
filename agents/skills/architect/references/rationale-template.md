@@ -1,14 +1,16 @@
 # Rationale template
 
-The prose that ships alongside the type sketch. One page. Sentence-case headings, no boilerplate. Replace the italic notes with actual content.
+Use this reference when a design needs a durable rationale. A small decision can
+use a paragraph beside the sketch in the response or the same file. For larger
+work, select the sections below that explain the decision; omit empty sections.
 
 ## Problem
 
-*One paragraph. What we're trying to do, and what about the existing system or constraints makes the shape non-obvious. If [Phase A](../SKILL.md#phase-a-ground-the-problem) surfaced constraints the design must honor (existing types to interop with, callers we can't break, invariants that crossed our boundary), name them here so the reader sees the same constraints you saw.*
+*What the design must achieve and which traced callers, existing types, or supplied constraints determine the shape. Cite the evidence.*
 
 ## Usage (caller's view)
 
-*Write this first, before the type sketch. Show the README or quickstart the consumer reads, plus two or three realistic call sites in their own code. What they import, what they call, what comes back. The type sketch in [Shape](#shape) is derived from this. The two must agree; when they diverge, reconcile the sketch to the usage, not the reverse. The caller's experience is the spec. The types serve it.*
+*Write usage before types. Show enough realistic calls to cover materially different paths, including errors when relevant. Derive the type sketch from those calls and reconcile differences.*
 
 ## Shape
 
@@ -16,7 +18,7 @@ The prose that ships alongside the type sketch. One page. Sentence-case headings
 
 ## Synthesis decision
 
-*Filled in during Architect Phase B. Records which candidate became the base and why, what was adapted from each of the others, and what was rejected and why.*
+*Only for a comparison: which candidate became the base and why, what was adapted, and what was rejected.*
 
 ## Tradeoffs accepted
 
@@ -24,7 +26,7 @@ The prose that ships alongside the type sketch. One page. Sentence-case headings
 
 ## Alternatives considered
 
-*Required. Name at least one concrete alternative shape, with one line on why it lost. Two or three when the design space had real contenders; one is fine when the constraints forced the answer, with the conclusion phrased as "this was the only viable shape because..." Avoid listing flavors of the same shape. Distinct from "Synthesis decision": this section covers design alternatives the chosen shape considered and rejected, not other runner candidates.*
+*Include real contenders only, with the constraint or evidence that ruled each out. Combine with the synthesis decision when that already covers the alternatives.*
 
 ## Open questions and risks
 

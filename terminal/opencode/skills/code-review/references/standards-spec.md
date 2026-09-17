@@ -8,14 +8,10 @@ Read repository instructions such as `AGENTS.md`, `CONTRIBUTING.md`, coding stan
 
 Use these smells as judgment prompts, not hard violations:
 
-- Mysterious names that hide behavior or ownership.
-- Duplicated logic shapes that need one shared implementation.
-- Feature envy or logic living away from the data it owns.
-- Data clumps and primitive values standing in for domain concepts.
-- Repeated switches or condition families that indicate a missing model.
-- Shotgun surgery and divergent modules with unrelated reasons to change.
-- Speculative abstractions, hooks, or parameters with no current requirement.
-- Message chains, middlemen, and inheritance that obscures the real target.
+- Names or indirection that hide behavior and ownership.
+- Duplicated logic or scattered changes that suggest an unclear owner.
+- State represented so loosely that callers must reconstruct its invariants.
+- Abstractions, hooks, or parameters with no current requirement.
 
 For each standards finding, cite the repository rule or name the smell and explain why it matters in this change.
 

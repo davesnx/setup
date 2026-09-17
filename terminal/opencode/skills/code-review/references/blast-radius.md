@@ -4,7 +4,9 @@ Find breakage that a symbol search alone will not reveal. Trace changed behavior
 
 ## Safety Fact
 
-Identify the one or two facts on which the change's safety depends. Test those facts instead of replacing evidence with a convincing writeup.
+Identify the material facts on which the change's safety depends. Prioritize
+them by impact and uncertainty, and test them instead of replacing evidence
+with a convincing writeup.
 
 Use this proof ladder and report where each important fact stopped:
 
