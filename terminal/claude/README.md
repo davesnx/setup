@@ -64,3 +64,11 @@ instructions live only as skills, under
 settings there.
 
 Restart Claude Code after changing these settings.
+
+## Automatic improvement reviews
+
+See the [shared overview](../../agents/README.md#automatic-improvement-reviews)
+and the [hook reference](hooks/README.md) for scheduling, state, and disabling
+automatic reviews.
+
+Run the [hook checks](hooks/README.md#checks) from the repository root.

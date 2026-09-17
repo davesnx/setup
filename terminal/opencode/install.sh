@@ -15,7 +15,7 @@ fi
 
 CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}/opencode
 
-for name in opencode.jsonc tui.json instructions.md package.json agent-permission-boundaries.mjs auto-improve.mjs; do
+for name in opencode.jsonc tui.json instructions.md package.json agent-permission-boundaries.mjs; do
   link_path "$ROOT/$name" "$CONFIG_HOME/$name"
 done
 

@@ -92,3 +92,13 @@ loads traces back to `mcp.json`. A server that appears anywhere else came
 from an external installer replacing a link. In January 2026
 `npx vibeship-spawner-skills` wrote a `spawner` server into `~/.mcp.json`
 that way.
+
+## Automatic improvement reviews
+
+Claude Code uses the shared [`auto-improve` skill](skills/auto-improve/SKILL.md)
+for read-only reviews of the current session and relevant setup files. Reviews
+propose changes to skills, hooks, scripts, or rules. Applying a proposal needs
+user approval.
+
+The [Claude Code hook reference](../terminal/claude/hooks/README.md) owns the
+review scheduling, state, and disable controls.
