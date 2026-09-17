@@ -2,15 +2,15 @@ schema_version: 2
 id: routing-audit-selects-improve-codebase-architecture
 mode: deterministic
 skill_under_test: improve-codebase-architecture
-skills_loaded: [improve-codebase-architecture, execute-codebase-plan]
-description: "A new codebase audit routes to the advisor when both plan skills are available"
+skills_loaded: [improve-codebase-architecture, implement]
+description: "A new codebase audit routes to the read-only advisor, not the implementation skill"
 tags: [routing, audit, skill-overlap]
 
 prompt: |
   I want a read-only audit of this repository, a prioritized local HTML report,
   and implementation plans for the findings I select. Do not inspect files or
   run commands in this routing check. Write route.md with the owning workflow
-  and its edit boundary.
+  and its edit boundary. State how implementation can start after the audit.
 
 budget:
   max_tokens: 2500
@@ -20,8 +20,8 @@ checks:
   - kind: file_exists
     path: route.md
   - kind: output_not_contains
-    value: '"name":"execute-codebase-plan"'
+    value: '"name":"implement"'
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"route.md\",\"utf8\"); process.stdout.write(/improve-codebase-architecture/.test(s)&&/read.only/i.test(s)&&/HTML/i.test(s)?\"advisor\":\"wrong\")'"
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"route.md\",\"utf8\"); process.stdout.write(/improve-codebase-architecture/.test(s)&&/read.only/i.test(s)&&/HTML/i.test(s)&&/\\bimplement\\b/.test(s)&&/(user|you|explicit)/i.test(s)?\"advisor\":\"wrong\")'"
     unsafe_shell: true
     expect_exact: "advisor"

@@ -22,7 +22,8 @@ making every document sound like a blog post.
 ## Choose the work
 
 Follow the workflow the user selects and load its skill. Otherwise, use the
-writing step of `create-pr` for PR titles and bodies, `technical-docs` for
+writing step of `create-pr` for PR titles and bodies, the writing step of
+`create-issue` for issue titles and bodies, `technical-docs` for
 developer documentation, `write-blog-post` for articles, and `write-x-post` for X posts.
 For other prose, work directly. Load other writing skills when requested or
 required by the selected workflow.

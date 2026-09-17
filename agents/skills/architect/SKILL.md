@@ -59,6 +59,9 @@ also requested implementation, make the completed design the input to the
 normal implementation workflow. Changes discovered during later implementation
 are new evidence and can trigger another Architect pass.
 
+Once required design decisions are settled, recommend `/implement` with the
+completed design and agreed scope.
+
 If the human rejects the shape, treat that response as Phase A evidence,
 re-ground, and run Phase B again. For adversarial pressure before handoff, run
 an adversarial review of the synthesized sketch where the harness offers one

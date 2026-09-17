@@ -2,9 +2,8 @@
 
 Every plan is written for an executor model that has **zero context**: it has not seen the advisor session, the audit, the other plans, or any prior conversation. It may be a smaller/cheaper model. Assume it is competent at following explicit instructions and weak at filling gaps, recovering from ambiguity, or knowing when to stop.
 
-This template owns the plan and index schemas read by the executor's
-[closing-the-loop reference](../../execute-codebase-plan/references/closing-the-loop.md).
-Keep that reader aligned when these schemas change.
+This template owns the plan and index schemas. Include all execution and runtime
+verification steps in each plan so the handoff needs no separate workflow reference.
 
 Three properties make a plan executable by a weaker model:
 
@@ -125,6 +124,24 @@ callers, then remove old path.)
   "model after `src/users/api.test.ts`".
 - Verification: `<test command>` → all pass, including N new tests.
 
+## Runtime handoff
+
+Use exact commands and expected results for the changed path:
+
+1. Prepare <inputs, fixtures, dependencies, and required environment> in
+   <working path>. State any access requirement without including secrets.
+2. Run <start or invocation command>. For a service, check <readiness command>
+   at <URL or port> and expect <ready result>.
+3. Exercise <changed behavior> from <input or user action> to <observable output>.
+   Include the original failure and relevant repeat-run or recovery checks.
+4. Record <output, logs, or screenshots> at <evidence path> and compare with
+   <expected result>. Static checks alone do not prove runtime behavior.
+5. Stop processes started for this check with <command> and remove only the
+   temporary test data created for it with <command>.
+
+If runtime verification does not apply, state why. If it is blocked, report the
+missing prerequisite and the unverified behavior; do not claim completion.
+
 ## Done criteria
 
 Machine-checkable. ALL must hold:
@@ -133,6 +150,7 @@ Machine-checkable. ALL must hold:
 - [ ] `pnpm test` exits 0; new tests for <X> exist and pass
 - [ ] `grep -rn "<old pattern>" src/` returns no matches
 - [ ] No files outside the in-scope list are modified (`git status`)
+- [ ] Runtime handoff checks produce the expected results, or are explicitly inapplicable.
 
 ## STOP conditions
 

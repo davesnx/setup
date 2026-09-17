@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Audit a codebase across correctness, security, performance, tests, and architecture; render vetted findings as a local HTML review and write implementation plans for another agent. Use for "improve this codebase", "audit this repo", or "what should we build next". Read-only on source. Do not use it to review, execute, reconcile, or publish an existing plan; use execute-codebase-plan for that.
+description: Audit a codebase across correctness, security, performance, tests, and architecture; render vetted findings as a local HTML review and write implementation plans for another agent. Use for "improve this codebase", "audit this repo", or "what should we build next". Read-only on source. For implementation, ask the user to invoke implement. Handle existing-plan review, reconciliation, or publication through the normal review/Git/PR workflow, outside this audit.
 ---
 
 # Improve Codebase Architecture
@@ -121,4 +121,4 @@ Before writing a new plan, inspect existing plan titles and scopes, including us
 
 ## Output
 
-Return the HTML report path, short top findings, coverage gaps, and selected or generated plan paths. State uncertainty plainly and prefer "not worth doing" over a padded backlog. For follow-through, name `execute-codebase-plan` as the separate owning skill without starting it.
+Return the HTML report path, short top findings, coverage gaps, and selected or generated plan paths. State uncertainty plainly and prefer "not worth doing" over a padded backlog. Stop here. Recommend that the user invoke `implement` with the selected plan for implementation; do not invoke it automatically. For existing-plan review, reconciliation, or publication, handle the requested action through the normal review/Git/PR workflow, outside this audit.

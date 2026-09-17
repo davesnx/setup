@@ -1,3 +1,0 @@
-interface:
-  display_name: "Execute Codebase Plan"
-  short_description: "Review and run existing audit plans in isolation"

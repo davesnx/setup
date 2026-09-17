@@ -3,8 +3,8 @@ name: orchestrate
 description: >
   Coordinate implementation across subagents in one environment, or write an
   orchestrator kickoff. Use when explicitly asked to orchestrate implementation.
-  Use council for multiple perspectives on one question; use execute-codebase-plan
-  for an existing audit plan. Combine only when explicitly requested.
+  Use council for multiple perspectives on one question; use implement for
+  implementation from a spec or plan. Combine only when explicitly requested.
 ---
 
 # Orchestrate
@@ -25,9 +25,11 @@ merge authority.
    current diff and identify existing work. Confirm observable completion criteria
    and required checks from the request and repository. Set the completion boundary
    and any stop or time bounds. No prior plan is required.
-2. Use the authorized working path and local permission rules. Preserve unrelated
-   changes. If combined with `execute-codebase-plan`, keep all source edits in its
-   isolated worktree and leave the main worktree untouched.
+2. Use the authorized working path and local permission rules. Before source edits,
+   the parent creates an isolated worktree outside the main worktree from the
+   agreed base, or verifies and reuses the isolated worktree supplied by the user.
+   Record its absolute path, branch, and base. Keep all edits and mutating commands
+   there; preserve unrelated changes and leave the main worktree untouched.
 3. Map dependencies and assign separate file ownership before starting children.
    Complete critical dependencies first. Give shared types, interfaces, and files
    one owner at a time; establish their contracts before dependent work starts.

@@ -16,7 +16,7 @@ It is a local adaptation, not a verbatim copy or an upstream-maintained version.
 The adaptation uses host-neutral instructions and only available model choices.
 It adds local permission and isolated-worktree rules, precise file ownership,
 child briefs, partial-work recovery, and direct evidence for completion. It also
-defines boundaries with council and execute-codebase-plan and grants no publishing
+defines boundaries with council and implement and grants no publishing
 authority. The upstream license link and notice are retained for attribution.
 
 ## Cursor playbooks
