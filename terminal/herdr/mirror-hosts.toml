@@ -1,0 +1,6 @@
+# herdr-mirror hosts. Managed in the setup repo at terminal/herdr/mirror-hosts.toml.
+# Reference: https://github.com/nikok6/herdr-mirror#configuration
+# Linked on the Mac only: remote machines are viewed from here.
+
+[hosts.nspawn]
+target = "nspawn"

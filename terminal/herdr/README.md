@@ -50,13 +50,11 @@ are in use.
 server's workspaces and agents in the local sidebar and streams their panes.
 Its build downloads a prebuilt binary and links `~/.local/bin/herdr-mirror`.
 Both ends need a Herdr with terminal session streams: preview build 2026-06-30
-or newer, or a stable release that includes them. Hosts are machine state, so
-they are not in this repository. Create `~/.config/herdr-mirror/hosts.toml`:
-
-```toml
-[hosts.nspawn]
-target = "nspawn"
-```
+or newer, or a stable release that includes them. Remote machines are viewed
+from the Mac, so the installer adds this plugin on the `local` profile only and
+links `mirror-hosts.toml` to `~/.config/herdr-mirror/hosts.toml`. As with the
+Claude Code and OpenCode installers, the first argument, `local` or `ssh`,
+overrides the detected profile.
 
 The daemon starts when a workspace gains focus, and `herdr-mirror status`
 reports the loaded config and each host. The actions have no keys; the plugin

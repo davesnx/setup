@@ -148,8 +148,8 @@ shell test does not prove desktop delivery.
 
 After changing `terminal/herdr/`, rerun its installer and confirm that
 `herdr plugin list` shows `jhochenbaum.hunkdiff` and `mirror` as enabled. From
-an agent pane, press `prefix+shift+r`; a hunk review pane opens beside it. With
-a host in `~/.config/herdr-mirror/hosts.toml`, `herdr-mirror status` lists it.
+an agent pane, press `prefix+shift+r`; a hunk review pane opens beside it. On
+the Mac, `herdr-mirror status` lists the `nspawn` host from `mirror-hosts.toml`.
 
 ## Changes that need a real smoke test
 

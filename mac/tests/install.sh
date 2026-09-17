@@ -264,6 +264,7 @@ expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh"
 cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 grep -q '^herdr:plugin install jhochenbaum/herdr-hunk-diff --ref [0-9a-f]\{40\} --yes$' "$command_log"
 grep -q '^herdr:plugin install nikok6/herdr-mirror --ref [0-9a-f]\{40\} --yes$' "$command_log"
+[ "$(readlink "$HOME/.config/herdr-mirror/hosts.toml")" = "$root/terminal/herdr/mirror-hosts.toml" ]
 printf 'PASS: Herdr installer links its config directory and installs the pinned plugins\n'
 
 : >"$command_log"
@@ -277,6 +278,15 @@ if grep -q '^herdr:plugin install' "$command_log"; then
   exit 1
 fi
 printf 'PASS: repeated Herdr installation leaves its link and installed plugins unchanged\n'
+
+prepare_home
+expect_exit 0 /bin/sh "$root/terminal/herdr/install.sh" ssh
+grep -q '^herdr:plugin install jhochenbaum/herdr-hunk-diff ' "$command_log"
+if grep -q '^herdr:plugin install nikok6/herdr-mirror ' "$command_log"; then
+  exit 1
+fi
+[ ! -e "$HOME/.config/herdr-mirror/hosts.toml" ]
+printf 'PASS: SSH hosts skip the mirror plugin and its hosts file\n'
 
 prepare_home
 mkdir -p "$HOME/.config/herdr"

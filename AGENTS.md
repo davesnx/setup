@@ -53,7 +53,8 @@ terminal/opencode/        OpenCode only -> ~/.config/opencode. opencode.jsonc, a
                           skills/ only for skills whose names clash with Claude built-ins.
                           mcp.ts renders mcp.json -> ~/.config/opencode/opencode.json
                           and hosts/*.jsonc, the per-machine profile -> host.jsonc.
-terminal/herdr/           config.toml -> ~/.config/herdr/config.toml
+terminal/herdr/           config.toml -> ~/.config/herdr/config.toml. Plugin pins in install.sh.
+                          mirror-hosts.toml -> ~/.config/herdr-mirror/hosts.toml on the Mac.
 terminal/htop/            htoprc -> ~/.config/htop/htoprc
 
 mac/                      macOS only. install.sh: Homebrew, defaults, apps, daemons.
