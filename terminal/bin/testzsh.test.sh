@@ -56,6 +56,9 @@ clean() {
 
 printf 'original\n' >"$home/history"
 cat >"$home/.zshenv" <<'ZSH'
+# Ubuntu's /etc/zsh/zshrc runs compinit; its autoload stub has no source file
+# and would add a second (unknown) event to the trace.
+skip_global_compinit=1
 print -r -- "env:${ZDOTDIR+x}:${ZDOTDIR-}:$ZSH_BENCHMARK" >>"$FIXTURE/order"
 [[ -o login && -o interactive ]] || exit 71
 [[ $ZSH_EVAL_CONTEXT == *file && $ZSH_EVAL_CONTEXT != *shfunc* ]] || exit 72
@@ -132,7 +135,9 @@ for location in 'sourced file:1' '.zshrc:4' '.zlogin:1'; do
   awk -F '\t' -v location="$location" 'index($3, location) {found++; if ($1 < 80 || $1 > 1000 || $2 != 1) exit 1} END {if (found != 1) exit 1}' "$scratch/out" || fail "sleep attribution: $location"
 done
 awk -F '\t' '/^Top 20/ {exit} NF == 3 {sum += $1} END {if (sum < 240 || sum > 900) exit 1}' "$scratch/out" || fail 'exclusive costs double counted'
-awk -F '\t' '/^Top 20/ {exit} $3 ~ /\.zshrc[^:]*$/ {found++; if ($1 < 80 || $1 > 220) exit 1} END {if (found != 1) exit 1}' "$scratch/out" || fail 'source or subshell cost counted twice in .zshrc'
+# The .zshrc total may exceed its own subshell line only by the cost of its other
+# lines. A double-counted source or subshell would add at least 120 ms.
+awk -F '\t' '/^Top 20/ {lines = 1; next} !lines && $3 ~ /\.zshrc[^:]*$/ {file = $1; files++} lines && $3 ~ /\.zshrc:4[^0-9]/ {line = $1; found++} END {if (files != 1 || found != 1 || file < line || file - line > 100) exit 1}' "$scratch/out" || fail 'source or subshell cost counted twice in .zshrc'
 clean
 success
 clean
