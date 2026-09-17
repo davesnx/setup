@@ -166,6 +166,14 @@ the Mac, `herdr-mirror status` lists the `nspawn` host from `mirror-hosts.toml`.
 
 ## Changes that need a real smoke test
 
+After changing `mac/daemons/com.davesnx.ssh-add.plist`, run
+`sh mac/daemons/install.sh` with `DOTFILES_PATH` set to this checkout.
+The job loads SSH keys saved in macOS Keychain once at login. Check
+`launchctl print "gui/$(id -u)/com.davesnx.ssh-add"` for `last exit code = 0`,
+then run `/usr/bin/ssh-add -l` to confirm the expected keys are loaded.
+Rerun the installer and repeat both checks. To verify login behavior, log out
+and back in, then repeat both checks before making an SSH connection.
+
 Tests cannot prove that external apps, downloads, or future package versions work.
 After changing installation or app integration, check the affected feature on a
 disposable machine or account: run setup, run it again, open a fresh terminal,
