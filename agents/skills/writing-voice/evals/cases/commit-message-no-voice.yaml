@@ -1,0 +1,22 @@
+schema_version: 2
+id: writing-voice-commit-message-no-voice
+mode: deterministic
+skill_under_test: writing-voice
+skills_loaded: [writing-voice]
+description: "A commit message request does not load the blog writing voice"
+tags: [routing, near-miss, scope]
+
+prompt: |
+  Write a one-line commit message for a change that renames the function
+  parseArgs to parseCliArgs in src/cli.mts and updates its two callers. Write
+  only the message to message.txt.
+
+budget:
+  max_tokens: 2000
+  max_seconds: 60
+
+checks:
+  - kind: output_not_contains
+    value: '"name":"writing-voice"'
+  - kind: file_exists
+    path: message.txt

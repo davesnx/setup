@@ -7,8 +7,9 @@ description: Finish sancho.dev drafts with stub, outline, or partial SKILLS stat
 
 Finish a draft by mapping its gaps, finding evidence, and asking the author
 only for unresolved decisions. Write supported material into the post.
-Read `VOICE.md` at the repository root and the draft. Use the voice
-guide's relevant examples in context, not as a formula for every post.
+Load the `writing-voice` skill, then read the draft and the repository's
+`VOICE.md` when it has one. Use the voice guide's examples in context, not
+as a formula for every post.
 
 ## Gaps
 
@@ -79,8 +80,8 @@ history to justify writing. Write supported parts even if other gaps remain.
   qualifications about uncertainty, scope, or
   frequency, such as "might", "in my case", and "usually".
 - Check each addition against its confirmed answer or source and the
-  relevant VOICE.md examples. Keep source authors' experiences and opinions
-  separate from his.
+  relevant `writing-voice` rules and VOICE.md examples. Keep source authors'
+  experiences and opinions separate from his.
 - Keep unavailable evidence explicit with `[Q: ...]`, stating what is
   missing and where to obtain it. A promised answer is not evidence.
 - Update the SKILLS block: `state:` to stub, outline, partial or

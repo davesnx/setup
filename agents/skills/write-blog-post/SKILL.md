@@ -21,7 +21,7 @@ You are an expert blog editor and writer. Help the author produce a post that is
 
 ## Workflow
 
-For direct requests, read the supplied material and relevant `VOICE.md`, then do the requested review, drafting, or editing. Ask only blocking questions that the available material cannot answer. A complete-post review does not require an interview; report findings and uncertain claims directly. A review request alone does not authorize file edits.
+For direct requests, load the `writing-voice` skill, read the supplied material and the repository's `VOICE.md` when it has one, then do the requested review, drafting, or editing. Ask only blocking questions that the available material cannot answer. A complete-post review does not require an interview; report findings and uncertain claims directly. A review request alone does not authorize file edits.
 
 When the author opts into collaborative interviews, guide them through three stages:
 
@@ -110,7 +110,7 @@ Understand how the post should be organized.
 
 Understand how it should sound.
 
-When the repository has a `VOICE.md` at its root, read it before asking. Follow its current guidance and use its examples in context, not as mandatory structures or quotas. It overrides the generic style guidance later in this skill. Ask only what it leaves open.
+Load the `writing-voice` skill before asking. It is the target voice and overrides the generic style guidance later in this skill. When the repository has a `VOICE.md` at its root, read it too: it refines the target with the author's own corrections and examples. Use examples in context, not as mandatory structures or quotas. Ask only what both leave open.
 
 - How would you describe your writing voice? (casual, technical, conversational, authoritative, witty)
 - Any blog posts (yours or others) that match the tone you're going for?
@@ -361,7 +361,7 @@ Write:
 
 ### Run an Unslop Pass
 
-Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written. When a `VOICE.md` exists, pass it as the writing sample, and when the author is David, run unslop's `references/author-patterns.md` as part of the pass.
+Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written. Pass the `writing-voice` skill text, and the repository's `VOICE.md` when it exists, as the writing sample, and when the author is David, run unslop's `references/author-patterns.md` as part of the pass.
 
 Before delivery, compare the revision with the source and ask internally: did this edit add or remove any claim? Restore lost claims and delete unsupported additions.
 

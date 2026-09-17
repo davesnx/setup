@@ -1,0 +1,25 @@
+schema_version: 2
+id: writing-voice-loads-for-post-opening
+mode: deterministic
+skill_under_test: writing-voice
+skills_loaded: [writing-voice, technical-docs]
+description: "Drafting the opening of a personal blog post loads the writing voice, not developer documentation"
+tags: [routing, blog-post]
+
+prompt: |
+  Draft the opening three sentences of a post for my personal blog about why I
+  moved my CLI's tests to cram tests. The stake is that snapshot files replaced
+  forty hand-written assertions. Write only the paragraph to opening.md. Do not
+  research or add facts beyond that one.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: output_contains
+    value: '"name":"writing-voice"'
+  - kind: output_not_contains
+    value: '"name":"technical-docs"'
+  - kind: file_exists
+    path: opening.md
