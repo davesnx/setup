@@ -15,7 +15,9 @@ It checks:
 
 - ShellCheck findings, including extensionless commands and local imports, plus
   Zsh syntax, including `.zimrc` and Zsh startup filenames without shebangs.
-  Run only this part with `bash shellcheck.sh`.
+  Run only this part with `bash check.sh --shell-only`. This mode needs only
+  Git, Bash, ShellCheck, Zsh, and base system utilities. Shell validation failures
+  stop the full command before formatting and other checks.
 - Formatting of the check scripts, Git effort command, and `testzsh`.
 - Argument handling, collections, and logging in both system and PATH Bash,
   plus shared helpers in Zsh.
@@ -88,8 +90,9 @@ for the measurement and shutdown boundaries.
 ## Check on nspawn
 
 nspawn has ShellCheck 0.9, Node, npm, Python 3, Zsh, jq, and rsync, but no `shfmt`
-and no `bun`, so `check.sh` cannot run there. Before each commit, copy the
-working tree to a scratch directory on nspawn and run the checks that can:
+and no `bun`, so the full `bash check.sh` cannot run there. The focused
+`bash check.sh --shell-only` command can run with those tools. Before each commit,
+copy the working tree to a scratch directory on nspawn and run the checks that can:
 
 ```sh
 rsync -a --delete --exclude node_modules --exclude .venv --exclude .cache \

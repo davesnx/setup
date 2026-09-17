@@ -3,15 +3,78 @@
 set -euo pipefail
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 
-for tool in git shellcheck shfmt zsh bun node npm python3 jq; do
+usage() {
+  printf 'Usage: bash check.sh [--shell-only | --help]\nRun all setup checks, or only ShellCheck and Zsh syntax checks.\n'
+}
+
+shell_only=false
+if [[ $# -gt 1 ]]; then
+  usage >&2
+  exit 64
+fi
+if [[ $# -eq 1 ]]; then
+  case "$1" in
+    --shell-only) shell_only=true ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 64
+      ;;
+  esac
+fi
+
+required_tools=(git shellcheck zsh)
+if ! "$shell_only"; then
+  required_tools+=(shfmt bun node npm python3 jq)
+fi
+for tool in "${required_tools[@]}"; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     printf '%s is required to run the checks.\n' "$tool" >&2
     exit 69
   fi
 done
 
-bash "$root/shellcheck.sh"
-shfmt -d -i 2 -ci "$root/check.sh" "$root/shellcheck.sh" \
+files=()
+zsh_files=()
+while IFS= read -r -d '' file; do
+  [[ -f "$root/$file" ]] || continue
+  IFS= read -r first_line <"$root/$file" || true
+  case "$first_line" in
+    '#!'*zsh*) zsh_files+=("$root/$file") ;;
+    '#!'*bash* | '#!'*'/sh' | '#!'*' sh' | '# shellcheck shell='*) files+=("$root/$file") ;;
+    '#!'*) ;;
+    *)
+      case "${file##*/}" in
+        *.sh) files+=("$root/$file") ;;
+        *.zsh | .zimrc | .zshenv | .zshrc | .zprofile | .zlogin | .zlogout) zsh_files+=("$root/$file") ;;
+      esac
+      ;;
+  esac
+done < <(git -C "$root" ls-files --cached --others --exclude-standard -z)
+
+status=0
+for file in ${files[@]+"${files[@]}"}; do
+  IFS= read -r first_line <"$file" || true
+  shell=bash
+  case "$first_line" in
+    '#!'*'/sh' | '#!'*' sh' | '# shellcheck shell=sh') shell='sh' ;;
+  esac
+  case "$file" in */prelude.sh) shell='sh' ;; esac
+  shellcheck --norc --external-sources --source-path=SCRIPTDIR --source-path="$root" \
+    --shell="$shell" --format=gcc "$file" || status=1
+done
+for file in ${zsh_files[@]+"${zsh_files[@]}"}; do
+  zsh -n "$file" || status=1
+done
+printf 'Checked %s shell scripts and %s Zsh scripts.\n' "${#files[@]}" "${#zsh_files[@]}"
+if "$shell_only" || [[ "$status" -ne 0 ]]; then
+  exit "$status"
+fi
+
+shfmt -d -i 2 -ci "$root/check.sh" \
   "$root/terminal/core/test.sh" "$root/terminal/bin/git-extras/test.sh" \
   "$root/terminal/bin/git-extras/git-effort" \
   "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh"
