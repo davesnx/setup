@@ -53,7 +53,6 @@ terminal/opencode/        OpenCode only -> ~/.config/opencode. opencode.jsonc, a
                           skills/ only for skills whose names clash with Claude built-ins.
                           mcp.ts renders mcp.json -> ~/.config/opencode/opencode.json
                           and hosts/*.jsonc, the per-machine profile -> host.jsonc.
-terminal/tmux/            .tmux.conf -> ~/.tmux.conf
 terminal/herdr/           config.toml -> ~/.config/herdr/config.toml
 terminal/htop/            htoprc -> ~/.config/htop/htoprc
 

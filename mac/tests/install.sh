@@ -532,9 +532,6 @@ expect_exit 0 env -u DOTFILES_PATH /bin/sh "$root/install.sh"
 [ -L "$HOME/.zshenv" ]
 grep -q '^chsh:' "$command_log"
 grep -q '^zsh:' "$command_log"
-[ -L "$HOME/.tmux.conf" ]
-grep -q '^git:clone .* https://github.com/o0th/tmux-nova.git ' "$command_log"
-[ -d "$HOME/.tmux/plugins/tmux-nova" ]
 [ "$(readlink "$HOME/.config/herdr/config.toml")" = "$root/terminal/herdr/config.toml" ]
 cmp "$root/terminal/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 printf 'PASS: root exports DOTFILES_PATH on a fresh installation and reaches all phases\n'
@@ -581,12 +578,8 @@ printf 'PASS: unsupported architecture stops before Node installation\n'
 
 prepare_home
 install_brew_stub
-mkdir -p "$HOME/.tmux/plugins/tmux-nova"
 expect_exit 0 env DOTFILES_PATH="$work/missing" /bin/sh "$root/install.sh"
-if grep -q 'tmux-nova' "$command_log"; then
-  exit 1
-fi
-printf 'PASS: root replaces stale DOTFILES_PATH and does not clone installed tmux-nova again\n'
+printf 'PASS: root replaces stale DOTFILES_PATH\n'
 
 prepare_home
 install_brew_stub

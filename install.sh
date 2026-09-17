@@ -41,7 +41,6 @@ PATH="$HOME/.local/share/node-tools/node_modules/.bin:$PATH"
 sh "$DOTFILES_PATH/git/install.sh"
 sh "$DOTFILES_PATH/local/install.sh"
 sh "$DOTFILES_PATH/terminal/zsh/install.sh"
-sh "$DOTFILES_PATH/terminal/tmux/install.sh"
 sh "$DOTFILES_PATH/terminal/herdr/install.sh"
 sh "$DOTFILES_PATH/terminal/htop/install.sh"
 
