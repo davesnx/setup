@@ -2,7 +2,7 @@ schema_version: 2
 id: unavailable-check-blocks-draft
 mode: prose
 skill_under_test: create-pr
-skills_loaded: [create-pr, github]
+skills_loaded: [create-pr, github, comment-purge]
 description: "Dry PR preparation names the title/body inputs but an unavailable required check blocks even a draft"
 tags: [readiness, wording-inputs, safety, draft]
 

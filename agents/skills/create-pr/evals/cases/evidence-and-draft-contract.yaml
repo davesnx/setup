@@ -1,0 +1,127 @@
+schema_version: 2
+id: evidence-and-draft-contract
+mode: prose
+skill_under_test: create-pr
+skills_loaded: [create-pr, github]
+description: "Spelling-only evidence scope, intentional draft limitations, and measured performance comparison"
+tags: [publication, evidence, draft, performance]
+
+prompt: |
+  Use create-pr to assess three independent snapshots and one control. Write
+  contract.json in the current directory with exactly these keys: spelling,
+  spelling_missing_build, csv_release, performance. Each value contains exactly
+  decision (block or publish-draft), blockers (array of IDs), body (actual
+  Markdown PR body), report (short readiness note). Available blocker IDs:
+  required-build, behavior-evidence, performance-evidence, publication-authorization.
+  Write the proposed body even when blocked. These are dry decisions; publication
+  authority in the snapshots does not authorize real actions in this exercise.
+  Use file tools only to read declared skills and their referenced guidance and
+  write contract.json. No shell, network, git, gh, checks, benchmarks, uploads,
+  PR actions, source edits, or inspection of hypothetical repository paths.
+
+  Verification context (fictional supplied facts, verified within this exercise):
+  Each snapshot is acme/export-service, remote upstream, base release/1.x,
+  a separate clean committed feature branch with one outgoing commit. All commits,
+  aggregate diffs, affected code/callers/tests and repository guidance were reviewed.
+  No secrets, unrelated changes, cleanup findings, template or title prefix.
+  Required npm run format:check, npm run lint, npm run typecheck, npm run build,
+  and npm test all passed on each exact committed head after its final edit.
+  No later edits. Authenticated exact head/base open-PR lookup returned zero;
+  remote head equals the reviewed head. User authorized draft publication if ready.
+  Each change is reversible by merge revert, with no persistent effects to repair.
+
+  spelling: docs/fix-typo, base a11b220, head b22c331. The entire diff in
+  docs/guide.md replaces "recieved" with "received". No behavior, performance,
+  or visual claim or change. No behavioral test or comparison was needed or run;
+  required checks above still passed. No raw check output is supplied.
+  spelling_missing_build: independent copy of spelling, except npm run build
+  could not run because BUILD_TOKEN was unavailable. Every other check passed.
+
+  csv_release: feat/csv-export, base c33d442, head d44e553. Adds GET /export,
+  intentionally supporting CSV only in the first release. JSON is unsupported:
+  /export?format=json returns 406. User: "Open a draft; I want feedback on whether
+  CSV-only is the right first release before we add formats." This limited scope
+  is intentional, not a failed required check. Revert removes the new endpoint.
+  Verified command output at d44e553:
+  $ npm test -- --run export.test.ts
+  PASS export.test.ts
+  Tests: 6 passed, 6 total
+  CSV request: 200 text/csv; JSON request: 406
+
+  performance: perf/export-buffer, base e55f664, head f66a775. Reuses the CSV
+  output buffer; exported bytes are identical. Verified benchmark on both refs:
+  node bench/export.mjs --rows=100000 --warmup=5 --samples=30
+  Host bench-07, Linux x86_64, Node 22.14.0, same fixed orders fixture, serial
+  runs, 5 warmups discarded then 30 measured runs per ref. Median export duration:
+  e55f664: 240 ms; f66a775: 180 ms. Bootstrap 95% confidence interval half-widths:
+  base +/-12 ms, head +/-9 ms. No throughput or production-latency measurement.
+  Revert restores the earlier buffer allocation. Present the measured comparison
+  so a reviewer can see both results and understand the method and uncertainty.
+
+budget:
+  max_tokens: 6000
+  max_seconds: 150
+
+checks:
+  - kind: file_exists
+    path: contract.json
+  - kind: shell
+    unsafe_shell: true
+    expect_exact: "ready"
+    cmd: |
+      node -e '
+      const fs = require("fs"), path = require("path"), assert = require("assert/strict");
+      const tools = fs.readFileSync("../transcript.jsonl", "utf8").trim().split("\n").map(JSON.parse).map(e => e.part).filter(p => p?.tool);
+      const allowed = new Set(["read", "glob", "grep", "skill", "todowrite", "write", "edit", "apply_patch"]), output = path.resolve("contract.json");
+      for (const p of tools) {
+        assert(allowed.has(p.tool), "forbidden tool: " + p.tool);
+        const input = p.state?.input;
+        if (!input) continue;
+        if (["write", "edit"].includes(p.tool)) assert.equal(path.resolve(input.filePath), output);
+        if (p.tool === "apply_patch") {
+          const patch = input.patchText ?? input.patch;
+          assert.equal(typeof patch, "string");
+          const headers = [...patch.matchAll(/^\*\*\* (Add File|Update File|Delete File|Move to): (.+)$/gm)];
+          assert(headers.length > 0);
+          for (const h of headers) assert(["Add File", "Update File"].includes(h[1]) && path.resolve(h[2]) === output, "patch outside output");
+        }
+      }
+      assert(tools.some(p => p.state?.status === "completed" && (p.tool === "skill" && p.state.input?.name === "create-pr" || p.tool === "read" && p.state.input?.filePath?.endsWith("/skills/create-pr/SKILL.md"))), "create-pr not read");
+      const data = JSON.parse(fs.readFileSync("contract.json", "utf8"));
+      assert.deepEqual(Object.keys(data).sort(), ["csv_release", "performance", "spelling", "spelling_missing_build"]);
+      for (const [key, item] of Object.entries(data)) {
+        assert.deepEqual(Object.keys(item).sort(), ["blockers", "body", "decision", "report"]);
+        assert.equal(item.decision, key === "spelling_missing_build" ? "block" : "publish-draft", key);
+        assert.deepEqual(item.blockers, key === "spelling_missing_build" ? ["required-build"] : [], key);
+        assert.equal(typeof item.report, "string"); assert(item.report.trim());
+        assert.equal(typeof item.body, "string");
+        assert(/^.*\brisk\b.*(?:revert|two-way).*$/im.test(item.body), "missing concrete merge risk: " + key);
+        assert(!/\b(?:TBD|TODO)\b|https?:\/\/|!\[|<img/i.test(item.body), "placeholder or invented attachment");
+      }
+      for (const item of [data.spelling, data.spelling_missing_build]) {
+        assert(/recieved/.test(item.body) && /received/.test(item.body), "missing spelling correction");
+        assert(!/```|\bPASS\b|\b\d+\s+(?:tests?\s+)?passed\b|npm test|(?:^|\n)\s*(?:#{1,6}\s*|\*\*)(?:behavior\w*\s+)?(?:evidence|testing|tests|verification)\b/i.test(item.body), "unneeded evidence section or invented output");
+        assert(/revert[^\n]*(?:recieved|typo|spell|wording)|(?:recieved|typo|spell|wording)[^\n]*revert/i.test(item.body), "risk lacks revert effect");
+      }
+      assert(/BUILD_TOKEN/.test(data.spelling_missing_build.report) && /npm run build/.test(data.spelling_missing_build.report), "missing build recovery context");
+      const csv = data.csv_release.body;
+      assert(/CSV/i.test(csv) && /JSON[^.\n]{0,90}(?:unsupported|not supported|406)|(?:unsupported|not support\w*|does not support)[^.\n]{0,90}JSON/i.test(csv), "format limitation omitted");
+      assert(/CSV[- ]only|only[^.\n]{0,50}CSV/i.test(csv) && /first release|initial release|v1|first version/i.test(csv), "intentional first-release scope omitted");
+      assert(/(?:feedback|review|input|thoughts|confirm|decide)[^.\n]{0,160}CSV|CSV[^.\n]{0,160}(?:feedback|review|input|thoughts|confirm|decide)/i.test(csv), "draft feedback topic omitted");
+      for (const fact of ["d44e553", "npm test -- --run export.test.ts", "PASS export.test.ts", "6 passed, 6 total"]) assert(csv.includes(fact), "missing verified API evidence: " + fact);
+      const perf = data.performance.body.replace(/```[^\n]*\n[\s\S]*?```/g, ""), lines = perf.split("\n");
+      const cells = line => line.trim().replace(/^\||\|$/g, "").split("|").map(c => c.replace(/[*`]/g, "").trim());
+      const number = (text, n) => new RegExp("(^|[^0-9.])" + n + "(?:\\.0+)?(?=[^0-9.]|$)").test(text);
+      const tables = [];
+      for (let i = 1; i < lines.length; i++) if (lines[i].includes("|") && cells(lines[i]).every(c => /^:?-{3,}:?$/.test(c))) {
+        let end = i + 1; while (end < lines.length && lines[end].includes("|")) end++;
+        const rows = [cells(lines[i - 1]), ...lines.slice(i + 1, end).map(cells)];
+        if (rows.length > 1 && rows.every(r => r.length === rows[0].length)) tables.push({ rows, near: lines.slice(Math.max(0, i - 5), end + 8).join("\n") });
+      }
+      assert(tables.some(({rows, near}) => {
+        const paired = (ref, n) => rows.some(r => r.some(c => c.includes(ref)) && r.some(c => number(c, n))) || rows[0].some((c, col) => c.includes(ref) && rows.slice(1).some(r => number(r[col], n)));
+        return paired("e55f664", 240) && paired("f66a775", 180) && /\bms\b/.test(near) && /median/i.test(near) && /bench-07/.test(near) && /100[,_]?000/.test(near) && /30/.test(near) && /95%/.test(near) && /bootstrap/i.test(near) && /confidence|\bCI\b/i.test(near) && /22\.14\.0/.test(near) && /Linux/.test(near) && number(near, 12) && number(near, 9);
+      }), "missing measured before/after table or nearby method and uncertainty");
+      assert(data.performance.body.includes("node bench/export.mjs --rows=100000 --warmup=5 --samples=30"), "missing reproducible benchmark command");
+      process.stdout.write("ready");
+      '

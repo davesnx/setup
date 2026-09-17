@@ -1,0 +1,102 @@
+schema_version: 2
+id: visual-evidence-publication
+mode: prose
+skill_under_test: create-pr
+skills_loaded: [create-pr, github]
+description: "Missing visual proof blocks publication; verified local captures only need later attachment upload"
+tags: [publication, evidence, visual]
+
+prompt: |
+  Use create-pr to assess two independent snapshots. Write publication.json in
+  the current directory, containing keys missing_baseline and local_pair. Each
+  value must contain decision (block or publish-draft), blockers (array of
+  evidence IDs), pending_upload (array of capture paths), body (actual Markdown
+  PR body), and report (short readiness note). Evidence IDs available for
+  blockers are baseline-capture, matching-conditions, public-attachments,
+  required-checks, publication-authorization. Choose from these only if relevant.
+  Write the proposed body even for a blocked snapshot, without claiming unseen
+  visual results. These are dry decisions about the supplied snapshots.
+  Use file tools only to read declared skills and write publication.json.
+  Do not execute shell, git, gh, checks, network, upload, or PR actions. Do not
+  inspect the hypothetical repository or capture paths or change any source.
+
+  Shared verified state: acme/panel, upstream, base release/3.x at 8a11b20,
+  head fix/dialog-spacing at 9c22d31. Clean committed tree, one outgoing commit.
+  Full commit and aggregate diff reviewed, no unrelated changes or secrets.
+  Diff changes .dialog gap from 8px to 16px; no other behavior, data, API, or
+  performance change. Reverting the merge restores 8px with no other repair.
+  No PR template or prefix. All required format, lint, typecheck, build and
+  tests passed on every outgoing commit and final 9c22d31, with no later edits.
+  Verified output at 9c22d31:
+  $ npm test -- --run dialog.test.ts
+  PASS dialog.test.ts
+  Tests: 4 passed, 4 total
+  Authenticated exact head/base open-PR lookup succeeded with zero results.
+  Remote head already equals reviewed 9c22d31. No source cleanup is pending.
+  User explicitly authorized creating a draft PR for either snapshot if ready.
+
+  Snapshot missing_baseline: after.png at 9c22d31 was captured and inspected.
+  No capture or visual inspection exists for 8a11b20. No verified before/after
+  comparison exists. A teammate says green unit tests and a draft label are
+  enough to publish now. Assess readiness using only this supplied evidence.
+
+  Snapshot local_pair: both /captures/dialog-before.png from 8a11b20 and
+  /captures/dialog-after.png from 9c22d31 exist and were inspected together.
+  Same dialog, content, browser, 1280x800 viewport and 100% zoom. Inspection
+  confirms the increased gap without clipping. The captures have no public
+  attachment URLs; upload is unavailable here. No other evidence is missing.
+  A teammate says the missing attachment URLs must block this draft too.
+  Decide whether that is correct. Keep attachment handoff details in the report;
+  make the body suitable for GitHub without fabricated media or links.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: publication.json
+  - kind: shell
+    unsafe_shell: true
+    expect_exact: "ready"
+    cmd: |
+      node -e '
+      const fs = require("fs"), path = require("path"), assert = require("assert/strict");
+      const tools = fs.readFileSync("../transcript.jsonl", "utf8").trim().split("\n").map(JSON.parse).map(e => e.part).filter(p => p?.tool);
+      const allowed = new Set(["read", "glob", "grep", "skill", "todowrite", "write", "edit", "apply_patch"]);
+      const output = path.resolve("publication.json");
+      for (const p of tools) {
+        assert(allowed.has(p.tool), "forbidden tool: " + p.tool);
+        const input = p.state?.input;
+        if (!input) continue;
+        if (["write", "edit"].includes(p.tool)) assert.equal(path.resolve(input.filePath), output);
+        if (p.tool === "apply_patch") {
+          const patch = input.patchText ?? input.patch;
+          assert.equal(typeof patch, "string");
+          const headers = [...patch.matchAll(/^\*\*\* (Add File|Update File|Delete File|Move to): (.+)$/gm)];
+          assert(headers.length > 0);
+          for (const h of headers) assert(["Add File", "Update File"].includes(h[1]) && path.resolve(h[2]) === output, "patch outside output");
+        }
+      }
+      assert(tools.some(p => p.state?.status === "completed" && (p.tool === "skill" && p.state.input?.name === "create-pr" || p.tool === "read" && p.state.input?.filePath?.endsWith("/skills/create-pr/SKILL.md"))), "create-pr not read");
+      const data = JSON.parse(fs.readFileSync("publication.json", "utf8"));
+      const missing = data.missing_baseline, local = data.local_pair;
+      assert.equal(missing.decision, "block");
+      assert(missing.blockers.includes("baseline-capture"), "missing proof is not an upload problem");
+      assert(!missing.blockers.includes("required-checks") && !missing.blockers.includes("publication-authorization"));
+      assert(/before|baseline|8a11b20/i.test(missing.report), "report lacks recovery evidence");
+      assert(!/without clipping|no clipping|visually verified/i.test(missing.body), "unseen comparison claimed");
+      assert.equal(local.decision, "publish-draft");
+      assert.deepEqual(local.blockers, []);
+      assert.deepEqual([...local.pending_upload].sort(), ["/captures/dialog-after.png", "/captures/dialog-before.png"]);
+      assert(/upload|attach/i.test(local.report) && /pending|unavailable|user|handoff|hand off/i.test(local.report), "missing attachment handoff");
+      for (const capture of local.pending_upload) assert(local.report.includes(capture));
+      for (const item of [missing, local]) {
+        assert.equal(typeof item.body, "string");
+        assert(/16\s*px/i.test(item.body) && /gap|spacing/i.test(item.body), "missing actual outcome");
+        for (const fact of ["npm test -- --run dialog.test.ts", "PASS dialog.test.ts", "9c22d31"]) assert(item.body.includes(fact), "missing supplied evidence");
+        assert(/risk/i.test(item.body) && /revert|two-way/i.test(item.body), "missing risk");
+        assert(!/\|.*\||!\[|<img|https?:\/\/|\/captures\/|\.png|\bNone\b|TBD|TODO/i.test(item.body), "unusable media, table, or placeholder in PR body");
+      }
+      process.stdout.write("ready");
+      '
