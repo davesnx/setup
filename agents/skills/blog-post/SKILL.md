@@ -35,7 +35,7 @@ The author can skip or compress a stage. If they prefer freeform collaboration, 
 
 When the author asks to collect notes or think aloud without drafting, accumulate their material and corrections across messages. Reply briefly with useful optional questions or angles; do not repeat the full notes, create an outline, or edit the draft. Leave this mode when they ask to draft, arrange, or revise material. A one-off drafting request does not make later notes an edit request; resume collection unless they ask for ongoing updates. This mode is optional, not a prerequisite for drafting.
 
-Keep supplied material, verified research, suggested ideas, and open questions distinct in both collection and drafting. Choosing an angle or approving an outline selects a direction, not evidence for its proposed events, motives, numbers, or causes. Confirm those details with the author or verify them from sources before treating them as facts.
+Keep supplied material, verified research, suggested ideas, and open questions distinct in both collection and drafting. Choosing an angle or approving an outline selects a direction, not evidence for its proposed events, motives, numbers, or causes. Confirm those details with the author or verify them from sources before treating them as facts. Do not label a thread promising, important, surprising, central, or revealing to steer the author. Keep model inference visibly separate from confirmed author intent; never fold a tentative interpretation into the notes as if the author said it.
 
 ### Step 1: Receive Input
 
@@ -83,8 +83,19 @@ Ensure the post is built on solid ground.
 - What's your core argument or thesis?
 - What evidence or experience supports this? (data, anecdotes, case studies, research)
 - Are there parts you're unsure about or where you're speculating?
-- What's the strongest counterargument to your point?
 - Are there claims that need sources or caveats?
+- Which of these objections will readers raise, and how does the post answer them?
+
+| Objection | What the reader thinks |
+|---|---|
+| Factual | "That's not true" |
+| Experiential | "That doesn't match my experience" |
+| Scope | "This doesn't apply to my situation" |
+| Mechanism | "I don't see how that follows" |
+| Tradeoff | "What about the downsides?" |
+| Alternative | "There's a better way" |
+| Moral | "That feels wrong" |
+| Practical | "That's unrealistic" |
 
 #### Area 4: Structure and Flow
 
@@ -138,7 +149,7 @@ Start with the section that has the most uncertainty or carries the central argu
 For collaborative new posts or major rewrites, use this loop for each section. For direct work, draft from supported material, ask only blocking questions, and skip brainstorming and curation rounds unless requested.
 
 1. **Clarify:** Ask 3-7 specific questions about the section's purpose, required claims, evidence, examples, and boundaries.
-2. **Brainstorm:** Offer 5-15 possible points, examples, objections, or arrangements. Label proposals that still need evidence or author confirmation. Recover useful context that may have been forgotten and include angles the author has not considered.
+2. **Brainstorm:** Offer 5-15 possible points, examples, objections, or arrangements. Label proposals that still need evidence or author confirmation. Recover useful context that may have been forgotten and include angles the author has not considered. Offer only points that are new (the new made familiar, or the familiar made new), true (accurate, honest to the author's experience, logically sound), and useful (they generate, reframe, clarify, or give an action, in that order of value).
 3. **Curate:** Ask what to keep, remove, or combine. Accept numbered choices or freeform feedback. Brief reasons help reveal the author's priorities for later sections.
 4. **Check gaps:** Ask whether the curated material misses anything the section must accomplish.
 5. **Draft:** Replace only that section's placeholder or existing text. Do not reprint or rewrite unrelated sections.
@@ -157,6 +168,7 @@ Once most sections are complete, read the entire post rather than judging sectio
 - flow and consistency across sections
 - duplicated arguments, examples, summaries, or transitions
 - contradictions and unstated assumptions
+- intro drift: pitch the finished body in one sentence, as if stopped in a hallway, and compare it with the promise the intro states. If they differ, one is wrong; usually the intro drifted and must catch up to the body
 - claims that need verification, sourcing, or qualification
 - changes in voice or technical depth
 - generic filler and AI-writing patterns
@@ -169,7 +181,7 @@ Make surgical edits and then ask what still feels wrong, missing, factually unce
 Test whether the post works without the conversation that produced it.
 
 1. Predict 5-10 realistic questions a target reader would ask after finding or reading the post.
-2. Give a fresh sub-agent only the post, the audience description, and one or more questions. Do not give it interview notes or conversation history.
+2. Give a fresh sub-agent only the post, the audience description, and one or more questions. Do not give it interview notes or conversation history. Tell it to read as a stranger to the author and their site: no goodwill, no shared context, no in-group shorthand.
 3. Ask it to answer from the post and report ambiguity, assumed knowledge, unsupported conclusions, contradictions, and unanswered questions.
 4. Summarize what the fresh reader understood, misunderstood, or could not find.
 5. Fix confirmed gaps section by section, then retest the affected questions.
@@ -193,6 +205,10 @@ Does the opening earn the reader's attention?
 - Start with a relatable problem or frustration
 - Begin with a story or moment
 - Ask a question the reader genuinely wants answered
+- Name the date or moment that changed everything
+- Show a credible expert getting it wrong
+- State two true things that should not both be true
+- Admit a struggle or weakness before the argument starts
 
 **Weak hooks:**
 - Generic statements ("In today's world...")
@@ -218,7 +234,8 @@ Does the post flow logically and keep the reader moving forward?
 **Check for:**
 - Does each section naturally lead to the next?
 - Are there sections that could be cut without loss?
-- Is the most important content buried in the middle?
+- What do the title and opening declare as the point, and what point does the whole post spend its weight on? They must match.
+- When they differ, try the smallest structural move first: promote a sentence, move a paragraph, cut warm-up, or tighten the bridge from hook to point. Rewrite the opening only when rearrangement cannot fix it.
 - Does the post front-load value or make the reader wait too long?
 - Are transitions smooth or jarring?
 
@@ -252,8 +269,19 @@ Is everything factually accurate and logically sound?
 - Factual claims that need verification
 - Logical leaps or unstated assumptions
 - Overgeneralizations ("everyone knows...", "always...", "never...")
-- Statistics or data used without context or source
 - Technical accuracy (if applicable)
+
+Judge each claim by its support:
+
+| Support | Verdict |
+|---|---|
+| Personal experience the author lived through | Strong, let it stand |
+| A linked study, dataset, or named source | Strong, let it stand |
+| An expert quote or named practitioner | Strong, let it stand |
+| A specific named example (company, person, moment) | Strong, let it stand |
+| "Studies show", "experts agree", "many people say" without specifics | Weak, flag |
+| Only the author's authority, on a point where the author is not established | Weak, flag |
+| Nothing; the assertion floats free | Weak, flag |
 
 ### 7. Ending
 
@@ -321,6 +349,7 @@ When writing or rewriting, follow these rules:
 - Bold key phrases in long paragraphs
 - Use bullet points or numbered lists for sequences of items
 - Keep paragraphs short (3-5 sentences max)
+- Check it worked: read only the title, the first two sentences, the subheadings, the first sentence of each section, and the ending. A skimmer should feel the problem, want the answer, and know what they gain
 
 ### Show, Don't Tell
 
@@ -461,3 +490,5 @@ Identify where the reader would have questions. Add examples, anticipate objecti
 The staged co-authoring and fresh-reader testing workflow adapts Anthropic's `doc-coauthoring` skill. Prose cleanup delegates to the local `unslop` skill rather than embedding a subset of it.
 
 Collection controls, separation of suggestions from evidence, and partial-draft safeguards draw on ideas from [kdy1's `write-blog-post`](https://github.com/kdy1/kdy1-scripts/blob/f9079364d84a9d3e1eaa1c8b8c9dbc60ee4e46de/skills/write-blog-post/SKILL.md), expressed here for this research-capable workflow.
+
+The evidence-strength table, the declared-versus-delivered structure check, the objection types, the pitch and skim tests, the brainstorm filter, and the interview rules against steering draw on [everyinc's `compound-writing`](https://github.com/everyinc/compound-writing) (MIT, declared in its README).
