@@ -89,6 +89,9 @@ source "$DOTFILES_PATH/terminal/zsh/themes/prompt_davesnx_setup"
 setopt autopushd # Automatically adds directories to the directory stack when you use cd
 unsetopt cdablevars # Disables the ability to use variable names as directory shortcuts with cd
 setopt promptsubst # allow substitution in PS1
+# The zim environment module sets noclobber. Claude Code runs commands through a
+# snapshot of this shell, and its `>` redirects to existing files must succeed.
+[[ -n "$CLAUDECODE" ]] && setopt clobber
 
 # GPG
 export GPG_TTY=/dev/tty

@@ -170,7 +170,8 @@ alias top="htop"
 
 # https://hasseg.org/trash/
 alias _rm="command rm"
-alias rm="trash"
+# Claude Code's sandbox denies trash, so its shells keep the real rm.
+[[ -n "$CLAUDECODE" ]] || alias rm="trash"
 
 # Generate a uuid
 alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
