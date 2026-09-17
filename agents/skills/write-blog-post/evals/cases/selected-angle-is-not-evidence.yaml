@@ -1,8 +1,8 @@
 schema_version: 2
 id: selected-angle-is-not-evidence
 mode: prose
-skill_under_test: blog-post
-skills_loaded: [blog-post]
+skill_under_test: write-blog-post
+skills_loaded: [write-blog-post]
 description: "An approved angle supplies neither facts nor an ending; write the supported part"
 tags: [prose, evidence, partial-draft]
 

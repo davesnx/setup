@@ -1,8 +1,8 @@
 schema_version: 2
 id: direct-complete-review
 mode: prose
-skill_under_test: blog-post
-skills_loaded: [blog-post]
+skill_under_test: write-blog-post
+skills_loaded: [write-blog-post]
 description: Review a complete post directly without an interview or source edits
 tags: [prose, review, evidence]
 

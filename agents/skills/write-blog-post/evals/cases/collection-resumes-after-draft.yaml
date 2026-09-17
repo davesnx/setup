@@ -1,8 +1,8 @@
 schema_version: 2
 id: collection-resumes-after-draft
 mode: prose
-skill_under_test: blog-post
-skills_loaded: [blog-post]
+skill_under_test: write-blog-post
+skills_loaded: [write-blog-post]
 description: "Resume note collection without editing the draft or promoting an observation to a causal result"
 tags: [prose, collection]
 

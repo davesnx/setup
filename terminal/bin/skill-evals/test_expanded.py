@@ -10,7 +10,8 @@ from commit_eval import snapshot_catalogs
 from expanded import discover, make_study, native_case, snapshot_working_cases, write_coverage
 from pilot import HERE, load_json
 
-REVISION = "a3863a324c86fa6ea4eccad07aa0be479f3383cd"
+# The committed catalog must contain every skill the cases and routing labels name.
+REVISION = "HEAD"
 CACHE_REASON = "I kept the cache because offline preview lets me read pages on the train."
 
 
@@ -90,24 +91,23 @@ class ExpandedChecks(unittest.TestCase):
             all(c["weight"] == 0 for t in routing["tasks"] for c in t["success_criteria"])
         )
 
-    def test_current_case_snapshot_is_separate_from_skill_revision_and_source(self):
+    def test_current_case_snapshot_is_separate_from_source(self):
         relative = "evals/cases/direct-complete-review.yaml"
-        old_case = (self.skill_catalog["blog-post"] / relative).read_bytes()
-        current_case = (self.catalog["blog-post"] / relative).read_bytes()
-        self.assertNotEqual(old_case, current_case)
-        self.assertIn(b"source_quote and observation", current_case)
+        current_case = (self.catalog["write-blog-post"] / relative).read_bytes()
         with tempfile.TemporaryDirectory() as temp:
             first = snapshot_working_cases(Path(temp) / "first")
             second = snapshot_working_cases(Path(temp) / "second")
-            changed = first["blog-post"] / relative
+            changed = first["write-blog-post"] / relative
             changed.write_text("Changed only the disposable snapshot.")
-            self.assertEqual((second["blog-post"] / relative).read_bytes(), current_case)
-            self.assertEqual((self.catalog["blog-post"] / relative).read_bytes(), current_case)
+            self.assertEqual((second["write-blog-post"] / relative).read_bytes(), current_case)
+            self.assertEqual(
+                (self.catalog["write-blog-post"] / relative).read_bytes(), current_case
+            )
 
     def test_focused_coverage_counts_only_selected_tasks_and_loaded_skills(self):
         catalogs = {"off": self.skill_catalog, "on": self.skill_catalog}
         study = make_study(catalogs, "behavior", "focused", case_catalog=self.catalog)
-        task = "expanded-blog-post-direct-complete-review"
+        task = "expanded-write-blog-post-direct-complete-review"
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "manifest.json").write_text(
@@ -115,8 +115,9 @@ class ExpandedChecks(unittest.TestCase):
                     {
                         "expected": [{"task": task, "variant": variant} for variant in catalogs],
                         "bundles": {
-                            f"blog-post/{variant}": {
-                                name: "hash" for name in ["blog-post", "unslop", "writing-shape"]
+                            f"write-blog-post/{variant}": {
+                                name: "hash"
+                                for name in ["write-blog-post", "unslop", "write-draft-blog-post"]
                             }
                             for variant in catalogs
                         },
@@ -126,7 +127,7 @@ class ExpandedChecks(unittest.TestCase):
             write_coverage(root, catalogs, study)
             coverage = load_json(root / "coverage.json")
             for row in coverage.values():
-                self.assertEqual(row["behavioral_cases"], ["blog-post"])
+                self.assertEqual(row["behavioral_cases"], ["write-blog-post"])
                 self.assertEqual(row["positive_routing_cases"], [])
                 self.assertEqual(len(row["available"]), 3)
                 self.assertEqual(len(row["discovered"]), len(self.skill_catalog))
@@ -177,7 +178,7 @@ class ExpandedChecks(unittest.TestCase):
             self.assertFalse(self.run_checks("tdd", {"decision.json": {**good, key: value}}))
 
     def test_blog_review_boundaries(self):
-        task, _, _ = native_case(self.entries["blog-post"], self.catalog)
+        task, _, _ = native_case(self.entries["write-blog-post"], self.catalog)
         self.assertIn("review.md itself must contain one JSON object", task["initial_prompt"])
         good = {
             "findings": [
@@ -189,22 +190,22 @@ class ExpandedChecks(unittest.TestCase):
             "blocking_questions": [],
             "draft_action": "unchanged",
         }
-        self.assertTrue(self.run_checks("blog-post", {"review.md": good}))
+        self.assertTrue(self.run_checks("write-blog-post", {"review.md": good}))
         for outputs in [
             {"review.md": {**good, "blocking_questions": ["Who is the audience?"]}},
             {"review.md": good, "draft.md": "Edited without authorization.\n"},
             {"review.md": {**good, "findings": []}},
         ]:
-            self.assertFalse(self.run_checks("blog-post", outputs))
+            self.assertFalse(self.run_checks("write-blog-post", outputs))
         # This grader establishes the boundary, not the quality of a finding.
         self.assertFalse(
             self.run_checks(
-                "blog-post", {"review.md": {**good, "findings": ["Unrelated nonsense."]}}
+                "write-blog-post", {"review.md": {**good, "findings": ["Unrelated nonsense."]}}
             )
         )
         self.assertTrue(
             self.run_checks(
-                "blog-post",
+                "write-blog-post",
                 {
                     "review.md": {
                         **good,

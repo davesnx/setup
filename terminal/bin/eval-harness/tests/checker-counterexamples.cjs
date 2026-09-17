@@ -135,7 +135,7 @@ try {
     'sloppy.mjs': 'throw new Error("import failed"); export function firstPositive() {}',
   }, false, 1);
 
-  const collection = load('agents/skills/blog-post/evals/cases/collection-resumes-after-draft.yaml');
+  const collection = load('agents/skills/write-blog-post/evals/cases/collection-resumes-after-draft.yaml');
   const note = {
     notes: [{ source: 'latest-user', quote: "Friday's build took 28 seconds." }],
     cache_effect: 'unknown', draft_action: 'unchanged',

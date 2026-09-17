@@ -64,7 +64,7 @@ also run their documented checks:
 - [Claude Code hooks](terminal/claude/hooks/README.md#checks).
 - [Eval harness](terminal/bin/eval-harness/README.md#test).
 - [Skill eval runner](terminal/bin/skill-evals/README.md#development-checks).
-- [Writing eval contracts](agents/skills/blog-post/evals/README.md).
+- [Writing eval contracts](agents/skills/write-blog-post/evals/README.md).
 
 These module checks are not part of the root command or its CI jobs.
 

@@ -1,5 +1,5 @@
 interface:
-  display_name: "Writing Shape"
+  display_name: "Write Draft Blog Post"
   short_description: "Shape raw material into an article"
 policy:
   allow_implicit_invocation: false

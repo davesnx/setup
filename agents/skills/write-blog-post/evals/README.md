@@ -1,19 +1,19 @@
 # Check the writing eval contracts
 
-For maintainers checking the blog-post and post-draft evaluation cases.
+For maintainers checking the write-blog-post and post-draft evaluation cases.
 
 Run the shared regression checks from the repository root after installing the
 existing eval-harness dependencies:
 
 ```sh
-node --test agents/skills/blog-post/evals/regression.test.cjs
+node --test agents/skills/write-blog-post/evals/regression.test.cjs
 ```
 
 If those dependencies are absent and Ruby/Psych is installed, use the explicit
 offline parser option:
 
 ```sh
-EVAL_YAML_PARSER=ruby node --test agents/skills/blog-post/evals/regression.test.cjs
+EVAL_YAML_PARSER=ruby node --test agents/skills/write-blog-post/evals/regression.test.cjs
 ```
 
 The tests execute the shell graders from the actual YAML against disposable
@@ -60,6 +60,6 @@ both failed against isolated pre-fix case definitions. All 12 shared tests then
 passed against the corrected cases using the Ruby parser option.
 
 Four focused OpenCode attempts also passed the revised automatic contracts:
-blog-post and post-draft each ran once against both skill revisions from the
+write-blog-post and post-draft each ran once against both skill revisions from the
 a3863a3 study. The new runner kept their assessment at `needs_review`.
 These runs establish contract execution, not general writing quality.

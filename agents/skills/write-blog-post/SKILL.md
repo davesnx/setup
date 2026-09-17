@@ -1,5 +1,5 @@
 ---
-name: blog-post
+name: write-blog-post
 description: "Collect notes, draft, edit, or review blog posts and articles. Supports direct work and collaborative interviews."
 ---
 
@@ -46,7 +46,7 @@ The user will provide one of the following:
 | **A title or topic only** | Use supplied context; ask about blocking gaps. Use the Full Interview if the author wants to develop the idea together. |
 | **An outline or rough draft** | Draft or edit as requested. Use a Focused Interview for opt-in collaboration. |
 | **A complete blog post** | Deliver the requested review or edit directly; ask only blocking questions. |
-| **A request to arrange a fixed pile of raw material without new claims** | Use the `writing-shape` skill instead |
+| **A request to arrange a fixed pile of raw material without new claims** | Use the `write-draft-blog-post` skill instead |
 
 Select the path from the request, not just the input's completeness. Do not waste a turn announcing routine process.
 
