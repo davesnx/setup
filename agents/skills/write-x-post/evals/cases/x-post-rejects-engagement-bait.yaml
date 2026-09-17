@@ -1,8 +1,8 @@
 schema_version: 2
 id: x-post-rejects-engagement-bait
 mode: deterministic
-skill_under_test: x-writing
-skills_loaded: [x-writing]
+skill_under_test: write-x-post
+skills_loaded: [write-x-post]
 description: "X-post mode must replace engagement bait with specific audience value"
 tags: [x-post, anti-bait, current-algorithm]
 

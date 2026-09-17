@@ -1,8 +1,8 @@
 schema_version: 2
-id: x-writing-routes-x-writing-only
+id: write-x-post-routes-write-x-post-only
 mode: deterministic
-skill_under_test: x-writing
-skills_loaded: [technical-docs, x-writing]
+skill_under_test: write-x-post
+skills_loaded: [technical-docs, write-x-post]
 description: "A technical release announcement for X routes to X writing only"
 tags: [routing, x-post, near-miss]
 
@@ -18,6 +18,6 @@ budget:
 
 checks:
   - kind: output_contains
-    value: '"name":"x-writing"'
+    value: '"name":"write-x-post"'
   - kind: output_not_contains
     value: '"name":"technical-docs"'

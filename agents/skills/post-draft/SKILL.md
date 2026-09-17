@@ -96,7 +96,7 @@ pointing to the first outstanding question or evidence needed.
 Set `state: full-draft` only when material gaps are resolved, the post meets
 its reader promise, and no unfinished text or unanswered `[Q:]` remains.
 Then set `next: unslop with its references/author-patterns.md, then the
-blog-post reader test`. A supported uncertain or mixed result can be complete;
+write-blog-post reader test`. A supported uncertain or mixed result can be complete;
 do not manufacture a conclusion to close the draft.
 
 ## Rules

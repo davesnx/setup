@@ -48,7 +48,7 @@ function check(t, scenario, artifacts) {
 }
 
 test('skill and scenario metadata stays valid and concise', () => {
-  for (const name of ['blog-post', 'post-draft', 'impeccable']) {
+  for (const name of ['write-blog-post', 'post-draft', 'impeccable']) {
     const directory = path.join(root, 'agents/skills', name);
     const body = fs.readFileSync(path.join(directory, 'SKILL.md'), 'utf8');
     const frontmatter = YAML.parse(body.match(/^---\n([\s\S]*?)\n---/)[1]);
@@ -73,7 +73,7 @@ test('skill and scenario metadata stays valid and concise', () => {
 
 test('workflow text allows direct work and keeps approval and fact safeguards', () => {
   const read = relative => fs.readFileSync(path.join(root, 'agents/skills', relative), 'utf8');
-  const blog = read('blog-post/SKILL.md');
+  const blog = read('write-blog-post/SKILL.md');
   assert.match(blog, /A complete-post review does not require an interview/);
   assert.match(blog, /When the author opts into collaborative interviews/);
   assert.match(blog, /Keep every fact, name, number, date, quote, citation, qualification, and conclusion/);
@@ -89,7 +89,7 @@ test('workflow text allows direct work and keeps approval and fact safeguards', 
 });
 
 test('direct complete review checker accepts findings and rejects interviews or edits', t => {
-  const scenario = load('blog-post', 'direct-complete-review');
+  const scenario = load('write-blog-post', 'direct-complete-review');
   const review = { findings: [{ source_quote: 'My first build took 40 seconds.', observation: 'The post does not explain why the first duration matters.' }], blocking_questions: [], draft_action: 'unchanged' };
   assert.equal(check(t, scenario, { 'review.md': JSON.stringify(review) }), true);
   assert.equal(check(t, scenario, { 'review.md': JSON.stringify({ ...review, blocking_questions: ['Who is the audience?'] }) }), false);
@@ -115,13 +115,13 @@ test('direct complete review checker accepts findings and rejects interviews or 
 });
 
 test('direct review rejects an irrelevant uncited finding', t => {
-  assert.equal(check(t, load('blog-post', 'direct-complete-review'), {
+  assert.equal(check(t, load('write-blog-post', 'direct-complete-review'), {
     'review.md': JSON.stringify({ findings: ['The recipe needs more salt.'], blocking_questions: [], draft_action: 'unchanged' }),
   }), false);
 });
 
 test('selected angle checker rejects invented results and accepts the supported part', t => {
-  const scenario = load('blog-post', 'selected-angle-is-not-evidence');
+  const scenario = load('write-blog-post', 'selected-angle-is-not-evidence');
   const draft = 'I changed the build configuration on Tuesday. I have not run the comparison yet.\n';
   const gaps = 'Partial draft. Missing evidence: comparison measurements.\n';
   assert.equal(check(t, scenario, { 'draft.md': draft, 'gaps.md': gaps }), true);

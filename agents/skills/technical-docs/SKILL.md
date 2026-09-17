@@ -10,7 +10,7 @@ metadata:
 Write developer documentation that a tired engineer understands on the first read.
 
 PR titles and bodies use `create-pr`, not a documentation mode here.
-X posts use `x-writing`. Independent research, commit messages, product UI copy,
+X posts use `write-x-post`. Independent research, commit messages, product UI copy,
 and code review findings are outside this skill's scope.
 
 ## Set the document contract

@@ -1,5 +1,5 @@
 ---
-name: x-writing
+name: write-x-post
 description: Draft, edit, or analyze X posts and threads using supplied material and analytics. Not developer documentation or independent research.
 metadata:
   algorithm-source: "https://github.com/xai-org/x-algorithm"

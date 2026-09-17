@@ -20,8 +20,8 @@
     {
       "kind": "output_not_contains",
       "passed": true,
-      "failed_check_id": "output_not_contains:\"name\":\"x-writing\"",
-      "expected": "absence of \"name\":\"x-writing\"",
+      "failed_check_id": "output_not_contains:\"name\":\"write-x-post\"",
+      "expected": "absence of \"name\":\"write-x-post\"",
       "actual": "absent",
       "diff_hint": "",
       "transcript_span": null,
