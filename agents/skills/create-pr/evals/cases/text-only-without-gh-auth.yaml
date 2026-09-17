@@ -1,0 +1,96 @@
+schema_version: 2
+id: text-only-without-gh-auth
+mode: prose
+skill_under_test: create-pr
+skills_loaded: [create-pr]
+description: "Write usable PR text from verified evidence despite unavailable GitHub authentication"
+tags: [wording, evidence, scope]
+
+prompt: |
+  Write only a proposed PR title and body for this supplied change. Save the
+  title to title.txt and the actual Markdown body to body.md. Save any drafting
+  limitations to notes.md (an empty file is fine). This is a text-only request.
+  Use create-pr and only the supplied verified facts. Local file tools may read
+  the declared skill and write those three output files in the current directory.
+  Do not run shell commands, git, gh, checks, network requests, or other tools
+  that execute actions. Do not edit source, commit, push, publish, or upload.
+
+  Verified full aggregate diff for acme/cache-service: base release/2.x at
+  5d12a90; head fix/cache-expiry at 7b30c42. One outgoing commit, clean working
+  tree and staging area. The caller still uses the same boolean return value.
+  No API change, data migration, performance claim, or visual change. Reverting
+  the merge restores the old comparison; no persistent data is changed.
+  No PR template, glossary, or title prefix. Existing title style is direct:
+  "Reject empty cache keys", "Keep cache misses out of hit counts".
+
+  Complete implementation diff in src/cache.ts:
+  - return entry.expiresAt < now;
+  + return entry.expiresAt <= now;
+  Complete test addition in test/cache.test.ts:
+  + test("expiry equal to now is stale", () => {
+  +   expect(isStale({ expiresAt: 100 }, 100)).toBe(true);
+  + });
+
+  Verified command output, run on committed 7b30c42 after the final edit:
+  $ npm test -- --run test/cache.test.ts
+  PASS test/cache.test.ts
+  Tests: 3 passed, 3 total
+  The added equality test failed on 5d12a90 (expected true, received false).
+  Repository format, lint, typecheck, build, and full test checks also passed
+  on 7b30c42. Nothing changed after these results.
+
+  The supplied gh auth status result is "not logged into any GitHub hosts".
+  Existing-PR lookup has not run. No destination write is requested. Produce
+  the text from the evidence above rather than requesting more actions.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: title.txt
+  - kind: file_exists
+    path: body.md
+  - kind: file_exists
+    path: notes.md
+  - kind: shell
+    unsafe_shell: true
+    expect_exact: "ready"
+    cmd: |
+      node -e '
+      const fs = require("fs"), path = require("path"), assert = require("assert/strict");
+      const events = fs.readFileSync("../transcript.jsonl", "utf8").trim().split("\n").map(JSON.parse);
+      const tools = events.map(e => e.part).filter(p => p?.tool);
+      const allowed = new Set(["read", "glob", "grep", "skill", "todowrite", "write", "edit", "apply_patch"]);
+      const outputs = new Set(["title.txt", "body.md", "notes.md"].map(p => path.resolve(p)));
+      for (const p of tools) {
+        assert(allowed.has(p.tool), "forbidden tool: " + p.tool);
+        const input = p.state?.input;
+        if (!input) continue;
+        if (["write", "edit"].includes(p.tool)) assert(outputs.has(path.resolve(input.filePath)), "write outside outputs");
+        if (p.tool === "apply_patch") {
+          const patch = input.patchText ?? input.patch;
+          assert.equal(typeof patch, "string");
+          const headers = [...patch.matchAll(/^\*\*\* (Add File|Update File|Delete File|Move to): (.+)$/gm)];
+          assert(headers.length > 0);
+          for (const h of headers) assert(["Add File", "Update File"].includes(h[1]) && outputs.has(path.resolve(h[2])), "patch outside outputs");
+        }
+      }
+      assert(tools.some(p => p.state?.status === "completed" && (p.tool === "skill" && p.state.input?.name === "create-pr" || p.tool === "read" && p.state.input?.filePath?.endsWith("/skills/create-pr/SKILL.md"))), "create-pr not read");
+      const title = fs.readFileSync("title.txt", "utf8").trim();
+      const body = fs.readFileSync("body.md", "utf8").trim();
+      const notes = fs.readFileSync("notes.md", "utf8");
+      assert(title.length > 10 && !title.includes("\n"), "missing actual title");
+      assert(/expir|stale|cache/i.test(title), "title lacks outcome subject");
+      assert(body.length > 80 && body.split(/\s+/).length <= 220, "body missing or too long for narrow fix");
+      assert(/equal|\bnow\b|<=|boundary/i.test(body) && /stale/i.test(body), "missing changed boundary");
+      for (const fact of ["npm test -- --run test/cache.test.ts", "7b30c42"]) assert(body.includes(fact), "missing evidence: " + fact);
+      assert(/3 passed|3 total/.test(body) && /PASS test\/cache.test.ts/.test(body), "missing supplied test output");
+      assert(/risk/i.test(body) && /revert|two-way/i.test(body), "missing reversible merge risk");
+      assert(!/\bNone\b|\bN\/A\b|TBD|TODO|placeholder|https?:\/\//i.test(body), "empty sections or invented links");
+      assert(!/gh auth|log[ -]?in|authenticat|publish|blocked|format:check|typecheck/i.test(body), "readiness gate leaked into PR body");
+      assert(!/\d+\s*%|\b(?:faster|speedup|production-tested)\b/i.test(body), "unsupported performance or production claim");
+      assert(!/cannot (?:draft|write)|blocked.*(?:title|body)|must.*(?:login|log in|authenticate).*before/i.test(notes), "authentication blocks text drafting");
+      process.stdout.write("ready");
+      '

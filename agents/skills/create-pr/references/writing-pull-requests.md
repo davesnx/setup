@@ -1,182 +1,110 @@
-# Shapes And Examples
+# Examples And Media Details
 
-These shapes apply the rules in [the main skill](../SKILL.md). They are options,
-not mandatory sections. The small examples below are illustrative, not evidence
-for a real repository. Replace their facts with inspected facts before use.
+[The main skill](../SKILL.md) owns the workflow and body rules. All examples
+below are fictional: commands, output, SHAs, and measurements illustrate the
+format and are not evidence from this repository.
 
 ## Quick Correction
 
 Title: `Treat equal expiry timestamps as stale`
 
-```markdown
-- Expire cache entries when their expiry equals the current timestamp, rather
-  than keeping them valid for another refresh cycle.
+````markdown
+Expire entries at the current timestamp so an expired value cannot survive
+another refresh cycle.
 
-**Risk**: two-way door.
+**Evidence** (`a1b2c3d`)
+```text
+$ go test ./cache -run TestExpiryBoundary -v
+--- PASS: TestExpiryBoundary/equal_timestamp_is_stale
+--- PASS: TestExpiryBoundary/future_timestamp_is_valid
+PASS
+ok example/cache 0.004s
 ```
 
-One bullet can explain both the boundary problem and the outcome. The risk line
-stays; nothing else is needed.
+**Risk**: two-way door. Revert restores the old expiry boundary; stored data is unchanged.
+````
 
-## Bounded Change
+## Bounded Change In Bullet Style
 
 Title: `Retry transient failures for idempotent storage writes`
 
 ````markdown
 - Apply the shared retry policy to idempotent storage writes after transient
-  503 responses, so timeout and backoff behavior matches other storage calls.
+  503 responses, matching the timeout and backoff of other storage calls.
 - Return permanent errors immediately; non-idempotent writes remain unchanged.
 
-**Evidence** (`a1b2c3d`)
-
+**Evidence** (`d4e5f6a`)
 ```text
 $ go test ./storage -run Retry -v
 --- PASS: TestRetry/transient_503_retried_three_times
 --- PASS: TestRetry/permanent_404_returned_at_once
 --- PASS: TestRetry/non_idempotent_write_not_retried
+PASS
+ok example/storage 0.008s
 ```
 
 **Risk**: two-way door. Revert restores single attempts; no stored state changes.
 ````
 
-The second bullet earns its place only if both constraints are true. The test
-names carry the evidence; the whole log would not add anything.
+## Focused Sketches
 
-## Sketches, Code, And Diagrams
+A call tree can show why plan loading now happens once per request:
 
-Pick the smallest view that makes the key point clear, and place it next to the
-bullet it supports. One or two sketches per body; rarely more.
-
-- Logic or an algorithm: pseudocode.
-
-  ```text
-  on(lookup)
-    if expiresAt > now
-      return entry
-    drop entry
-  ```
-
-- Runtime flow: a call tree. UI structure: a component tree with the state
-  hooks and module boundaries that matter. Responsibilities or a broad
-  refactor: a shallow file tree with one comment per entry.
-
-  ```text
-  handleRequest
-    loadPlan            # once per request; was once per query
-      parsePlan
-    runQueries
-  ```
-
-- A change to a shape whose surroundings already exist: a `diff` block of that
-  shape, so the reviewer sees only what moved.
-
-  ```diff
-   src/cache/
-   ├── expiry.ts
-  -└── store.ts
-  +├── store.ts
-  +└── clock.ts          # injectable clock for the boundary tests
-  ```
-
-- Interaction, control flow, or data flow between parts: a fenced `mermaid`
-  block. Verify nodes and edges against the code. A one-step correction needs
-  no diagram.
-- Show the whole block when most of it is new, when omitted context would hide
-  ownership or order, or when the reviewer needs a copyable target shape.
-- Show a small actual usage or internal snippet from the final change with the
-  contract needed to read it; label the language. Show old/new code only when
-  both sides exist in the diff.
-- Use candidate-SHA permalinks for detailed explanations; quote enough that the
-  link stays supplemental.
-
-## Evidence
-
-Put the proof next to the claim it supports, and name the SHA it came from.
-
-- Behavior: the command and the relevant output lines, not the whole log.
-- Diagnostics: the source trigger paired with the observed output. User PR #70
-  in [my pull requests](my-pull-requests.md) has this shape.
-- Visual and performance changes: the comparison tables below.
-
-A bare "tests pass" is a claim. Format, lint, and typecheck results are
-readiness facts for the report, not evidence of the changed behavior. Missing
-evidence is a blocker for the report, never a placeholder in the body.
-
-## Risk Line
-
-One line, always present, after the evidence and before any review notes.
-
-```markdown
-**Risk**: two-way door. Reverting the merge restores the old boundary; no
-stored data or contract changes.
+```text
+handleRequest
+  loadPlan
+    parsePlan
+  runQueries
 ```
 
-```markdown
-**Risk**: one-way door. The migration rewrites `sessions.expires_at` in place,
-so a revert keeps the new values. Rollback: run `0042-down.sql` before reverting.
+A shape diff can locate a new responsibility without a full file inventory:
+
+```diff
+ src/cache/
+ ├── expiry.ts
+-└── store.ts
++├── store.ts
++└── clock.ts          # injectable clock for boundary tests
 ```
 
-Name the door from what a revert cannot restore, not from the diff size. A
-ten-line migration is a one-way door; a thousand-line internal rename is not.
+Other useful views include pseudocode for logic, a component tree for UI state
+ownership, and Mermaid for interactions. Show the full shape when most is new
+or omitted context would hide order or ownership. Candidate-SHA permalinks can
+support a short code excerpt. For diagnostics, pair a source trigger with its
+observed output; [user PR #70](my-pull-requests.md) illustrates that shape.
 
-## Visual Comparison
+## Visual Comparisons
 
-Include a rendered Markdown table with these columns:
+Use columns **Scenario**, **Before: base branch and SHA**, and **After: head
+branch and SHA**. Each row holds the two uploaded captures for one scenario.
+Use descriptive image alt text or video labels. Describe viewport, theme, input,
+and state beside the table, including indirect changes such as text wrapping.
+The main skill defines the upload exception and publication requirements.
 
-| Scenario | Before: target branch and SHA | After: PR branch and SHA |
-| --- | --- | --- |
+## Benchmark Detail
 
-Populate each row with the same scenario and actual uploaded images or videos
-for both versions. Use descriptive image alt text or linked video labels. Name
-the relevant viewport, state, theme, or input conditions in bullets beside the table.
-Include indirect visual effects, such as wrapping changes from fonts or data.
+Example comparison for fictional base `main@123abcd` and head `cache@456defa`:
 
-This header is a shape, not a finished table. Do not return empty cells,
-placeholder URLs, local file paths, or an after-only image as a completed
-comparison. `gh` cannot upload attachments: hand local captures to the user,
-publish without the table, and list the comparison in the readiness report.
-
-## Benchmark Comparison
-
-Include a rendered Markdown table with these columns:
-
-| Metric and unit | Before: target branch and SHA | After: PR branch and SHA | Delta, if useful |
+| Metric | Before: main@123abcd | After: cache@456defa | Change |
 | --- | --- | --- | --- |
+| Mean lookup time | 8.2 ms | 6.1 ms | 2.1 ms lower |
 
-Fill both sides with real measurements. State the shared workload, input size,
-environment, measurement method, and relevant sample count or uncertainty in
-brief bullets next to the table. Distinguish mean, median, and percentile values.
-Do not compare different workloads or machines as if they measured the change.
+Example method: `bench lookup --entries 10000 --seed 42`, on the same host and
+runtime, ten warmup runs and thirty measured runs per ref. The 95% confidence
+intervals for the means are 8.0–8.4 ms and 5.9–6.3 ms. This describes the measured
+workload, not production tail latency.
 
-Only compute a delta from comparable values; label its direction and meaning.
-Avoid relative percentages when the baseline is zero. A candidate-only number
-cannot establish improvement. Missing baseline data belongs in the readiness
-report, not a guessed cell. Do not paste this empty header into a finished body.
+Include input size and measurement method. Distinguish mean, median, and
+percentiles; explain how uncertainty was estimated. Label a delta's direction
+and meaning, and avoid relative percentages when the baseline is zero.
 
-## Difficult Or High-Risk Change
+## Migration Risk Example
 
-Use only the parts needed to explain actual consequences:
+```markdown
+**Risk**: one-way door. Rewriting `sessions.expires_at` destroys the old values; rollback requires restoring the pre-migration backup before reverting.
+```
 
-- Summary: the concrete problem and final outcome.
-- Context: the constraint that makes the problem difficult.
-- Design: the chosen mechanism, relevant code, and a sketch if it helps.
-- Tradeoffs: the costs and limits of that choice, not the author's work history.
-- Compatibility or rollout: precise old/new behavior and recovery preconditions.
-- Evidence and comparisons: the outputs and tables that prove the claims.
-- Risk: the door, what a revert cannot restore, and the rollback path.
-- Review order: where the design lives, then what follows mechanically, and the
-  decision that most needs a second opinion.
-
-This can reach technical-blog length when the reasoning warrants it. Prefer a
-few connected sections over a long inventory. Preserve explicit invariants:
-"old readers accept new rows during deployment" is more useful than "backward
-compatible" when that is the real contract. Do not invent such a contract.
-
-## Output Boundary
-
-Return the title separately from the body. If a fenced Markdown body contains
-code fences, use a longer outer fence so the nested code remains intact.
-Material unknowns and readiness or template conflicts go in the readiness
-report, or after the body as separate notes for a text-only request. Evidence
-shows the changed behavior; routine check results and command checklists stay
-out of the body.
+For a complex migration, a useful review note could point first to the reader/
+writer compatibility contract, then the migration and recovery checks. A precise
+invariant such as “old readers accept new rows during deployment” gives the
+reviewer more to check than “backward compatible”.
