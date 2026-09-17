@@ -8,4 +8,5 @@ Local changes (2026-09-03): merged the local `prd` skill in as a Product require
 
 Local changes (2026-09-07): moved PR title/body writing to `write-pr-body` and
 removed the PR-description mode, including its verification-report guidance.
-Ordinary developer documentation remains here.
+Ordinary developer documentation remains here. On 2026-09-17 `write-pr-body`
+merged into `create-pr`, and the pointer followed.

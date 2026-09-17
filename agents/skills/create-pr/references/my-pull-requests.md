@@ -7,8 +7,9 @@ from titles. Grouping describes body depth; diffs were not inspected for this
 style research.
 
 Current rules in [the main skill](../SKILL.md) override these older patterns.
-None of these bodies contains Mermaid, uploaded before/after media, or benchmark
-tables. Those are requested new rules, not observed habits.
+None of these bodies contains Mermaid, uploaded before/after media, benchmark
+tables, an evidence block, or a risk line. Those are requested new rules, not
+observed habits.
 
 ## Simple Bodies
 
@@ -65,9 +66,9 @@ tables. Those are requested new rules, not observed habits.
 - Shape: link to an earlier PR, three bullets, a source trigger, then diagnostic
   output with the callstack and fatal exception in two unlabelled code fences.
 - Keep: concise bullets plus a concrete source/output demonstration. This is
-  behavior output, not a test report. Current difference: language-label snippets,
-  trim irrelevant output, and explain the final change without relying on the
-  earlier PR. It is not an uploaded visual comparison.
+  the evidence shape: trigger plus observed output. Current difference:
+  language-label snippets, trim irrelevant output, and explain the final change
+  without relying on the earlier PR. It is not an uploaded visual comparison.
 
 ## Complex Body
 

@@ -1,12 +1,48 @@
 # Research Basis
 
+These references were written for the `write-pr-body` skill, which merged into
+`create-pr` on 2026-09-17. Step 4 of [the main skill](../SKILL.md) now holds the
+writing rules.
+
 ## Attribution
+
+### Change records
 
 This adapts the rationale in the upstream
 [writing-change-records](https://github.com/thesammykins/skills/tree/eec746ff24516acb5c7bd7352dcb739c03886afe/skills/writing-change-records)
 skill. The external sources below were cited by upstream;
 they were not independently read or verified during this integration. Treat the
 support descriptions as upstream rationale, not new research findings.
+
+### Sketches
+
+The sketch rules adapt, in original wording, the
+[show-me](https://github.com/humanlayer/skills/blob/3c2629142c5d437428269b1b722b08c0b87f574d/plugins/show-me/skills/show-me/SKILL.md)
+skill by HumanLayer (Dex Horthy), MIT license, read at that revision on
+2026-09-17. Adopted: the smallest view that makes the key point clear; pseudocode,
+call tree, component tree, shallow file tree, and Mermaid as the view shapes;
+a `diff` of a shape when the surroundings already exist and the whole block when
+most of it is new; each visual beside the text it supports; one or a few views,
+rarely all. Not adopted: focused HTML artifacts, which a PR body cannot carry.
+
+### Domain language
+
+The vocabulary rule reads the `CONTEXT.md` glossary that the local
+`domain-modeling` skill maintains, the same glossary the `grilling` skill keeps
+in its "grill with docs" mode. Reading the glossary does not load that skill.
+
+### Merge risk
+
+The two-way and one-way door framing is Jeff Bezos's Type 1 and Type 2
+decisions from the 2015 Amazon shareholder letter, applied here to what a
+revert of the merge can and cannot restore. The letter was not re-read for
+this integration.
+
+### Evidence
+
+Evidence in the body is a user requirement from 2026-09-17. It replaces the
+earlier rule that kept every test and check report out of the body. Routine
+readiness results still stay in the user-facing report.
 
 ## Retained Rationale
 
@@ -40,16 +76,17 @@ Commit-only sources and rules are omitted.
 ## Local Rules And Observations
 
 The user's explicit current rules govern concise bullets, the eventual squash
-record, no test/CI reporting in the body, relevant code and Mermaid, uploaded
-visual comparisons, measured benchmark tables, and the threshold for long-form
-explanation. These are preferences and safety constraints, not empirical claims
-attributed to the sources above.
+record, domain terms from the glossary, sketches and relevant code, evidence of
+the changed behavior in the body with routine readiness results outside it,
+uploaded visual comparisons, measured benchmark tables, the one-line merge-risk
+statement, and the threshold for long-form explanation. These are preferences
+and safety constraints, not empirical claims attributed to the sources above.
 
 [My pull requests](my-pull-requests.md) records six user-selected bodies actually
 read with `gh`. They support observations about short bullets, informal context,
 code/output examples, and one longer problem-to-approach explanation. None shows
-Mermaid, uploaded before/after media, or benchmark tables. Those requirements
-come from the user, not from extrapolating the old examples.
+Mermaid, uploaded before/after media, benchmark tables, or a risk line. Those
+requirements come from the user, not from extrapolating the old examples.
 
 For future changes, identify whether a rule comes from a user requirement, an
 observed example, or an external source. Verify external claims before presenting

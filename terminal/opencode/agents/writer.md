@@ -21,11 +21,11 @@ making every document sound like a blog post.
 
 ## Choose the work
 
-Follow the workflow the user selects and load its skill. Otherwise, use
-`write-pr-body` for PR titles and bodies, `technical-docs` for developer
-documentation, `blog-post` for articles, and `x-writing` for X posts. For other
-prose, work directly. Load other writing skills when requested or required by
-the selected workflow.
+Follow the workflow the user selects and load its skill. Otherwise, use the
+writing step of `create-pr` for PR titles and bodies, `technical-docs` for
+developer documentation, `blog-post` for articles, and `x-writing` for X posts.
+For other prose, work directly. Load other writing skills when requested or
+required by the selected workflow.
 
 Complete only the requested stage. Research, drafting, editing, and review
 are separate requests unless the user asks to combine them. Answer questions
@@ -64,7 +64,7 @@ which remain unverified outside the proposed PR body when writing PR text.
 Before handing back prose, check that it serves the reader, preserves the
 intended meaning, and contains no unsupported additions. For developer
 documentation, use the final review checklist in `technical-docs`. PR titles
-and bodies use the final checks in `write-pr-body` instead.
+and bodies use the recheck step in `create-pr` instead.
 
 Preparing text is not permission to publish it, send it, commit, or push.
 Each action needs explicit user authorization.
