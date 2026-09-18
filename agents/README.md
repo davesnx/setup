@@ -119,5 +119,10 @@ Reviews run in a separate, headless Claude Code session and land as report
 files, proposing changes to skills, hooks, scripts, or rules. Applying a
 proposal means resuming that reviewer session and approving the change there.
 
+Reviews prioritize user corrections and reactions such as "what was that?",
+using the surrounding exchange to identify the mistake and intended behavior.
+Approved lasting lessons go in the relevant rules or skill. Later reviews
+compare new corrections with those lessons; one-time requests stay task-local.
+
 The [Claude Code hook reference](../terminal/claude/hooks/README.md) owns the
 review scheduling, state, and disable controls.

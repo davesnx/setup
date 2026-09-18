@@ -1,12 +1,14 @@
 ---
 name: auto-improve
-description: Use proactively when a host requests an auto-improve checkpoint, after repeated corrections or tool failures, or when a reusable workflow emerges. Propose improvements to skills, hooks, scripts, or agent rules and ask for approval before editing. Limit automatic reviews to one per session. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
+description: Use proactively when a host requests an auto-improve checkpoint, after a lasting user correction or repeated misunderstandings or tool failures, or when a reusable workflow emerges. Prioritize user corrections and reactions such as "what was that?" in context. Propose improvements to skills, hooks, scripts, or agent rules and ask for approval before editing. Limit automatic reviews to one per session. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
 ---
 
 # Auto Improve
 
 Use evidence from the current session to improve how agents work. Prefer a
 check, hook, or script over another reminder when the rule can be enforced.
+Give priority to the user's corrections: learn what the agent misunderstood
+and what the user wanted instead.
 
 ## Checkpoints
 
@@ -14,8 +16,9 @@ check, hook, or script over another reminder when the rule can be enforced.
   count completed user replies, not tasks or tool calls. Finish the user's
   current task before a review attached to that task's input.
 - Without a host trigger, review after three substantial completed tasks.
-- Review sooner after repeated corrections or failures, or when a useful
-  workflow is missing from the existing skills. Finish urgent work first.
+- Review sooner after a correction with clear lasting value, repeated
+  misunderstandings or failures, or a useful workflow missing from the existing
+  skills. Resolve the user's current correction before reviewing it.
 - Allow at most one automatic review per session, including checkpoints with
   no useful proposal. Explicit user requests can run further reviews.
 - Review only new evidence. While a proposal awaits an answer, do not ask
@@ -43,11 +46,54 @@ search unrelated conversations or projects for lessons.
    a script, lint rule, type, or runtime check for a rule that code can enforce.
    Read the host's actual hook interface before proposing hook behavior.
 
+## Learn from User Corrections
+
+Read corrective messages with the request, agent action, and follow-up around
+them. Short reactions such as "what?", "what was that?", or "that's not what
+I asked" can expose a misunderstanding. Interpret their meaning in context,
+including typos; do not use them as keyword triggers or infer a preference
+from frustration alone. An ordinary question asking for an explanation is
+not evidence of an agent mistake.
+
+For each useful correction:
+
+1. Identify the mismatch between the user's request and the agent's answer or
+   action. Use a short user quote and the relevant action as evidence.
+2. State the replacement behavior supported by the user's correction, edits,
+   or explanation. If the intended behavior is unclear, ask a focused question
+   through the host's result destination rather than inventing a lasting rule.
+3. Separate a task-specific correction from a lasting preference. One explicit
+   instruction such as "for future reviews, lead with the findings" can justify
+   a proposal. An inferred preference needs repeated evidence and confirmation.
+   Keep one-time exceptions scoped to the task. Do not infer personality traits.
+4. Check existing guidance before adding anything. If the rule already exists,
+   investigate why the agent missed it. Propose a change to its wording,
+   trigger, or enforcement only when the evidence supports that change.
+
+Also use explicit approval or the user's reason for choosing an approach to
+identify behavior worth repeating. Silence, "continue", and passing tests do
+not establish user preference. Technical success and user approval are separate
+evidence.
+
+Save approved lessons in the instructions that govern the work: shared agent
+rules for general preferences, the relevant skill for task-specific methods,
+or project instructions for local decisions. Keep one authoritative rule;
+do not create a separate user profile or copy transcripts into instructions.
+Approval to correct the current task is not approval to save a lasting lesson.
+
+At later checkpoints, compare new evidence with relevant saved lessons. Check
+whether the agent followed the rule, whether the user had to repeat the
+correction, and whether the rule was too broad. Propose replacing conflicting
+or outdated guidance instead of adding another rule. Use only available
+evidence; do not claim improvement across sessions without observed outcomes.
+
 ## Propose and Wait
 
 Present at most three concrete proposals. For each, give:
 
 - The observed evidence and the problem or repeated work it reveals.
+- For a user lesson, the replacement behavior, its scope and exceptions, and
+  whether the user stated it explicitly or it still needs confirmation.
 - The target path, proposed change, and why that location fits.
 - The verification check and any wider effect, such as cross-project behavior,
   added model calls, or startup dependencies.
