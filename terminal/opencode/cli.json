@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "theme": {
+    "name": "fosk"
+  },
+  "keybinds": {
+    "session.first": "ctrl+g",
+    "session.last": "ctrl+alt+g",
+    "input.line.home": "ctrl+a,home",
+    "input.line.end": "ctrl+e,end",
+    "input.buffer.home": "super+up",
+    "input.buffer.end": "super+down"
+  },
+  "tabs": {
+    "enabled": false
+  }
+}

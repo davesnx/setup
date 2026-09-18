@@ -26,6 +26,10 @@ live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
 which only OpenCode reads. Existing files move to a timestamped directory
 under `~/.local/state/setup/backups`.
 
+Both profiles link the shared `cli.json`, which disables OpenCode V2 session tabs
+with `tabs.enabled: false` and preserves the theme and keybindings from `tui.json`.
+V2 reads `cli.json`; `tui.json` remains available for V1.
+
 `terminal/zsh/.zprofile` looks for `host.jsonc` in the same config directory.
 When that file exists, startup sets `OPENCODE_CONFIG` to its path, replacing
 any inherited value. When it is absent, startup leaves `OPENCODE_CONFIG`

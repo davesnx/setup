@@ -73,9 +73,8 @@ node terminal/opencode/mcp.ts
 
 Claude Code runs them itself when it edits the file, through a PostToolUse
 hook in `terminal/claude/settings.json`. `bash check.sh` fails when a rendered
-file is stale and, when `opencode` is installed, runs `opencode debug config`
-against the shared file merged with each profile. Both installers render
-before linking. Restart the tool to load the change.
+shared or host-profile file is stale. Both installers render before linking.
+Restart the tool to load the change.
 
 ### OAuth from nspawn
 

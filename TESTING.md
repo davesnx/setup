@@ -40,9 +40,8 @@ It checks:
   exact npm arguments, caller history, and shell-state preservation.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
-- MCP declaration: `agents/mcp.json` rejects unknown root keys, the rendered files match it,
-  and OpenCode accepts the shared file merged with each host profile when
-  `opencode` is installed.
+- MCP declaration: `agents/mcp.json` rejects unknown root keys, and the rendered
+  shared and host-profile files match it.
 - The browser endpoint reader and guarded Playwright examples use the declaration.
   On macOS, the Raycast launcher uses native JSON parsing with no Node or jq on
   its test PATH. Browser calls are stubbed, including failed launches and retries.
