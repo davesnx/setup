@@ -81,6 +81,11 @@ local/                    Machine-specific overrides. Git-ignored except README,
 
 ## Rules
 
+- Add shared, fixed PATH entries to the `paths` array in
+  `terminal/zsh/.zprofile`. Use `$HOME` for home-directory paths. Keep SSH
+  setup in `.zshenv`, tool-managed paths in their initialization code, and
+  installer PATH changes in installers. Machine-specific additions belong
+  in `local/*.zsh`.
 - `agents/` is shared by both harnesses. `terminal/claude/` is Claude Code
   only. `terminal/opencode/` is OpenCode only. Do not move a file across these
   three because one harness wanted it. Put it where both can reach it.

@@ -24,6 +24,7 @@ paths=(
   "$HOME/.local/share/node-tools/node_modules/.bin"
   "$HOME/.deno/bin"
   "$HOME/.cargo/bin"
+  "$HOME/.bend/bin"
   "$BUN_INSTALL/bin"
   "$GEM_HOME/bin"
   "$HOME/.elan/bin"
