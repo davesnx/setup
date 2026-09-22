@@ -1,3 +1,53 @@
+# Open an OpenCode session
+
+Run `ocs` to search OpenCode V2 sessions and open the selected session in its
+working directory. The OpenTUI picker uses the setup `fosk` theme and the default
+navigation keys from `/sessions`.
+
+Install its dependencies from the setup repository root:
+
+```sh
+sh terminal/bin/ocs/install.sh
+ocs
+```
+
+The setup shell adds `terminal/bin/ocs` to `PATH`. Open a new terminal to apply
+this change to existing shells. You can also run `terminal/bin/ocs/ocs` directly.
+Installation needs Node and npm. The command needs
+OpenCode V2 on `PATH` and an interactive terminal. Its pinned Bun runtime is
+installed locally with its dependencies.
+
+| Key | Action |
+| --- | --- |
+| Type | Search session titles. |
+| Up / Ctrl+P | Previous session, with wrap. |
+| Down / Ctrl+N | Next session, with wrap. |
+| Page Up / Page Down | Move ten sessions, with wrap. |
+| Home / End | First / last session. |
+| Ctrl+A | Switch between all projects and the current directory. |
+| Enter | Open the selected session. |
+| Esc | Cancel. |
+| Ctrl+C | Clear the search. Press again to cancel. |
+
+The picker starts with all projects and shows up to 50 root sessions, newest
+first, grouped by update date. Search uses the OpenCode service, so it can find
+older sessions. Current-directory scope uses OpenCode's project and relative
+path, including matching paths in related worktrees. Outside a project, it
+matches the exact directory.
+Cancellation exits successfully. After selection, `ocs` returns OpenCode's exit
+status. Run `ocs --help` for the key list.
+
+Run its checks with:
+
+```sh
+npm --prefix terminal/bin/ocs run format:check
+npm --prefix terminal/bin/ocs run check
+npm --prefix terminal/bin/ocs test
+```
+
+The tests cover the picker, API responses, and terminal handoff with a fake
+OpenCode command. `bash check.sh` installs dependencies and runs these checks.
+
 # Run package scripts
 
 Run `scripts` in a directory with `package.json` to select a script with fzf.

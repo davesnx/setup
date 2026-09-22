@@ -40,6 +40,9 @@ It checks:
   exact npm arguments, caller history, and shell-state preservation.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
+- `ocs` formatting, strict TypeScript checks, session API validation, picker
+  navigation and search, and terminal handoff through a pseudo-terminal with
+  a fake OpenCode command. This check installs pinned dependencies with npm.
 - MCP declaration: `agents/mcp.json` rejects unknown root keys, the renderers
   preserve the expected fields and defaults, and the rendered files match it.
 - The browser endpoint reader and guarded Playwright examples use the declaration.

@@ -16,6 +16,7 @@ fi
 paths=(
   "$DOTFILES_PATH/mac/enpass/bin"
   "$DOTFILES_PATH/terminal/bin"
+  "$DOTFILES_PATH/terminal/bin/ocs"
   "$DOTFILES_PATH/terminal/bin/git-extras"
   "$DOTFILES_PATH/terminal/bin/ocaml"
   "$DOTFILES_PATH/terminal/bin/fs"

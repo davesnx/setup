@@ -51,3 +51,4 @@ sh "$DOTFILES_PATH/terminal/claude/install.sh"
 sh "$DOTFILES_PATH/terminal/opencode/install.sh"
 
 sh "$DOTFILES_PATH/terminal/bin/eval-harness/install.sh"
+sh "$DOTFILES_PATH/terminal/bin/ocs/install.sh"

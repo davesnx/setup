@@ -99,6 +99,10 @@ bash "$root/terminal/zsh/tests/syntax-selection.sh"
 zsh "$root/terminal/bin/scripts.test.zsh"
 sh "$root/mac/tests/shell-startup.sh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
+sh "$root/terminal/bin/ocs/install.sh"
+npm --prefix "$root/terminal/bin/ocs" run format:check
+npm --prefix "$root/terminal/bin/ocs" run check
+npm --prefix "$root/terminal/bin/ocs" test
 
 # Layout: AGENTS.md names only paths that exist, every tracked directory in
 # the first two levels has a row, and no tracked symlink is absolute.
