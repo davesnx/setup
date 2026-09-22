@@ -16,6 +16,75 @@ caller's variables and shell options.
 including names with newlines. `count_files_recursive_per_directory` uses the
 same counter for each non-hidden subdirectory and prints its name and count.
 
+# Use the Flipper Zero CLI
+
+`flipper` sends commands to the Flipper Zero's built-in CLI over USB serial.
+It needs Bun, `stty`, `lsof`, and `ps` on `PATH`. Connect the device by USB.
+
+```sh
+flipper port
+flipper info
+flipper ls /ext/nfc
+flipper send 'help'
+flipper send 'nfc' 'dump /ext/nfc/MyCard.nfc'
+flipper watch 5
+```
+
+Only one program can own the serial port. `flipper port` reports its holders
+without opening it. Close screen, qFlipper, or the browser connection before
+sending commands. `flipper release` sends SIGTERM only to `screen`, `SCREEN`,
+`minicom`, `tio`, `picocom`, `cu`, or `socat`. If any other program holds the
+port, it refuses to terminate anything and tells you to close that program.
+It checks whether the port becomes free after sending SIGTERM.
+
+## Commands and options
+
+| Command | Action |
+| --- | --- |
+| `port` | Print the resolved device and whether it is free or busy, with holder PID and command. |
+| `send <line>...` | Send each quoted CLI line in order. Aliases: `exec`, `run`. |
+| `ls [path]` | Send `storage list <path>`. Default: `/ext`. A trailing slash is trimmed. Alias: `storage`. |
+| `info` | Send `device_info`. |
+| `watch [seconds]` | Read output for the given duration. Default: 5 seconds. |
+| `release` | Terminate known serial-terminal holders. |
+| `help` | Print usage. No command or an unknown command prints usage and exits with status 1. |
+
+Options can appear before or after the command. Use `--` before literal
+arguments that start with a hyphen.
+
+- `--port <path>` selects an absolute device path. Otherwise, `FLIPPER_PORT`
+  takes priority over discovery. Discovery checks `/dev/cu.usbmodemflip_*`,
+  then `/dev/serial/by-id/*Flipper*`, then `/dev/ttyACM*`. Within each group,
+  it selects the first path in sorted order.
+- `--timeout <ms>` limits the whole serial session. Default: 5000 ms.
+- `--idle <ms>` ends a reply after silence. Default: 800 ms. Multiple lines
+  share the total timeout. Each line waits for its reply before the next line.
+- `watch` ignores the idle timeout. Its duration replaces the default total
+  timeout. An explicit `--timeout` can shorten that duration.
+- `--raw` preserves ANSI escape sequences. They are removed by default.
+- `--json` prints an object with `port`, `command`, `output`, and `busy`.
+  Errors add `error` and return status 1. Unresolved fields are `null`.
+
+The command configures 115200 baud in raw mode without terminal echo.
+It does not interpret CLI replies as success or failure. A read timeout ends
+collection and returns the text received so far. If the timeout prevents a
+remaining line from being sent, the command reports an error.
+
+Use NFC commands only with your own cards. Enter the `nfc` subshell and send
+its command in the same invocation:
+
+```sh
+flipper send 'nfc' 'dump /ext/nfc/MyCard.nfc'
+flipper send --timeout 10000 'nfc' 'emulate /ext/nfc/MyCard.nfc'
+```
+
+Closing the host serial connection does not prove that device-side emulation
+has stopped. Check the device and stop it there when finished. See the
+[Flipper skill](../../agents/skills/flipper/SKILL.md) for the agent workflow.
+
+Run `bun test terminal/bin/flipper.test.ts` for the pure-logic tests.
+They do not open a serial port or terminate a process.
+
 # Transfer files over SSH
 
 Use `ssh-transfer` from your Mac to copy files to or from nspawn. Both `push`

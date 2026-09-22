@@ -23,6 +23,8 @@
 - Otherwise, when asked to create a plan, write it to
   `.workplace/plans/<descriptive-name>_PLAN.md` at the repository root. The
   global Git ignore file excludes `.workplace/`.
+- Record agreed scope or constraint changes in the existing plan or spec before
+  acting on them.
 - For planned rewrites and migrations, define the intended end state and
   verification boundaries. Allow temporary breakage only within declared,
   scoped, reversible phases. Keep checks for affected areas running; avoid
@@ -63,6 +65,10 @@
 - For a bug fix, verify the original symptom. For a regression test, prove it
   fails before the fix and passes after it. Use an isolated baseline for the
   failure check; never revert user work.
+- Check that tests detect the intended failure. Do not weaken assertions just
+  to make tests pass. No tautological tests. Check expected behavior, not a
+  copy of the implementation. Test only through public interfaces, not private
+  implementation details.
 - Verify each requirement directly. Passing tests alone do not prove that all
   requirements are met.
 - Before declaring done, check the actual result directly. For code, build it
@@ -123,6 +129,10 @@ to subagents and orchestrate them:
 - Get the data shape and core types right before writing logic. Trace the
   access patterns, and ask what happens when another actor changes shared
   state. A late structure change is a rewrite.
+- Use types to prevent invalid states and unit mixups. Keep related state
+  changes and shared checks in one place.
+- Validate external input at entry points. Report errors with useful context,
+  without exposing secrets. Use defaults only when the contract defines them.
 - Make commands, lifecycle steps, and processing loops idempotent: retries and
   restarts must reach the intended state without duplicate effects. Reconcile
   partial prior work before continuing.
