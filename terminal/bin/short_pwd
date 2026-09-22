@@ -12,8 +12,8 @@ source "$DOTFILES_PATH/terminal/core/main.sh"
 
 docs::parse "$@"
 
-if [[ $(pwd) == $HOME ]] ; then
-  echo "~"
+if [[ $PWD == $HOME || ${PWD:h} == $HOME || ${PWD:h} == / ]] ; then
+  echo ${(D)PWD}
 else
-  echo ${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h}}#(|.)[^.]}}/${PWD:t}}//\/~/\~}/\/\//\/}
+  echo ${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h:h}}#(|.)[^.]}}/${PWD:h:t}/${PWD:t}}//\/~/\~}/\/\//\/}
 fi

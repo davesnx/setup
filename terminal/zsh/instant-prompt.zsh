@@ -23,10 +23,10 @@ typeset -gi _INSTANT_PROMPT_ACTIVE=1
 
 # Compute the short pwd inline (same logic as prompt_short_pwd)
 _instant_prompt_pwd() {
-  if [[ $PWD == $HOME ]]; then
-    REPLY='~'
+  if [[ $PWD == $HOME || ${PWD:h} == $HOME || ${PWD:h} == / ]]; then
+    REPLY=${(D)PWD}
   else
-    REPLY=${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h}}#(|.)[^.]}}/${PWD:t}}//\/~/\~}/\/\//\/}
+    REPLY=${${${:-/${(j:/:)${(M)${(s:/:)${(D)PWD:h:h}}#(|.)[^.]}}/${PWD:h:t}/${PWD:t}}//\/~/\~}/\/\//\/}
   fi
 }
 
@@ -54,4 +54,3 @@ _instant_prompt_finalize() {
 
 # Register finalize to run once on first precmd (after .zshrc loads)
 precmd_functions=(_instant_prompt_finalize $precmd_functions)
-
