@@ -2,15 +2,16 @@
 
 set -euo pipefail
 
-source "$DOTFILES_PATH/terminal/core/main.sh"
-
 ##? Short the current $PWD
 #?? 1.0.0
 ##?
 ##? Usage:
 ##?    short_pwd
 
-docs::parse "$@"
+if (( $# )); then
+  source "$DOTFILES_PATH/terminal/core/main.sh"
+  docs::parse "$@"
+fi
 
 if [[ $PWD == $HOME || ${PWD:h} == $HOME || ${PWD:h} == / ]] ; then
   echo ${(D)PWD}
