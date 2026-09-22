@@ -40,9 +40,8 @@ It checks:
   exact npm arguments, caller history, and shell-state preservation.
 - npm-wrapper argument forwarding, failure handling, and real offline package
   install/update/removal through the shared manifest links.
-- MCP declaration: `agents/mcp.json` rejects unknown root keys, the rendered files match it,
-  and OpenCode accepts the shared file merged with each host profile when
-  `opencode` is installed.
+- MCP declaration: `agents/mcp.json` rejects unknown root keys, the renderers
+  preserve the expected fields and defaults, and the rendered files match it.
 - The browser endpoint reader and guarded Playwright examples use the declaration.
   On macOS, the Raycast launcher uses native JSON parsing with no Node or jq on
   its test PATH. Browser calls are stubbed, including failed launches and retries.
@@ -137,6 +136,11 @@ an agent pane, press `prefix+shift+r`; a hunk review pane opens beside it. On
 the Mac, `herdr-mirror status` lists the `nspawn` host from `mirror-hosts.toml`.
 
 ## Changes that need a real smoke test
+
+After changing OpenCode configuration, confirm that OpenCode loads the shared
+MCP servers and the selected host profile on the affected machine. Effective
+configuration loading needs a real smoke test; `check.sh` validates the
+declaration and rendered output only.
 
 After changing `mac/daemons/com.davesnx.ssh-add.plist`, run
 `sh mac/daemons/install.sh` with `DOTFILES_PATH` set to this checkout.
