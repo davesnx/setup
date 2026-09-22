@@ -157,7 +157,13 @@
       "git branch -f*": "deny",
       // Hook bypass: --no-verify covers commit and push, and the -c core.hooksPath route skips hooks without naming --no-verify.
       "git *--no-verify*": "deny",
-      "git *commit *-n*": "deny",
+      // Keep -n separate from words such as library-name in commit messages.
+      "git *commit -n*": "deny",
+      "git *commit * -n*": "deny",
+      "git *commit '-n*": "deny",
+      "git *commit * '-n*": "deny",
+      "git *commit \"-n*": "deny",
+      "git *commit * \"-n*": "deny",
       "git *core.hooksPath*": "deny",
       // History rewriting.
       "git reset --hard*": "deny",
