@@ -1,23 +1,20 @@
 {
   "update.mode": "default",
   /* Window */
-  "window.zoomLevel": 2,
-  "workbench.colorTheme": "Fosk",
+  "window.zoomLevel": 1.8,
   "window.title": "${dirty} ${rootName}${separator}${separator}${activeEditorShort}",
-  "window.commandCenter": false,
+  "window.commandCenter": true,
   "window.newWindowDimensions": "inherit",
-  /* Workbench */
   "workbench.tips.enabled": false,
   "workbench.editor.editorActionsLocation": "hidden",
   "workbench.editor.showTabs": "multiple",
-  "workbench.layoutControl.enabled": false,
-  /* Controls the location of the activity bar. Hides the menu of icons */
-  "workbench.activityBar.location": "hidden",
+  "workbench.layoutControl.enabled": true,
   "workbench.tree.indent": 12,
+  "workbench.sideBar.location": "left",
   /* Controls whether the tree should render indent guides. */
   "workbench.tree.renderIndentGuides": "always",
   /* Controls whether the panel opens maximized. It can either always open maximized,
-     never open maximized, or open to the last state it was in before being closed. */
+  never open maximized, or open to the last state it was in before being closed. */
   "workbench.panel.opensMaximized": "never",
   /* Determines which settings editor to use by default. */
   "workbench.settings.editor": "json",
@@ -25,12 +22,15 @@
   /* Controls which editor is shown at startup */
   "workbench.startupEditor": "none",
   "workbench.fontAliasing": "antialiased",
+  "workbench.colorTheme": "Fosk",
   "workbench.iconTheme": "material-icon-theme",
+  "workbench.productIconTheme": "fluent-icons",
   "material-icon-theme.folders.theme": "specific",
   "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
   "workbench.statusBar.visible": true,
   "workbench.colorCustomizations": {},
+  "workbench.navigationControl.enabled": false,
   /* Explorer */
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
@@ -38,11 +38,14 @@
   "explorer.compactFolders": false,
   "explorer.decorations.colors": true,
   "explorer.decorations.badges": true,
+  "explorer.autoReveal": true,
   /* Files */
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "files.exclude": {
-    "**/.esy": true
+    "**/.esy": true,
+    "**/.git": false,
+    "**/.workplace": true
   },
   "files.watcherExclude": {
     "**/.esy": false,
@@ -50,14 +53,13 @@
     "**/.DS_Store": true,
     "node_modules": false,
     "**/Thumbs.db": true,
-    "**/.git": false
+    "**/.git": false,
+    "**/.workplace/**": true
   },
   "files.associations": {
     ".env*": "dotenv",
-    "*.jsx": "javascriptreact",
+    "*.ts": "typescriptreact",
     "*.js": "javascriptreact",
-    "*.mly": "ocaml.menhir",
-    "*.mlx": "ocaml"
   },
   /* Search */
   "search.mode": "reuseEditor",
@@ -65,17 +67,17 @@
   "search.showLineNumbers": true,
   "search.smartCase": true,
   "search.exclude": {
-    "**/.workplace/**": true,
-    "**/_build": true,
-    "**/node_modules": true,
     "**/.git": true,
-    "**/dist": true,
     "**/.vscode": true,
     "**/_esy": true,
-    "**/build": true,
     "**/esy.lock": true,
-    "**/_opam": true,
-    "**/.next": true
+    "**/_opam*": true,
+    "**/node_modules*": true,
+    "**/_build": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/.workplace/**": true
   },
   /* Breadcrumbs */
   "breadcrumbs.enabled": true,
@@ -87,14 +89,14 @@
   "editor.fontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
   "editor.codeLensFontSize": 16,
   "editor.codeLensFontFamily": "JetBrains Mono, Ligalex Mono, IBM Plex Mono, Martian Mono, Monaco",
-  "editor.fontLigatures": true,
+  "editor.fontLigatures": false,
   "editor.rulers": [
     120
   ],
   "editor.tabSize": 2,
   "editor.fontSize": 15,
-  "editor.fontWeight": 400,
-  "editor.wordWrap": "on",
+  "editor.fontWeight": "normal",
+  "editor.wordWrap": "bounded",
   "editor.folding": true,
   "editor.glyphMargin": false,
   "editor.renderWhitespace": "boundary",
@@ -132,10 +134,10 @@
   "editor.minimap.renderCharacters": false,
   "editor.minimap.enabled": true,
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.accessibilitySupport": "off",
   "editor.scrollPredominantAxis": true,
   "editor.guides.bracketPairs": "active",
   "editor.guides.bracketPairsHorizontal": false,
+  "editor.accessibilitySupport": "off",
   "editor.unicodeHighlight.allowedCharacters": {
     "’": true,
     "‹": true,
@@ -154,6 +156,9 @@
   "scm.alwaysShowActions": true,
   "scm.diffDecorations": "all",
   /* Terminal */
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.shellIntegration.enabled": false,
   "terminal.integrated.tabs.location": "left",
   "terminal.integrated.enableMultiLinePasteWarning": "never",
   "terminal.integrated.persistentSessionReviveProcess": "never",
@@ -187,6 +192,28 @@
   },
   /* Makefile */
   "makefile.configureOnOpen": true,
+  /* JSON */
+  "[json][jsonc]": {
+    "editor.autoIndent": "full",
+    "editor.formatOnPaste": false,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.formatOnSave": true,
+    "editor.suggest.insertMode": "replace",
+  },
+  "json.schemaDownload.enable": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://schemastore.azurewebsites.net/": true,
+    "https://raw.githubusercontent.com/microsoft/vscode/": true,
+    "https://raw.githubusercontent.com/devcontainers/spec/": true,
+    "https://www.schemastore.org/": true,
+    "https://json.schemastore.org/": true,
+    "https://json-schema.org/": true,
+    "https://developer.microsoft.com/json-schemas/": true,
+    "https://biomejs.dev": true
+  },
   /* TypeScript */
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
@@ -195,54 +222,43 @@
   "typescript.inlayHints.parameterTypes.enabled": true,
   /* JavaScript */
   "js/ts.implicitProjectConfig.strictNullChecks": true,
-  "eslint.validate": [
-    "javascriptreact",
-    "javascript",
-    "typescript",
-    "typescriptreact",
-  ],
-  "eslint.enable": false,
-  "eslint.format.enable": false,
-  "[typescript][typescriptreact][javascript][javascriptreact][json][jsonc]": {
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "biome.suggestInstallingGlobally": false,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome",
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
       "source.fixAll.ts": "always"
     }
   },
-  "javascript.updateImportsOnFileMove.enabled": "always",
   /* OCaml */
   "ocaml.dune.autoDetect": true,
-  "ocaml.server.codelens": true,
+  "ocaml.server.codelens.enable": true,
+  "ocaml.server.duneDiagnostics": true,
   "ocaml.server.extendedHover": true,
-  "[dune][ocaml.interface][ocaml.opam][ocaml.menhir][ocaml.ocamlformat]": {
+  "ocaml.server.extraEnv": {
+    "OCAMLLSP_SEMANTIC_HIGHLIGHTING": "full",
+  },
+  "[ocaml.opam][ocaml.menhir][ocaml.mlx][dune]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
-  "[ocaml]": {
+  "[ocaml][ocaml.interface]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
+  },
+  "material-icon-theme.files.associations": {
+    "*.mlx": "ocaml",
+    "*.mll": "ocaml"
   },
   /* ReScript */
   "[rescript]": {
-    "rescript.settings.askToStartBuild": false,
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "chenglou92.rescript-vscode"
-  },
-  /* JSON */
-  "[json][jsonc]": {
-    "editor.autoIndent": "full",
-    "editor.formatOnPaste": false,
-    "editor.defaultFormatter": "vscode.json-language-features",
-    "editor.quickSuggestions": {
-      "strings": true
-    },
-    "editor.formatOnSave": true,
-    "editor.suggest.insertMode": "replace"
+    "editor.defaultFormatter": "chenglou92.rescript-vscode",
+    "rescript.settings.askToStartBuild": false
   },
   /* Reason */
-  "[reason]": {
+  "[reason][reason.interface]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ocamllabs.ocaml-platform"
   },
@@ -254,12 +270,12 @@
   "extensions.autoUpdate": "onlyEnabledExtensions",
   "extensions.ignoreRecommendations": true,
   /* Error Lens */
-  "errorLens.scrollbarHackEnabled": false,
   "errorLens.enabled": true,
   "errorLens.padding": "0",
   "errorLens.gutterIconsEnabled": true,
   "errorLens.removeLinebreaks": false,
-  "errorLens.fontWeight": "400",
+  "errorLens.fontWeight": "600",
+  "errorLens.scrollbarHackEnabled": true,
   /* GitLens */
   "git.decorations.enabled": true,
   "gitlens.codeLens.scopes": [],
@@ -269,6 +285,9 @@
   "gitlens.statusBar.enabled": true,
   "gitlens.currentLine.format": "${message|50?} ${'in 'pullRequest}• ${agoOrDate} by ${author}",
   "gitlens.currentLine.uncommittedChangesFormat": "${message|50?} ${'in 'pullRequest}• ${agoOrDate}",
+  "gitlens.advanced.messages": {
+    "suppressLineUncommittedWarning": true
+  },
   /* Emmet */
   "emmet.showSuggestionsAsSnippets": true,
   "emmet.includeLanguages": {
@@ -286,8 +305,8 @@
   "apc.electron": {
     "titleBarStyle": "hiddenInset",
     "trafficLightPosition": {
-      "x": 12,
-      "y": 8
+      "x": 16,
+      "y": 10
     }
   },
   "apc.font.family": "JetBrains Mono",
@@ -304,38 +323,18 @@
   "where-am-i.textTransfrom": "none",
   /* Go to next error */
   "go-to-next-error.multiSeverityHandlingMethod": "hover",
-  /* colorize */
-  "colorize.hide_current_line_decorations": false,
-  "colorize.languages": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "reason",
-    "ocaml",
-    "*"
-    // ...
-  ],
-  "colorize.colorized_colors": [
-    "HEXA",
-    "ARGB",
-    "RGB",
-    "HSL",
-    "OKLAB",
-    "OKLCH"
-  ],
-  /* AI */
-  "github.copilot.enable": {
-    "*": true
+  /* Cursor */
+  "cursor.composer.usageSummaryDisplay": "always",
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "json.schemaDownload.trustedDomains": {
-    "https://schemastore.azurewebsites.net/": true,
-    "https://raw.githubusercontent.com/microsoft/vscode/": true,
-    "https://raw.githubusercontent.com/devcontainers/spec/": true,
-    "https://www.schemastore.org/": true,
-    "https://json.schemastore.org/": true,
-    "https://json-schema.org/": true,
-    "https://developer.microsoft.com/json-schemas/": true,
-    "https://biomejs.dev": true
-  }
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "window.autoDetectColorScheme": false,
+  "remote.autoForwardPortsSource": "hybrid",
+  "gitlens.hovers.currentLine.over": "line",
 }
