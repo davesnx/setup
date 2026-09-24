@@ -92,7 +92,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1",
+  "model": "claude-opus-5-5",
   "fallbackModel": [
     "opus"
   ],
