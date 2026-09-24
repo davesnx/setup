@@ -62,3 +62,5 @@ succeeds even if CI is red or threads are unresolved.
   zsh quoting breaks.
 - Don't sleep-poll runs or checks; `gh run watch ID` and
   `gh pr checks N --watch --fail-fast` exist; let the harness background them.
+  Inside a `loop-on-ci` watch, use its snapshot commands instead: a blocking
+  watch there hides another provider's failure or a target change.

@@ -10,12 +10,6 @@
 - Use lists when requested or when they improve clarity. Use plain prose when
   minimal formatting is requested or the exchange is personal or emotional.
 
-## Question Reasoning
-
-- When a user prompt contains a question, consider other viable paths before
-  you answer. Confirm that the selected answer or approach best fits the
-  available evidence and the user's goal.
-
 ## Planning
 
 - When working in `$HOME/workplace` or below it, first read
@@ -108,8 +102,8 @@ to subagents and orchestrate them:
   include this in the subagent prompt so it follows)
 - always instruct subagents not to perform git write operations (no commit, no
   push, no reset etc), only top level session is allowed to do that
-- some subagents get confused there are already some git changes, you need to
-  instruct them it's ok as the work is done in parallel
+- tell subagents that uncommitted changes they did not make come from parallel
+  work: leave those files alone and do not treat them as an error
 
 ## Hosts
 

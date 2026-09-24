@@ -62,10 +62,11 @@ function buildPrompt(transcriptPath: string, cwd: string): string {
     `follow it. Evidence: that session's transcript at ${transcriptPath} ` +
     "(JSONL; read all of it, and only that transcript) with working " +
     `directory ${cwd}. Inspect the relevant skills, hooks, scripts, and ` +
-    "rules read-only. Do the work yourself without subagents. Return at " +
-    "most 3 concrete, evidence-backed proposals for skills, hooks, scripts, " +
-    "or rules, each with its evidence, target path, change, and " +
-    "verification, or state that none is useful. This run is read-only: " +
+    "rules read-only. Do the work yourself without subagents. Return the " +
+    "concrete, evidence-backed proposals the transcript supports, strongest " +
+    "first, for skills, hooks, scripts, or rules, each with its evidence, " +
+    "target path, change, and verification, or state that none is useful. " +
+    "This run is read-only: " +
     "make no edits, commits, or external calls. Plan mode is only the " +
     "read-only guard: do not write a plan file, do not start Explore or Plan " +
     "agents, and do not call ExitPlanMode; answer with the proposals " +

@@ -15,7 +15,6 @@ archive. The goal: extract patterns from their denied plans, reduce
 them into actionable insights, and produce an elegant HTML dashboard report.
 
 This is a multi-phase process. Each phase must complete fully before the next begins.
-Research integrity is paramount — every file must be read, no skipping.
 
 ## Source Selection
 
@@ -144,7 +143,7 @@ report the denial-reason dataset assembled by the parser.
 ## Phase 2: Map — Parallel Extraction
 
 This is the most time-intensive phase. You must read EVERY `*-denied.md` file
-**in scope**. Do not skip files. Do not summarize early.
+**in scope**.
 
 **In scope** means: all denied files if running a full analysis, or only denied
 files dated after the cutoff date if running incrementally. In incremental mode,
@@ -230,7 +229,7 @@ Read EVERY file in your list. For EACH file, extract:
   and reviewer comments)
 - The date (extracted from the filename)
 
-Do NOT skip any files. One entry per file.
+One entry per file.
 
 Format each entry as:
 **[filename]**
@@ -301,8 +300,7 @@ extraction includes the plan topic, denial feedback, annotations, and reviewer
 language. Your job: aggregate everything, find patterns, cluster into a taxonomy,
 and produce a comprehensive analysis.
 
-Be exhaustive. Use real counts. Quote real phrases from the data. This is
-research — no hand-waving, no fabrication.
+Use real counts and quote real phrases from the data.
 
 Write your complete results to [OUTPUT FILE PATH].
 

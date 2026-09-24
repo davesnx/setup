@@ -155,13 +155,10 @@ Write a JSON file with this structure:
 
 ## Guidelines
 
-- **Be specific**: Quote from skills and transcripts, don't just say "instructions were unclear"
-- **Be actionable**: Suggestions should be concrete changes, not vague advice
-- **Focus on skill improvements**: The goal is to improve the losing skill, not critique the agent
-- **Prioritize by impact**: Which changes would most likely have changed the outcome?
-- **Consider causation**: Did the skill weakness actually cause the worse output, or is it incidental?
-- **Stay objective**: Analyze what happened, don't editorialize
-- **Think about generalization**: Would this improvement help on other evals too?
+The goal is to improve the losing skill, not to critique the agent. For each
+weakness, quote the skill or transcript text behind it, say whether it caused
+the worse output or is incidental, and whether the fix would help on other
+evals too.
 
 ## Categories for Suggestions
 

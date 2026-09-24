@@ -1,6 +1,6 @@
 ---
 name: auto-improve
-description: Use proactively when a host requests an auto-improve checkpoint, after a lasting user correction or repeated misunderstandings or tool failures, or when a reusable workflow emerges. Prioritize user corrections and reactions such as "what was that?" in context. Propose improvements to skills, hooks, scripts, or agent rules and ask for approval before editing. Limit automatic reviews to one per session. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
+description: Use proactively when a host requests an auto-improve checkpoint, after a lasting user correction or repeated misunderstandings or tool failures, or when a reusable workflow emerges. Reactions such as "what was that?" count as corrections. Also use when explicitly asked to auto-improve. Not a general code audit or routine cleanup.
 ---
 
 # Auto Improve
@@ -89,7 +89,8 @@ evidence; do not claim improvement across sessions without observed outcomes.
 
 ## Propose and Wait
 
-Present at most three concrete proposals. For each, give:
+Present the concrete proposals the session's evidence supports, strongest
+first, in a set the user can answer in one pass. For each, give:
 
 - The observed evidence and the problem or repeated work it reveals.
 - For a user lesson, the replacement behavior, its scope and exceptions, and

@@ -115,7 +115,7 @@ Do not use this skill for visual design, layout, styling, accessibility, or gene
 
 - `advanced-event-handler-refs` - Store event handlers in refs
 - `advanced-init-once` - Initialize app once per app load
-- `advanced-use-latest` - useLatest for stable callback refs
+- `advanced-use-latest` - useEffectEvent for stable callback refs
 
 ## How to Use
 

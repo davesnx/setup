@@ -194,7 +194,7 @@ Reader testing passes when the fresh reader answers the important questions corr
 
 ## Review Framework
 
-When reviewing a draft or complete post, evaluate these 8 dimensions. Score each 1-5 and provide specific, actionable feedback. Keep scores internal unless the author asks for them; lead with concrete findings rather than a report card.
+When reviewing a draft or complete post, evaluate these 8 dimensions and give specific, actionable feedback on each. Lead with concrete findings rather than a report card.
 
 ### 1. Hook (First 2-3 sentences)
 
@@ -475,11 +475,10 @@ Identify where the reader would have questions. Add examples, anticipate objecti
 ## Rules
 
 - Follow the requested mode. Direct drafting, editing, review, or reader testing does not require an interview. Collaborative interviews remain available when requested.
-- NEVER invent facts, statistics, quotes, or sources. If needed data is unavailable, mark the gap and write only the supported parts.
-- NEVER use filler phrases: "In today's fast-paced world", "It goes without saying", "At the end of the day", "It's worth noting that".
-- NEVER add fluff to hit a word count. A tight 800-word post beats a padded 2000-word post.
-- ALWAYS preserve the author's core ideas even when restructuring.
-- ALWAYS explain why you're suggesting a change, not just what to change.
+- Do not invent facts, statistics, quotes, or sources. If needed data is unavailable, mark the gap and write only the supported parts.
+- Length follows the argument. A tight 800-word post beats a padded 2000-word post.
+- Preserve the author's core ideas even when restructuring.
+- Explain why you are suggesting a change, not just what to change.
 - Flag factual claims you cannot verify in the review or gap list. Ask for confirmation when the missing fact blocks the requested work; do not present uncertainty as an established fact.
 - When the user says "make it better", use their context and the review findings to make supported improvements. Ask what "better" means only if that choice blocks the work.
 - Use targeted file edits during refinement. Do not replace or reprint the whole post when one section needs work.

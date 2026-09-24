@@ -219,9 +219,6 @@ Write a JSON file with this structure:
 
 ## Guidelines
 
-- **Be objective**: Base verdicts on evidence, not assumptions
-- **Be specific**: Quote the exact text that supports your verdict
-- **Be thorough**: Check both transcript and output files
-- **Be consistent**: Apply the same standard to each expectation
-- **Explain failures**: Make it clear why evidence was insufficient
-- **No partial credit**: Each expectation is pass or fail, not partial
+Each expectation is pass or fail, with no partial credit, and the same standard
+applies to every one. Quote the exact text from the transcript or outputs that
+supports the verdict, and for a fail say why the evidence was insufficient.

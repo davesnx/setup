@@ -351,10 +351,7 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
         "organization": 4,
         "formatting": 5,
         "usability": 4
-      },
-      "content_score": 4.7,
-      "structure_score": 4.3,
-      "overall_score": 9.0
+      }
     },
     "B": {
       "content": {
@@ -366,10 +363,7 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
         "organization": 3,
         "formatting": 2,
         "usability": 3
-      },
-      "content_score": 2.7,
-      "structure_score": 2.7,
-      "overall_score": 5.4
+      }
     }
   },
   "output_quality": {
