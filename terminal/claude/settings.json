@@ -94,7 +94,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-opus-5-5",
+  "model": "opus",
   "fallbackModel": [
     "opus"
   ],
