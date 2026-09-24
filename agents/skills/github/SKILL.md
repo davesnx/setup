@@ -1,6 +1,6 @@
 ---
 name: github
-description: "GitHub and Git work: validated commits, GitHub Actions CI failures, non-trivial gh commands, and merge/rebase/cherry-pick conflict resolution. Load before every `git commit`. Use for 'commit', 'write a commit message', 'commit changes', GitHub PR inspection, unresolved review threads, GitHub CI logs, 'fix merge conflicts', 'resolve conflicts', or a conflicted branch."
+description: "GitHub and Git work: validated commits, non-trivial gh commands, PR inspection, unresolved review threads, and merge/rebase/cherry-pick conflict resolution. Load before every `git commit`. Use for 'commit', 'write a commit message', 'commit changes', 'fix merge conflicts', 'resolve conflicts', or a conflicted branch. To watch, diagnose, or fix CI, use the ci skill."
 ---
 
 # GitHub
@@ -62,5 +62,5 @@ succeeds even if CI is red or threads are unresolved.
   zsh quoting breaks.
 - Don't sleep-poll runs or checks; `gh run watch ID` and
   `gh pr checks N --watch --fail-fast` exist; let the harness background them.
-  Inside a `loop-on-ci` watch, use its snapshot commands instead: a blocking
+  Inside a `ci` skill watch, use its snapshot commands instead: a blocking
   watch there hides another provider's failure or a target change.

@@ -1,9 +1,9 @@
 ---
-name: loop-on-ci
-description: Use to inspect or debug CI, plan or fix failures, retry a job, or watch checks on a PR, branch, commit, or build. Supports GitHub Actions, Buildkite, and attached providers; each action needs its own authority.
+name: ci
+description: Use to inspect, debug, watch, fix, or retry CI checks on a PR, branch, commit, or build. Supports GitHub Actions, Buildkite, and attached providers; each action needs its own authority. Commits and pushes go through the github skill.
 ---
 
-# Loop On CI
+# CI
 
 Find checks, route them to the correct provider, and act only within the requested mode.
 
@@ -13,7 +13,7 @@ Find checks, route them to the correct provider, and act only within the request
 - **Watch**: Observe current checks without edits, retries, commits, or pushes. A watch request, including "watch until green", does not authorize fixes or require push authorization.
 - **Fix and loop**: A fix request authorizes focused local edits and checks, not publication or retries. An ambiguous "loop until green" request permits observation only until mutation authority is clear.
 - **Retry**: Retry only when requested or separately approved and supported by flake evidence. Retry authority does not authorize edits or publication.
-- **Publish**: Commit and push only when explicitly requested, after required local checks pass. Inspect, watch, fix, and retry authority do not imply publication authority.
+- **Publish**: Only when explicitly requested, through the `github` skill's commit flow. Inspect, watch, fix, and retry authority do not imply publication authority.
 
 ## 1. Resolve The Target
 
@@ -29,7 +29,7 @@ For a branch or commit without a PR, use repository CI configuration and explici
 - Read [references/buildkite.md](references/buildkite.md) for Buildkite builds, jobs, logs, retries, and watches.
 - For an unsupported provider, report its check name and details URL. State that no adapter is installed instead of pretending the logs were inspected.
 
-Verify each required CLI and its authentication before starting. Do not handle credentials or print tokens.
+Verify each provider's tools or CLI and their authentication before starting. Do not handle credentials or print tokens.
 
 ## 3. Inspect Before Waiting
 

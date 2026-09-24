@@ -1,13 +1,13 @@
 schema_version: 2
 id: watch-polls-all-providers
 mode: prose
-skill_under_test: loop-on-ci
-skills_loaded: [loop-on-ci]
+skill_under_test: ci
+skills_loaded: [ci]
 description: "Polling detects another provider's failure while one remains pending and respects head changes and user stop"
 tags: [ci, watch, polling, providers, target, cancellation]
 
 prompt: |
-  Use loop-on-ci to watch PR 42 for at most 120 seconds with ten-second
+  Use the ci skill to watch PR 42 for at most 120 seconds with ten-second
   polling intervals. This is an offline decision test. Use only the saved
   observations below; do not run commands, contact CI, or make changes.
   Snapshot reads are immediate and all mentioned checks are required.

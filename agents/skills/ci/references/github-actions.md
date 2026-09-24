@@ -16,7 +16,7 @@ gh pr checks <pr> --json name,bucket,state,workflow,link
 Prefer the `github` skill's CI failure inspector for GitHub Actions failures. It handles `gh` field drift, run extraction, job-log fallback, and concise snippets:
 
 ```bash
-"$(dirname "${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/loop-on-ci}")/github/scripts/ci-failures.ts" --pr "<number>" -R "<owner>/<repo>" --json
+"$(dirname "${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/ci}")/github/scripts/ci-failures.ts" --pr "<number>" -R "<owner>/<repo>" --json
 ```
 
 Manual fallback:
@@ -40,6 +40,6 @@ gh run view <run-id> --json databaseId,headSha,status,conclusion,jobs
 
 For branch targets, recheck the branch tip; for a fixed commit, verify the returned run's commit. Do not use `gh run watch` or `gh pr checks --watch`: either can hide another provider's failure or a target change while waiting. Bound snapshot requests by the round's remaining budget and return to the shared polling loop even when a run is pending.
 
-For PR snapshots, `gh pr checks` exits 1 for failing checks and 8 for pending checks. Interpret the returned states, not just the exit code. A request timeout means unavailable data, not a CI result.
+Interpret the returned check states, not the `gh pr checks` exit code. A request timeout means unavailable data, not a CI result.
 
 Only this adapter fetches GitHub Actions logs. Route a check whose link points to Buildkite to the Buildkite adapter.

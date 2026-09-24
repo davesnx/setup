@@ -6,7 +6,7 @@ Apply the main skill's ownership, verification, and stop rules throughout.
 ## Authority and ownership
 
 Load [github](../../github/SKILL.md) for PR state, review threads, and Git work;
-load [loop-on-ci](../../loop-on-ci/SKILL.md) for CI diagnosis, fixes, retries, and
+load [ci](../../ci/SKILL.md) for CI diagnosis, fixes, retries, and
 bounded waits. Use their existing tools and provider guidance, not a second watch
 loop. For authorized PR creation, use [create-pr](../../create-pr/SKILL.md).
 
@@ -33,7 +33,7 @@ wait limit across passes; a new head, push, or retry does not reset it.
    operations. Children can fix owned files. If authority or ownership prevents
    resolution, report the blocker before waiting on CI.
 3. Verify each review finding. Fix real defects within scope; support rejected
-   findings with concrete evidence. Use `loop-on-ci` to diagnose failed checks
+   findings with concrete evidence. Use `ci` to diagnose failed checks
    and distinguish code defects, base failures, and infrastructure problems.
    Retry only with its required authority and evidence. Pending reviews and
    required human approvals are waits to report, not defects to edit away.
@@ -42,7 +42,7 @@ wait limit across passes; a new head, push, or retry does not reset it.
    or integration changes invalidate affected evidence, even if patch-id matches.
    Publish only when authorized and local checks pass. Tie authorized replies to
    the actual fix and evidence; resolve threads only with explicit authority.
-5. For pending CI, let the single wait owner use `loop-on-ci` within the remaining
+5. For pending CI, let the single wait owner use `ci` within the remaining
    bounds. A target change ends that watch. If follow-through is still authorized
    and within bounds, start a fresh pass on the new target. After an authorized
    push or retry, refresh all attached checks. Never restart an expired watch

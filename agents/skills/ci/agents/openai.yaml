@@ -1,4 +1,4 @@
 interface:
-  display_name: "Loop on CI"
+  display_name: "CI"
   short_description: "Inspect, watch, or fix CI across providers"
   default_prompt: "Inspect failing CI checks in this repository, summarize the root cause, and propose a focused fix plan."
