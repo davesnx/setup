@@ -23,7 +23,7 @@ __pycache__/
 /terminal/opencode/technical_memory.md
 /terminal/opencode/memory.instruction.md
 /terminal/opencode/tasks/
-/terminal/opencode/node_modules/
+/terminal/opencode/node_modules
 /terminal/opencode/*.lock
 /terminal/opencode/package-lock.json
 /terminal/opencode/host.jsonc
@@ -33,10 +33,10 @@ __pycache__/
 /terminal/opencode/commands/plannotator-*.md
 
 # Eval harness dependencies
-/terminal/bin/eval-harness/node_modules/
+/terminal/bin/eval-harness/node_modules
 
 # Shared Node CLI dependencies (normally installed outside the repo)
-/terminal/node/node_modules/
+/terminal/node/node_modules
 
 # Machine-specific overrides
 /local/*
@@ -46,4 +46,4 @@ __pycache__/
 
 # Claude Code machine-local settings (the global ignore only matches .claude/ paths)
 /terminal/claude/settings.local.json
-/terminal/claude/hooks/node_modules/
+/terminal/claude/hooks/node_modules

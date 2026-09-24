@@ -59,6 +59,12 @@
 - For a bug fix, verify the original symptom. For a regression test, prove it
   fails before the fix and passes after it. Use an isolated baseline for the
   failure check; never revert user work.
+- When only the user can reproduce the symptom, present the fix as the next
+  step to try and name the result that confirms it. Do not state that the
+  symptom is gone.
+- When a question is about how an installed tool reads its configuration or
+  input, settle it with a scratch file and the tool's dry-run or print-config
+  option before you answer, and quote the command you ran.
 - Check that tests detect the intended failure. Do not weaken assertions just
   to make tests pass. No tautological tests. Check expected behavior, not a
   copy of the implementation. Test only through public interfaces, not private
@@ -144,3 +150,8 @@ to subagents and orchestrate them:
   silent fallbacks.
 - When a change alters behavior, update the docs that describe that behavior in
   the same change.
+- Commands in the sandbox `excludedCommands` setting, such as `make`, `git`,
+  `gh`, and `docker`, run outside the sandbox and see the system `$TMPDIR`.
+  Write a file that another command must read to the session scratchpad or the
+  repository, not to `$TMPDIR`. Let a background command's exit code reach the
+  task; do not append an `echo` that masks it.

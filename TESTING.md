@@ -150,6 +150,8 @@ After changing `mac/daemons/com.davesnx.ssh-add.plist`, run
 The job loads SSH keys saved in macOS Keychain once at login. Check
 `launchctl print "gui/$(id -u)/com.davesnx.ssh-add"` for `last exit code = 0`,
 then run `/usr/bin/ssh-add -l` to confirm the expected keys are loaded.
+Run `ssh -T git@github.com` and confirm the greeting names the personal
+account, because the SSH identity decides which GitHub account a push uses.
 Rerun the installer and repeat both checks. To verify login behavior, log out
 and back in, then repeat both checks before making an SSH connection.
 

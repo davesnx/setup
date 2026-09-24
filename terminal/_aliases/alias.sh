@@ -134,9 +134,9 @@ alias pg='pgcli'
 alias my='mycli'
 
 # Extend ls
-alias l="eza --group-directories-first -lh --octal-permissions"
-alias ls="eza --group-directories-first -alh --octal-permissions"
-alias lsa="eza \
+[[ -n "$CLAUDECODE" ]] || alias l="eza --group-directories-first -lh --octal-permissions"
+[[ -n "$CLAUDECODE" ]] || alias ls="eza --group-directories-first -alh --octal-permissions"
+[[ -n "$CLAUDECODE" ]] || alias lsa="eza \
   --long --all --all \
   --group-directories-first \
   --header \
@@ -151,7 +151,7 @@ alias lsa="eza \
   --no-quotes"
 
 # List only directories
-alias ld="ls -D"
+[[ -n "$CLAUDECODE" ]] || alias ld="ls -D"
 
 # https://github.com/sharkdp/bat
 cat() {

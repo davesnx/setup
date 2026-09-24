@@ -1,6 +1,6 @@
 ---
 name: write-draft-blog-post
-description: "Shape a fixed pile of raw material (notes, transcripts, drafts) into an article, paragraph by paragraph, without adding new claims. Companion to write-blog-post and unslop."
+description: "Shape a fixed pile of raw material (notes, transcripts, drafts) into an article, paragraph by paragraph, without adding new claims. Companion to write-blog-post and unslop. Formerly writing-shape (write-shape)."
 disable-model-invocation: true
 argument-hint: "<raw-material.md> [article path]"
 ---
