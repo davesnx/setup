@@ -3,7 +3,7 @@ name: librarian
 description: "Cache and refresh remote git repositories under ~/.librarian, grouped by host/org/repo, so future references can reuse a local copy. Use this skill when the user points you to a remote git repository as reference or you encountered a remote git repo through other means."
 ---
 
-<!-- Local changes: use ~/.librarian and clarify the script location. See UPSTREAM.md. -->
+<!-- Differs from upstream: the default cache is ~/.librarian and checkout.sh is relative to this directory. -->
 
 Use this skill when the user points you to a remote git repository (GitHub/GitLab/Bitbucket URLs, `git@...`, or `owner/repo` shorthand).
 

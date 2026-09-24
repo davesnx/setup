@@ -97,4 +97,4 @@ outside the request needs separate direction.
 
 ## Provenance
 
-See [UPSTREAM.md](UPSTREAM.md) for the integrated source and update record.
+See [UPSTREAM.md](UPSTREAM.md) for the source.

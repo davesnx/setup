@@ -24,7 +24,8 @@ agents/AGENTS.md          Global agent rules -> ~/.claude/CLAUDE.md, ~/.agents/A
                           ~/.config/opencode/AGENTS.md
 agents/skills/            The only skills directory -> ~/.claude/skills, ~/.agents/skills.
                           One directory per skill with SKILL.md. Its tests, evals, and
-                          references stay inside it. Third-party skills carry UPSTREAM.md.
+                          references stay inside it. Third-party skills carry UPSTREAM.md:
+                          the source URL, plus the license when no license file ships.
 agents/skills/VENDOR      Skills published upstream from here, managed by skill-vendor.
 agents/skills/.skill-lock.json  Versions of skills installed with npx skills -> ~/.agents/
 agents/mcp.json           Every MCP server once, in the common format. Never linked.
@@ -91,8 +92,10 @@ local/                    Machine-specific overrides. Git-ignored except README,
   three because one harness wanted it. Put it where both can reach it.
 - A new skill is `agents/skills/<name>/SKILL.md`. Its tests, evals, and
   references live in that directory. Vendor third-party skills and plugins in
-  this repository with an `UPSTREAM.md`. Global configuration folders only link
-  to this repository.
+  this repository with an `UPSTREAM.md` that holds the source URL, pinned to the
+  vendored revision when known, and the license when the directory has no
+  license file. Local changes live in git history, not in `UPSTREAM.md`. Global
+  configuration folders only link to this repository.
 - MCP servers are declared in `agents/mcp.json` only, per-machine differences
   under its `hosts` key. After editing it, run `node terminal/claude/mcp.ts`
   and `node terminal/opencode/mcp.ts`, and commit the rendered files with it.

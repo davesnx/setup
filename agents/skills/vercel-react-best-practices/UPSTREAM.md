@@ -1,9 +1,5 @@
-# Upstream source
+# Upstream
 
-- Repository: not recorded (`README.md` credits the work to "@shuding at Vercel" but does not name a source repository)
-- Source: not recorded
-- Revision: not recorded
-- Vendored: not recorded
-- License: MIT
+https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
 
-Frontmatter metadata records author `vercel`, version `1.0.0`. No local changes have been made to this skill.
+License: MIT

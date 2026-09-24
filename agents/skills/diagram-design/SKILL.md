@@ -8,7 +8,7 @@ metadata:
 
 # Diagram Design
 
-Create self-contained HTML diagrams with inline SVG and CSS. Load only the references needed for the task. License and local provenance remain recorded in this frontmatter and [UPSTREAM.md](UPSTREAM.md).
+Create self-contained HTML diagrams with inline SVG and CSS. Load only the references needed for the task. The license is in this frontmatter and the source in [UPSTREAM.md](UPSTREAM.md).
 
 ## Scope and input trust
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Local change: default to ~/.librarian. See UPSTREAM.md.
+# Differs from upstream: the default cache is ~/.librarian.
 set -euo pipefail
 
 usage() {

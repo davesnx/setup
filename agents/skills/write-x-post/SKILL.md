@@ -51,4 +51,4 @@ Follow the user's requested format. If no format is given, provide:
 
 ## Provenance
 
-See [UPSTREAM.md](UPSTREAM.md) for the source and update record.
+See [UPSTREAM.md](UPSTREAM.md) for the source.
