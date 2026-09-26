@@ -27,6 +27,9 @@
   ],
   "provider": {
     "openai": {
+      "options": {
+        "textVerbosity": "low",
+      },
       "models": {
         "gpt-5.6-luna": {
           "options": {
