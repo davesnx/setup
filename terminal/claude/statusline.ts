@@ -1,6 +1,7 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 
-import { readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { readdirSync, readFileSync } from "node:fs";
 
 // Type for the optional local module
 type GetModelDisplayName = (displayName: string | undefined) => string;
@@ -243,11 +244,11 @@ function formatAutoImproveReports(): string {
 
 function getGitDiffStats(): { additions: number; deletions: number } {
   try {
-    const result = Bun.spawnSync(["git", "diff", "--numstat"], {
+    const result = spawnSync("git", ["diff", "--numstat"], {
       cwd: process.cwd(),
-      stderr: "ignore",
+      stdio: ["ignore", "pipe", "ignore"],
     });
-    if (result.exitCode === 0) {
+    if (result.status === 0) {
       const lines = result.stdout.toString().trim().split("\n");
       let additions = 0;
       let deletions = 0;
@@ -273,11 +274,11 @@ function getGitDiffStats(): { additions: number; deletions: number } {
 function getGitBranch(): string {
   // Get current git branch if git branch available
   try {
-    const result = Bun.spawnSync(["git", "rev-parse", "--abbrev-ref", "HEAD"], {
+    const result = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       cwd: process.cwd(),
-      stderr: "ignore",
+      stdio: ["ignore", "pipe", "ignore"],
     });
-    if (result.exitCode === 0) {
+    if (result.status === 0) {
       return ` ${result.stdout.toString().trim()}`;
     }
   } catch {
@@ -288,10 +289,10 @@ function getGitBranch(): string {
 
 function getClaudeVersion(): string {
   try {
-    const result = Bun.spawnSync(["claude", "-v"], {
-      stderr: "ignore",
+    const result = spawnSync("claude", ["-v"], {
+      stdio: ["ignore", "pipe", "ignore"],
     });
-    if (result.exitCode === 0) {
+    if (result.status === 0) {
       return result.stdout.toString().trim();
     }
   } catch {
@@ -324,7 +325,7 @@ function formatCurrentDir(currentDir: string): string {
 }
 
 async function main() {
-  const input = await Bun.stdin.text();
+  const input = readFileSync(0, "utf8");
   const data: SessionData = JSON.parse(input);
 
   // Calculate current tokens from context_window.current_usage
