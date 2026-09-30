@@ -33,14 +33,20 @@ succeeds even if CI is red or threads are unresolved.
 
 ## Gotchas (each one burned real sessions repeatedly)
 
+- `gh` and `git` run outside the Bash sandbox, with credentials, only when
+  the call is the whole command. A pipe, `;`, `&&`, a redirect, `cd … &&`, or
+  an env/export prefix runs the call inside the sandbox instead, where
+  `~/.config/gh` and `~/.ssh` are denied (`gh auth login` or an SSH error).
+  Run them alone; do not use `dangerouslyDisableSandbox` for this.
 - Never pipe gh into `head`: SIGPIPE can kill gh mid-write (spurious nonzero
   exit, shell-dependent) or silently truncate large output.
-  Redirect to a file and read that, or trim with `--jq '.[0:20]'`.
+  Trim with `--jq '.[0:20]'` instead.
 - `gh pr diff` has no `--stat` and no positive pathspec (`--name-only` and
   `-e/--exclude` globs exist in gh ≥ 2.95). Per-file stats:
   `gh api 'repos/{owner}/{repo}/pulls/N/files' --jq '.[]|[.filename,.additions,.deletions]|@tsv'`
-  Full diff: `gh pr diff N > "$TMPDIR/pr.diff"` once, then rg/sed the file.
-- `gh pr checks` exits 1 = failing, 8 = pending by design; append `|| true`, read the table.
+  Full diff: run `gh pr diff N` alone and read the output; a redirect makes
+  gh run inside the sandbox, without credentials.
+- `gh pr checks` exits 1 = failing, 8 = pending by design; run it alone and read the table, not the exit code.
 - File at any ref, no base64 dance:
   `gh api 'repos/{owner}/{repo}/contents/PATH?ref=SHA' -H 'Accept: application/vnd.github.raw'`
 - `gh api` fills `{owner}/{repo}` from the cwd repo (`GH_REPO=o/r` overrides).

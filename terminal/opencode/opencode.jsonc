@@ -150,8 +150,15 @@
       "shred *": "deny",
       "dd if=*": "deny",
       "mkfs*": "deny",
-      // This also catches --force-with-lease and --force-if-includes
-      "git *--force*": "deny",
+      // Listed per subcommand so push --force-with-lease stays allowed: after
+      // "--force" it has "-", not a space or the end of the command.
+      "git push *--force": "deny",
+      "git push *--force *": "deny",
+      "git clean *--force*": "deny",
+      "git checkout *--force*": "deny",
+      "git switch *--force*": "deny",
+      "git branch *--force*": "deny",
+      "git worktree *--force*": "deny",
       // The -f shorthand, enumerated per subcommand. A blanket "git *-f*" cannot be used: it would also match --format, --follow, --file.
       "git push -f*": "deny",
       "git clean -f*": "deny",

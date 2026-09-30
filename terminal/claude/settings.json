@@ -75,7 +75,13 @@
       "Bash(shred:*)",
       "Bash(dd if=*)",
       "Bash(mkfs*)",
-      "Bash(git *--force*)",
+      "Bash(git push *--force)",
+      "Bash(git push *--force *)",
+      "Bash(git clean *--force*)",
+      "Bash(git checkout *--force*)",
+      "Bash(git switch *--force*)",
+      "Bash(git branch *--force*)",
+      "Bash(git worktree *--force*)",
       "Bash(git push -f*)",
       "Bash(git clean -f*)",
       "Bash(git checkout -f*)",
@@ -193,6 +199,7 @@
   },
   "sandbox": {
     "enabled": true,
+    "enableWeakerNestedSandbox": true,
     "autoAllowBashIfSandboxed": true,
     "network": {
       "allowLocalBinding": true
@@ -225,7 +232,8 @@
       "docker *",
       "orb *",
       "orbctl *",
-      "make *"
+      "make *",
+      "*/skills/github/scripts/*"
     ]
   },
   "spinnerVerbs": {
