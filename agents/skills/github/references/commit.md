@@ -78,9 +78,8 @@ hook protection, and isolation of unrelated work.
 
 6. **Draft the commit message**:
 
-   - Write a single-line subject (unless the repo uses multi-line messages). Add
-     any trailer the harness requires (for example a `Co-Authored-By:` line)
-     with a second `-m`; a trailer does not make it a multi-line message.
+   - Write a single-line subject (unless the repo uses multi-line messages).
+     Add no `Co-Authored-By:` or other AI attribution trailer.
    - Follow the exact style, casing, and verb tense of previous commits.
    - Focus on the purpose/effect of the changes, not a mechanical list of files.
    - Keep it concise: aim for under 72 characters.
@@ -122,8 +121,6 @@ hook protection, and isolation of unrelated work.
 
    ```bash
    git commit -m "<subject>"
-   # with a harness-required trailer:
-   git commit -m "<subject>" -m "<trailer>"
    ```
 
    Then verify:
