@@ -1,12 +1,14 @@
 ---
 name: how
-description: Explain or research how something works in this codebase by exploring code and producing a clear architectural explanation. Use for "how does X work", "research X", "trace X", or "where is X used" when X refers to the current codebase. Optionally critique the architecture for issues.
+description: Explain or research how something works, in this codebase or outside it, by exploring code or primary sources and producing a clear, sourced explanation. Use for "how does X work", "research X", "trace X", or "where is X used" — X can be local code or an external topic, such as a library, API, other repo, or knowledge base. Optionally critique the architecture for issues.
 ---
 
 # How
 
 Explain enough of the system for the reader to follow its behavior and find the
-relevant code. This is read-only work unless the user separately asks for edits.
+relevant code. For a question about an external topic, explain it from primary
+sources instead, with a source on each claim. This is read-only work unless the
+user separately asks for edits.
 
 ## Trace the system
 
@@ -20,6 +22,22 @@ Explore directly by default. Use parallel read-only explorers only for separate
 parts that justify the extra work. Give each a distinct question and use
 `references/explorer-prompt.md` when delegating. Let the host configuration select
 models. Synthesize the findings yourself and verify disagreements in the code.
+
+## Research outside the codebase
+
+Some questions point outside this repository: a third-party library, an API,
+another repo, or a knowledge base.
+
+1. For a remote git repo, use the librarian skill for a local cached checkout,
+   then trace it like local code.
+2. For docs, APIs, specs, and knowledge bases, read the primary source itself,
+   not a secondary write-up of it. Follow each claim back to the page or file
+   that states it.
+3. Give each claim a source: a URL, a file path, or a doc section. A caller
+   that records findings on a ticket, such as wayfinder, needs that source on
+   each line it keeps.
+4. Stop when the claims the question needs are covered, or name what you could
+   not verify.
 
 ## Explain
 

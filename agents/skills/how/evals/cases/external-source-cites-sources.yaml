@@ -1,0 +1,24 @@
+schema_version: 2
+id: external-source-cites-sources
+mode: deterministic
+skill_under_test: how
+skills_loaded: [how]
+description: "A research question about an external doc file answers with a source on the claim"
+setup:
+  fixtures:
+    vendor-docs/widget-api.md: fixtures/widget-api.md
+prompt: |
+  Use How to research what vendor-docs/widget-api.md says about the default
+  value of options.retries in createWidget. This file is a cached copy of
+  third-party API docs, not part of this codebase's source. Write at most 100
+  words to answer.md, giving a source for the claim. Do not edit
+  vendor-docs/widget-api.md.
+checks:
+  - kind: file_exists
+    path: answer.md
+  - kind: output_contains
+    value: '"name":"how"'
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"answer.md\",\"utf8\"); if(!/\\b3\\b/.test(s)||!s.includes(\"widget-api.md\")) process.exit(1); console.log(\"sourced\")'"
+    unsafe_shell: true
+    expect_exact: sourced
