@@ -5,7 +5,7 @@ Performance is a feature. Identify the actual bottleneck for THIS interface, fix
 Understand current performance and identify problems:
 
 1. **Measure current state**:
-   - **Core Web Vitals**: LCP, FID/INP, CLS scores
+   - **Core Web Vitals**: LCP, INP, CLS scores
    - **Load time**: Time to interactive, first contentful paint
    - **Bundle size**: JavaScript, CSS, image sizes
    - **Runtime performance**: Frame rate, memory usage, CPU usage
@@ -34,7 +34,7 @@ Create systematic improvement plan:
 - Use CDN for faster delivery
 
 ```html
-<img
+<img 
   src="hero.webp"
   srcset="hero-400.webp 400w, hero-800.webp 800w, hero-1200.webp 1200w"
   sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"
@@ -106,7 +106,7 @@ elements.forEach((el, i) => {
 - Minimize DOM depth (flatter is faster)
 - Reduce DOM size (fewer elements)
 - Use `content-visibility: auto` for long lists
-- Virtual scrolling for very long lists (react-window, react-virtualized)
+- Virtual scrolling for very long lists (react-window, TanStack Virtual)
 
 **Reduce Paint & Composite**:
 - Use `transform` and `opacity` for reliable movement, but allow blur, filters, masks, clip paths, shadows, and color shifts when they create meaningful polish
@@ -196,7 +196,7 @@ const observer = new IntersectionObserver((entries) => {
 - Use CDN
 - Server-side rendering
 
-### First Input Delay (FID < 100ms) / INP (< 200ms)
+### Interaction to Next Paint (INP < 200ms)
 - Break up long tasks
 - Defer non-critical JavaScript
 - Use web workers for heavy computation
@@ -226,7 +226,7 @@ const observer = new IntersectionObserver((entries) => {
 - Performance monitoring (Sentry, DataDog, New Relic)
 
 **Key metrics**:
-- LCP, FID/INP, CLS (Core Web Vitals)
+- LCP, INP, CLS (Core Web Vitals; INP replaced FID in March 2024)
 - Time to Interactive (TTI)
 - First Contentful Paint (FCP)
 - Total Blocking Time (TBT)
