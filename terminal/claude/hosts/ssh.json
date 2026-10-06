@@ -40,6 +40,16 @@
     "grafana": {
       "command": "grafana-mcp",
       "args": []
+    },
+    "buildkite": {
+      "command": "buildkite-mcp-server",
+      "args": [
+        "stdio"
+      ],
+      "env": {
+        "BUILDKITE_API_TOKEN": "${BUILDKITE_API_TOKEN}",
+        "BUILDKITE_ORG_SLUG": "ahrefs"
+      }
     }
   }
 }

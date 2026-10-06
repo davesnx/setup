@@ -34,7 +34,7 @@
     },
     "buildkite": {
       "type": "local",
-      "enabled": false,
+      "enabled": true,
       "command": [
         "buildkite-mcp-server",
         "stdio"
