@@ -84,6 +84,15 @@
 		"enabled": true
 	},
 	{
+		"name": "febox1: melange-dune-library-examples",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/melange-dune-library-examples",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
 		"name": "febox1: melange-re.github.io",
 		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/melange/.workplace/deps/melange-re.github.io",
 		"paths": [],
