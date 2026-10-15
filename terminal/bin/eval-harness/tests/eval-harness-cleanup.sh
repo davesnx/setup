@@ -6,7 +6,7 @@ root=$(CDPATH='' cd "$(dirname "$0")/.." && pwd)
 package="$root/node_modules/@nano-step/eval-harness"
 bash "$package/scripts/eval/tests/cleanup.sh"
 
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$work/runs/cli/case/sandbox" "$work/runs/cli/case/workdir/sandbox"
 printf '0\n' > "$work/runs/cli/.finished"

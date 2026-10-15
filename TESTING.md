@@ -18,7 +18,7 @@ It checks:
   Run only this part with `bash check.sh --shell-only`. This mode needs only
   Git, Bash, ShellCheck, Zsh, and base system utilities. Shell validation failures
   stop the full command before formatting and other checks.
-- Formatting of the check scripts, Git effort command, and `testzsh`.
+- Formatting of the check scripts, Git effort command, `testzsh`, and the Git module.
 - Argument handling, collections, and logging in both system and PATH Bash,
   plus shared helpers in Zsh.
 - Git effort counts, filtering, unusual filenames, command failure, and temporary
@@ -51,6 +51,18 @@ It checks:
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
   tracked directory in the first two levels has a row, and no tracked symlink
   is absolute.
+- Config syntax: every tracked `.json` and `.jsonc` file parses, allowing
+  comments and trailing commas. Every `agents/skills/*/SKILL.md` has frontmatter
+  with a `name` equal to its directory and a non-empty `description`.
+- Claude Code hook tests (`npm ci` installs pinned dependencies), the OpenCode
+  permission plugin test, and the skill tests that need no model or network:
+  skill-vendor, ssh-transfer, librarian, autoresearch, the plannotator
+  `SKILL.test.ts` files, and skill-creator (all but `test_run_eval`).
+  Skipped: the Mermaid render test (needs the Plannotator monorepo),
+  `test_run_eval` (process pools, fake `claude`), and OpenCode
+  `tests/integration` (needs the `opencode` binary).
+- The pre-commit hook: the installer links it without `core.hooksPath`, it blocks
+  a commit when `check.sh` fails, and a rerun changes nothing.
 - On macOS, installer ordering, reruns, backups, failure recovery, native Node
   selection, and Choosy settings restoration.
 
@@ -69,6 +81,23 @@ also run their documented checks:
 - [Writing eval contracts](agents/skills/write-blog-post/evals/README.md).
 
 These module checks are not part of the root command or its CI jobs.
+
+## Pre-commit hook
+
+`sh git/install.sh` links `git/hooks/pre-commit` into the checkout's own
+`.git/hooks`. The hook runs `bash check.sh --shell-only` (about 6 seconds).
+It does not replace the full command. Run `bash check.sh` before pushing; CI
+does too.
+
+## Claude Code sandbox
+
+`bash check.sh` runs inside the Claude Code Bash sandbox with the network host
+`registry.npmjs.org` allowed for `npm ci` and `npm install`. Test scripts make
+temporary paths under `$TMPDIR` because macOS `mktemp` otherwise writes to
+`/var/folders`, which the sandbox denies. One check needs more than the sandbox
+gives: the `ocs` pseudo-terminal test, because the sandbox denies opening a
+PTY. `agent-link.sh` prints SKIP when the sandbox denies Unix socket binds. Run
+the full command outside the sandbox to cover both.
 
 Run the focused `testzsh` checks without installing tools or touching your home:
 

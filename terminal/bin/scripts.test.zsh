@@ -9,7 +9,7 @@ export DOTFILES_PATH="$root"
 export REAL_JQ=$(whence -p jq)
 [[ -n "$REAL_JQ" ]] || { print -u2 'Tests require jq'; exit 1; }
 zsh_bin=$(whence -p zsh)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf -- "$work"' EXIT HUP INT TERM
 mkdir -p "$work/bin" "$work/project with spaces" "$work/home"
 export HOME="$work/home" ZDOTDIR="$work/home"

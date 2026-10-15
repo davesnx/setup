@@ -3,7 +3,7 @@ set -euo pipefail
 
 skill_dir="$(cd "$(dirname "$0")/.." && pwd)"
 checkout="$skill_dir/checkout.sh"
-test_root="$(mktemp -d)"
+test_root="$(cd -P "$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")" && pwd)"
 trap 'rm -rf "$test_root"' EXIT
 
 fake_bin="$test_root/bin"

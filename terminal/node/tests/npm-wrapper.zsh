@@ -6,7 +6,7 @@ root=${0:A:h:h:h:h}
 original_path=$PATH
 real_npm=$(whence -p npm)
 real_node=$(whence -p node)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 work=${work:A}
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 

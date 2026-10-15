@@ -2,7 +2,7 @@
 
 set -euo pipefail
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$work/repo/mac/raycast" "$work/repo/agents" "$work/bin" "$work/home"
 launcher="$work/repo/mac/raycast/raycast-open-chrome-agent.sh"

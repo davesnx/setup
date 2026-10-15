@@ -2,7 +2,7 @@
 
 set -euo pipefail
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/../../.." && pwd)
-work=$(mktemp -d)
+work=$(cd "$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")" && pwd)
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$work/repo/terminal/zsh" "$work/bin"
 cp "$root/check.sh" "$work/repo/check.sh"

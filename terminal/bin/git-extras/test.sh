@@ -2,7 +2,7 @@
 
 set -euo pipefail
 root=$(CDPATH='' cd "$(dirname "$0")/../../.." && pwd)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf -- "$work"' EXIT
 export DOTFILES_PATH="$root" TERM=dumb
 export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null

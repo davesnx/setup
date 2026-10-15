@@ -121,7 +121,7 @@ if [[ -t 1 ]]; then
   to_tty=true
   reset_color=$(tputq sgr0)
 fi
-tmp=$(mktemp -t "$(basename "$0").XXXXXXX")
+tmp=$(mktemp "${TMPDIR:-/tmp}/$(basename "$0").XXXXXXX")
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM

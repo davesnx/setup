@@ -77,7 +77,8 @@ fi
 shfmt -d -i 2 -ci "$root/check.sh" \
   "$root/terminal/core/test.sh" "$root/terminal/bin/git-extras/test.sh" \
   "$root/terminal/bin/git-extras/git-effort" \
-  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh"
+  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh" \
+  "$root/git/install.sh" "$root/git/hooks/pre-commit" "$root/git/tests/pre-commit.sh"
 git -C "$root" diff --check
 git -C "$root" diff --cached --check
 
@@ -93,12 +94,92 @@ bun test "$root/terminal/bin/flipper.test.ts"
 bun test "$root/agents/mcp.test.ts"
 bun test "$root/terminal/claude/mcp.test.ts"
 bun test "$root/terminal/opencode/mcp.test.ts"
+sh "$root/git/tests/pre-commit.sh"
 sh "$root/terminal/zsh/tests/agent-link.sh"
 zsh "$root/terminal/zsh/tests/cached-init.zsh"
 bash "$root/terminal/zsh/tests/syntax-selection.sh"
 zsh "$root/terminal/bin/scripts.test.zsh"
 sh "$root/mac/tests/shell-startup.sh"
 zsh "$root/terminal/node/tests/npm-wrapper.zsh"
+# Config syntax: .json and .jsonc files parse as JSON with comments and
+# trailing commas allowed (the editor settings files use both).
+json_files=()
+while IFS= read -r -d '' file; do
+  [ -e "$root/$file" ] || continue
+  json_files+=("$root/$file")
+done < <(git -C "$root" ls-files --cached --others --exclude-standard -z -- '*.json' '*.jsonc')
+node - ${json_files[@]+"${json_files[@]}"} <<'JS'
+const fs = require("fs");
+const strip = (text) => {
+  let out = "";
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inString) {
+      out += c;
+      if (c === "\\") out += text[++i];
+      else if (c === '"') inString = false;
+    } else if (c === '"') {
+      inString = true;
+      out += c;
+    } else if (c === "/" && text[i + 1] === "/") {
+      while (i < text.length && text[i] !== "\n") i++;
+      out += "\n";
+    } else if (c === "/" && text[i + 1] === "*") {
+      const end = text.indexOf("*/", i + 2);
+      i = end < 0 ? text.length : end + 1;
+    } else out += c;
+  }
+  return out.replace(/,(\s*[}\]])/g, "$1");
+};
+let bad = 0;
+for (const file of process.argv.slice(2)) {
+  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) continue;
+  try {
+    JSON.parse(strip(fs.readFileSync(file, "utf8")));
+  } catch (error) {
+    console.error(`Invalid JSON: ${file}: ${error.message}`);
+    bad = 1;
+  }
+}
+process.exit(bad);
+JS
+
+# Skills: SKILL.md starts with frontmatter whose name matches the directory and
+# whose description is not empty.
+for skill in "$root"/agents/skills/*/SKILL.md; do
+  dir=$(basename "$(dirname "$skill")")
+  if ! awk -v dir="$dir" '
+    NR == 1 && $0 != "---" { exit 1 }
+    NR > 1 && $0 == "---" { closed = 1; exit }
+    /^name:/ { sub(/^name:[ ]*/, ""); gsub(/["\047]/, ""); name = $0 }
+    /^description:/ { sub(/^description:[ ]*/, ""); desc = $0 }
+    END { exit !(closed && name == dir && desc != "") }
+  ' "$skill"; then
+    printf 'Bad SKILL.md frontmatter (name must equal %s, description required): %s\n' "$dir" "$skill" >&2
+    exit 1
+  fi
+done
+
+# Deterministic skill and hook tests. Not run here: skill-creator test_run_eval
+# (process pools and a fake claude), the Mermaid render test in
+# plannotator-visual-explainer (needs the Plannotator monorepo), opencode
+# tests/integration (needs the opencode binary), and skill-evals/eval-harness
+# (own checks, see TESTING.md).
+npm ci --silent --prefix "$root/terminal/claude/hooks"
+node --test "$root/terminal/claude/hooks/auto-improve.test.ts"
+node --test "$root/terminal/opencode/tests/agent-permission-boundaries.test.mjs"
+bash "$root/agents/skills/skill-vendor/tests/skill-vendor.sh"
+bash "$root/agents/skills/ssh-transfer/tests/ssh-transfer.sh"
+bash "$root/agents/skills/librarian/tests/checkout.sh"
+bun test "$root/agents/skills/plannotator-setup-goal/SKILL.test.ts"
+bun test "$root/agents/skills/plannotator-visual-explainer/SKILL.test.ts" \
+  --test-name-pattern '^(?!.*renders representative)'
+(cd "$root/agents/skills/autoresearch" && python3 -m unittest discover -s tests)
+(cd "$root/agents/skills/skill-creator" &&
+  python3 -m unittest tests.test_aggregate_benchmark tests.test_generate_review \
+    tests.test_quick_validate tests.test_run_loop)
+
 sh "$root/terminal/bin/ocs/install.sh"
 npm --prefix "$root/terminal/bin/ocs" run format:check
 npm --prefix "$root/terminal/bin/ocs" run check

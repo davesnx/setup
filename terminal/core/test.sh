@@ -3,7 +3,7 @@
 # Also run with zsh: the interactive shell shares these helpers.
 set -euo pipefail
 root=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf -- "$work"' EXIT
 export DOTFILES_PATH="$root" TERM=dumb
 LOG_FILE="$work/messages.log"

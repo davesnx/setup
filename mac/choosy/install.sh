@@ -17,7 +17,7 @@ if pgrep -x Choosy >/dev/null; then
   exit 69
 fi
 
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 for name in behaviours preferences; do
   file="$work/$name.plist"

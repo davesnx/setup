@@ -4,7 +4,7 @@ set -eu
 
 root=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
 export DOTFILES_PATH="$root"
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 
 test_bin="$work/bin"

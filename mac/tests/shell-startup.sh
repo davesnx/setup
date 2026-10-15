@@ -3,7 +3,7 @@
 set -eu
 
 root=$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 zsh_bin=$(command -v zsh)
 mkdir -p "$work/home" "$work/apple silicon/bin" "$work/intel/bin" "$work/path brew/bin"

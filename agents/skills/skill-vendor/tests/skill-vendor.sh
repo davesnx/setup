@@ -3,7 +3,7 @@
 set -euo pipefail
 
 setup=$(CDPATH='' cd "$(dirname "$0")/../../../.." && pwd)
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' HUP TERM

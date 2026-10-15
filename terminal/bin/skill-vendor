@@ -53,7 +53,7 @@ manifest=${SKILL_VENDOR_MANIFEST:-$script_dir/../../agents/skills/VENDOR}
 skills_dir=$(CDPATH='' cd "$(dirname "$manifest")" && pwd)
 manifest=$skills_dir/$(basename "$manifest")
 cache_root=${SKILL_VENDOR_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/skill-vendor}
-work=$(mktemp -d)
+work=$(mktemp -d "${TMPDIR:-/tmp}/skill-vendor.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' HUP TERM
