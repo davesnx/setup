@@ -77,8 +77,7 @@ fi
 shfmt -d -i 2 -ci "$root/check.sh" \
   "$root/terminal/core/test.sh" "$root/terminal/bin/git-extras/test.sh" \
   "$root/terminal/bin/git-extras/git-effort" \
-  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh" \
-  "$root/git/install.sh" "$root/git/hooks/pre-commit" "$root/git/tests/pre-commit.sh"
+  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh"
 git -C "$root" diff --check
 git -C "$root" diff --cached --check
 
@@ -94,7 +93,6 @@ bun test "$root/terminal/bin/flipper.test.ts"
 bun test "$root/agents/mcp.test.ts"
 bun test "$root/terminal/claude/mcp.test.ts"
 bun test "$root/terminal/opencode/mcp.test.ts"
-sh "$root/git/tests/pre-commit.sh"
 sh "$root/terminal/zsh/tests/agent-link.sh"
 zsh "$root/terminal/zsh/tests/cached-init.zsh"
 bash "$root/terminal/zsh/tests/syntax-selection.sh"

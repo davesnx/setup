@@ -77,9 +77,6 @@ mac/chrome-extensions.md  Browser extension list.
 mac/vimium-options.json   Vimium settings.
 
 git/                      .gitconfig .gitignore_global .gitattributes -> ~/. forgit.zsh.
-git/hooks/pre-commit      Runs check.sh --shell-only. install.sh links it into this
-                          checkout's .git/hooks; never set core.hooksPath.
-git/tests/pre-commit.sh   Scratch-repo test of the installer link and the hook.
 local/                    Machine-specific overrides. Git-ignored except README, install.sh,
                           main.sh. *.zsh files are sourced at shell start. local/bin holds
                           machine-only commands.

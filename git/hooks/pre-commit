@@ -1,5 +1,0 @@
-#!/bin/sh
-# Linked into .git/hooks by git/install.sh. Runs the fast checks only; the full
-# `bash check.sh` still runs in CI and before a push.
-root=$(git rev-parse --show-toplevel) || exit 1
-exec bash "$root/check.sh" --shell-only

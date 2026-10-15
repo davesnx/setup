@@ -61,8 +61,6 @@ It checks:
   Skipped: the Mermaid render test (needs the Plannotator monorepo),
   `test_run_eval` (process pools, fake `claude`), and OpenCode
   `tests/integration` (needs the `opencode` binary).
-- The pre-commit hook: the installer links it without `core.hooksPath`, it blocks
-  a commit when `check.sh` fails, and a rerun changes nothing.
 - On macOS, installer ordering, reruns, backups, failure recovery, native Node
   selection, and Choosy settings restoration.
 
@@ -81,13 +79,6 @@ also run their documented checks:
 - [Writing eval contracts](agents/skills/write-blog-post/evals/README.md).
 
 These module checks are not part of the root command or its CI jobs.
-
-## Pre-commit hook
-
-`sh git/install.sh` links `git/hooks/pre-commit` into the checkout's own
-`.git/hooks`. The hook runs `bash check.sh --shell-only` (about 6 seconds).
-It does not replace the full command. Run `bash check.sh` before pushing; CI
-does too.
 
 ## Claude Code sandbox
 
