@@ -36,6 +36,6 @@ jobs:
         if: runner.os == 'macOS'
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
-        run: brew install bash shellcheck shfmt jq
+        run: brew install bash shellcheck shfmt jq rsync
       - name: Run checks
         run: bash check.sh
