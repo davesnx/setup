@@ -146,3 +146,10 @@ to subagents and orchestrate them:
   silent fallbacks.
 - When a change alters behavior, update the docs that describe that behavior in
   the same change.
+- Commands in the sandbox `excludedCommands` setting, such as `make`, `git`,
+  `gh`, and `docker`, run outside the sandbox and see the system `$TMPDIR`.
+  Write a file that another command must read to the session scratchpad or the
+  repository, not to `$TMPDIR`. Let a background command's exit code reach the
+  task; do not append an `echo` that masks it.
+- The Bash tool shell is zsh, so `$PIPESTATUS` is empty. Use `$pipestatus[1]`
+  or `set -o pipefail` to check a pipeline's exit code.
