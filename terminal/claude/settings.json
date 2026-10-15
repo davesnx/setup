@@ -197,7 +197,6 @@
   },
   "sandbox": {
     "enabled": true,
-    "enableWeakerNestedSandbox": true,
     "autoAllowBashIfSandboxed": true,
     "network": {
       "allowLocalBinding": true
@@ -222,6 +221,7 @@
         }
       ]
     },
+    "enableWeakerNestedSandbox": true,
     "excludedCommands": [
       "git *",
       "gh *",
@@ -252,5 +252,33 @@
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "useAutoModeDuringPlan": true,
-  "teammateDefaultModel": "sonnet"
+  "teammateDefaultModel": "sonnet",
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: davesnx/setup — PUBLIC (confirmed via gh); no rulesets or classic protected branches listed",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: main (default); no protected branches or rulesets listed for davesnx/setup",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine or CI runner with open internet",
+      "**Source control**: davesnx/setup (public) and its origin remote only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development",
+      "**Trusted repo**: davesnx/setup (public, this repo's working directory) and its origin remote at https://github.com/davesnx/setup — this repo is PUBLIC, so only this repo's own work belongs here; confidential material, secrets, and credentials are never cleared into it by its visibility",
+      "**Org-specific CLIs**: None configured"
+    ]
+  }
 }
