@@ -3,7 +3,8 @@
 Dotfiles and tool configuration for the Mac and the nspawn host. Each module's
 `install.sh` links its managed files into place. Edit the source here and rerun
 that installer. Never edit the linked copy under `~`, and never let another tool
-write through a link into this repository.
+write through a link into this repository. Use the terms in `CONTEXT.md`, and
+update it when you add or change a term.
 
 ## Where things go
 
@@ -17,6 +18,7 @@ prelude.sh                Installer helpers: need, link_path, one backup dir per
 check.sh                  Shared setup checks. Run before committing. See TESTING.md.
 TESTING.md                What check.sh covers, and what needs a real smoke test.
 CLAUDE.md                 One line, @AGENTS.md. Claude Code does not read AGENTS.md.
+CONTEXT.md                Glossary of this repository's terms. Use them; update on change.
 .github/workflows/check.yml  CI. Runs check.sh on Linux and macOS.
 
 agents/                   Shared by Claude Code and OpenCode: rules, skills, MCP.
