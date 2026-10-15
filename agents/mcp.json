@@ -1,29 +1,5 @@
 {
   "servers": {
-    "notion": {
-      "type": "remote",
-      "enabled": true,
-      "url": "https://mcp.notion.com/mcp"
-    },
-    "ahrefs": {
-      "type": "remote",
-      "enabled": true,
-      "url": "https://api.ahrefs.com/mcp/mcp"
-    },
-    "linear": {
-      "type": "remote",
-      "enabled": true,
-      "url": "https://mcp.linear.app/mcp"
-    },
-    "strava": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "@r-huijts/strava-mcp-server"
-      ]
-    },
     "chrome-devtools": {
       "type": "local",
       "enabled": true,
@@ -47,21 +23,65 @@
     }
   },
   "hosts": {
+    "local": {
+      "notion": {
+        "type": "remote",
+        "enabled": true,
+        "url": "https://mcp.notion.com/mcp"
+      },
+      "ahrefs": {
+        "type": "remote",
+        "enabled": false,
+        "url": "https://api.ahrefs.com/mcp/mcp"
+      },
+      "linear": {
+        "type": "remote",
+        "enabled": false,
+        "url": "https://mcp.linear.app/mcp"
+      },
+      "strava": {
+        "type": "local",
+        "enabled": false,
+        "command": [
+          "npx",
+          "-y",
+          "@r-huijts/strava-mcp-server"
+        ]
+      }
+    },
     "ssh": {
       "notion": {
+        "type": "remote",
+        "enabled": true,
+        "url": "https://mcp.notion.com/mcp",
         "oauth": {
           "callbackPort": 25121
         }
       },
       "ahrefs": {
+        "type": "remote",
+        "enabled": true,
+        "url": "https://api.ahrefs.com/mcp/mcp",
         "oauth": {
           "callbackPort": 25122
         }
       },
       "linear": {
+        "type": "remote",
+        "enabled": true,
+        "url": "https://mcp.linear.app/mcp",
         "oauth": {
           "callbackPort": 25123
         }
+      },
+      "strava": {
+        "type": "local",
+        "enabled": true,
+        "command": [
+          "npx",
+          "-y",
+          "@r-huijts/strava-mcp-server"
+        ]
       },
       "grafana": {
         "type": "local",

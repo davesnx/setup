@@ -25,6 +25,15 @@
         "callbackPort": 25123
       }
     },
+    "strava": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "@r-huijts/strava-mcp-server"
+      ]
+    },
     "grafana": {
       "type": "local",
       "enabled": true,

@@ -1,24 +1,5 @@
 {
   "mcpServers": {
-    "notion": {
-      "type": "http",
-      "url": "https://mcp.notion.com/mcp"
-    },
-    "ahrefs": {
-      "type": "http",
-      "url": "https://api.ahrefs.com/mcp/mcp"
-    },
-    "linear": {
-      "type": "http",
-      "url": "https://mcp.linear.app/mcp"
-    },
-    "strava": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@r-huijts/strava-mcp-server"
-      ]
-    },
     "chrome-devtools": {
       "command": "npx",
       "args": [
@@ -36,6 +17,10 @@
       "headers": {
         "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       }
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
     }
   }
 }

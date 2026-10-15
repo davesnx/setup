@@ -16,9 +16,14 @@ key, so a typo fails the check instead of being ignored by one tool.
 machine adds or changes, keyed by server name: a partial entry merges over the
 shared server of that name, and a complete entry adds a server that only that
 machine has. The profile names match the OpenCode host profiles that the
-installer selects. Today `hosts.ssh` pins the OAuth callback port of each
-remote server and adds the Grafana and Buildkite servers that exist only on
-nspawn.
+installer selects. Today `servers` holds only `chrome-devtools` and `context7`.
+Both profiles add Notion, Ahrefs, Linear, and Strava. `hosts.local` sets
+`enabled: false` on Ahrefs, Linear, and Strava: Claude Code skips them and
+OpenCode lists them turned off. Set `enabled: true` to load one again.
+`hosts.ssh` also pins the
+OAuth callback port of each remote server and adds the Grafana and Buildkite
+servers that exist only on nspawn. Put a server that only some machines need in
+`hosts`, not in `servers`.
 
 `chrome-devtools` does not launch a browser. It attaches to the Brave that the
 Raycast command **Open Brave Agent**, `mac/raycast/raycast-open-chrome-agent.sh`,
