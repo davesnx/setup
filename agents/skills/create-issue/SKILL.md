@@ -1,6 +1,6 @@
 ---
 name: create-issue
-description: Use when asked to open, file, report, or create a GitHub issue, or to write or edit an issue title or body. Reads the repository's templates and recent issues for style, searches for duplicates, writes a short body around a verified reproduction, and files the issue only with explicit authorization. Not for pull requests; use create-pr. Not for splitting a plan into tickets; use to-tickets.
+description: Use when asked to open, file, report, or create a GitHub issue, or to write or edit an issue title or body. Reads templates and recent issues for style, searches duplicates, writes a short body around a verified reproduction, and files only with explicit authorization. Not for pull requests; use create-pr. Not for splitting a plan into tickets; use to-tickets.
 ---
 
 # Create an issue

@@ -5,7 +5,7 @@ habits an edit pass fixes in his prose and the ones it leaves alone. Based
 on the diff of sancho.dev PR #753, with suggested alternatives for the
 context-dependent cases below. The alternatives are not a record of
 author-approved wording. Apply
-after the generic catalogue in `SKILL.md`, on any text he wrote: sancho.dev
+after the generic catalogue in `catalog.md`, on any text he wrote: sancho.dev
 posts, docs, READMEs, messages. The standard the edit serves is
 `VOICE.md` in the sancho.dev repository. These edits are contextual examples,
 not universal grammar rules or targets for future posts. Preserve uncertainty,
@@ -25,7 +25,7 @@ list before touching it.
 - "Aside," as a paragraph opener when it introduces an aside. It is his
   "Aparte,". Judge its function, not how often it appears.
 - "actually" when it corrects: "what actually works", "cram tests are nice,
-  actually". This overrides pattern 43 in `SKILL.md`.
+  actually". This overrides pattern 43 in `catalog.md`.
 - "very", "a bit", "a little", "kind of", "some stuff here and there" when
   they carry a reaction, degree, or uncertainty. Cut repetition only when it
   adds no meaning; a count alone is not a reason to edit.

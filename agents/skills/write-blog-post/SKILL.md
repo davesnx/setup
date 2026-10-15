@@ -17,7 +17,13 @@ You are an expert blog editor and writer. Help the author produce a post that is
 6. **Preserve claims.** Keep every fact, name, number, date, quote, citation, qualification, and conclusion unless the author asks to change the substance. This applies to titles, headings, transitions, and endings too: a sequence of events does not establish a cause, and a possible result is not a confirmed one.
 7. **Do not invent details.** Never add sources, statistics, anecdotes, quotes, or personal experiences. Mark hypotheticals as hypothetical.
 
----
+## Reference files
+
+Read each file only when its condition holds.
+
+- [references/interview.md](references/interview.md): read before asking interview questions (Step 2), and when `VOICE.md` questions come up.
+- [references/review-framework.md](references/review-framework.md): read when reviewing a draft or complete post, or judging claim support.
+- [references/writing-principles.md](references/writing-principles.md): read when writing or rewriting prose, choosing a post structure, writing titles, or handling a post that is too long, too short, boring, flimsy, or off-voice.
 
 ## Workflow
 
@@ -39,8 +45,6 @@ Keep supplied material, verified research, suggested ideas, and open questions d
 
 ### Step 1: Receive Input
 
-The user will provide one of the following:
-
 | Input Type | What You Do |
 |---|---|
 | **A title or topic only** | Use supplied context; ask about blocking gaps. Use the Full Interview if the author wants to develop the idea together. |
@@ -52,95 +56,26 @@ Select the path from the request, not just the input's completeness. Do not wast
 
 ### Step 2: Interview (Opt-In)
 
-The interview has **5 areas**. Ask only what's needed based on the input. Do not dump all questions at once. Ask in **batches of 3-5 questions**, then follow up based on the answers. Tell the author that shorthand answers, links, and an unstructured information dump are welcome.
-
-When starting from a topic or thin outline, invite the author to unload relevant context without organizing it first. Useful context includes personal experience, technical constraints, failed alternatives, disputed claims, source material, publication timing, stakeholder concerns, and details that must survive editing. Read linked or local material with available tools rather than asking the author to repeat it.
-
-#### Area 1: Intent and Goal
-
-Understand why this post exists.
-
-- What's the one thing you want the reader to walk away knowing or doing?
-- Why are you writing this now? Is there a trigger (event, trend, personal experience)?
-- Is this meant to educate, persuade, entertain, or document?
-- Where will this be published? (personal blog, company blog, Medium, dev.to, etc.)
-- Does this tie into a broader content strategy or is it standalone?
-
-#### Area 2: Audience
-
-Understand who will read this.
-
-- Who is the ideal reader? (role, experience level, context)
-- What does the reader already know about this topic?
-- What does the reader believe that you might challenge or confirm?
-- What would make the reader stop reading halfway through?
-- What would make the reader share this with someone?
-
-#### Area 3: Substance and Claims
-
-Ensure the post is built on solid ground.
-
-- What's your core argument or thesis?
-- What evidence or experience supports this? (data, anecdotes, case studies, research)
-- Are there parts you're unsure about or where you're speculating?
-- Are there claims that need sources or caveats?
-- Which of these objections will readers raise, and how does the post answer them?
-
-| Objection | What the reader thinks |
-|---|---|
-| Factual | "That's not true" |
-| Experiential | "That doesn't match my experience" |
-| Scope | "This doesn't apply to my situation" |
-| Mechanism | "I don't see how that follows" |
-| Tradeoff | "What about the downsides?" |
-| Alternative | "There's a better way" |
-| Moral | "That feels wrong" |
-| Practical | "That's unrealistic" |
-
-#### Area 4: Structure and Flow
-
-Understand how the post should be organized.
-
-- Do you have a preferred structure in mind? (listicle, narrative, tutorial, essay, comparison)
-- What's the ideal length? (short: 500-800 words, medium: 800-1500, long: 1500-3000, deep dive: 3000+)
-- Are there specific sections or points you definitely want included?
-- Is there a natural narrative arc (problem-discovery-solution, before-after, chronological)?
-
-#### Area 5: Voice and Style
-
-Understand how it should sound.
-
-When the repository has a `VOICE.md` at its root, read it before asking. Follow its current guidance and use its examples in context, not as mandatory structures or quotas. It overrides the generic style guidance later in this skill. Ask only what it leaves open.
-
-- How would you describe your writing voice? (casual, technical, conversational, authoritative, witty)
-- Any blog posts (yours or others) that match the tone you're going for?
-- What should this NOT sound like? (academic, corporate, preachy, clickbaity)
-- Do you use "I", "we", or third person?
-
-**Exit condition:** Context is sufficient when you can ask about edge cases and tradeoffs without needing the basics explained.
-
-**After the interview:** Summarize the intended reader, thesis, evidence, structure, voice, and constraints in a brief paragraph. Ask the author to correct anything wrong or missing before drafting.
+Read [references/interview.md](references/interview.md). It has 5 areas: intent, audience, substance and claims, structure, voice. Ask only what the input leaves open, in batches of 3-5 questions. Done when you can ask about edge cases and tradeoffs without explaining the basics; then summarize reader, thesis, evidence, structure, voice, and constraints, and let the author correct it before drafting.
 
 ### Step 3: Agree on the Direction and Structure (Collaborative)
 
 For direct drafting or editing, use the supplied direction and structure without adding an approval round. Preserve any approval steps the author requested. For review-only requests, deliver findings and proposed rewrites without changing the file.
 
-Based on the input type:
+**Starting from a title/topic:**
+1. Propose 2-3 possible angles or framings.
+2. After the user picks one, produce a detailed outline (structures in [references/writing-principles.md](references/writing-principles.md)).
+3. After outline approval, create a Markdown scaffold with placeholders for each section.
 
-**If starting from a title/topic:**
-1. Propose 2-3 possible angles or framings
-2. After the user picks one, produce a detailed outline
-3. After outline approval, create a Markdown scaffold with placeholders for each section
+**Improving an outline/draft:**
+1. Provide a structural assessment (what's working, what's missing, what's in the wrong order).
+2. Propose changes with rationale.
+3. After approval, create or update the Markdown scaffold.
 
-**If improving an outline/draft:**
-1. Provide a structural assessment (what's working, what's missing, what's in the wrong order)
-2. Propose changes with rationale
-3. After approval, create or update the Markdown scaffold
-
-**If reviewing a complete post:**
-1. Deliver an editorial review (see Review Framework below)
-2. Propose specific rewrites for weak sections
-3. After approval, revise the post in place, section by section
+**Reviewing a complete post:**
+1. Deliver an editorial review using [references/review-framework.md](references/review-framework.md).
+2. Propose specific rewrites for weak sections.
+3. After approval, revise the post in place, section by section.
 
 Start with the section that has the most uncertainty or carries the central argument. Usually write the introduction, summary, and title last, once the body proves what the post can honestly promise.
 
@@ -190,287 +125,11 @@ If sub-agents are unavailable, provide the questions and a short prompt the auth
 
 Reader testing passes when the fresh reader answers the important questions correctly and no longer finds material ambiguity or contradictions. Recommend a final human read and verification of facts, links, commands, and technical details before publication.
 
----
-
-## Review Framework
-
-When reviewing a draft or complete post, evaluate these 8 dimensions and give specific, actionable feedback on each. Lead with concrete findings rather than a report card.
-
-### 1. Hook (First 2-3 sentences)
-
-Does the opening earn the reader's attention?
-
-**Strong hooks:**
-- Open with a specific, surprising fact or claim
-- Start with a relatable problem or frustration
-- Begin with a story or moment
-- Ask a question the reader genuinely wants answered
-- Name the date or moment that changed everything
-- Show a credible expert getting it wrong
-- State two true things that should not both be true
-- Admit a struggle or weakness before the argument starts
-
-**Weak hooks:**
-- Generic statements ("In today's world...")
-- Dictionary definitions ("According to Merriam-Webster...")
-- Throat-clearing ("I've been thinking a lot about...")
-- Overpromising ("This will change everything about how you...")
-
-### 2. Clarity
-
-Can a reader understand every sentence on first read?
-
-**Check for:**
-- Sentences trying to say two things at once
-- Jargon used without context
-- Ambiguous pronouns ("this", "it" — what does it refer to?)
-- Paragraphs that don't have a clear point
-- Abstract language where concrete examples would help
-
-### 3. Structure
-
-Does the post flow logically and keep the reader moving forward?
-
-**Check for:**
-- Does each section naturally lead to the next?
-- Are there sections that could be cut without loss?
-- What do the title and opening declare as the point, and what point does the whole post spend its weight on? They must match.
-- When they differ, try the smallest structural move first: promote a sentence, move a paragraph, cut warm-up, or tighten the bridge from hook to point. Rewrite the opening only when rearrangement cannot fix it.
-- Does the post front-load value or make the reader wait too long?
-- Are transitions smooth or jarring?
-
-### 4. Substance
-
-Is the post saying something worth reading?
-
-**Check for:**
-- Is there a clear thesis or argument?
-- Are claims supported with evidence, examples, or reasoning?
-- Does the post say something the reader couldn't easily find elsewhere?
-- Are there vague generalizations that should be specific?
-- Is the author drawing from real experience or just restating common knowledge?
-
-### 5. Engagement
-
-Will the reader stay to the end and want to share it?
-
-**Check for:**
-- Does the post maintain tension, curiosity, or momentum?
-- Are there concrete examples, stories, or visuals that break up abstract reasoning?
-- Does the post speak to the reader ("you") or only about the topic?
-- Is there variety in sentence length and paragraph structure?
-- Does it feel like a person wrote this, or a textbook?
-
-### 6. Correctness
-
-Is everything factually accurate and logically sound?
-
-**Check for:**
-- Factual claims that need verification
-- Logical leaps or unstated assumptions
-- Overgeneralizations ("everyone knows...", "always...", "never...")
-- Technical accuracy (if applicable)
-
-Judge each claim by its support:
-
-| Support | Verdict |
-|---|---|
-| Personal experience the author lived through | Strong, let it stand |
-| A linked study, dataset, or named source | Strong, let it stand |
-| An expert quote or named practitioner | Strong, let it stand |
-| A specific named example (company, person, moment) | Strong, let it stand |
-| "Studies show", "experts agree", "many people say" without specifics | Weak, flag |
-| Only the author's authority, on a point where the author is not established | Weak, flag |
-| Nothing; the assertion floats free | Weak, flag |
-
-### 7. Ending
-
-Does the post land, or just stop?
-
-**Strong endings:**
-- Circle back to the opening (bookend technique)
-- End with a clear call to action or next step
-- Leave the reader with a thought-provoking question
-- Summarize the key insight in a memorable way
-
-**Weak endings:**
-- "In conclusion..." followed by a restatement
-- Introducing a new idea in the last paragraph
-- Trailing off without a clear point
-- Overly generic wrap-up ("And that's why X matters")
-
-### 8. Authenticity and Density
-
-Does it sound like this author, and has every paragraph earned its place?
-
-**Check for:**
-- generic language that could appear in any post on the topic
-- manufactured drama, quotable one-liners, or forced revelations
-- repeated thesis statements that add no evidence or consequence
-- invented labels that make ordinary observations sound established
-- polished language that erased uncertainty, humor, asides, or useful rough edges
-- edits that added a claim or removed a qualification
-
----
-
-## Writing Principles
-
-When writing or rewriting, follow these rules:
-
-### Cut Ruthlessly
-
-- If a sentence doesn't add new information or advance the argument, cut it.
-- If a paragraph makes the same point as another, merge or cut.
-- If an adjective or adverb doesn't change the meaning, remove it.
-- If the introduction takes more than 3-4 sentences to reach the point, shorten it.
-
-### Be Specific
-
-- Replace "many companies" with a specific example.
-- Replace "it can be difficult" with a concrete scenario.
-- Replace "significant improvement" with an actual number or comparison.
-- Replace "recently" with the actual timeframe.
-
-### Use Active Voice
-
-- "We shipped the feature" not "The feature was shipped."
-- "The study found" not "It was found by the study."
-- Active voice is shorter, clearer, and more engaging.
-
-### Vary Rhythm
-
-- Alternate between short and long sentences.
-- Use one-sentence paragraphs for emphasis.
-- Break up long explanatory sections with examples, questions, or transitions.
-
-### Write for Scanners
-
-- Use descriptive subheadings (not "Part 1", but "Why Most Onboarding Fails")
-- Bold key phrases in long paragraphs
-- Use bullet points or numbered lists for sequences of items
-- Keep paragraphs short (3-5 sentences max)
-- Check it worked: read only the title, the first two sentences, the subheadings, the first sentence of each section, and the ending. A skimmer should feel the problem, want the answer, and know what they gain
-
-### Show, Don't Tell
-
-Instead of:
-> "Our onboarding process was really bad."
-
-Write:
-> "New hires spent their first week hunting for passwords, reading outdated docs, and sitting in meetings no one could explain."
-
-### Run an Unslop Pass
+## Unslop pass
 
 Use the `unslop` skill for the cleanup pass. Preserve the author's voice, and protect quotations, code, commands, proper names, and technical terms exactly as written. When a `VOICE.md` exists, pass it as the writing sample, and when the author is David, run unslop's `references/author-patterns.md` as part of the pass.
 
 Before delivery, compare the revision with the source and ask internally: did this edit add or remove any claim? Restore lost claims and delete unsupported additions.
-
----
-
-## Blog Post Structures
-
-Suggest the right structure based on the content:
-
-### The Argument
-**Best for:** Opinion pieces, thought leadership, persuasion.
-1. Bold claim or thesis
-2. Why this matters / context
-3. Evidence point 1
-4. Evidence point 2
-5. Evidence point 3
-6. Address counterarguments
-7. Restate the thesis with added nuance
-
-### The How-To
-**Best for:** Tutorials, guides, practical advice.
-1. What the reader will achieve
-2. Prerequisites / context
-3. Step 1 (with explanation and example)
-4. Step 2
-5. Step N
-6. Common mistakes / troubleshooting
-7. Next steps
-
-### The Story
-**Best for:** Personal essays, case studies, lessons learned.
-1. Hook: a vivid moment or surprising outcome
-2. Context: the situation before
-3. The turning point or challenge
-4. What happened / what you did
-5. The result
-6. The lesson or takeaway
-7. How the reader can apply this
-
-### The Comparison
-**Best for:** Tool reviews, framework evaluations, decision guides.
-1. The decision the reader faces
-2. Criteria for evaluation
-3. Option A: strengths, weaknesses
-4. Option B: strengths, weaknesses
-5. (Option C if applicable)
-6. Recommendation and reasoning
-7. When to choose each option
-
-### The Listicle
-**Best for:** Tactical tips, resource roundups, pattern collections.
-1. Context: why this list matters
-2. Item 1 (with explanation, not just a bullet)
-3. Item 2
-4. Item N
-5. Wrap-up: the connecting thread or key insight
-
-### The Deep Dive
-**Best for:** Technical explanations, comprehensive analyses, research summaries.
-1. Executive summary / TL;DR
-2. Background and context
-3. Core explanation (section by section)
-4. Implications / what this means
-5. Open questions or areas of uncertainty
-6. Conclusion and further reading
-
----
-
-## Title Guidelines
-
-Help the user craft a title that is honest and compelling:
-
-**Strong title patterns:**
-- Specific outcome: "How We Cut Deploy Time from 20 Minutes to 45 Seconds"
-- Surprising tension: "Why I Stopped Using the Tool I Built"
-- Direct and clear: "A Practical Guide to Database Indexing"
-- Question the reader has: "Should You Rewrite Your App in Rust?"
-
-**Avoid:**
-- Vague clickbait: "You Won't Believe What Happened Next"
-- Keyword stuffing: "Best Practices for Best Practice Implementation"
-- Superlatives without substance: "The Ultimate Guide to Everything"
-- Generic: "Thoughts on Software Development"
-
-Offer 3-5 title options and explain the tradeoff of each (clarity vs. curiosity, SEO vs. engagement, etc.)
-
----
-
-## Handling Common Problems
-
-### The post tries to cover too much
-Ask: "If you could only make ONE point in this post, what would it be?" Then restructure around that point. The other points become future posts.
-
-### The post is correct but boring
-Look for: missing examples, no stories, no direct address to the reader, overly abstract language. Add specificity and human moments.
-
-### The post is engaging but flimsy
-Look for: claims without evidence, strong opinions without reasoning, anecdotes presented as universal truths. Add substance, caveats, and sources.
-
-### The post doesn't sound like the author
-Read their other writing if available. Ask them to describe the tone they want. Provide A/B rewrites of a paragraph in different voices and let them pick.
-
-### The post is too long
-Identify the core argument. Everything that doesn't directly support it gets cut or moved to a separate post. Apply the "so what?" test to every section.
-
-### The post is too short
-Identify where the reader would have questions. Add examples, anticipate objections, expand on the "why" behind each point.
-
----
 
 ## Rules
 

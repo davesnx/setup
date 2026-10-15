@@ -82,7 +82,7 @@ test('workflow text allows direct work and keeps approval and fact safeguards', 
   assert.match(draft, /Do not invent an interview\nhistory/);
   assert.match(draft, /state: partial/);
   assert.doesNotMatch(draft, /Prose is written after a round is answered, never before/);
-  assert.match(read('impeccable/SKILL.md'), /not ordinary React implementation/);
+  assert.match(read('vercel-react-best-practices/SKILL.md'), /use impeccable for those\. Load both only when/);
   assert.match(read('impeccable/reference/craft.md'), /You must stop at every gate/);
   assert.match(read('impeccable/reference/shape.md'), /stop and wait for explicit confirmation/);
   assert.match(read('impeccable/reference/live.md'), /do not bypass the check or invent project decisions/);

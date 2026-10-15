@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Audit a codebase across correctness, security, performance, tests, and architecture; render vetted findings as a local HTML review and write implementation plans for another agent. Use for "improve this codebase", "audit this repo", or "what should we build next". Read-only on source. For implementation, ask the user to invoke implement. Handle existing-plan review, reconciliation, or publication through the normal review/Git/PR workflow, outside this audit.
+description: Audit a codebase for correctness, security, performance, tests, and architecture; render vetted findings as a local HTML review and write implementation plans for another agent. Use for "improve this codebase", "audit this repo", or "what should we build next". Read-only on source; for implementation, the user invokes implement. Not for reviewing, reconciling, or publishing existing plans.
 ---
 
 # Improve Codebase Architecture
