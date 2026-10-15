@@ -12,8 +12,8 @@
 
 ## Planning
 
-- When working in `$HOME/workplace` or below it, first read
-  `$HOME/workplace/AGENTS.md`. Use its shared or project task plan location.
+- When `$HOME/workplace/AGENTS.md` exists and you work in `$HOME/workplace` or
+  below it, first read it. Use its shared or project task plan location.
 - Otherwise, when asked to create a plan, write it to
   `.workplace/plans/<descriptive-name>_PLAN.md` at the repository root. The
   global Git ignore file excludes `.workplace/`.
@@ -110,12 +110,8 @@ to subagents and orchestrate them:
   push, no reset etc), only top level session is allowed to do that
 - tell subagents that uncommitted changes they did not make come from parallel
   work: leave those files alone and do not treat them as an error
-
-## Hosts
-
-- When `systemd-detect-virt --container` returns `systemd-nspawn`, bind a
-  service to `0.0.0.0` on an unused port from `25000-25099`. Reach it at
-  `febox-uk.ahrefs.net:<port>` while the VPN is on.
+- style plugins such as ponytail govern how code is written (smallest change);
+  Orchestration governs who does the work; the two do not conflict
 
 ## Code
 
@@ -150,10 +146,3 @@ to subagents and orchestrate them:
   silent fallbacks.
 - When a change alters behavior, update the docs that describe that behavior in
   the same change.
-- Commands in the sandbox `excludedCommands` setting, such as `make`, `git`,
-  `gh`, and `docker`, run outside the sandbox and see the system `$TMPDIR`.
-  Write a file that another command must read to the session scratchpad or the
-  repository, not to `$TMPDIR`. Let a background command's exit code reach the
-  task; do not append an `echo` that masks it.
-- The Bash tool shell is zsh, so `$PIPESTATUS` is empty. Use `$pipestatus[1]`
-  or `set -o pipefail` to check a pipeline's exit code.
