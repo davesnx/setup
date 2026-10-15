@@ -26,8 +26,10 @@ that same directory as `<uuid>.report.md`; a run that fails leaves
 `<uuid>.failed.md` instead. The
 [statusline](../statusline.ts) shows how many unread reports exist. Read one
 with `cat`, then apply a proposal by running `claude --resume <uuid>` (leave
-plan mode first if the resumed session is still in it). Delete the report
-file to dismiss it. The reviewer's own hooks stay quiet, since it runs with
+plan mode first if the resumed session is still in it). Once decided, move
+the report to `archive/` in that directory with a final `outcome:` line (see
+the [auto-improve skill](../../../agents/skills/auto-improve/SKILL.md)); the
+statusline counts only reports outside `archive/`. The reviewer's own hooks stay quiet, since it runs with
 `AUTO_IMPROVE_REVIEWER=1` in its environment.
 
 Script errors produce a diagnostic without a review and exit successfully.

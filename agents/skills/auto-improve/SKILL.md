@@ -111,6 +111,14 @@ If no proposal earns a change, finish quietly for an automatic checkpoint.
 Use the host's no-proposal response when one is specified.
 For an explicit request, say that no useful change was found and why.
 
+## Close the Report
+
+When the user decides on a report in `auto-improve/claude` under
+`${XDG_STATE_HOME:-$HOME/.local/state}`, archive it: append
+`outcome: applied|dismissed|duplicate <path or reason>` and move the file to
+`archive/` there. Only reports outside `archive/` count as unread. Archive
+only on the user's decision.
+
 ## Apply Approved Changes
 
 Re-read the target files and change only the approved proposals. Follow the
