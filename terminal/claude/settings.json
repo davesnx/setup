@@ -42,7 +42,6 @@
       "Bash(gh pr checks:*)",
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
-      "Bash(gh api:*)",
       "Bash(opam exec:*)",
       "Bash(opam list:*)",
       "Bash(opam show:*)",
@@ -69,6 +68,13 @@
       "WebSearch"
     ],
     "deny": [
+      "Bash(gh repo delete:*)",
+      "Bash(gh secret:*)",
+      "Bash(gh release delete:*)",
+      "Bash(gh api *-X DELETE*)",
+      "Bash(gh api *-XDELETE*)",
+      "Bash(gh api *--method DELETE*)",
+      "Bash(gh api *--method=DELETE*)",
       "Bash(rm -rf:*)",
       "Bash(rm -fr:*)",
       "Bash(shred:*)",
