@@ -127,6 +127,9 @@ proposal means resuming that reviewer session and approving the change there.
 
 Reviews prioritize user corrections and reactions such as "what was that?",
 using the surrounding exchange to identify the mistake and intended behavior.
+Confirmed reviewer findings in the session count as corrections too. A
+correction that exposes missing knowledge of a language, compiler, library, or
+tool leads to a new or extended skill, researched after approval.
 Approved lasting lessons go in the relevant rules or skill. Later reviews
 compare new corrections with those lessons; one-time requests stay task-local.
 
