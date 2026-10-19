@@ -163,7 +163,9 @@
     "dock": "left",
   },
   "agent": {
-    "sidebar_side": "right",
+    "threads_sidebar": {
+      "position": "right"
+    },
     "dock": "right",
     "model_parameters": [],
   },

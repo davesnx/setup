@@ -228,6 +228,15 @@
 		"enabled": true
 	},
 	{
+		"name": "febox1: ppx_platform",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ml-in-barcelona/ppx_platform",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
 		"name": "febox1: melange-opam-template",
 		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/melange/.workplace/deps/melange-opam-template",
 		"paths": [],
