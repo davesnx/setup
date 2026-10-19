@@ -18,6 +18,10 @@
         "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       }
     },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
+    },
     "notion": {
       "type": "http",
       "url": "https://mcp.notion.com/mcp"

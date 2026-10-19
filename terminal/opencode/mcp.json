@@ -21,6 +21,11 @@
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       }
+    },
+    "mobbin": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://api.mobbin.com/mcp"
     }
   }
 }

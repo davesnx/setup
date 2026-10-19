@@ -18,6 +18,10 @@
         "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       }
     },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
+    },
     "notion": {
       "type": "http",
       "url": "https://mcp.notion.com/mcp"
@@ -47,7 +51,7 @@
         "stdio"
       ],
       "env": {
-        "BUILDKITE_API_TOKEN": "${BUILDKITE_API_TOKEN}",
+        "BUILDKITE_API_TOKEN": "${BUILDKITE_TOKEN}",
         "BUILDKITE_ORG_SLUG": "ahrefs"
       }
     }

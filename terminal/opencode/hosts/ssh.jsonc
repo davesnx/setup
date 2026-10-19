@@ -34,6 +34,14 @@
         "@r-huijts/strava-mcp-server"
       ]
     },
+    "mobbin": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://api.mobbin.com/mcp",
+      "oauth": {
+        "callbackPort": 25124
+      }
+    },
     "grafana": {
       "type": "local",
       "enabled": true,
@@ -49,7 +57,7 @@
         "stdio"
       ],
       "environment": {
-        "BUILDKITE_API_TOKEN": "{env:BUILDKITE_API_TOKEN}",
+        "BUILDKITE_API_TOKEN": "{env:BUILDKITE_TOKEN}",
         "BUILDKITE_ORG_SLUG": "ahrefs"
       }
     }
