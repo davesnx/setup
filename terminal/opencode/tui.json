@@ -8,5 +8,8 @@
     "input_line_end": "ctrl+e,end",
     "input_buffer_home": "super+up",
     "input_buffer_end": "super+down"
-  }
+  },
+  "plugin": [
+    "file:///home/me/.config/opencode/plugins/orca-opencode-status-tui/tui.js"
+  ]
 }

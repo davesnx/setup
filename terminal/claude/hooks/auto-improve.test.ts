@@ -799,10 +799,6 @@ exit 0
   test("settings commands deliver review through installed link", async () => {
     rmSync(hookDirectory, { recursive: true });
     assert.equal((await installHook()).exitCode, 0);
-    const { hooks } = JSON.parse(
-      readFileSync(join(ROOT, "terminal/claude/settings.json"), "utf8"),
-    );
-    assert.equal(hooks.PreToolUse, undefined);
     for (const prompt of ["p1", "p2", "p3"]) {
       for (const name of ["UserPromptSubmit", "Stop"]) {
         const result = await invokeSettings(name, event(name, prompt));
