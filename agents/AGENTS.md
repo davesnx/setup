@@ -130,7 +130,7 @@ to subagents and orchestrate them:
 - When adding a requirement, consider the design you would choose if it had
   been known from the start. Use that design to guide the smallest coherent
   change, delivered in steps, rather than adding a special case. Update all
-  affected references, including types, docs, examples, and design rationale.
+  affected references, including types, examples, and design rationale.
 - Get the data shape and core types right before writing logic. Trace the
   access patterns, and ask what happens when another actor changes shared
   state. A late structure change is a rewrite.
@@ -153,8 +153,8 @@ to subagents and orchestrate them:
   delimit sections.
 - Fix root causes. Do not silence findings with casts, lint suppressions, or
   silent fallbacks.
-- When a change alters behavior, update the docs that describe that behavior in
-  the same change.
+- When a change is substantial or alters a public-facing API, ask the user
+  whether updating the docs is part of the work.
 - Commands in the sandbox `excludedCommands` setting, such as `make`, `git`,
   `gh`, and `docker`, run outside the sandbox and see the system `$TMPDIR`.
   Write a file that another command must read to the session scratchpad or the
