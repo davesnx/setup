@@ -6,8 +6,12 @@ const assert = require('node:assert/strict');
 const { promisify } = require('node:util');
 const exec = promisify(require('node:child_process').execFile);
 (async () => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-test-'));
-  const state = path.join(temp, 'state');
+  const socketRoot = fs.realpathSync(os.tmpdir());
+  // Darwin reserves one of its 104 Unix socket path bytes for the terminator.
+  assert(Buffer.byteLength(path.join(socketRoot, 'at-XXXXXX/s/agent.sock')) <= 103,
+    'TMPDIR too long for Unix socket fixture');
+  const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'at-')));
+  const state = path.join(temp, 's');
   const a = path.join(temp, 'a.sock');
   const b = path.join(temp, 'b.sock');
   const first = net.createServer(socket => socket.end('1'));

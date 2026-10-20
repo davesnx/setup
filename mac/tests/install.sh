@@ -506,7 +506,7 @@ grep -Fxq "npm:ci --prefix $root/terminal/claude/hooks --omit=dev --no-audit --n
 [ ! -e "$HOME/.claude/hooks/auto-improve.ts" ]
 [ ! -L "$HOME/.claude/hooks/auto-improve.ts" ]
 [ "$(readlink "$HOME/.claude/hooks/auto-improve.py")" = "$root/terminal/claude/hooks/auto-improve.py" ]
-if grep -q '^npm:.*eval-harness' "$command_log"; then
+if grep -Eq '^npm:.*terminal/bin/eval-harness([[:space:]]|$)' "$command_log"; then
   exit 1
 fi
 printf 'PASS: failed hook npm install stops before publishing and preserves the old hook\n'

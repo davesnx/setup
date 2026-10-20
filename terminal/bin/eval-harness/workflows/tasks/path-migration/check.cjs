@@ -10,7 +10,7 @@ finish(() => {
       monorepo: 'other-project', history: 'history/session.json',
     });
     assert.deepEqual(json('startup.json'), { setupRoot: destination, editor: 'fixture-editor' });
-    assert.equal(fs.realpathSync('home/tool'), path.resolve(destination, 'tool.txt'));
+    assert.equal(fs.realpathSync('home/tool'), fs.realpathSync(path.join(destination, 'tool.txt')));
     assert.equal(fs.readlinkSync('home/personal'), '../other-project/notes.txt');
   };
   file('migrate.cjs');

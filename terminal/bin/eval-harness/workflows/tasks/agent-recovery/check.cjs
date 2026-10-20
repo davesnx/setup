@@ -8,7 +8,11 @@ finish(async () => {
   preserve(__dirname, ['probe.cjs', 'CONTRACT.md']);
   file('select.cjs');
   const startup = file('startup.sh');
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-check-'));
+  const socketRoot = fs.realpathSync(os.tmpdir());
+  // Darwin reserves one of its 104 Unix socket path bytes for the terminator.
+  assert(Buffer.byteLength(path.join(socketRoot, 'ac-XXXXXX/s/agent.sock')) <= 103,
+    'TMPDIR too long for Unix socket fixture');
+  const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'ac-')));
   const servers = [];
   const sockets = new Set();
   async function agent(name, response) {
@@ -25,7 +29,7 @@ finish(async () => {
     return { location, control };
   }
   try {
-    const state = path.join(temp, 'state');
+    const state = path.join(temp, 's');
     const stable = path.join(state, 'agent.sock');
     const a = await agent('a.sock', '1');
     const b = await agent('b.sock', '0');

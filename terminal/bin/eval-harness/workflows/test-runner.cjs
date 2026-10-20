@@ -135,7 +135,7 @@ function main() {
   const pkg = path.resolve(process.env.EVAL_TEST_PACKAGE || path.join(harness, 'node_modules/@nano-step/eval-harness'));
   assert(fs.existsSync(path.join(pkg, 'scripts/eval/workflow.sh')),
     `Workflow runner not installed at ${pkg}. Install the patches or set EVAL_TEST_PACKAGE to a patched scratch package.`);
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-runner-'));
+  const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-runner-')));
   const env = {
     PATH: `${temp}/bin:${harness}/shims:${process.env.PATH}`,
     HOME: `${temp}/home`, TMPDIR: temp, LANG: 'C', LC_ALL: 'C',

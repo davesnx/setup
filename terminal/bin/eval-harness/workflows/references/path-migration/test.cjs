@@ -12,7 +12,7 @@ for (let repeat = 0; repeat < 2; repeat++) {
   assert.deepEqual(JSON.parse(fs.readFileSync('startup.json', 'utf8')), {
     setupRoot: config.dotfiles, editor: 'fixture-editor',
   });
-  assert.equal(fs.realpathSync('home/tool'), path.resolve(config.dotfiles, 'tool.txt'));
+  assert.equal(fs.realpathSync('home/tool'), fs.realpathSync(path.join(config.dotfiles, 'tool.txt')));
   assert.equal(fs.readFileSync('history/session.json', 'utf8'), historical);
   assert.equal(fs.readFileSync('home/user.txt', 'utf8'), user);
 }
