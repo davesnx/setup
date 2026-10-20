@@ -25,12 +25,7 @@ fi
 link_path "$DOTFILES_PATH/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 link_path "$DOTFILES_PATH/agents/skills" "$HOME/.claude/skills"
 
-# Puppet installs the real dcg wrapper at this path on nspawn; link the no-op
-# stand-in only where nothing is there yet.
 mkdir -p "$HOME/.claude/hooks"
-if [ ! -e "$HOME/.claude/hooks/dcg" ]; then
-  ln -sfn "$DOTFILES_PATH/terminal/claude/hooks/dcg" "$HOME/.claude/hooks/dcg"
-fi
 
 auto_improve_hook="$HOME/.claude/hooks/auto-improve.ts"
 auto_improve_source="$DOTFILES_PATH/terminal/claude/hooks/auto-improve.ts"

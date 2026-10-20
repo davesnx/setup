@@ -23,15 +23,10 @@ The script links:
   files from the shared `agents/mcp.json` first, with Node, so edits belong in
   the shared file. See [`agents/README.md`](../../agents/README.md#mcp-servers).
 
-It also creates `~/.claude/hooks` and links two hooks with guards:
-
-- `hooks/dcg` links to `~/.claude/hooks/dcg` only when nothing exists there
-  yet. Puppet installs the real `dcg` wrapper at that path on nspawn; the
-  installer never replaces it.
-- `hooks/auto-improve.ts` links to `~/.claude/hooks/auto-improve.ts` only
-  when that path is missing or already links to this file. A foreign file at
-  that path makes the installer refuse and exit with status 73, rather than
-  overwrite it.
+It also creates `~/.claude/hooks` and links `hooks/auto-improve.ts` to
+`~/.claude/hooks/auto-improve.ts` only when that path is missing or already
+links to this file. A foreign file at that path makes the installer refuse and
+exit with status 73, rather than overwrite it.
 
 Two more SessionStart hooks run commands inline from `settings.json`. One runs
 `~/.claude/hooks/herdr-agent-state.sh` when that file exists; Herdr installs and

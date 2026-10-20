@@ -621,9 +621,7 @@ exit 0
     assert.equal(existsSync(directory), false);
   });
 
-  test("install is repeatable and preserves Puppet dcg", async () => {
-    const dcg = join(hookDirectory, "dcg");
-    writeFileSync(dcg, "Puppet-managed wrapper");
+  test("install is repeatable", async () => {
     assert.equal((await installHook()).exitCode, 0);
     const before = lstatSync(installedHook, { bigint: true });
     assert.equal(readlinkSync(installedHook), HOOK);
@@ -631,8 +629,6 @@ exit 0
     const after = lstatSync(installedHook, { bigint: true });
     assert.equal(after.ino, before.ino);
     assert.equal(after.mtimeNs, before.mtimeNs);
-    assert.equal(readFileSync(dcg, "utf8"), "Puppet-managed wrapper");
-    assert.equal(lstatSync(dcg).isSymbolicLink(), false);
     assert.deepEqual(
       readFileSync(join(home, "npm-args"), "utf8").trimEnd().split("\n"),
       [...NPM_ARGS, ...NPM_ARGS],
@@ -806,12 +802,7 @@ exit 0
     const { hooks } = JSON.parse(
       readFileSync(join(ROOT, "terminal/claude/settings.json"), "utf8"),
     );
-    assert.deepEqual(hooks.PreToolUse, [
-      {
-        matcher: "Bash",
-        hooks: [{ type: "command", command: "~/.claude/hooks/dcg" }],
-      },
-    ]);
+    assert.equal(hooks.PreToolUse, undefined);
     for (const prompt of ["p1", "p2", "p3"]) {
       for (const name of ["UserPromptSubmit", "Stop"]) {
         const result = await invokeSettings(name, event(name, prompt));

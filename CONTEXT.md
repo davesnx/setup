@@ -23,7 +23,6 @@ Terms this repository uses, as the code and docs use them. Use these words. When
 - **published skill**: A skill this repository publishes upstream, listed in `agents/skills/VENDOR` and synced by `skill-vendor`. `terminal/bin/skill-vendor`.
 - **progressive disclosure**: `SKILL.md` holds the workflow; detail sits in reference files that a "read X when Y" line points to. `agents/skills/writing-for-agents/SKILL.md`.
 - **global agent rules**: `agents/AGENTS.md`, linked to each harness's user-level rules file. Not this repository's `AGENTS.md`, which guides work on the repository. `AGENTS.md` (tree).
-- **dcg**: Claude Code hook wrapper at `~/.claude/hooks/dcg`. On nspawn, Puppet owns it; the installer never replaces it. `terminal/claude/README.md`.
 - **auto-improve**: A Stop hook that starts a detached headless `claude -p` reviewer of the finished session. `terminal/claude/hooks/auto-improve.ts`, `agents/skills/auto-improve/SKILL.md`.
 - **auto-improve report**: The reviewer's output file proposing changes to skills, hooks, scripts, or rules. Applying one means resuming the reviewer session. `agents/README.md`, `terminal/claude/hooks/README.md`.
 

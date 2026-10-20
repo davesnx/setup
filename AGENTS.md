@@ -111,10 +111,10 @@ local/                    Machine-specific overrides. Git-ignored except README,
 - Keep credentials and machine state out of Git. Machine-specific settings go
   in `local/`.
 - The repository also runs on nspawn: Linux, `HOME=/home/me`, checkout at
-  `/home/me/workplace/davesnx/setup`, no Homebrew, no `bun`, no `shfmt`, and
-  Puppet owns `~/.claude/hooks/dcg`. Before each commit, confirm the change
-  works there: no `/Users/`, `/opt/homebrew`, or `/Applications` path and no
-  Mac-only command such as `brew`, `open`, `pbcopy`, or `trash` outside `mac/`.
+  `/home/me/workplace/davesnx/setup`, no Homebrew, no `bun`, and no `shfmt`.
+  Before each commit, confirm the change works there: no `/Users/`,
+  `/opt/homebrew`, or `/Applications` path and no Mac-only command such as
+  `brew`, `open`, `pbcopy`, or `trash` outside `mac/`.
 - Make temporary paths with `mktemp -d "${TMPDIR:-/tmp}/name.XXXXXX"`. On macOS
   a bare `mktemp -d` or `mktemp -t` ignores `$TMPDIR` and fails in the Claude
   Code sandbox.

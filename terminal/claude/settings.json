@@ -157,17 +157,6 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/dcg"
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "matcher": "*",
