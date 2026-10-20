@@ -1,0 +1,5 @@
+interface:
+  display_name: "Critique Blog Post"
+  short_description: "Find gaps, contradictions, and repetition"
+policy:
+  allow_implicit_invocation: true

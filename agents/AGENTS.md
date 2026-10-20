@@ -2,7 +2,12 @@
 
 ## Communication
 
-- Always use ASD-STE100 Simplified Technical English.
+Use these rules for the agent's own replies, explanations, and status updates.
+When drafting or editing text for the user, follow the requested voice, relevant
+`VOICE.md`, and author samples instead. Preserve the author's wording and style
+within the requested editing scope.
+
+- Use ASD-STE100 Simplified Technical English for the agent's own wording.
 - Please remove all mannered prose.
 - Make sure each word in this text justifies its existence.
 - Do not use jargon. Write clearly, simply, and concisely, as one person

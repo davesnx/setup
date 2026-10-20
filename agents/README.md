@@ -2,6 +2,23 @@
 
 Shared agent rules and skills, used by both Claude Code and OpenCode.
 
+## Blog writing
+
+Choose the stage you need:
+
+| Skill | Work | Result |
+|---|---|---|
+| [`create-drafted-blog-post`](skills/create-drafted-blog-post/SKILL.md) | Interview and iterate on the story, argument, and conclusion | Headings with bullet-point notes |
+| [`write-polish-blog-post`](skills/write-polish-blog-post/SKILL.md) | Expand the structure, resolve missing facts and author decisions, choose art and code, and refine the prose | Complete article, or a partial draft with explicit gaps |
+| [`critique-blog-post`](skills/critique-blog-post/SKILL.md) | Find contradictions, repetition, unsupported claims, and reader gaps | Findings and proposed repairs; source unchanged |
+
+These replace `write-blog-post`, `write-draft-blog-post`, and `post-draft`.
+Writing reads `VOICE.md` when present and uses a site-independent gap-filling
+process. Author samples guide voice and how ideas develop. Small edits stay local;
+gap-filling and full-post work load their own references. Critique checks the post's
+purpose and reader needs rather than a fixed engagement formula. Each stage can be
+used on its own. Moving to the next stage is the author's choice.
+
 ## MCP servers
 
 `mcp.json` declares every MCP server once, in this repository's own format.

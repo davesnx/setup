@@ -6,13 +6,37 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from commit_eval import snapshot_catalogs
-from expanded import discover, make_study, native_case, snapshot_working_cases, write_coverage
-from pilot import HERE, load_json
+import yaml
 
-# The committed catalog must contain every skill the cases and routing labels name.
+from commit_eval import snapshot_catalogs
+from expanded import (
+    VENDORED,
+    discover,
+    make_study,
+    native_case,
+    snapshot_working_cases,
+    write_coverage,
+)
+from pilot import HERE, ROOT, load_json
+
 REVISION = "HEAD"
 CACHE_REASON = "I kept the cache because offline preview lets me read pages on the train."
+
+
+def working_catalog():
+    files = [
+        *(ROOT / "agents/skills").glob("*/SKILL.md"),
+        *(ROOT / "terminal/opencode/skills").glob("*/SKILL.md"),
+        *(ROOT / path for path in VENDORED),
+    ]
+    catalog = {}
+    for file in files:
+        metadata = yaml.safe_load(file.read_text().split("---", 2)[1])
+        name = metadata["name"]
+        if name in catalog:
+            raise ValueError(f"Duplicate working skill name: {name}")
+        catalog[name] = file.parent
+    return catalog
 
 
 class ExpandedChecks(unittest.TestCase):
@@ -20,14 +44,20 @@ class ExpandedChecks(unittest.TestCase):
     def setUpClass(cls):
         cls.snapshot = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.snapshot.cleanup)
-        cls.skill_catalog = snapshot_catalogs(
+        cls.revision_catalog = snapshot_catalogs(
             {"on": REVISION}, Path(cls.snapshot.name), all_skills=True
         )["on"]
+        cls.skill_catalog = working_catalog()
         cls.catalog = snapshot_working_cases(Path(cls.snapshot.name) / "current-evals")
         cls.entries = {entry["skill"]: entry for entry in load_json(HERE / "expanded_cases.json")}
 
-    def run_checks(self, skill, outputs):
-        task, files, _ = native_case(self.entries[skill], self.catalog)
+    def run_checks(self, skill, outputs, case=None):
+        entry = self.entries[skill]
+        catalog = self.catalog
+        if case is not None:
+            entry = {**entry, "case": case}
+            catalog = {**catalog, skill: ROOT / "agents/skills" / skill}
+        task, files, _ = native_case(entry, catalog)
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             work, graders = root / "work", root / "graders"
@@ -79,35 +109,79 @@ class ExpandedChecks(unittest.TestCase):
 
     def test_revision_discovery_and_profiles(self):
         discovered = discover(REVISION)
-        self.assertEqual(len(discovered), len(self.skill_catalog))
-        self.assertTrue(self.entries.keys() <= discovered.keys())
+        snapshot_root = Path(self.snapshot.name) / "on"
+        rows = load_json(HERE / "expanded_cases.json")
+        self.assertEqual(len(rows), len({row["skill"] for row in rows}))
+        self.assertEqual(
+            discovered,
+            {
+                name: path.relative_to(snapshot_root).as_posix()
+                for name, path in self.revision_catalog.items()
+            },
+        )
+        self.assertTrue(self.entries.keys() <= self.skill_catalog.keys())
         catalogs = {"on": self.skill_catalog, "off": self.skill_catalog}
         full = make_study(catalogs, "behavior", "full", case_catalog=self.catalog)
-        self.assertEqual(len(full["tasks"]), 12)
-        self.assertEqual(len(full["behavior_skills"]), 8)
+        self.assertEqual(len(full["tasks"]), 13)
+        self.assertEqual(len(full["behavior_skills"]), 9)
         routing = make_study(catalogs, "routing", "full", case_catalog=self.catalog)
-        self.assertEqual(len(routing["tasks"]), 24)
+        self.assertEqual(len(routing["tasks"]), 25)
         self.assertTrue(
             all(c["weight"] == 0 for t in routing["tasks"] for c in t["success_criteria"])
         )
 
+    def test_writing_support_matches_loaded_skills_and_routing(self):
+        entries = {entry["skill"]: entry for entry in load_json(HERE / "expanded_cases.json")}
+        routes = {route["id"]: route for route in load_json(HERE / "expanded_routing.json")}
+        self.assertIn("unslop", entries["write-polish-blog-post"]["support"])
+        self.assertIn("unslop", self.skill_catalog)
+        self.assertTrue((self.skill_catalog["unslop"] / "references/author-patterns.md").is_file())
+        self.assertIn("unslop", routes["blog-polish"]["allowed"])
+        self.assertEqual(
+            routes["blog-polish"]["fixture"],
+            "expanded-write-polish-blog-post-source-resolved-gaps",
+        )
+        study = make_study(
+            {"off": self.skill_catalog, "on": self.skill_catalog},
+            "behavior",
+            "focused",
+            case_catalog=self.catalog,
+        )
+        self.assertEqual(
+            study["supports"]["write-polish-blog-post"], ["write-polish-blog-post", "unslop"]
+        )
+        polish_dir = self.catalog["write-polish-blog-post"]
+        polish = polish_dir / "evals/cases/source-resolved-gaps.yaml"
+        self.assertEqual(
+            yaml.safe_load(polish.read_text())["skills_loaded"],
+            ["write-polish-blog-post", "unslop"],
+        )
+
+    def test_historical_revision_without_migrated_skill_fails_clearly(self):
+        historical = {
+            "off": {"critique-blog-post": self.skill_catalog["critique-blog-post"]},
+            "on": self.skill_catalog,
+        }
+        with self.assertRaisesRegex(ValueError, "absent from off revision"):
+            make_study(historical, "behavior", "full", case_catalog=self.catalog)
+
     def test_current_case_snapshot_is_separate_from_source(self):
         relative = "evals/cases/direct-complete-review.yaml"
-        current_case = (self.catalog["write-blog-post"] / relative).read_bytes()
+        current_case = (self.catalog["critique-blog-post"] / relative).read_bytes()
         with tempfile.TemporaryDirectory() as temp:
             first = snapshot_working_cases(Path(temp) / "first")
             second = snapshot_working_cases(Path(temp) / "second")
-            changed = first["write-blog-post"] / relative
+            changed = first["critique-blog-post"] / relative
             changed.write_text("Changed only the disposable snapshot.")
-            self.assertEqual((second["write-blog-post"] / relative).read_bytes(), current_case)
+            self.assertEqual((second["critique-blog-post"] / relative).read_bytes(), current_case)
             self.assertEqual(
-                (self.catalog["write-blog-post"] / relative).read_bytes(), current_case
+                (self.catalog["critique-blog-post"] / relative).read_bytes(), current_case
             )
 
     def test_focused_coverage_counts_only_selected_tasks_and_loaded_skills(self):
         catalogs = {"off": self.skill_catalog, "on": self.skill_catalog}
         study = make_study(catalogs, "behavior", "focused", case_catalog=self.catalog)
-        task = "expanded-write-blog-post-direct-complete-review"
+        task = "expanded-critique-blog-post-direct-complete-review"
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "manifest.json").write_text(
@@ -115,10 +189,7 @@ class ExpandedChecks(unittest.TestCase):
                     {
                         "expected": [{"task": task, "variant": variant} for variant in catalogs],
                         "bundles": {
-                            f"write-blog-post/{variant}": {
-                                name: "hash"
-                                for name in ["write-blog-post", "unslop", "write-draft-blog-post"]
-                            }
+                            f"critique-blog-post/{variant}": {"critique-blog-post": "hash"}
                             for variant in catalogs
                         },
                     }
@@ -127,9 +198,9 @@ class ExpandedChecks(unittest.TestCase):
             write_coverage(root, catalogs, study)
             coverage = load_json(root / "coverage.json")
             for row in coverage.values():
-                self.assertEqual(row["behavioral_cases"], ["write-blog-post"])
+                self.assertEqual(row["behavioral_cases"], ["critique-blog-post"])
                 self.assertEqual(row["positive_routing_cases"], [])
-                self.assertEqual(len(row["available"]), 3)
+                self.assertEqual(len(row["available"]), 1)
                 self.assertEqual(len(row["discovered"]), len(self.skill_catalog))
 
     def test_contract_safeguards(self):
@@ -178,7 +249,7 @@ class ExpandedChecks(unittest.TestCase):
             self.assertFalse(self.run_checks("tdd", {"decision.json": {**good, key: value}}))
 
     def test_blog_review_boundaries(self):
-        task, _, _ = native_case(self.entries["write-blog-post"], self.catalog)
+        task, _, _ = native_case(self.entries["critique-blog-post"], self.catalog)
         self.assertIn("review.md itself must contain one JSON object", task["initial_prompt"])
         good = {
             "findings": [
@@ -190,22 +261,22 @@ class ExpandedChecks(unittest.TestCase):
             "blocking_questions": [],
             "draft_action": "unchanged",
         }
-        self.assertTrue(self.run_checks("write-blog-post", {"review.md": good}))
+        self.assertTrue(self.run_checks("critique-blog-post", {"review.md": good}))
         for outputs in [
             {"review.md": {**good, "blocking_questions": ["Who is the audience?"]}},
             {"review.md": good, "draft.md": "Edited without authorization.\n"},
             {"review.md": {**good, "findings": []}},
         ]:
-            self.assertFalse(self.run_checks("write-blog-post", outputs))
+            self.assertFalse(self.run_checks("critique-blog-post", outputs))
         # This grader establishes the boundary, not the quality of a finding.
         self.assertFalse(
             self.run_checks(
-                "write-blog-post", {"review.md": {**good, "findings": ["Unrelated nonsense."]}}
+                "critique-blog-post", {"review.md": {**good, "findings": ["Unrelated nonsense."]}}
             )
         )
         self.assertTrue(
             self.run_checks(
-                "write-blog-post",
+                "critique-blog-post",
                 {
                     "review.md": {
                         **good,
@@ -220,21 +291,84 @@ class ExpandedChecks(unittest.TestCase):
             )
         )
 
-    def post_outputs(self):
-        draft = (self.catalog["post-draft"] / "evals/fixtures/partial-cache.md").read_text()
-        draft = draft.replace(
-            "next: explain the author's cache choice", "next: obtain cold-start measurements"
+    def test_blog_scaffold_keeps_unsupported_result_out(self):
+        good = {
+            "scaffold.md": (
+                "## Story\n- I changed the build configuration on Tuesday.\n"
+                "## Argument\n- I have not run the comparison yet.\n"
+                "## Conclusion\n- The outcome depends on the comparison.\n"
+            ),
+            "gaps.md": "Need comparison measurements.\n",
+        }
+        self.assertTrue(self.run_checks("create-drafted-blog-post", good))
+        self.assertFalse(
+            self.run_checks(
+                "create-drafted-blog-post",
+                {
+                    **good,
+                    "scaffold.md": good["scaffold.md"] + "- The migration halved build times.\n",
+                },
+            )
         )
+        self.assertFalse(
+            self.run_checks(
+                "create-drafted-blog-post",
+                {**good, "scaffold.md": good["scaffold.md"].replace("- I changed", "I changed")},
+            )
+        )
+
+    def test_blog_polish_preserves_missing_art_code_and_result(self):
+        post = (
+            "On Tuesday I changed the build configuration. "
+            "I have not run the before/after comparison yet."
+        )
+        good = {
+            "post.md": post,
+            "gaps.json": {"art": "missing", "code": "missing"},
+            "evidence.json": [
+                {
+                    "text": post,
+                    "source_quotes": ["On Tuesday I changed the build configuration."],
+                }
+            ],
+        }
+        self.assertTrue(
+            self.run_checks("write-polish-blog-post", good, "outline-to-supported-prose")
+        )
+        self.assertFalse(
+            self.run_checks(
+                "write-polish-blog-post",
+                {**good, "post.md": post + " The migration halved build times."},
+                "outline-to-supported-prose",
+            )
+        )
+        self.assertFalse(
+            self.run_checks(
+                "write-polish-blog-post",
+                {**good, "gaps.json": {"art": "complete", "code": "missing"}},
+                "outline-to-supported-prose",
+            )
+        )
+        self.assertFalse(
+            self.run_checks(
+                "write-polish-blog-post",
+                {**good, "gaps.json": {"art": "missing", "code": "complete"}},
+                "outline-to-supported-prose",
+            )
+        )
+
+    def post_outputs(self):
+        draft = (
+            self.catalog["write-polish-blog-post"] / "evals/fixtures/partial-cache.md"
+        ).read_text()
         draft = draft.replace(
-            "[Q: Why did I keep the cache?]",
-            "I kept the cache because offline preview lets me read pages on the train.",
+            "# Why keep the cache?\n\n", f"# Why keep the cache?\n\n{CACHE_REASON}\n\n"
         )
         return {
             "src/content/posts/cache-notebook.md": draft,
             "progress.md": {
                 "evidence_source": "source-notes.md",
                 "answered_interview_rounds": 0,
-                "status": "partial",
                 "added_passages": [
                     {
                         "text": CACHE_REASON,
@@ -247,17 +381,22 @@ class ExpandedChecks(unittest.TestCase):
 
     def test_post_evidence_and_unresolved_gaps(self):
         good = self.post_outputs()
-        self.assertTrue(self.run_checks("post-draft", good))
+        self.assertTrue(self.run_checks("write-polish-blog-post", good))
         draft_path = "src/content/posts/cache-notebook.md"
         self.assertFalse(
             self.run_checks(
-                "post-draft",
-                {**good, draft_path: good[draft_path].replace("state: partial", "state: complete")},
+                "write-polish-blog-post",
+                {
+                    **good,
+                    draft_path: good[draft_path].replace(
+                        "What is the cold-start time with the cache?", "My cold start was 12 ms."
+                    ),
+                },
             )
         )
         self.assertFalse(
             self.run_checks(
-                "post-draft",
+                "write-polish-blog-post",
                 {**good, draft_path: good[draft_path].replace("blue drawer", "green drawer")},
             )
         )
@@ -272,13 +411,13 @@ class ExpandedChecks(unittest.TestCase):
                 "source_quote": "An external report says its author measured a 12 ms cold start.",
             }
         ]
-        self.assertFalse(self.run_checks("post-draft", bad))
+        self.assertFalse(self.run_checks("write-polish-blog-post", bad))
         # New prose cannot be omitted from the paragraph ledger.
         bad = copy.deepcopy(good)
         bad[draft_path] = bad[draft_path].replace(
             "## What is still unknown?", "My cold start was 12 ms.\n\n## What is still unknown?"
         )
-        self.assertFalse(self.run_checks("post-draft", bad))
+        self.assertFalse(self.run_checks("write-polish-blog-post", bad))
         bad["progress.md"]["added_passages"].append(
             {
                 "text": "My cold start was 12 ms.",
@@ -288,7 +427,7 @@ class ExpandedChecks(unittest.TestCase):
             }
         )
         # Citation completeness cannot establish correct attribution.
-        self.assertTrue(self.run_checks("post-draft", bad))
+        self.assertTrue(self.run_checks("write-polish-blog-post", bad))
 
     def test_spec_draft_scope(self):
         good = {

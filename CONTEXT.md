@@ -19,6 +19,7 @@ Terms this repository uses, as the code and docs use them. Use these words. When
 - **host profile**: The per-machine variant, `local` or `ssh`, that selects which MCP servers a harness gets. `agents/mcp.ts`, `terminal/claude/hosts/`, `terminal/opencode/hosts/`.
 - **MCP server**: An external tool server declared once in `agents/mcp.json`. `mcp.ts` renders it for each harness and profile. `agents/README.md`.
 - **skill**: A directory `agents/skills/<name>/` with a `SKILL.md`. Its tests, evals, and references stay inside it. `agents/skills/`.
+- **blog scaffold**: A working outline of headings and bullet-point notes ("dotted lines") for a post's story, argument, evidence, and conclusion. `agents/skills/create-drafted-blog-post/SKILL.md`. `write-polish-blog-post` expands it into an article; `critique-blog-post` reviews either form.
 - **vendored skill**: A third-party skill copied in, with an `UPSTREAM.md` naming source and revision. Local changes live in git history. `agents/skills/*/UPSTREAM.md`.
 - **published skill**: A skill this repository publishes upstream, listed in `agents/skills/VENDOR` and synced by `skill-vendor`. `terminal/bin/skill-vendor`.
 - **progressive disclosure**: `SKILL.md` holds the workflow; detail sits in reference files that a "read X when Y" line points to. `agents/skills/writing-for-agents/SKILL.md`.

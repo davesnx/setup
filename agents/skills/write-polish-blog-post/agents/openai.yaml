@@ -1,0 +1,5 @@
+interface:
+  display_name: "Write Polish Blog Post"
+  short_description: "Turn an outline into prose with art and code"
+policy:
+  allow_implicit_invocation: true

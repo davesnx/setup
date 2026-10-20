@@ -1,0 +1,51 @@
+schema_version: 2
+id: selected-angle-is-not-evidence
+mode: prose
+skill_under_test: create-drafted-blog-post
+skills_loaded: [create-drafted-blog-post]
+description: "An approved angle supplies neither facts nor an ending; scaffold supported notes"
+tags: [outline, evidence, partial-draft]
+
+prompt: |
+  Earlier in our collaboration you suggested the angle "How our migration
+  halved build times" and I replied "yes, that angle". Now make a one-off
+  writing scaffold; do not write full prose. No reader test is needed.
+  Audience: developers who know what a build is. Voice: plain first person.
+  These are all the facts I have supplied: "I changed the build configuration
+  on Tuesday. I have not run the comparison yet."
+  Put headings and bullet notes for the story, argument, and conclusion in
+  scaffold.md. Put outstanding evidence questions in gaps.md. No external research.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: scaffold.md
+  - kind: file_exists
+    path: gaps.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const draft = fs.readFileSync('scaffold.md', 'utf8');
+      const gaps = fs.readFileSync('gaps.md', 'utf8');
+      const sections = [...draft.matchAll(/^#{1,3}\s+(story|argument|conclusion)\s*$/gim)].map(match => match[1].toLowerCase());
+      const bullets = draft.split('\n').filter(line => /^\s*[-*]\s+\S/.test(line));
+      const body = draft.split('\n').filter(line => line.trim() && !/^\s*(?:#{1,3}\s+|[-*]\s+)/.test(line));
+      const facts = /\bI\b/.test(draft) && /build\s+configuration/i.test(draft) && /Tuesday/.test(draft) && /(?:not|haven.t)\s+(?:yet\s+)?run\s+(?:a |the )?comparison|yet to run\s+(?:a |the )?comparison/i.test(draft);
+      // Exclude explicitly unverified quoted proposals, not their surrounding claims.
+      const claims = draft.replace(/\b((?:proposed|suggested)\s+(?:angle|title),?\s*)(?:"[^"\n]+"|\u201c[^\u201d\n]+\u201d)(?=,?\s+(?:is\s+unverified\b|depends\s+on\s+(?:a|an)\s+(?:result|outcome)\s+(?:I|we)\s+have\s+not\s+(?:yet\s+)?(?:measured|verified)\b))/gi, '$1');
+      // Scope these exceptions to a clause so a separate claim still fails.
+      const unsupported = claims.split(/[.!?;,]+|\n\s*\n|\b(?:but|however)\b/i).some(part => {
+        const clause = part.replace(/\s+/g, ' ');
+        const boundary = /^\s*(?:so )?(?:(?:I|we) (?:also )?|it is )?(?:(?:cannot|can.t) (?:yet )?(?:say|claim|confirm)|(?:do not|don.t) know (?:yet )?(?:whether|if)|(?:unknown|unclear) (?:whether|if))\b/i.test(clause);
+        const claim = clause.replace(/^\s*(?:I|we) (?:have not|haven.t|did not|didn.t) migrated\b/i, '');
+        return !boundary && /halv|50\s*(?:%|percent)|twice as fast|2x|migration|migrated|faster|speedup/i.test(claim);
+      });
+      const separate = /comparison|measur|timing|benchmark/i.test(gaps);
+      process.stdout.write(sections.join(',') === 'story,argument,conclusion' && bullets.length >= 3 && body.length === 0 && facts && !unsupported && separate ? 'supported-scaffold' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: supported-scaffold

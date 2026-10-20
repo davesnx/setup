@@ -1,0 +1,5 @@
+interface:
+  display_name: "Create Drafted Blog Post"
+  short_description: "Interview and build headings with bullet notes"
+policy:
+  allow_implicit_invocation: true

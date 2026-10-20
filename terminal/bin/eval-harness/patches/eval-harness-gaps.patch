@@ -417,7 +417,18 @@ diff --git a/scripts/eval/hooks/pre-push b/scripts/eval/hooks/pre-push
 
  set -euo pipefail
 
-@@ -41,8 +41,15 @@
+@@ -23,8 +23,9 @@
+   while IFS= read -r f; do
+     case "$f" in
+       .opencode/skills/*/*|*/.opencode/skills/*/*)
+-        skill="$(echo "$f" | grep -oP '\.opencode/skills/\K[^/]+' | head -1 || true)"
++        skill=${f#*.opencode/skills/}
++        skill=${skill%%/*}
+         [[ -n "$skill" ]] && affected_skills+=("$skill")
+         ;;
+     esac
+   done <<< "$changed_files"
+@@ -41,8 +42,15 @@
  EVAL_HARNESS_BIN="${EVAL_HARNESS_BIN:-eval-harness}"
  exit_code=0
  for skill in $unique_skills; do

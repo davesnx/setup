@@ -5,7 +5,7 @@ const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 
 const source = path.resolve(__dirname, '..')
-const work = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-paths-'))
+const work = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'eval-paths-')))
 const repo = path.join(work, 'repo with spaces')
 const root = path.join(repo, 'terminal/bin/eval-harness')
 const runner = path.join(root, 'eval-harness')
@@ -69,7 +69,9 @@ opencode
   const offline = path.join(work, 'offline-bin')
   fs.mkdirSync(offline)
   for (const name of ['bash', 'dirname']) {
-    fs.symlinkSync(`/bin/${name}`, path.join(offline, name))
+    const command = spawnSync('/bin/sh', ['-c', 'command -v "$1"', 'sh', name], { encoding: 'utf8' })
+    assert.equal(command.status, 0, command.stderr)
+    fs.symlinkSync(command.stdout.trim(), path.join(offline, name))
   }
   const scripts = path.join(root, 'node_modules/@nano-step/eval-harness/scripts/eval')
   const offlineScript = `[[ -z "$OPENCODE_REAL_BIN" ]] || exit 99

@@ -1,0 +1,72 @@
+schema_version: 2
+id: outline-to-supported-prose
+mode: prose
+skill_under_test: write-polish-blog-post
+skills_loaded: [write-polish-blog-post, unslop]
+description: "Turn agreed notes into prose without claiming a result or fabricating missing art and code"
+tags: [prose, evidence, media]
+
+setup:
+  fixtures:
+    outline.md: fixtures/outline.md
+
+prompt: |
+  Turn the agreed outline.md into a short complete prose passage in post.md.
+  Write plain first-person prose for developers. post.md must contain only
+  prose paragraphs: no headings, lists, media placeholders, or code fences.
+  Do not ask for a full interview. Do not research or make files for the screenshot or
+  code snippet. Both are missing; record their status in gaps.json instead.
+  For this test only, gaps.json must be one JSON object with exactly these
+  fields: art and code, each set to "missing". Also provide evidence.json as
+  a JSON array with one record for each prose paragraph in post.md. Each
+  record has exactly text (the full paragraph) and source_quotes (an array of
+  exact sentences from outline.md). Attribution still needs human review.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: post.md
+  - kind: file_exists
+    path: gaps.json
+  - kind: file_exists
+    path: evidence.json
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const assert = require('node:assert/strict');
+      const fs = require('node:fs');
+      const source = fs.readFileSync('outline.md', 'utf8');
+      assert.equal(source, '# Build configuration notes\n\n## Story\n- On Tuesday I changed the build configuration.\n\n## Argument\n- I have not run a before/after comparison; no measured speed claim yet.\n\n## Conclusion\n- Explain what changed, but leave the effect unresolved.\n\n## Media\n- Screenshot of the build view: not captured.\n- Code snippet showing the final config: not checked against the repository.\n');
+      const post = fs.readFileSync('post.md', 'utf8');
+      const paragraphs = post.trim().split(/\n\s*\n/).map(p => p.replace(/\s+/g, ' ').trim());
+      assert.ok(paragraphs.length > 0);
+      assert.ok(paragraphs.every(p => !/^(?:#|[-*]\s|\[)/.test(p) && /[.!?]$/.test(p)));
+      assert.match(post, /\bI\b[^.\n]*\b(?:changed|updated)\b[^.\n]*\bbuild configuration\b[^.\n]*\bTuesday\b|\bTuesday\b[^.\n]*\bI\b[^.\n]*\b(?:changed|updated)\b[^.\n]*\bbuild configuration\b/i);
+      assert.match(post, /(?:not|haven.t)\s+(?:yet\s+)?run\s+(?:a |the )?(?:before\/after\s+)?comparison|(?:comparison|effect)\s+(?:is|remains)\s+(?:unmeasured|unknown|unverified)/i);
+      assert.doesNotMatch(post, /\b(?:halved|faster|speedup|50\s*(?:%|percent)|2x|12\s*ms)\b|!\[[^\]]*\]\([^)]+\)|```/i);
+      assert.deepEqual(JSON.parse(fs.readFileSync('gaps.json', 'utf8')), { art: 'missing', code: 'missing' });
+      const records = JSON.parse(fs.readFileSync('evidence.json', 'utf8'));
+      assert.ok(Array.isArray(records) && records.length === paragraphs.length);
+      const normalized = s => s.replace(/\s+/g, ' ').trim();
+      const sourceSentences = source.split(/(?<=[.!?])\s+|\n/).map(line => line.replace(/^\s*[-*]\s*/, '').trim()).filter(Boolean);
+      const expected = new Map(paragraphs.map(p => [p, 0]));
+      assert.equal(expected.size, paragraphs.length, 'duplicate paragraphs do not share one record');
+      for (const record of records) {
+        assert.deepEqual(Object.keys(record).sort(), ['source_quotes', 'text']);
+        assert.equal(typeof record.text, 'string');
+        const text = normalized(record.text);
+        assert.ok(expected.has(text));
+        expected.set(text, expected.get(text) + 1);
+        assert.ok(Array.isArray(record.source_quotes) && record.source_quotes.length > 0);
+        for (const quote of record.source_quotes) {
+          assert.ok(typeof quote === 'string' && sourceSentences.includes(quote));
+        }
+      }
+      assert.ok([...expected.values()].every(count => count === 1));
+      process.stdout.write('supported-prose');
+      JS
+    unsafe_shell: true
+    expect_exact: supported-prose

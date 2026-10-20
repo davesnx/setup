@@ -150,6 +150,13 @@ def native_case(entry, catalog):
 
 def make_study(catalogs, suite, profile, case_catalog=None):
     entries = load_json(HERE / "expanded_cases.json")
+    selected = {entry["skill"] for entry in entries}
+    for variant, catalog in catalogs.items():
+        missing = selected - catalog.keys()
+        if missing:
+            raise ValueError(
+                f"Expanded cases require skills absent from {variant} revision: {sorted(missing)}"
+            )
     source_catalog = case_catalog if case_catalog is not None else catalogs["on"]
     imported = [native_case(entry, source_catalog) for entry in entries]
     tasks = base_tasks() + [task for task, _, _ in imported]

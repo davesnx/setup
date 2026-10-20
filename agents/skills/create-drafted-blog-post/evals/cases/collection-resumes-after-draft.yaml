@@ -1,0 +1,62 @@
+schema_version: 2
+id: collection-resumes-after-draft
+mode: prose
+skill_under_test: create-drafted-blog-post
+skills_loaded: [create-drafted-blog-post]
+description: "Resume note collection without editing the draft or promoting an observation to a causal result"
+tags: [prose, collection]
+
+setup:
+  fixtures:
+    "draft.md": fixtures/collected-draft.md
+
+prompt: |
+  Continue this blog collaboration. Earlier conversation:
+  User: I want to collect notes for a post. Suggest angles as I go.
+  User: I tried a local cache. My first build took 40 seconds.
+  User: Save that bit now, skip the interview, and put the supplied text in draft.md.
+  Assistant: Saved the two supplied sentences now in draft.md.
+
+  Latest user message: Another note: Friday's build took 28 seconds.
+
+  Respond to the latest message. For this test, put your chat reply in
+  reply.md. Existing draft.md is available if the workflow calls for an edit.
+
+  Test protocol: represent the reply as one JSON object, without code fences
+  or extra prose, using exactly these fields:
+  - notes: an array of objects with source ("latest-user", "earlier-user",
+    or "assistant") and quote (verbatim note text from that source;
+    introductory "Another note:" may be omitted).
+  - cache_effect: "unknown", "improved", "worsened", or "no-effect".
+    This records what the supplied evidence establishes about causation,
+    not whether the two reported durations differ.
+  - draft_action: "unchanged" or "edited".
+  Record the new note and the current evidence status. This bounded capture
+  protocol replaces free-form chat for this test only; it does not test
+  unrestricted prose quality or infer prose meaning from keywords.
+
+budget:
+  max_tokens: 3000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: reply.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const assert = require('node:assert/strict');
+      assert.equal(fs.readFileSync('draft.md', 'utf8'), 'I tried a local cache. My first build took 40 seconds.\n');
+      const reply = JSON.parse(fs.readFileSync('reply.md', 'utf8'));
+      const quote = reply.notes?.[0]?.quote;
+      assert.ok(["Friday's build took 28 seconds.", "Another note: Friday's build took 28 seconds."].includes(quote));
+      assert.deepEqual(reply, {
+        notes: [{ source: 'latest-user', quote }],
+        cache_effect: 'unknown',
+        draft_action: 'unchanged',
+      });
+      process.stdout.write('collected');
+      JS
+    unsafe_shell: true
+    expect_exact: collected

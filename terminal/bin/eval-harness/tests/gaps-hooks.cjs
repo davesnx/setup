@@ -9,6 +9,14 @@ const source = process.argv[2] || path.join(root, 'node_modules/@nano-step/eval-
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'gaps-hooks-'))
 try {
   fs.writeFileSync(path.join(work, 'git'), '#!/bin/sh\nprintf "%s\\n" "$GAPS_CHANGED"\n', { mode: 0o755 })
+  const systemGrep = spawnSync('/bin/sh', ['-c', 'command -v grep'], { encoding: 'utf8' })
+  assert.equal(systemGrep.status, 0, systemGrep.stderr)
+  fs.writeFileSync(path.join(work, 'grep'), `#!/bin/sh
+for arg in "$@"; do
+  case "$arg" in -*P*) exit 97 ;; esac
+done
+exec ${JSON.stringify(systemGrep.stdout.trim())} "$@"
+`, { mode: 0o755 })
   fs.writeFileSync(path.join(work, 'evaluate'), `#!/bin/sh
 printf '%s %s\n' "$1" "$2" >> "$GAPS_CALLS"
 test "$1" = run || exit 98
@@ -20,21 +28,25 @@ case "$1" in
 esac
 exit 0
 `, { mode: 0o755 })
-  function check(skills, expected, warning = '0') {
+  function check(skills, expected, warning = '0', changed = skills.map(skill => `.opencode/skills/${skill}/SKILL.md`)) {
     const calls = path.join(work, 'calls')
     fs.writeFileSync(calls, '')
     const result = spawnSync('bash', [path.join(source, 'scripts/eval/hooks/pre-push')], {
       encoding: 'utf8', input: 'refs/heads/test local refs/heads/test remote\n',
       env: { ...process.env, PATH: `${work}:${process.env.PATH}`, EVAL_WARN_ONLY: warning,
         EVAL_HARNESS_BIN: path.join(work, 'evaluate'), GAPS_CALLS: calls,
-        GAPS_CHANGED: skills.map(skill => `.opencode/skills/${skill}/SKILL.md`).join('\n') },
+        GAPS_CHANGED: changed.join('\n') },
       timeout: 10000,
     })
     assert.equal(result.status, expected, `${skills}: ${result.stdout}\n${result.stderr}`)
     assert.deepEqual(fs.readFileSync(calls, 'utf8').trim().split('\n'),
-      [...skills].sort().map(skill => `run --skill=${skill}`), 'Every affected skill must receive the run command')
+      [...new Set(skills)].sort().map(skill => `run --skill=${skill}`), 'Every affected skill must receive the run command')
   }
   check(['pass'], 0)
+  check(['pass', 'nested'], 0, '0', [
+    '.opencode/skills/pass/SKILL.md', 'workspace/.opencode/skills/nested/evals/one.yaml',
+    '.opencode/skills/pass/evals/two.yaml',
+  ])
   check(['fail'], 12)
   check(['fail', 'pass'], 12)
   check(['error', 'fail', 'pass'], 13)
