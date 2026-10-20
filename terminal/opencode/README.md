@@ -107,8 +107,9 @@ reads project instructions and `VOICE.md` when present, and uses the writing
 skill that matches the task. It completes only the requested writing stage.
 
 Writer can edit prose files directly. Shell commands and edits to other file
-types require approval. Publishing, sending, committing, and pushing each need
-explicit authorization.
+types require approval. Publishing and sending need explicit authorization.
+Committing and pushing its own verified work follow the standing authorization
+in the global rules.
 
 The local permission plugin reapplies global hard Bash denies after Writer's
 approval default, so dangerous commands do not become approval prompts.

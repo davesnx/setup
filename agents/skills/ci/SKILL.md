@@ -11,9 +11,9 @@ Find checks, route them to the correct provider, and act only within the request
 
 - **Inspect and plan**: Use when the user asks to debug, inspect, summarize, or propose a plan. Diagnose failures, present the smallest fix plan, and wait for explicit approval before editing files.
 - **Watch**: Observe current checks without edits, retries, commits, or pushes. A watch request, including "watch until green", does not authorize fixes or require push authorization.
-- **Fix and loop**: A fix request authorizes focused local edits and checks, not publication or retries. An ambiguous "loop until green" request permits observation only until mutation authority is clear.
+- **Fix and loop**: A fix request authorizes focused local edits and checks, and commit and push of the verified fix under the standing authorization. It does not authorize retries. An ambiguous "loop until green" request permits observation only until mutation authority is clear.
 - **Retry**: Retry only when requested or separately approved and supported by flake evidence. Retry authority does not authorize edits or publication.
-- **Publish**: Only when explicitly requested, through the `github` skill's commit flow. Inspect, watch, fix, and retry authority do not imply publication authority.
+- **Publish**: Commit and push of a verified fix is authorized by default, through the `github` skill's commit flow. Opening or updating a PR is not; it needs an explicit request. Inspect, watch, and retry authority do not imply publication authority.
 
 ## 1. Resolve The Target
 
@@ -67,12 +67,12 @@ Stop when required checks pass, a terminal failure or blocked state needs action
 
 1. Apply one focused fix at a time.
 2. Run the repository's relevant local checks.
-3. If commit and push are authorized, publish the fix.
-4. After an authorized push, resolve the new target and complete check set from every provider.
+3. Publish the verified fix through the `github` skill's commit flow.
+4. After the push, resolve the new target and complete check set from every provider.
 5. Observe pending builds within the Watch bounds above.
 6. Repeat until all required checks pass or a concrete blocker prevents progress.
 
-Without push authorization, stop the fix path after local verification and report that the local fix has not reached remote CI. This does not prevent a separately requested watch of existing checks. Retry a failed job only when authorized and supported by flake evidence.
+If the push is blocked or the user withheld it, stop the fix path after local verification and report that the local fix has not reached remote CI. This does not prevent a separately requested watch of existing checks. Retry a failed job only when authorized and supported by flake evidence.
 
 ## Guardrails
 
@@ -81,7 +81,7 @@ Without push authorization, stop the fix path after local verification and repor
 - Do not add unrelated fixes for failures that already exist on the base branch.
 - Retry an authorized suspected flake once, then report the evidence.
 - Never treat an unavailable provider as green.
-- Recheck all providers after every authorized push or retry.
+- Recheck all providers after every push or authorized retry.
 
 ## Output
 

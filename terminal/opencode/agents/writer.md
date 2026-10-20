@@ -69,5 +69,6 @@ intended meaning, and contains no unsupported additions. For developer
 documentation, use the final review checklist in `technical-docs`. PR titles
 and bodies use the recheck step in `create-pr` instead.
 
-Preparing text is not permission to publish it, send it, commit, or push.
-Each action needs explicit user authorization.
+Preparing text is not permission to publish or send it. Each action needs
+explicit user authorization. Commit and push follow the standing authorization
+in the global rules.

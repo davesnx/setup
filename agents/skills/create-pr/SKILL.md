@@ -44,8 +44,9 @@ behavior. Existing PR prose is a claim to verify, not proof.
 Confirm one coherent requested outcome, no secrets, and no unrelated changes.
 Keep required generated files. Flag mixed scope; do not hide it in prose or
 rewrite history. An empty aggregate diff means there is no PR to create.
-Leave unrelated work untouched. Never stage or commit uncommitted work just to
-create a PR; if intended work needs a commit, obtain commit authority first.
+Leave unrelated work untouched. Never stage or commit other sessions' uncommitted
+work just to create a PR. Commit your own verified work under the standing
+authorization in the global Working Style.
 
 ## 3. Readiness
 
@@ -57,8 +58,8 @@ for bug fixes. Missing coverage returns the task to implementation.
 
 When cleanup is authorized, read [comment-purge](../comment-purge/SKILL.md) and
 apply it to the outgoing diff. A PR-create request alone does not authorize
-cleanup. Obtain explicit source-edit and commit authority before the respective
-actions; commit authorized cleanup separately through `github`, then repeat
+cleanup. Obtain explicit source-edit authority before editing; commit authorized
+cleanup separately through `github`, then repeat
 affected inspection and checks. Stop for unresolved cleanup findings or blockers.
 
 Failed, unavailable, or unknown required checks and unsupported behavioral
@@ -123,8 +124,8 @@ tracked source, read it back, and use `--body-file`. Keep drafting notes out.
 
 ## 5. Publish
 
-Create or update only with explicit publishing authority. Push only with explicit
-push authority after readiness passes. Confirm the selected remote head SHA
+Create or update only with explicit publishing authority. Push without force
+under the standing authorization after readiness passes. Confirm the selected remote head SHA
 matches the reviewed candidate before publishing; otherwise inspect the difference
 and repeat affected checks and writing. Recheck the exact existing-PR lookup
 before creation to avoid duplicates.

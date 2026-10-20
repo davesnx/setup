@@ -18,7 +18,7 @@ Choose one review mode from the request:
 
 Ship and Canvas modify the selected review mode:
 
-- **Ship**: Use only when the user asks to review and ship, commit, push, or open or update a PR. Review first, then fix and publish only what the request authorizes. Never treat reviewer suggestions as permission to edit.
+- **Ship**: Use only when the user asks to review and ship, commit, push, or open or update a PR. Commit and push of your own verified work is already authorized. Review first, then fix and publish only what the request authorizes. Never treat reviewer suggestions as permission to edit.
 - **Canvas output**: Use when the user asks for a review canvas, visual PR review, interactive walkthrough, or HTML review. Complete the selected review mode first, then render the result with `references/canvas.md`.
 
 ## 1. Define The Scope
@@ -152,7 +152,7 @@ In Ship mode:
 1. Run the repository's required format, lint, typecheck, build, and relevant tests.
 2. Fix only lead-confirmed blockers within the requested scope and rerun affected checks. Do not apply raw reviewer suggestions.
 3. Load `github` Commit mode before committing. Stage only intended files and do not bypass hooks.
-4. Push and open or update a PR only when explicitly requested.
+4. Push without force. Open or update a PR only when explicitly requested.
 5. Report findings, changes, checks, and the PR URL when one exists.
 
 For large diffs, prioritize risky files and boundaries, but do not silently omit files from the declared scope.

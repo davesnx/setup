@@ -142,7 +142,8 @@ hook protection, and isolation of unrelated work.
   commit. Report the message after the commit succeeds.
 - NEVER include files that look like secrets (.env, credentials, tokens).
 - NEVER amend existing commits unless the user explicitly asks.
-- NEVER push unless the user explicitly asks.
+- Push the committed work without force to its upstream branch after the
+  required checks pass. NEVER force push unless the user explicitly asks.
 - If there are no changes from the current session to commit, tell the user
   and stop, even if unrelated changes remain.
 - If the diff is very large, summarize the key themes rather than listing every change.

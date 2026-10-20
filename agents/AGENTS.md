@@ -94,6 +94,10 @@ Adapted from [Verification Before Completion](https://www.skills.sh/obra/superpo
   without waiting for approval at each step. Product direction remains with
   the user. Ask when intent cannot be inferred, and before destructive or
   irreversible actions or external messages unless already authorized.
+- Standing authorization: commit and push your own finished work without
+  asking, after the Green Build Gate passes. Push without force to the
+  branch's upstream. Do not force push, amend or rewrite history, or bypass
+  hooks. Opening or updating a pull request needs an explicit request.
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
 - When `git status` shows uncommitted work you did not make, another session
