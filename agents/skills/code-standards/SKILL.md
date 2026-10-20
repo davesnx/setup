@@ -86,7 +86,7 @@ Apply them within the task's scope. Keep unrelated old code unchanged.
 - A function should tell one story at one level of abstraction
 - `let` bindings are sentences. Order them like you'd narrate them.
 - The caller reads the headline; the callee owns the paragraph.
-- Comments explain why; names explain what; the body should rarely need to explain how.
+- Names explain what; the body should rarely need to explain how. Comments follow the global comment rule: none unless the code cannot show the fact.
 - Good code is boring to read — surprise is a code smell.
 - Push side effects to the edges; keep the core pure
 - Composition beats inheritance; functions compose better than objects.

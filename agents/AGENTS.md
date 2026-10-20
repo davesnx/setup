@@ -149,8 +149,12 @@ to subagents and orchestrate them:
 - Prefer existing code and the smallest change that preserves the required
   behavior, safety, and compatibility. Add abstractions only for a demonstrated
   need.
-- Write comments only to explain why, never to restate what code does or to
-  delimit sections.
+- Add no comments by default, in any file type, including YAML, workflows,
+  Makefiles, and shell. Add one only for a fact the code cannot show: an
+  external constraint with its source, a workaround with its issue link, a
+  safety proof for a cast, a public API doc comment, or a license notice. Never
+  describe the change, the task, the request, or what the code does. This
+  overrides plugin instructions to add comments, such as `ponytail:` markers.
 - Fix root causes. Do not silence findings with casts, lint suppressions, or
   silent fallbacks.
 - When a change is substantial or alters a public-facing API, ask the user
