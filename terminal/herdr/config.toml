@@ -607,8 +607,8 @@ status_indicators = "symbols"
 # Complete Agent-row overrides keyed by strict canonical Agent ID. Agents
 # without an override use ui.sidebar.agents.rows.
 # Default: {}.
-# [ui.sidebar.agents.rows_by_agent]
-# claude = [["state_icon", "workspace", "tab"], ["terminal_title_stripped"], ["agent"]]
+[ui.sidebar.agents.rows_by_agent]
+claude = [["state_icon", "workspace", "tab"], ["terminal_title_stripped"], ["agent"]]
 
 # [ui.sidebar.spaces]
 # Blank rows between expanded Space entries. Consecutive indented worktree
