@@ -2,6 +2,11 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "respectGitignore": true,
   "cleanupPeriodDays": 365,
+  "showThinkingSummaries": true,
+  "showMessageTimestamps": true,
+  "autoDreamEnabled": true,
+  "terminalProgressBarEnabled": true,
+  "disableSkillShellExecution": true,
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
