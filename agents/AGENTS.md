@@ -162,10 +162,16 @@ to subagents and orchestrate them:
   silent fallbacks.
 - When a change is substantial or alters a public-facing API, ask the user
   whether updating the docs is part of the work.
-- Commands in the sandbox `excludedCommands` setting, such as `make`, `git`,
-  `gh`, and `docker`, run outside the sandbox and see the system `$TMPDIR`.
-  Write a file that another command must read to the session scratchpad or the
-  repository, not to `$TMPDIR`. Let a background command's exit code reach the
-  task; do not append an `echo` that masks it.
+- Do not count on the sandbox `excludedCommands` setting. Listed commands such
+  as `git` and `make` can still run inside the sandbox (observed 2026-11-03).
+  When a command fails with "Operation not permitted" on a write, rerun that
+  one command alone with `dangerouslyDisableSandbox`. Run `git` commands that
+  write the working tree (merge, pull, stash, checkout, restore, rebase,
+  worktree add) alone. After a partial failure, check `git status` and
+  `git stash list`.
+- Commands run outside the sandbox see the system `$TMPDIR`, not the sandbox
+  one. Write a file that another command must read to the session scratchpad or
+  the repository, not to `$TMPDIR`. Let a background command's exit code reach
+  the task; do not append an `echo` that masks it.
 - The Bash tool shell is zsh, so `$PIPESTATUS` is empty. Use `$pipestatus[1]`
   or `set -o pipefail` to check a pipeline's exit code.
