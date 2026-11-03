@@ -1,8 +1,8 @@
 schema_version: 2
 id: answered-round-keeps-unresolved-fact-partial
 mode: prose
-skill_under_test: write-polish-blog-post
-skills_loaded: [write-polish-blog-post, unslop]
+skill_under_test: write-blog-post
+skills_loaded: [write-blog-post, unslop]
 description: "Write a confirmed answer without forcing a shape or completing an unsupported result"
 tags: [prose, partial-draft, voice-preservation, evidence]
 

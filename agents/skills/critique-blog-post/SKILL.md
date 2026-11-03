@@ -63,7 +63,7 @@ was found. Avoid a scorecard and generic praise.
 The review is complete when each reported issue has textual or source evidence,
 the whole post has been checked, and verification limits are explicit. A critique
 does not authorize file edits. If the author asks to apply repairs, use
-`write-polish-blog-post`; use `create-drafted-blog-post` for a requested rethink of
+`write-blog-post`; use `draft-blog-post` for a requested rethink of
 the story and outline.
 
 ## Fresh-reader test

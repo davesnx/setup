@@ -1,8 +1,8 @@
 schema_version: 2
 id: source-resolved-gaps
 mode: prose
-skill_under_test: write-polish-blog-post
-skills_loaded: [write-polish-blog-post, unslop]
+skill_under_test: write-blog-post
+skills_loaded: [write-blog-post, unslop]
 description: Write from linked author evidence without inventing an interview round
 tags: [prose, partial-draft, evidence, voice-preservation]
 

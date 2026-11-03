@@ -50,7 +50,7 @@ question, or quiet stopping point can work without a summary or call to action.
 ## When the piece is not working
 
 - **Too broad:** identify competing purposes and propose a narrower scope. Use
-  `create-drafted-blog-post` if the author wants to rethink the argument or order.
+  `draft-blog-post` if the author wants to rethink the argument or order.
 - **Too abstract:** find the point where an example or mechanism would help, and
   use available material rather than inventing a story.
 - **Weakly supported:** find evidence, preserve limits, or ask to reduce the claim.

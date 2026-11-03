@@ -1,8 +1,8 @@
 schema_version: 2
 id: selected-angle-is-not-evidence
 mode: prose
-skill_under_test: create-drafted-blog-post
-skills_loaded: [create-drafted-blog-post]
+skill_under_test: draft-blog-post
+skills_loaded: [draft-blog-post]
 description: "An approved angle supplies neither facts nor an ending; scaffold supported notes"
 tags: [outline, evidence, partial-draft]
 

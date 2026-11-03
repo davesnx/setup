@@ -1,5 +1,5 @@
 ---
-name: create-drafted-blog-post
+name: draft-blog-post
 description: "Interview the author and develop blog topics or notes into headings and bullet-point outlines. Iterate on the story, argument, evidence, and conclusion."
 ---
 
@@ -110,7 +110,7 @@ distinct purpose, the conclusion follows from the body, and every known gap is
 visible. The author decides when to stop iterating. An outline with gaps can be
 handed off, with those gaps still marked.
 
-Offer `write-polish-blog-post` to turn the agreed scaffold into prose. Stop at the
+Offer `write-blog-post` to turn the agreed scaffold into prose. Stop at the
 outline unless the author requests that next stage. Use `critique-blog-post` when
 the requested result is a review of an existing outline or post.
 

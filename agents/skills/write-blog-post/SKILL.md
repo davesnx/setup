@@ -1,5 +1,5 @@
 ---
-name: write-polish-blog-post
+name: write-blog-post
 description: "Write blog posts from outlines, finish incomplete drafts, or edit existing prose. Resolve evidence gaps and help choose supporting art and code."
 ---
 
@@ -43,7 +43,7 @@ use the supplied text, and ask only if an unresolved voice choice affects the wo
 
 Use the agreed reader, argument, order, and conclusion. Ask only questions that
 block the requested work. If a topic has no usable direction or structure, use
-`create-drafted-blog-post` for that decision rather than inventing the author's
+`draft-blog-post` for that decision rather than inventing the author's
 position. A supplied outline is enough to start writing.
 
 ## Output and edits

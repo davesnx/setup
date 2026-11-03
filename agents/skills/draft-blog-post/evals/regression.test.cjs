@@ -48,7 +48,7 @@ function check(t, scenario, artifacts) {
 }
 
 test('writing scenario metadata and fixtures stay valid', () => {
-  for (const name of ['create-drafted-blog-post', 'write-polish-blog-post', 'critique-blog-post', 'impeccable']) {
+  for (const name of ['draft-blog-post', 'write-blog-post', 'critique-blog-post', 'impeccable']) {
     const directory = path.join(root, 'agents/skills', name);
     const body = fs.readFileSync(path.join(directory, 'SKILL.md'), 'utf8');
     const frontmatter = YAML.parse(body.match(/^---\n([\s\S]*?)\n---/)[1]);
@@ -105,7 +105,7 @@ test('direct review rejects an irrelevant uncited finding', t => {
 });
 
 test('selected angle checker accepts bullet scaffold but rejects prose and invented results', t => {
-  const scenario = load('create-drafted-blog-post', 'selected-angle-is-not-evidence');
+  const scenario = load('draft-blog-post', 'selected-angle-is-not-evidence');
   const draft = '## Story\n- I changed the build configuration on Tuesday.\n## Argument\n- I have not run the comparison yet.\n## Conclusion\n- Result depends on the comparison.\n';
   const gaps = 'Partial draft. Missing evidence: comparison measurements.\n';
   assert.equal(check(t, scenario, { 'scaffold.md': draft, 'gaps.md': gaps }), true);
@@ -115,7 +115,7 @@ test('selected angle checker accepts bullet scaffold but rejects prose and inven
 });
 
 test('collection rejects causal inference and unwanted draft edits', t => {
-  const scenario = load('create-drafted-blog-post', 'collection-resumes-after-draft');
+  const scenario = load('draft-blog-post', 'collection-resumes-after-draft');
   const reply = { notes: [{ source: 'latest-user', quote: "Friday's build took 28 seconds." }], cache_effect: 'unknown', draft_action: 'unchanged' };
   assert.equal(check(t, scenario, { 'reply.md': JSON.stringify(reply) }), true);
   assert.equal(check(t, scenario, { 'reply.md': JSON.stringify({ ...reply, cache_effect: 'improved' }) }), false);
@@ -123,7 +123,7 @@ test('collection rejects causal inference and unwanted draft edits', t => {
 });
 
 test('polish writes sourced prose without claiming unavailable art or code', t => {
-  const scenario = load('write-polish-blog-post', 'outline-to-supported-prose');
+  const scenario = load('write-blog-post', 'outline-to-supported-prose');
   const post = 'On Tuesday I changed the build configuration. I have not run the before/after comparison yet.';
   const quote = 'On Tuesday I changed the build configuration.';
   const evidence = [{ text: post, source_quotes: [quote] }];
@@ -141,7 +141,7 @@ test('polish writes sourced prose without claiming unavailable art or code', t =
 });
 
 function draftExample(name) {
-  const scenario = load('write-polish-blog-post', name);
+  const scenario = load('write-blog-post', name);
   const filename = 'src/content/posts/cache-notebook.md';
   const original = fs.readFileSync(path.join(scenario.directory, 'fixtures/partial-cache.md'), 'utf8');
   const source = fs.readFileSync(path.join(scenario.directory, 'fixtures/source-notes.md'), 'utf8');
@@ -264,8 +264,8 @@ for (const name of ['source-resolved-gaps', 'answered-round-keeps-unresolved-fac
 }
 
 test('polish gap cases use the same progress contract except for interview count', () => {
-  const source = load('write-polish-blog-post', 'source-resolved-gaps');
-  const answered = load('write-polish-blog-post', 'answered-round-keeps-unresolved-fact-partial');
+  const source = load('write-blog-post', 'source-resolved-gaps');
+  const answered = load('write-blog-post', 'answered-round-keeps-unresolved-fact-partial');
   assert.deepEqual(source.setup, answered.setup);
   assert.equal(source.prompt.split('Put a brief account')[1], answered.prompt.split('Put a brief account')[1]);
   assert.equal(source.checks[0].cmd.replace('answered_interview_rounds: 0', 'answered_interview_rounds: 1'), answered.checks[0].cmd);

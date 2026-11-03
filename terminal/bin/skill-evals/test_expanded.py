@@ -133,13 +133,13 @@ class ExpandedChecks(unittest.TestCase):
     def test_writing_support_matches_loaded_skills_and_routing(self):
         entries = {entry["skill"]: entry for entry in load_json(HERE / "expanded_cases.json")}
         routes = {route["id"]: route for route in load_json(HERE / "expanded_routing.json")}
-        self.assertIn("unslop", entries["write-polish-blog-post"]["support"])
+        self.assertIn("unslop", entries["write-blog-post"]["support"])
         self.assertIn("unslop", self.skill_catalog)
         self.assertTrue((self.skill_catalog["unslop"] / "references/author-patterns.md").is_file())
         self.assertIn("unslop", routes["blog-polish"]["allowed"])
         self.assertEqual(
             routes["blog-polish"]["fixture"],
-            "expanded-write-polish-blog-post-source-resolved-gaps",
+            "expanded-write-blog-post-source-resolved-gaps",
         )
         study = make_study(
             {"off": self.skill_catalog, "on": self.skill_catalog},
@@ -147,14 +147,12 @@ class ExpandedChecks(unittest.TestCase):
             "focused",
             case_catalog=self.catalog,
         )
-        self.assertEqual(
-            study["supports"]["write-polish-blog-post"], ["write-polish-blog-post", "unslop"]
-        )
-        polish_dir = self.catalog["write-polish-blog-post"]
+        self.assertEqual(study["supports"]["write-blog-post"], ["write-blog-post", "unslop"])
+        polish_dir = self.catalog["write-blog-post"]
         polish = polish_dir / "evals/cases/source-resolved-gaps.yaml"
         self.assertEqual(
             yaml.safe_load(polish.read_text())["skills_loaded"],
-            ["write-polish-blog-post", "unslop"],
+            ["write-blog-post", "unslop"],
         )
 
     def test_historical_revision_without_migrated_skill_fails_clearly(self):
@@ -300,10 +298,10 @@ class ExpandedChecks(unittest.TestCase):
             ),
             "gaps.md": "Need comparison measurements.\n",
         }
-        self.assertTrue(self.run_checks("create-drafted-blog-post", good))
+        self.assertTrue(self.run_checks("draft-blog-post", good))
         self.assertFalse(
             self.run_checks(
-                "create-drafted-blog-post",
+                "draft-blog-post",
                 {
                     **good,
                     "scaffold.md": good["scaffold.md"] + "- The migration halved build times.\n",
@@ -312,7 +310,7 @@ class ExpandedChecks(unittest.TestCase):
         )
         self.assertFalse(
             self.run_checks(
-                "create-drafted-blog-post",
+                "draft-blog-post",
                 {**good, "scaffold.md": good["scaffold.md"].replace("- I changed", "I changed")},
             )
         )
@@ -332,35 +330,31 @@ class ExpandedChecks(unittest.TestCase):
                 }
             ],
         }
-        self.assertTrue(
-            self.run_checks("write-polish-blog-post", good, "outline-to-supported-prose")
-        )
+        self.assertTrue(self.run_checks("write-blog-post", good, "outline-to-supported-prose"))
         self.assertFalse(
             self.run_checks(
-                "write-polish-blog-post",
+                "write-blog-post",
                 {**good, "post.md": post + " The migration halved build times."},
                 "outline-to-supported-prose",
             )
         )
         self.assertFalse(
             self.run_checks(
-                "write-polish-blog-post",
+                "write-blog-post",
                 {**good, "gaps.json": {"art": "complete", "code": "missing"}},
                 "outline-to-supported-prose",
             )
         )
         self.assertFalse(
             self.run_checks(
-                "write-polish-blog-post",
+                "write-blog-post",
                 {**good, "gaps.json": {"art": "missing", "code": "complete"}},
                 "outline-to-supported-prose",
             )
         )
 
     def post_outputs(self):
-        draft = (
-            self.catalog["write-polish-blog-post"] / "evals/fixtures/partial-cache.md"
-        ).read_text()
+        draft = (self.catalog["write-blog-post"] / "evals/fixtures/partial-cache.md").read_text()
         draft = draft.replace(
             "# Why keep the cache?\n\n", f"# Why keep the cache?\n\n{CACHE_REASON}\n\n"
         )
@@ -381,11 +375,11 @@ class ExpandedChecks(unittest.TestCase):
 
     def test_post_evidence_and_unresolved_gaps(self):
         good = self.post_outputs()
-        self.assertTrue(self.run_checks("write-polish-blog-post", good))
+        self.assertTrue(self.run_checks("write-blog-post", good))
         draft_path = "src/content/posts/cache-notebook.md"
         self.assertFalse(
             self.run_checks(
-                "write-polish-blog-post",
+                "write-blog-post",
                 {
                     **good,
                     draft_path: good[draft_path].replace(
@@ -396,7 +390,7 @@ class ExpandedChecks(unittest.TestCase):
         )
         self.assertFalse(
             self.run_checks(
-                "write-polish-blog-post",
+                "write-blog-post",
                 {**good, draft_path: good[draft_path].replace("blue drawer", "green drawer")},
             )
         )
@@ -411,13 +405,13 @@ class ExpandedChecks(unittest.TestCase):
                 "source_quote": "An external report says its author measured a 12 ms cold start.",
             }
         ]
-        self.assertFalse(self.run_checks("write-polish-blog-post", bad))
+        self.assertFalse(self.run_checks("write-blog-post", bad))
         # New prose cannot be omitted from the paragraph ledger.
         bad = copy.deepcopy(good)
         bad[draft_path] = bad[draft_path].replace(
             "## What is still unknown?", "My cold start was 12 ms.\n\n## What is still unknown?"
         )
-        self.assertFalse(self.run_checks("write-polish-blog-post", bad))
+        self.assertFalse(self.run_checks("write-blog-post", bad))
         bad["progress.md"]["added_passages"].append(
             {
                 "text": "My cold start was 12 ms.",
@@ -427,7 +421,7 @@ class ExpandedChecks(unittest.TestCase):
             }
         )
         # Citation completeness cannot establish correct attribution.
-        self.assertTrue(self.run_checks("write-polish-blog-post", bad))
+        self.assertTrue(self.run_checks("write-blog-post", bad))
 
     def test_spec_draft_scope(self):
         good = {

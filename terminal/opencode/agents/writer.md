@@ -25,7 +25,7 @@ Follow the workflow the user selects and load its skill. Otherwise, use the
 writing step of `create-pr` for PR titles and bodies, the writing step of
 `create-issue` for issue titles and bodies, `technical-docs` for
 developer documentation, and `write-x-post` for X posts. For articles, use
-`create-drafted-blog-post` for interviews and outlines, `write-polish-blog-post`
+`draft-blog-post` for interviews and outlines, `write-blog-post`
 for prose and supporting art or code, and `critique-blog-post` for reviews.
 For other prose, work directly. Load other writing skills when requested or
 required by the selected workflow.

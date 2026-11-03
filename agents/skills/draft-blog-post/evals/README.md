@@ -1,20 +1,20 @@
 # Check the writing eval contracts
 
-For maintainers checking create-drafted-blog-post, write-polish-blog-post,
+For maintainers checking draft-blog-post, write-blog-post,
 and critique-blog-post evaluation cases.
 
 Run the shared regression checks from the repository root after installing the
 existing eval-harness dependencies:
 
 ```sh
-node --test agents/skills/create-drafted-blog-post/evals/regression.test.cjs
+node --test agents/skills/draft-blog-post/evals/regression.test.cjs
 ```
 
 If those dependencies are absent and Ruby/Psych is installed, use the explicit
 offline parser option:
 
 ```sh
-EVAL_YAML_PARSER=ruby node --test agents/skills/create-drafted-blog-post/evals/regression.test.cjs
+EVAL_YAML_PARSER=ruby node --test agents/skills/draft-blog-post/evals/regression.test.cjs
 ```
 
 The tests execute the shell graders from the actual YAML against disposable
@@ -56,7 +56,7 @@ quotes alone cannot prove faithful interpretation; review this by hand.
 
 ## Polish incomplete drafts
 
-Both gap-resolution cases under `write-polish-blog-post/evals/` use the same
+Both gap-resolution cases under `write-blog-post/evals/` use the same
 `progress.md` contract, without any site-specific draft metadata:
 
 - `evidence_source` and `answered_interview_rounds`.
