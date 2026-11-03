@@ -11,7 +11,8 @@ $EDITOR local/overrides.zsh
 ```
 
 `install.sh` runs once when a machine is set up. It links `local/gitconfig` to
-`~/.gitconfig.local` when that file exists.
+`~/.gitconfig.local` and `local/gitconfig.ahrefs` to `~/.gitconfig.ahrefs` when
+those files exist.
 
 `main.sh` runs at every shell start and sources every `.zsh` file here in name
 order. Use the `.zsh` files for local paths, environment values, aliases, and

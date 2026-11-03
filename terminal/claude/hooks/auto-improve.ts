@@ -145,6 +145,12 @@ async function main() {
     if (typeof sessionId !== "string" || typeof promptId !== "string") {
       throw new Error("invalid IDs");
     }
+    if (
+      name === "UserPromptSubmit" &&
+      typeof event.prompt === "string" &&
+      event.prompt.trimStart().startsWith("<task-notification>")
+    )
+      return;
     const active = "stop_hook_active" in event ? event.stop_hook_active : false;
     if (typeof active !== "boolean")
       throw new Error("invalid continuation flag");

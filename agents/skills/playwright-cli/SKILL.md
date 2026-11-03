@@ -30,10 +30,10 @@ allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*) Bash(node:*)
 ## Common Browser Task
 
 Use this path without loading references for routine navigation or inspection.
-Identify the requested outcome, page, and permitted changes. Run commands
-plainly, with pipes if needed: in Claude Code, subshell groups such as
-`( playwright-cli ... )` run sandboxed and can fail with `EROFS` under
-`~/.cache/ms-playwright`; plain commands need no sandbox override.
+Identify the requested outcome, page, and permitted changes. In Claude Code,
+if playwright-cli fails with `EPERM` or `EROFS` under its cache directory
+(`~/Library/Caches/ms-playwright` or `~/.cache/ms-playwright`), rerun that
+command with `dangerouslyDisableSandbox`.
 
 List sessions, then replace `task` below with an unused name. For the user's
 Brave on the Mac, attach through CDP (forwarded from the Mac on nspawn):
