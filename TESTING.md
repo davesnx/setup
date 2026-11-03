@@ -51,6 +51,8 @@ It checks:
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
   tracked directory in the first two levels has a row, and no tracked symlink
   is absolute.
+- Bun use: no tracked file outside `mac/`, `*.test.ts`, and Markdown has a Bun
+  shebang or calls `Bun.`, because nspawn has Node only.
 - Config syntax: every tracked `.json` and `.jsonc` file parses, allowing
   comments and trailing commas. Every `agents/skills/*/SKILL.md` has frontmatter
   with a `name` equal to its directory and a non-empty `description`.

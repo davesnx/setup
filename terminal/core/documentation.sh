@@ -19,8 +19,8 @@ docs::parse() {
   local -r file="${ZSH_ARGZERO:-$0}"
   local -r docopts="${DOTFILES_PATH}/terminal/core/utils/docopts.ts"
 
-  if ! platform::command_exists bun; then
-    log::error "You need to have bun installed in order to run $docopts"
+  if ! platform::command_exists node; then
+    log::error "You need to have node installed in order to run $docopts"
     exit 1
   fi
 

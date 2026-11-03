@@ -205,6 +205,11 @@ while IFS= read -r link; do
   fi
 done < <(git -C "$root" ls-files -s | awk '$1 == "120000" { print $4 }')
 
+if git -C "$root" grep -n -E '^#!/usr/bin/env bun|(^|[^[:alnum:]_])Bun\.' -- ':!mac/' ':!*.test.ts' ':!*.md' >&2; then
+  printf 'Bun is not on nspawn; use Node outside mac/ and tests.\n' >&2
+  exit 1
+fi
+
 if [[ "$(uname -s)" == Darwin ]]; then
   /bin/bash "$root/mac/tests/browser-cdp.sh"
   sh "$root/mac/tests/install.sh"

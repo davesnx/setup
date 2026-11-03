@@ -1,7 +1,7 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 // Shell interface for docopt. A TypeScript port of docopts 0.6.1+fix and of
 // docopt.py 0.6.2, both MIT licensed by Vladimir Keleshev and Lari Rasku, so
-// the terminal/bin scripts need Bun and nothing else.
+// the terminal/bin scripts need Node and nothing else.
 
 import { readFileSync, writeSync } from "node:fs";
 
@@ -59,8 +59,10 @@ class DocoptExit extends Error {
 
 // --help or --version was given; `text` is what docopt would print.
 class HelpExit extends Error {
-  constructor(public text: string) {
+  text: string;
+  constructor(text: string) {
     super(text);
+    this.text = text;
   }
 }
 
@@ -347,11 +349,10 @@ class Either extends Branch {
 
 class Tokens {
   tokens: string[];
+  errorKind: "exit" | "language";
 
-  constructor(
-    source: string | string[],
-    public errorKind: "exit" | "language" = "exit",
-  ) {
+  constructor(source: string | string[], errorKind: "exit" | "language" = "exit") {
+    this.errorKind = errorKind;
     this.tokens = typeof source === "string" ? source.split(/\s+/).filter(Boolean) : [...source];
   }
 
