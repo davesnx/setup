@@ -162,13 +162,14 @@ to subagents and orchestrate them:
   silent fallbacks.
 - When a change is substantial or alters a public-facing API, ask the user
   whether updating the docs is part of the work.
-- Do not count on the sandbox `excludedCommands` setting. Listed commands such
-  as `git` and `make` can still run inside the sandbox (observed 2026-11-03).
-  When a command fails with "Operation not permitted" on a write, rerun that
-  one command alone with `dangerouslyDisableSandbox`. Run `git` commands that
-  write the working tree (merge, pull, stash, checkout, restore, rebase,
-  worktree add) alone. After a partial failure, check `git status` and
-  `git stash list`.
+- A command in the sandbox `excludedCommands` setting, such as `git`, `gh`, or
+  `make`, runs outside the sandbox only when the call is that command alone. A
+  pipe, `;`, `&&`, a redirect, `cd`, `$(...)`, an env prefix, `git -C`,
+  `git -c`, or an absolute, `~`, or `..` path argument keeps it sandboxed. Run
+  it from the working directory with relative paths. When such a form is
+  needed, or the call still fails with "Operation not permitted", rerun it
+  alone with `dangerouslyDisableSandbox`. After a partial `git` failure, check
+  `git status` and `git stash list`.
 - Commands run outside the sandbox see the system `$TMPDIR`, not the sandbox
   one. Write a file that another command must read to the session scratchpad or
   the repository, not to `$TMPDIR`. Let a background command's exit code reach

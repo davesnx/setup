@@ -35,11 +35,12 @@ succeeds even if CI is red or threads are unresolved.
 
 - `gh` and `git` run outside the Bash sandbox, with credentials, only when
   the call is the whole command. A pipe, `;`, `&&`, a redirect, `cd … &&`,
-  `git -C <path>`, `git -c key=value`, or an env/export prefix runs the call
-  inside the sandbox instead, where `~/.config/gh` and `~/.ssh` are denied
-  (`gh auth login`, an SSH error, or `Couldn't get agent socket` on a signed
-  commit). `cd` to the repository in its own call, then run them alone; do not
-  use `dangerouslyDisableSandbox` for this.
+  `git -C <path>`, `git -c key=value`, an env/export prefix, or an absolute,
+  `~`, or `..` path argument runs the call inside the sandbox instead, where
+  `~/.config/gh` and `~/.ssh` are denied (`gh auth login`, an SSH error, or
+  `Couldn't get agent socket` on a signed commit). `cd` to the repository in
+  its own call, then run them alone with relative paths. When a sandboxed form
+  is unavoidable, run that call alone with `dangerouslyDisableSandbox`.
 - Never pipe gh into `head`: SIGPIPE can kill gh mid-write (spurious nonzero
   exit, shell-dependent) or silently truncate large output.
   Trim with `--jq '.[0:20]'` instead.
