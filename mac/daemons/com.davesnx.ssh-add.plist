@@ -6,8 +6,9 @@
   <string>com.davesnx.ssh-add</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/bin/ssh-add</string>
-    <string>--apple-load-keychain</string>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>/usr/bin/ssh-add --apple-load-keychain; exec /usr/bin/ssh-add "$HOME/.ssh/id_rsa"</string>
   </array>
   <key>RunAtLoad</key>
   <true/>

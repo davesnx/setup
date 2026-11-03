@@ -167,7 +167,8 @@ declaration and rendered output only.
 
 After changing `mac/daemons/com.davesnx.ssh-add.plist`, run
 `sh mac/daemons/install.sh` with `DOTFILES_PATH` set to this checkout.
-The job loads SSH keys saved in macOS Keychain once at login. Check
+The job loads the SSH keys saved in macOS Keychain, then `~/.ssh/id_rsa`,
+once at login. Check
 `launchctl print "gui/$(id -u)/com.davesnx.ssh-add"` for `last exit code = 0`,
 then run `/usr/bin/ssh-add -l` to confirm the expected keys are loaded.
 Run `ssh -T git@github.com` and confirm the greeting names the personal
