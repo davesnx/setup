@@ -280,6 +280,24 @@ exit 0
     assert.equal(state().issued, true);
   });
 
+  test("background task notifications do not count", async () => {
+    await complete("p1");
+    await quiet(
+      event("UserPromptSubmit", "notice", "session", {
+        prompt:
+          "<task-notification>\n<task-id>t1</task-id>\n</task-notification>",
+      }),
+    );
+    await quiet(event("Stop", "notice"));
+    assert.equal(state().completed_prompt_ids.length, 1);
+    assert.equal(state().current_prompt_id, null);
+    assert.equal(await complete("p2"), "");
+    assert.equal(state().completed_prompt_ids.length, 2);
+    assert.equal(state().issued, false);
+    assert.equal(await complete("p3"), "");
+    assert.equal(state().issued, true);
+  });
+
   test("fresh session is independent", async () => {
     for (const session of ["session", "fresh-session"]) {
       assert.equal(await complete("p1", session), "");

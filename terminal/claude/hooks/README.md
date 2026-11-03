@@ -18,7 +18,8 @@ detached, headless reviewer: `claude -p` in `--permission-mode plan`, given
 that session's transcript path as evidence. It runs independently of the
 working session; nothing is injected into it, and the hook's own process
 exits immediately after starting the reviewer. Duplicate events, subagents,
-and hook continuations do not count toward the three prompts.
+background task notifications, and hook continuations do not count toward the
+three prompts.
 
 The hook keeps its JSON state and locks under
 `${XDG_STATE_HOME:-$HOME/.local/state}/auto-improve/claude`. Reports land in
