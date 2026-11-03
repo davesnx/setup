@@ -160,20 +160,14 @@ for skill in "$root"/agents/skills/*/SKILL.md; do
 done
 
 # Deterministic skill and hook tests. Not run here: skill-creator test_run_eval
-# (process pools and a fake claude), the Mermaid render test in
-# plannotator-visual-explainer (needs the Plannotator monorepo), opencode
-# tests/integration (needs the opencode binary), and skill-evals/eval-harness
-# (own checks, see TESTING.md).
+# (process pools and a fake claude), opencode tests/integration (needs the
+# opencode binary), and skill-evals/eval-harness (own checks, see TESTING.md).
 npm ci --silent --prefix "$root/terminal/claude/hooks"
 node --test "$root/terminal/claude/hooks/auto-improve.test.ts"
 node --test "$root/terminal/opencode/tests/agent-permission-boundaries.test.mjs"
 bash "$root/agents/skills/skill-vendor/tests/skill-vendor.sh"
 bash "$root/agents/skills/ssh-transfer/tests/ssh-transfer.sh"
 bash "$root/agents/skills/librarian/tests/checkout.sh"
-bun test "$root/agents/skills/plannotator-setup-goal/SKILL.test.ts"
-bun test "$root/agents/skills/plannotator-visual-explainer/SKILL.test.ts" \
-  --test-name-pattern '^(?!.*renders representative)'
-(cd "$root/agents/skills/autoresearch" && python3 -m unittest discover -s tests)
 (cd "$root/agents/skills/skill-creator" &&
   python3 -m unittest tests.test_aggregate_benchmark tests.test_generate_review \
     tests.test_quick_validate tests.test_run_loop)

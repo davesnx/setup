@@ -45,7 +45,7 @@ It checks:
   a fake OpenCode command. This check installs pinned dependencies with npm.
 - MCP declaration: `agents/mcp.json` rejects unknown root keys, the renderers
   preserve the expected fields and defaults, and the rendered files match it.
-- The browser endpoint reader and guarded Playwright examples use the declaration.
+- The browser endpoint reader uses the declaration.
   On macOS, the Raycast launcher uses native JSON parsing with no Node or jq on
   its test PATH. Browser calls are stubbed, including failed launches and retries.
 - Repository layout against `AGENTS.md`: every path in its tree exists, every
@@ -58,10 +58,9 @@ It checks:
   with a `name` equal to its directory and a non-empty `description`.
 - Claude Code hook tests (`npm ci` installs pinned dependencies), the OpenCode
   permission plugin test, and the skill tests that need no model or network:
-  skill-vendor, ssh-transfer, librarian, autoresearch, the plannotator
-  `SKILL.test.ts` files, and skill-creator (all but `test_run_eval`).
-  Skipped: the Mermaid render test (needs the Plannotator monorepo),
-  `test_run_eval` (process pools, fake `claude`), and OpenCode
+  skill-vendor, ssh-transfer, librarian, and skill-creator (all but
+  `test_run_eval`). Skipped: `test_run_eval` (process pools, fake `claude`),
+  and OpenCode
   `tests/integration` (needs the `opencode` binary).
 - On macOS, installer ordering, reruns, backups, failure recovery, native Node
   selection, and Choosy settings restoration.

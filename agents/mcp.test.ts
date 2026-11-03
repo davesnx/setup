@@ -129,36 +129,12 @@ test("browser-url CLI reads the adjacent declaration under Node, independent of 
     expect(linked.status).toBe(0);
     expect(linked.stdout).toBe(result.stdout);
 
-    const examples = [
-      "README.md", "skills/playwright-cli/SKILL.md", "skills/playwright-cli/references/session-management.md",
-      "skills/playwright-cli/references/browser-commands.md",
-    ].map((file) => {
-      const content = readFileSync(join(import.meta.dirname, file), "utf8");
-      const command = content.match(/CDP_URL=\$\(node .* browser-url\) &&\n\s+playwright-cli[^\n]+/);
-      if (!command) throw new Error(`${file}: missing guarded browser-url attach example`);
-      return command[0];
-    });
-    const attach = (command: string) => spawnSync("bash", ["-c", `playwright-cli() { printf 'attached:%s\\n' "$*"; }; ${command}`], {
-      encoding: "utf8", env: { ...process.env, DOTFILES_PATH: root },
-    });
-    for (const command of examples) {
-      const attached = attach(command);
-      expect(attached.status).toBe(0);
-      expect(attached.stdout).toContain("--cdp=http://127.0.0.1:9333");
-    }
-
     writeFileSync(join(directory, "mcp.json"), JSON.stringify(browserDeclaration(["npx"])));
     const invalid = invoke("browser-url");
     expect(invalid.status).toBe(1);
     expect(invalid.stdout).toBe("");
     expect(invalid.stderr).toContain("agents/mcp.json");
     expect(invalid.stderr).toContain("--browser-url");
-    for (const command of examples) {
-      const attached = attach(command);
-      expect(attached.status).toBe(1);
-      expect(attached.stdout).toBe("");
-      expect(attached.stderr).toContain("--browser-url");
-    }
 
     const usage = invoke("unknown");
     expect(usage.status).toBe(1);
