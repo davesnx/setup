@@ -391,7 +391,7 @@ async function main() {
   const sessionTitle = getSessionTitle(data.transcript_path);
 
   process.stdout.write(
-    `${sessionTitle ? `\x1b[0m${colorize(sessionTitle, colors.brightWhite)}\n` : ""}\x1b[0m${colorize(`  ${modelName}`, colors.brightYellow)} | ${colorize(
+    `${sessionTitle ? `\x1b[0m${colorize(`[${sessionTitle}]`, colors.brightWhite)}\n` : ""}\x1b[0m${colorize(`  ${modelName}`, colors.brightYellow)} | ${colorize(
       `  ${currentDir}`,
       colors.brightBlue
     )} | ${colorize(gtitBranch, colors.brightOrange)}${colorize(
