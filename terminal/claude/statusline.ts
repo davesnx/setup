@@ -242,6 +242,27 @@ function formatAutoImproveReports(): string {
   }
 }
 
+function getSessionTitle(transcriptPath: string | undefined): string {
+  if (!transcriptPath) return "";
+  let lines: string[];
+  try {
+    lines = readFileSync(transcriptPath, "utf8").split("\n");
+  } catch {
+    return "";
+  }
+  let aiTitle = "";
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i];
+    if (!line.includes('"custom-title"') && !line.includes('"ai-title"')) continue;
+    try {
+      const entry = JSON.parse(line);
+      if (entry.type === "custom-title" && entry.customTitle) return entry.customTitle;
+      if (entry.type === "ai-title" && entry.aiTitle && !aiTitle) aiTitle = entry.aiTitle;
+    } catch {}
+  }
+  return aiTitle;
+}
+
 function getGitDiffStats(): { additions: number; deletions: number } {
   try {
     const result = spawnSync("git", ["diff", "--numstat"], {
@@ -367,9 +388,10 @@ async function main() {
   const outputStyle = data.output_style?.name || "";
   const rateLimits = formatRateLimits(data.rate_limits, modelName);
   const autoImprove = formatAutoImproveReports();
+  const sessionTitle = getSessionTitle(data.transcript_path);
 
   process.stdout.write(
-    `\x1b[0m${colorize(`  ${modelName}`, colors.brightYellow)} | ${colorize(
+    `${sessionTitle ? `\x1b[0m${colorize(`[${sessionTitle}]`, colors.brightWhite)}\n` : ""}\x1b[0m${colorize(`  ${modelName}`, colors.brightYellow)} | ${colorize(
       `  ${currentDir}`,
       colors.brightBlue
     )} | ${colorize(gtitBranch, colors.brightOrange)}${colorize(
