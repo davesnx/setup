@@ -3,4 +3,5 @@
 # Linked on the Mac only: remote machines are viewed from here.
 
 [hosts.nspawn]
-target = "nspawn"
+# An alias without the nspawn port forwards: a busy forward fails every mirror channel.
+target = "nspawn-herdr"
