@@ -77,6 +77,7 @@ mac/chrome-extensions.md  Browser extension list.
 mac/vimium-options.json   Vimium settings.
 
 git/                      .gitconfig .gitignore_global .gitattributes -> ~/. forgit.zsh.
+                          allowed_signers -> ~/.config/git/allowed_signers
 local/                    Machine-specific overrides. Git-ignored except README, install.sh,
                           main.sh. *.zsh files are sourced at shell start. local/bin holds
                           machine-only commands.

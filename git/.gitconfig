@@ -3,6 +3,9 @@
   name = David Sancho Moreno
   signingkey = 4175FBECA4EB3CA6
 
+[gpg "ssh"]
+  allowedSignersFile = ~/.config/git/allowed_signers
+
 [credential]
   helper = osxkeychain
 
