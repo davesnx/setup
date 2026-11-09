@@ -2,13 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "respectGitignore": true,
   "cleanupPeriodDays": 365,
-  "showThinkingSummaries": true,
-  "showMessageTimestamps": true,
-  "autoDreamEnabled": true,
-  "terminalProgressBarEnabled": true,
-  "disableSkillShellExecution": true,
   "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "opus",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "ENABLE_TOOL_SEARCH": "true",
@@ -126,7 +121,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -319,6 +314,7 @@
       }
     ]
   },
+  "disableSkillShellExecution": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.ts",
@@ -399,14 +395,17 @@
   "autoUpdatesChannel": "latest",
   "plansDirectory": ".workplace/plans",
   "tui": "fullscreen",
+  "autoDreamEnabled": true,
+  "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
+  "showMessageTimestamps": true,
+  "terminalProgressBarEnabled": true,
   "teammateMode": "in-process",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "useAutoModeDuringPlan": true,
-  "teammateDefaultModel": "sonnet",
   "autoMode": {
     "environment": [
       "### Org-wide",
