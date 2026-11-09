@@ -19,11 +19,9 @@ fi
 # a dead SSH_AUTH_SOCK. Shells share one stable link and use it instead.
 # sshd starts each login shell and remote command through zsh, so this runs
 # at every login. Not on the Mac: SSH_CONNECTION is unset there.
-# A live link is never replaced: short connections from editors and herdr
-# would take it and leave it dead when they close. When the connection
-# behind it closes, sshd deletes its socket under /tmp/ssh-*, and the next
-# shell start or prompt moves the link to this shell's socket or the newest
-# one still there.
+# Editors and herdr open short connections about every 30 seconds; sshd
+# deletes each socket under /tmp/ssh-* when its connection closes, so a link
+# that followed the newest login was dead most of the time.
 # ponytail: a socket left by a crashed sshd still counts as live; probe it
 # with ssh-add -l if that ever picks a dead one.
 if [ -n "$SSH_CONNECTION" ]; then
