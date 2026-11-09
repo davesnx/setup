@@ -16,17 +16,32 @@ fi
 
 # Over SSH, a forwarded agent socket gets a new random path per connection,
 # so processes that outlive the connection, such as Claude inside tmux, keep
-# a dead SSH_AUTH_SOCK. Every shell re-points one stable link to the newest
-# live socket and uses the link, so a reconnect repairs it with no restart.
+# a dead SSH_AUTH_SOCK. Shells share one stable link and use it instead.
 # sshd starts each login shell and remote command through zsh, so this runs
 # at every login. Not on the Mac: SSH_CONNECTION is unset there.
-# ponytail: last login wins; when a newer connection closes first, the link
-# is dead until the next login.
+# A live link is never replaced: short connections from editors and herdr
+# would take it and leave it dead when they close. When the connection
+# behind it closes, sshd deletes its socket under /tmp/ssh-*, and the next
+# shell start or prompt moves the link to this shell's socket or the newest
+# one still there.
+# ponytail: a socket left by a crashed sshd still counts as live; probe it
+# with ssh-add -l if that ever picks a dead one.
 if [ -n "$SSH_CONNECTION" ]; then
-  agent_link="$HOME/.ssh/agent.sock"
-  if [ -S "$SSH_AUTH_SOCK" ] && [ "$SSH_AUTH_SOCK" != "$agent_link" ]; then
-    ln -sfn "$SSH_AUTH_SOCK" "$agent_link" 2>/dev/null
+  _setup_agent_link() {
+    local link="$HOME/.ssh/agent.sock" sock
+    if [ ! -S "$link" ]; then
+      for sock in "$SSH_AUTH_SOCK" /tmp/ssh-*/agent.*(N=Uom); do
+        if [ "$sock" != "$link" ] && [ -S "$sock" ]; then
+          ln -sfn "$sock" "$link" 2>/dev/null
+          break
+        fi
+      done
+    fi
+    [ -S "$link" ] && export SSH_AUTH_SOCK="$link"
+  }
+  _setup_agent_link
+  if [[ -o interactive ]]; then
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _setup_agent_link
   fi
-  [ -S "$agent_link" ] && export SSH_AUTH_SOCK="$agent_link"
-  unset agent_link
 fi

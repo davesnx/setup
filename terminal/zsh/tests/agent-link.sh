@@ -37,12 +37,41 @@ echo "PASS: links a live forwarded socket and uses the link"
 [ "$(readlink "$link")" = "$sock" ] || fail "a dead path replaced the link"
 echo "PASS: keeps the link when the inherited socket is dead"
 
+newer="$work/agent.newer"
+(cd "$work" && python3 -c 'import socket; socket.socket(socket.AF_UNIX).bind("agent.newer")')
+[ "$(seen SSH_CONNECTION=x SSH_AUTH_SOCK="$newer")" = "$link" ] || fail "did not use the link"
+[ "$(readlink "$link")" = "$sock" ] || fail "a newer connection replaced a live link"
+echo "PASS: a newer connection does not replace a live link"
+
 [ "$(seen SSH_CONNECTION=x SSH_AUTH_SOCK="$link")" = "$link" ] || fail "changed an already linked value"
 [ "$(readlink "$link")" = "$sock" ] || fail "the link points at itself"
 echo "PASS: never points the link at itself"
 
 [ "$(seen SSH_AUTH_SOCK="$sock")" = "$sock" ] || fail "touched SSH_AUTH_SOCK without SSH_CONNECTION"
 echo "PASS: does nothing outside an SSH session"
+
+forwarded=$(mktemp -d /tmp/ssh-XXXXXXXXXX)
+trap 'rm -rf "$work" "$forwarded"' EXIT HUP INT TERM
+(cd "$forwarded" && python3 -c 'import socket; socket.socket(socket.AF_UNIX).bind("agent.1")')
+ln -sfn "$work/closed" "$link"
+[ "$(seen SSH_CONNECTION=x SSH_AUTH_SOCK="$link")" = "$link" ] || fail "did not use the repaired link"
+[ "$(readlink "$link")" = "$forwarded/agent.1" ] || fail "a dead link was not moved to a live socket"
+echo "PASS: shell start moves a dead link to the newest live socket"
+
+ln -sfn "$work/closed" "$link"
+actual=$(env -i HOME="$work" PATH="$PATH" SSH_CONNECTION=x SSH_AUTH_SOCK="$link" zsh -s <<'EOF'
+ln -sfn "$HOME/closed" "$HOME/.ssh/agent.sock"
+_setup_agent_link
+readlink "$HOME/.ssh/agent.sock"
+EOF
+)
+[ "$actual" = "$forwarded/agent.1" ] || fail "an open shell did not repair a link that died after start"
+actual=$(env -i HOME="$work" PATH="$PATH" SSH_CONNECTION=x zsh -is 2>/dev/null <<'EOF'
+print -r -- $precmd_functions
+EOF
+)
+case " $actual " in *" _setup_agent_link "*) ;; *) fail "interactive shells do not repair the link before each prompt" ;; esac
+echo "PASS: open interactive shells repair the link before each prompt"
 
 zsh_bin=$(command -v zsh)
 actual=$(env -i HOME="$work" PATH=/usr/bin:/bin "$zsh_bin" -c 'printenv DOTFILES_PATH')
