@@ -1,7 +1,10 @@
 [user]
   email = dsnxmoreno@gmail.com
   name = David Sancho Moreno
-  signingkey = 4175FBECA4EB3CA6
+  signingkey = key::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwC7TJ4wtKUj/kpMmkPiMFw0Sjspmp2XieRa8dUN1/7Q1Ys2XRqPOxwpbBYD0Uj1h2I2wBKR75PMlQqK81L9CTy+e6MB0j0ukeSPBr6HB3dkAIPioRLBV1m/Q2I1e4wMatLw372mxYAB8U4si1lRnqBrOKv+Pw4ivQRQrmWRO7/JyXn0zDvRR/xlSGujjxnoNW8l6DqKCvrXgocyoEH5EW9c7tX3LIEf530K0wI8V3qBaMX+uUoQhWc59diIGVeqffH5+HjfbtYV1ObndB+MV89+8Qk5z7Q2L6aQwXDakgajRzhUDtUAMLqPwZnF2EUSwnJea69/EDs8aP5rTiYB4N0YNsRcOdtFHjt+/LKFQ8EyvOPqE3TkmC0FmeRipEzL1i1gUlNDELGxd1Dh2GYL/WDZRQlVaB1OGJPe5RRShdQI37d9CDiTZrUwuapQJennZikVSYRPQzteIwBDE/djtmoI2i+zi/hoHdU4ttxRBFdH3KXNDNoYXkBXp+SNY9PZM=
+
+[gpg]
+  format = ssh
 
 [gpg "ssh"]
   allowedSignersFile = ~/.config/git/allowed_signers
