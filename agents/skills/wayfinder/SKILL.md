@@ -22,7 +22,7 @@ The map is a single issue on this repo's issue tracker, labelled `wayfinder:map`
 
 The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place, its ticket, so the map never restates it, only gists it and links.
 
-**Where the map, its child tickets, blocking, and frontier queries physically live is tracker-specific.** The issue tracker should have been provided to you. Consult the tracker doc's "Wayfinding operations" section for how _this_ repo expresses them. If no tracker has been provided, default to the local-markdown tracker.
+**Where the map, its child tickets, blocking, and frontier queries physically live is tracker-specific.** Pick the tracker by the issue tracker rule in the global agent rules and use its native relations. The local-markdown tracker keeps the map and each ticket as a file under `.workplace/plans/<slug>/`, tickets named `<NN>-<ticket-slug>.md`, with blocking edges in a "Blocked by" line.
 
 ### The map body
 

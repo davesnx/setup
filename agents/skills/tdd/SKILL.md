@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Use for explicit TDD, test-first, or red-green-refactor requests, including test-first integration tests. Not for generic implementation, bug fixes, tests alone, or domain artifacts. Load domain-modeling too only when explicitly requested.
+description: Use for explicit TDD, test-first, or red-green-refactor requests, including test-first integration tests. Implement mode covers library, compiler, and tool work; app work uses `implement`. Not for generic implementation, bug fixes, tests alone, or domain artifacts. Load domain-modeling too only when explicitly requested.
 ---
 
 # TDD
@@ -8,7 +8,7 @@ description: Use for explicit TDD, test-first, or red-green-refactor requests, i
 ## Modes
 
 - **Red-green-refactor**: Build behavior test-first through agreed seams.
-- **Implement**: When the user explicitly asks to implement a spec or ticket with TDD, read [references/implement.md](references/implement.md), then deliver it through vertical TDD slices and validation.
+- **Implement**: The library, compiler, and tool path, with no review or commit. For app work, use `implement`. When the user explicitly asks to implement a spec or ticket with TDD, read [references/implement.md](references/implement.md), then deliver it through vertical TDD slices and validation.
 
 When unclear domain language, boundaries, or a hard-to-reverse decision blocks test-first work, mention `domain-modeling` as an optional supporting skill instead of loading it. Load it only when the user also asks to resolve the domain model, language, context map, or decision record.
 

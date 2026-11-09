@@ -22,6 +22,9 @@ Terms this repository uses, as the code and docs use them. Use these words. When
 - **blog scaffold**: A working outline of headings and bullet-point notes ("dotted lines") for a post's story, argument, evidence, and conclusion. `agents/skills/draft-blog-post/SKILL.md`. `write-blog-post` expands it into an article; `critique-blog-post` reviews either form.
 - **vendored skill**: A third-party skill copied in, with an `UPSTREAM.md` naming source and revision. Local changes live in git history. `agents/skills/*/UPSTREAM.md`.
 - **published skill**: A skill this repository publishes upstream, listed in `agents/skills/VENDOR` and synced by `skill-vendor`. `terminal/bin/skill-vendor`.
+- **brief**: The agreed result of a `grilling` session, `<slug>_BRIEF.md` in `.workplace/plans/`. `to-spec` reads it. `agents/skills/grilling/SKILL.md`.
+- **local ticket**: A ticket file `.workplace/plans/<slug>/<NN>-<ticket-slug>.md`, written by `to-tickets` when no issue tracker applies. `agents/skills/to-tickets/SKILL.md`.
+- **issue tracker rule**: The order that picks where tickets live: the tracker the repository names, Linear for Ahrefs work, GitHub issues, then local tickets. `agents/AGENTS.md` (Planning).
 - **progressive disclosure**: `SKILL.md` holds the workflow; detail sits in reference files that a "read X when Y" line points to. `agents/skills/writing-for-agents/SKILL.md`.
 - **global agent rules**: `agents/AGENTS.md`, linked to each harness's user-level rules file. Not this repository's `AGENTS.md`, which guides work on the repository. `AGENTS.md` (tree).
 - **auto-improve**: A Stop hook that starts a detached headless `claude -p` reviewer of the finished session. `terminal/claude/hooks/auto-improve.ts`, `agents/skills/auto-improve/SKILL.md`.

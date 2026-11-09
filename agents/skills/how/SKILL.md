@@ -1,6 +1,6 @@
 ---
 name: how
-description: Explain or research how something works, in this codebase or outside it, by exploring code or primary sources and producing a clear, sourced explanation. Use for "how does X work", "research X", "trace X", or "where is X used" — X can be local code or an external topic, such as a library, API, other repo, or knowledge base. Optionally critique the architecture for issues.
+description: Explain or research how something works, in this codebase or outside it, by exploring code or primary sources and producing a clear, sourced explanation. Use for "how does X work", "research X", "trace X", or "where is X used" — X can be local code or an external topic, such as a library, API, other repo, or knowledge base. Optionally critique the architecture for issues. Not for auditing a whole codebase or writing plans; use improve-codebase-architecture.
 ---
 
 # How

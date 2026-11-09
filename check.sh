@@ -145,13 +145,22 @@ JS
 
 # Skills: SKILL.md starts with frontmatter whose name matches the directory and
 # whose description is not empty.
-for skill in "$root"/agents/skills/*/SKILL.md; do
+for skill in "$root"/agents/skills/*/SKILL.md "$root"/terminal/opencode/skills/*/SKILL.md; do
   dir=$(basename "$(dirname "$skill")")
   if ! awk -v dir="$dir" '
     NR == 1 && $0 != "---" { exit 1 }
     NR > 1 && $0 == "---" { closed = 1; exit }
     /^name:/ { sub(/^name:[ ]*/, ""); gsub(/["\047]/, ""); name = $0 }
-    /^description:/ { sub(/^description:[ ]*/, ""); desc = $0 }
+    /^description:/ {
+      sub(/^description:[ ]*/, "")
+      if ($0 ~ /^[>|][-+]?[ ]*$/) $0 = ""
+      desc = $0
+      indesc = 1
+      next
+    }
+    indesc && /^[ \t]/ { line = $0; gsub(/[ \t]/, "", line); desc = desc line; next }
+    indesc && $0 == "" { next }
+    { indesc = 0 }
     END { exit !(closed && name == dir && desc != "") }
   ' "$skill"; then
     printf 'Bad SKILL.md frontmatter (name must equal %s, description required): %s\n' "$dir" "$skill" >&2

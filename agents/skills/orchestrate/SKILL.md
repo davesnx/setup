@@ -31,6 +31,8 @@ merge authority.
    Record its absolute path, branch, and base. Keep all edits and mutating commands
    there; preserve unrelated changes and leave the main worktree untouched.
 3. Map dependencies and assign separate file ownership before starting children.
+   When the input is tickets, take dependencies from their blocking edges; do
+   not derive them again.
    Complete critical dependencies first. Give shared types, interfaces, and files
    one owner at a time; establish their contracts before dependent work starts.
 4. Prefer one implementer for small or sequential work. Run children in parallel

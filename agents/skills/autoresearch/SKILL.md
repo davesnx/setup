@@ -28,7 +28,3 @@ Read the reference for the current step before acting. Do not load every referen
 - Write JSONL atomically and verify each write. Back up state before user-confirmable actions. Update `autoresearch.md` every 5-10 experiments or after breakthroughs.
 - Follow user and repository permissions for Git writes, installs, external actions, and publication. This skill does not grant permission. If a required action is not authorized, stop at that boundary and ask rather than bypass it.
 - On a stop request, start no pending candidates. Make completed results durable, clean up only recorded worktrees, and report. On changed direction, finish active measurements and save results before replanning.
-
-## Skill Checks
-
-Run `python3 -B agents/skills/autoresearch/tests/test_examples.py` from the repository root to test the documented check gate, reference links, and shell syntax without running real experiments.

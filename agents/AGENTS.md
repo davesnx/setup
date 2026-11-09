@@ -19,9 +19,16 @@ within the requested editing scope.
 
 - When `$HOME/workplace/AGENTS.md` exists and you work in `$HOME/workplace` or
   below it, first read it. Use its shared or project task plan location.
-- Otherwise, when asked to create a plan, write it to
-  `.workplace/plans/<descriptive-name>_PLAN.md` at the repository root. The
-  global Git ignore file excludes `.workplace/`.
+- Otherwise, write plans and their companions at the repository root under
+  `.workplace/plans/`, one `<slug>` per feature: `<slug>_BRIEF.md`,
+  `<slug>_SPEC.md`, `<slug>_PLAN.md`, and local tickets as
+  `<slug>/<NN>-<ticket-slug>.md`. The global Git ignore file excludes
+  `.workplace/`.
+- Issue tracker, in this order: the tracker the repository's instructions name;
+  Linear for Ahrefs work repositories (remote host `ahrefs-github.com` or owner
+  `ahrefs`); GitHub issues for any other GitHub remote; otherwise local
+  markdown tickets. Labels come from the tracker. Ask when a needed label does
+  not exist; never invent one.
 - Record agreed scope or constraint changes in the existing plan or spec before
   acting on them.
 - For planned rewrites and migrations, define the intended end state and

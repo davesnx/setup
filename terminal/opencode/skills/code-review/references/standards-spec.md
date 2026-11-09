@@ -21,7 +21,7 @@ For each standards finding, cite the repository rule or name the smell and expla
 
 ## Spec
 
-Find intent from the user request, issue, PR description, commit messages, linked spec, or matching files under `docs/`, `specs/`, and `.scratch/`. If no spec exists, state that and continue with the other lenses.
+Find intent from the user request, issue, PR description, commit messages, linked spec, or matching files under `docs/`, `specs/`, and `.workplace/plans/`. If no spec exists, state that and continue with the other lenses.
 
 Check for:
 

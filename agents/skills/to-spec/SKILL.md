@@ -7,7 +7,9 @@ argument-hint: "[title]"
 
 Produce a spec from supported, agreed facts in the conversation and relevant codebase evidence. Do not interview the user or turn proposals into decisions. Record unresolved points as open questions in the spec, not questions that block drafting.
 
-Read `docs/agents/issue-tracker.md` when it exists. Otherwise infer the tracker from the repository remote. Preserve known tracker and label requirements. If the destination or required label mapping remains unknown, return the draft and report the publication blocker; do not invent or create a ready label.
+Pick the tracker by the issue tracker rule in the global agent rules. Preserve known tracker and label requirements. If the destination or a required label is unknown, return the draft and report the publication blocker; do not invent or create a ready label.
+
+Read `.workplace/plans/<slug>_BRIEF.md` or a wayfinder map when given or present, and take its decisions as the agreed facts.
 
 ## Process
 
@@ -15,7 +17,7 @@ Read `docs/agents/issue-tracker.md` when it exists. Otherwise infer the tracker 
 
 2. Record agreed interfaces and testing decisions. Use existing public interfaces where supported by the agreement and code. Leave unresolved design choices open; drafting does not require test-seam approval.
 
-3. Write the spec using the template below, including only supported content. Return a draft when requested or when publication is not authorized. Publish only with user authorization for the target tracker and with its known required labels. Report the actual result: the created issue URL on success, or the draft and error/blocker on failure. Do not claim publication from intent or a failed command.
+3. Write the spec using the template below, including only supported content. Return a draft when requested or when publication is not authorized: write it to `.workplace/plans/<slug>_SPEC.md` and return its path. Publish only with user authorization for the target tracker and with its known required labels. Report the actual result: the created issue URL on success, or the draft and error/blocker on failure. Do not claim publication from intent or a failed command.
 
 <spec-template>
 
@@ -72,3 +74,5 @@ A description of the things that are out of scope for this spec.
 Supported context and unresolved points, clearly separated from agreed decisions.
 
 </spec-template>
+
+Next: `to-tickets`.

@@ -1,11 +1,13 @@
 ---
 name: domain-modeling
-description: Use for explicit domain modeling, ubiquitous language, glossary or CONTEXT.md, context maps, or ADR work. Not for TDD, test-first, red-green-refactor, or integration tests alone. Load tdd too only when test-first work is explicitly requested.
+description: Use for explicit domain modeling, ubiquitous language, glossary or CONTEXT.md, context maps, or ADR work. Not for module, type, or signature design; use architect. Not for TDD, test-first, red-green-refactor, or integration tests alone. Load tdd too only when test-first work is explicitly requested.
 ---
 
 # Domain Modeling
 
 Use this skill to change the project's domain model or record its language and decisions. Merely reading existing domain terms while doing other work does not require this skill.
+
+This skill owns language and invariants. Module, type, and signature design belongs to architect; coding rules for types belong to code-standards.
 
 ## Modes
 

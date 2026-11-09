@@ -5,10 +5,10 @@ permission:
   submit_plan: allow
   edit:
     "*": deny
-    "plans/*_PLAN.md": allow
-    "*/plans/*_PLAN.md": allow
-    ".opencode/plans/*.md": allow
-    "*/.opencode/plans/*.md": allow
+    ".workplace/plans/*.md": allow
+    "*/.workplace/plans/*.md": allow
+    ".workplace/plans/*/*.md": allow
+    "*/.workplace/plans/*/*.md": allow
     "~/.local/share/opencode/plans/*.md": allow
     "docs/tasks/*/plan.md": allow
     "*/docs/tasks/*/plan.md": allow

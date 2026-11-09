@@ -1,6 +1,6 @@
 # Implement
 
-Implement a spec or ticket as a sequence of complete, test-driven slices.
+Implement a spec or ticket as a sequence of complete, test-driven slices. This is the library, compiler, and tool path: no review, no commit. App work uses the `implement` skill.
 
 ## Process
 
@@ -13,5 +13,3 @@ Implement a spec or ticket as a sequence of complete, test-driven slices.
 7. Compare the final diff with the source artifact. Fix missed or extra behavior and rerun every affected check. Do not start a separate review, commit, or push workflow unless the user asks for it.
 
 Do not silently expand scope. When a prerequisite or stop condition invalidates the plan, stop and report the evidence instead of improvising.
-
-Source integrated from `mattpocock/skills`, `skills/engineering/implement/SKILL.md`, read August 19, 2026. Its automatic review and commit steps were removed.

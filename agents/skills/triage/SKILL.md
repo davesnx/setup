@@ -41,7 +41,7 @@ For a PR, the same states read against the attached code: `ready-for-agent` mean
 
 Every triaged issue should carry exactly one category role and one state role. If state roles conflict, flag it and ask the maintainer before doing anything else.
 
-These are canonical role names. The actual label strings used in the issue tracker can differ. Read their mapping from `docs/agents/issue-tracker.md`, or ask the maintainer when it is missing.
+These are canonical role names. The actual label strings used in the issue tracker can differ. Pick the tracker by the issue tracker rule in the global agent rules and read the label strings from it. Ask the maintainer when a needed label does not exist; never invent one.
 
 State transitions: an unlabeled issue normally goes to `needs-triage` first; from there it moves to `needs-info`, `ready-for-agent`, `ready-for-human`, or `wontfix`. `needs-info` returns to `needs-triage` once the reporter replies. The maintainer can override at any time — flag transitions that look unusual and ask before proceeding.
 

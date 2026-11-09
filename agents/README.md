@@ -19,6 +19,22 @@ gap-filling and full-post work load their own references. Critique checks the po
 purpose and reader needs rather than a fixed engagement formula. Each stage can be
 used on its own. Moving to the next stage is the author's choice.
 
+## Feature lifecycle
+
+Artifacts live in `.workplace/plans/`. Each stage reads the previous result.
+
+| Stage | Skill | Work | Result | User-invoked |
+|---|---|---|---|---|
+| Ideate | [`grilling`](skills/grilling/SKILL.md) | Ideate mode: widen the idea, then interview | `<slug>_BRIEF.md` | No |
+| Specify | [`to-spec`](skills/to-spec/SKILL.md) | Turn the brief into a spec | Published spec, or `<slug>_SPEC.md` | Yes |
+| Break down | [`to-tickets`](skills/to-tickets/SKILL.md) | Split the spec into tracer-bullet tickets | Tickets on the tracker, or `<slug>/<NN>-<ticket-slug>.md` | Yes |
+| Build | [`implement`](skills/implement/SKILL.md) | App work from a spec or ticket | Changes and a report | Yes |
+| Build | [`tdd`](skills/tdd/SKILL.md) | Implement mode: library, compiler, and tool work, test-first | Tested changes | No |
+| Build | [`orchestrate`](skills/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |
+| Verify | [`verify-this`](skills/verify-this/SKILL.md) | Check a claim with fresh evidence | VERIFIED, NOT VERIFIED, or INCONCLUSIVE | No |
+| Commit | [`github`](skills/github/SKILL.md) | Validated commit with review | Commit | No |
+| Publish | [`create-pr`](skills/create-pr/SKILL.md) | Check readiness and write the pull request | Draft pull request | No |
+
 ## MCP servers
 
 `mcp.json` declares every MCP server once, in this repository's own format.

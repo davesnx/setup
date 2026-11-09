@@ -82,6 +82,7 @@ Use this default body, adapting it to the repository template and style:
    than prose. Keep it beside the claim it supports and verify it against code.
 3. Evidence for behavioral claims: the command and relevant test/output lines
    with the tested SHA, or the comparisons below, beside the supported claim.
+   Use `verify-this` to produce the before/after evidence.
 4. Important compatibility, migration, or review notes only when needed. For
    complex work, name where to start reading and the decision needing review.
    In drafts, state relevant incomplete behavior and the feedback sought.

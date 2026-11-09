@@ -56,6 +56,16 @@ If artifacts may contain sensitive code, prompts, screenshots, HTTP bodies, or h
 - `NOT VERIFIED`: the behavior is unchanged, moves the wrong way, or misses the threshold.
 - `INCONCLUSIVE`: no valid baseline, noisy signal, failed measurement, or an environment difference invalidates the comparison.
 
+A neutral result (inside the noise) means revert the change. Code you keep, you maintain.
+
+## Attempt Ledger
+
+For repeated tries, keep one line per attempt, reverted ones included, so a dead idea stays dead:
+
+```text
+<change> | <measurement, baseline -> treatment> | kept or reverted
+```
+
 ## Output
 
 Use this shape:

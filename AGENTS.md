@@ -102,8 +102,10 @@ local/                    Machine-specific overrides. Git-ignored except README,
   under its `hosts` key. After editing it, run `node terminal/claude/mcp.ts`
   and `node terminal/opencode/mcp.ts`, and commit the rendered files with it.
   Claude Code runs both on edit through a hook.
-- Plans go in `.workplace/plans/<name>_PLAN.md`. The global Git ignore file
-  excludes `.workplace/` everywhere.
+- Plans, briefs, specs, and local tickets go in `.workplace/plans/`, named
+  `<slug>_PLAN.md`, `<slug>_BRIEF.md`, `<slug>_SPEC.md`, and
+  `<slug>/<NN>-<ticket-slug>.md`. The global Git ignore file excludes
+  `.workplace/` everywhere.
 - A new module is a directory with `install.sh` called from the root
   `install.sh`, a README, and tests wired into `check.sh`. Add `main.sh` only
   when it must run at every shell start, and source it from

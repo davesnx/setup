@@ -18,6 +18,9 @@ workflow.
   works. Route by the requested deliverable, not by the subject. A production
   state-machine interface belongs here; an interactive state-machine experiment
   does not.
+- Architect owns the types and signatures of a new production module.
+  code-standards owns the coding rules for types in existing code.
+  domain-modeling owns the glossary, invariants, and ADRs.
 - Architect ends with a design package. Do not write production implementation
   as part of this skill.
 

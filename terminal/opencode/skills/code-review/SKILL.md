@@ -44,9 +44,9 @@ Find the originating intent in this order:
 1. The user's request and conversation.
 2. PR description and linked issue.
 3. Commit messages.
-4. A provided path or a matching spec under `docs/`, `specs/`, or `.scratch/`.
+4. A provided path or a matching spec under `docs/`, `specs/`, or `.workplace/plans/`.
 
-Read repository standards from `AGENTS.md`, `CONTRIBUTING.md`, coding standards, architecture docs, and instructions near the changed files. If tracker details are needed and `docs/agents/issue-tracker.md` is absent, infer the tracker from the remote and available CLI; ask only when ambiguous.
+Read repository standards from `AGENTS.md`, `CONTRIBUTING.md`, coding standards, architecture docs, and instructions near the changed files. If tracker details are needed, pick the tracker by the issue tracker rule in the global agent rules.
 
 ## 3. Select Review Details
 

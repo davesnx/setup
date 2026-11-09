@@ -22,7 +22,4 @@ Skip production test suites, persistence that is not under study,
 generalization, production error handling, and visual polish. The prototype
 exists to learn quickly, not to become production by accident.
 
-Source integrated from `mattpocock/skills`,
-`skills/engineering/prototype/LOGIC.md`, read August 19, 2026. The UI prototype
-branch was not copied because `impeccable` Live mode already owns visual
-variants.
+Visual variants are out of scope; `impeccable` Live mode owns them.
