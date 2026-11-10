@@ -49,7 +49,7 @@
 	},
 	{
 		"name": "febox1: parsing-1b-rows-in-ocaml",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/parsing-1b-rows-in-ocaml",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/parsing-1b-rows-in-ocaml",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -58,7 +58,7 @@
 	},
 	{
 		"name": "febox1: passage",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/passage",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ahrefs/passage",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -67,7 +67,7 @@
 	},
 	{
 		"name": "febox1: ocamlformat-mlx",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/mlx/ocamlformat-mlx",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ocaml-mlx/ocamlformat-mlx",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -112,7 +112,7 @@
 	},
 	{
 		"name": "febox1: melange-testing-library",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/melange-testing-library",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/melange-community/melange-testing-library",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -148,7 +148,7 @@
 	},
 	{
 		"name": "febox1: melange-bindings-against-tsc",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/melange-bindings-against-tsc",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/melange-bindings-against-tsc",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -184,7 +184,7 @@
 	},
 	{
 		"name": "febox1: quickjs.ml",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/quickjs.ml",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ml-in-barcelona/quickjs.ml",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -211,7 +211,7 @@
 	},
 	{
 		"name": "febox1: reffact",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/reffact",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/reffact",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -256,7 +256,7 @@
 	},
 	{
 		"name": "febox1: server-reason-react-starter",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/server-reason-react-starter",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/Software-Deployed/server-reason-react-starter",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -283,7 +283,7 @@
 	},
 	{
 		"name": "febox1: ocaml-toon",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/ocaml-toon",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/ocaml-toon",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -301,7 +301,7 @@
 	},
 	{
 		"name": "febox1: dune",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/dune",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ocaml/dune",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -310,7 +310,7 @@
 	},
 	{
 		"name": "febox1: ocaml",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/ocaml",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/ocaml/ocaml",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -319,7 +319,7 @@
 	},
 	{
 		"name": "febox1: ocaml-textmate-language",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/ocaml-textmate-language",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/alan-j-hu/ocaml-textmate-language",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -328,7 +328,7 @@
 	},
 	{
 		"name": "febox1: error-messages",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/error-messages",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/error-messages",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -337,7 +337,7 @@
 	},
 	{
 		"name": "febox1: opencode",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/opencode",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/anomalyco/opencode",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -364,7 +364,7 @@
 	},
 	{
 		"name": "febox1: ppx_let",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/ppx_let",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/janestreet/ppx_let",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -373,7 +373,7 @@
 	},
 	{
 		"name": "febox1: vite-plugin-melange",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/vite-plugin-melange",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/pdelacroix/vite-plugin-melange",
 		"paths": [],
 		"tags": [
 			"personal"
@@ -382,7 +382,7 @@
 	},
 	{
 		"name": "febox1: create-melange-app",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/archive/create-melange-app",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/melange-community/create-melange-app",
 		"paths": [],
 		"tags": [
 			"personal"
