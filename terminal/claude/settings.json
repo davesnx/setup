@@ -434,5 +434,6 @@
       "**Trusted repo**: davesnx/setup (public, this repo's working directory) and its origin remote at https://github.com/davesnx/setup — this repo is PUBLIC, so only this repo's own work belongs here; confidential material, secrets, and credentials are never cleared into it by its visibility",
       "**Org-specific CLIs**: None configured"
     ]
-  }
+  },
+  "teammateDefaultModel": "sonnet"
 }
