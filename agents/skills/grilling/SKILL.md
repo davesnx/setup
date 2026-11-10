@@ -1,5 +1,6 @@
 ---
 name: grilling
+model: claude-fable-5-2
 description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, says "grill me" or "grill with docs", or uses another grill trigger phrase. Also for "ideate", "refine this idea", or "explore options for an idea".
 ---
 

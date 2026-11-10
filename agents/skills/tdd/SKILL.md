@@ -1,5 +1,6 @@
 ---
 name: tdd
+model: claude-opus-5-5
 description: Use for explicit TDD, test-first, or red-green-refactor requests, including test-first integration tests. Implement mode covers library, compiler, and tool work; app work uses `implement`. Not for generic implementation, bug fixes, tests alone, or domain artifacts. Load domain-modeling too only when explicitly requested.
 ---
 

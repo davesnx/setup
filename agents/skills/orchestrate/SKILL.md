@@ -1,5 +1,6 @@
 ---
 name: orchestrate
+model: claude-opus-5-5
 description: >
   Coordinate implementation across subagents in one environment, or write an
   orchestrator kickoff. Use when explicitly asked to orchestrate implementation.

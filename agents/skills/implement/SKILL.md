@@ -1,5 +1,6 @@
 ---
 name: implement
+model: claude-opus-5-5
 description: "Implement app work from a spec, tickets, or an issue, then commit it. For library, compiler, or tool work, use `tdd` Implement mode."
 disable-model-invocation: true
 ---

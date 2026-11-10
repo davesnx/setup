@@ -1,5 +1,6 @@
 ---
 name: domain-modeling
+model: claude-fable-5-2
 description: Use for explicit domain modeling, ubiquitous language, glossary or CONTEXT.md, context maps, or ADR work. Not for module, type, or signature design; use architect. Not for TDD, test-first, red-green-refactor, or integration tests alone. Load tdd too only when test-first work is explicitly requested.
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: recall
+model: claude-sonnet-5-5
 description: "Reconstruct recent working context from chat history, repository state, and shared records like issues and incidents. Use for 'recall my work on X', 'catch me up', 'where did I leave off', 'what did we decide', 'resume work on X', or to summarise past conversations."
 ---
 

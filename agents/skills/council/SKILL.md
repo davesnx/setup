@@ -1,5 +1,6 @@
 ---
 name: council
+model: claude-fable-5-2
 description: Run a subagent council to investigate one problem from multiple perspectives and models, compare findings, and produce a recommendation. Use for a council, second opinions, multiple agents or models on one question, red-team/blue-team comparison, or deciding between competing approaches.
 ---
 

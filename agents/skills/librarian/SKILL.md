@@ -1,5 +1,6 @@
 ---
 name: librarian
+model: claude-sonnet-5-5
 description: "Cache and refresh remote git repositories under ~/.librarian, grouped by host/org/repo, so future references can reuse a local copy. Use this skill when the user points you to a remote git repository as reference or you encountered a remote git repo through other means."
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: architect
+model: claude-fable-5-2
 description: "Design production modules, interfaces, seams, types, signatures, and dependency structure before implementation. Use ONLY when the requested result is a production code shape or integration contract, such as 'architect this' or 'design this module'. Do not use for throwaway HTML experiments that test state, transition, policy, scheduling, or algorithm behavior."
 ---
 

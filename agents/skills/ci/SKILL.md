@@ -1,5 +1,6 @@
 ---
 name: ci
+model: claude-opus-5-5
 description: Use to inspect, debug, watch, fix, or retry CI checks on a PR, branch, commit, or build. Supports GitHub Actions, Buildkite, and attached providers; each action needs its own authority. Commits and pushes go through the github skill.
 ---
 
