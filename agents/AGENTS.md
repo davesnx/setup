@@ -105,9 +105,12 @@ Adapted from [Verification Before Completion](https://www.skills.sh/obra/superpo
   asking, after the Green Build Gate passes. Push without force to the
   branch's upstream. Do not force push, amend or rewrite history, or bypass
   hooks. Opening or updating a pull request needs an explicit request.
-  The push part covers only repositories the user owns or maintains:
-  `gh repo view --json viewerPermission` returns `ADMIN` or `MAINTAIN`. For
-  any other remote, ask before each push.
+  The push part covers two cases. First, repositories the user owns or
+  maintains: `gh repo view --json viewerPermission` returns `ADMIN` or
+  `MAINTAIN`. Second, a branch the user owns in any other repository: it is
+  not the default branch, and either `gh pr view --json author` names the
+  user, or the branch has no pull request and the user authored every commit
+  ahead of the default branch. For any other push, ask first.
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
 - When `git status` shows uncommitted work you did not make, another session

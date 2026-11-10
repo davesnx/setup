@@ -398,6 +398,7 @@
   "autoDreamEnabled": true,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "preferredNotifChannel": "terminal_bell",
   "showMessageTimestamps": true,
   "terminalProgressBarEnabled": true,
