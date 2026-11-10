@@ -257,3 +257,12 @@ itomate.yml
 **/.claude/settings.local.json
 
 **/.claude/.cc-writes/
+
+# Empty mount points the Claude Code Linux sandbox (bubblewrap) can leave behind
+/.bashrc
+/.bash_profile
+/.profile
+/.zshrc
+/.zprofile
+/.gitconfig
+/.ripgreprc
