@@ -32,6 +32,11 @@ list before touching it.
 - "optimise" next to "organize". The spelling mix is his.
 - Any construction that reads fine even if a native speaker would not have
   chosen it. "Empty in dune means very good" survived the pass.
+- In blog posts, the moves that `VOICE.md` lists under "Moves from posts
+  David admires": one-line fragments that carry a beat in a story and a
+  question he answers at once. This overrides pattern 17 in `catalog.md`
+  and the matching rows in `structures.md`. Report them when they repeat;
+  do not rewrite them.
 
 ## Grammar carried over from Spanish
 

@@ -31,6 +31,11 @@ Read for accidental repetition and places where a reader must backtrack. Vary
 rhythm only where it sounds mechanical; keep the author's natural cadence,
 fragments, and long sentences when they work.
 
+Most of a post is regular prose that connects one idea to the next. Write it
+plainly. Do not shape every sentence to be quoted, and do not end each paragraph
+on a punchline. A quotable line is rare: keep one where the post has earned it,
+usually at a turning point or the ending.
+
 Use headings, lists, tables, emphasis, and code when they make this material easier
 to understand or find. Plain paragraphs may be the best form. For a tutorial or
 reference-oriented post, check whether someone scanning can locate what they need.
