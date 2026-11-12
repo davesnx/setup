@@ -111,6 +111,10 @@ Adapted from [Verification Before Completion](https://www.skills.sh/obra/superpo
   not the default branch, and either `gh pr view --json author` names the
   user, or the branch has no pull request and the user authored every commit
   ahead of the default branch. For any other push, ask first.
+- Before you analyze, reproduce a bug on, or change a branch that tracks a
+  remote, run `git fetch` and read `git status -sb`. When the branch is
+  behind, read the code at the upstream ref, and fast-forward or merge before
+  you change it. Say in the answer when the checkout was behind.
 - Never revert user-authored changes unless the user asks.
 - Never accept a snapshot or promoted diff you cannot explain.
 - When `git status` shows uncommitted work you did not make, another session

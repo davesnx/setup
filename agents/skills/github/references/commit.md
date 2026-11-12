@@ -28,6 +28,10 @@ hook protection, and isolation of unrelated work.
      starting diff. A file's modification time or staged state does not prove
      that its changes belong to this session. If ownership is unclear, ask
      before including the uncertain changes.
+   - When the branch has an upstream, run `git fetch`, then
+     `git rev-list --left-right --count @{u}...HEAD`. If the first number is
+     not 0, the branch is behind: fast-forward or merge before step 8, so
+     validation runs on the tree that will be pushed.
    - Apply the global isolation rule before proceeding when unrelated work is present.
    - If the user provided `since`, inspect that history only to understand context and wording.
    - If there are no uncommitted changes, stop. Do not create a commit from an already committed range.
