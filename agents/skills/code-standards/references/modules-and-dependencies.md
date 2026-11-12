@@ -19,6 +19,8 @@
 - Remove modules that only forward calls, rename another API, or mirror storage
   without hiding useful complexity.
 - Reuse the codebase's canonical helper instead of writing a near-duplicate.
+- Refer to a library module by its full name (`Parseff.parse`). Do not add a
+  short alias such as `module P = Parseff` in OCaml.
 - Parallelize independent work only when it also makes the orchestration
   clearer, not by default.
 - Keep deterministic rules independent of I/O, frameworks, mutable global

@@ -30,6 +30,16 @@ let items = [<li>"a"</li>; <li>"b"</li>]
 let _ = render <App title="Hi" />
 ```
 
+## Fragments
+
+`<>a b</>` groups children without a wrapper element. It is the list of its
+children with a `[@JSX]` attribute, `[a; b] [@JSX]`. A runtime ppx gives it a
+meaning: `reason-react` turns it into a `React.Fragment`.
+
+```ocaml
+let both = <><Header /><Footer /></>
+```
+
 ## Props
 
 `name=value` passes `~name:value`. A bare `name` puns `~name:name`. `?name`
@@ -90,10 +100,29 @@ record, not interpolation.
 <div count=(-1) onClick=(fun _ -> go ())> (if ok then a else b) </div>
 ```
 
+An application without parentheses is not a syntax error. mlx splits it, and
+the type error points somewhere else.
+
+```ocaml
+<div>string_of_int n</div>     (* two children: string_of_int and n *)
+<row gap=to_gap size />        (* two props: ~gap:to_gap and ~size *)
+
+<div>(string_of_int n)</div>
+<row gap=(to_gap size) />
+```
+
+## Children spread
+
+`<Foo>...xs</Foo>` passes `xs` as `~children:xs`, not wrapped in a list. The
+spread must be the only child. `<>...xs</>` is `xs [@JSX]`.
+
 ## Known limits
 
-- Fragments `<>...</>` do not exist. Wrap the children in an element or use
-  a list of elements. If you use `reason-react` use `<React.Fragment>`
-- Spread `...props` and `...children` do not exist. Forward children with a
-  `children` prop, `<Child children />`
+- Props spread `...props` does not exist.
+- A fragment passed as a function argument needs parentheses, `f (<>a</>)`.
+  An element does not, `f <a />`.
+- `<` followed directly by a name starts a tag. Write a comparison with
+  spaces, `a < b`. `a<b` is a syntax error.
+- `<>` and `</>` are still operators. Inside a fragment, parenthesize them:
+  `<>(a </> b)</>`.
 - Comments `(* ... *)` are allowed between props and between children.
