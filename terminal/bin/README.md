@@ -280,6 +280,33 @@ Rules:
 The `skill-vendor` skill under `agents/skills/` gives agents this procedure. Its
 test is `agents/skills/skill-vendor/tests/skill-vendor.sh`.
 
+# Review changes in Cursor
+
+`cursor-diff` opens each tracked file changed since `HEAD` in a Cursor diff
+tab. The left side is the `HEAD` version and the right side is the working file.
+Staged and unstaged changes count. Untracked files are skipped.
+
+```sh
+cursor-diff
+cursor-diff src/ README.md
+```
+
+Paths limit the files. A new file has an empty left side; a deleted file has an
+empty right side. The `HEAD` copies stay under
+`${TMPDIR:-/tmp}/cursor-diff/<repository>-<checksum>/`, because Cursor reads
+them after the command returns. Each run overwrites them.
+
+In Cursor's integrated terminal, and on the Mac, the command uses `cursor` and
+`VSCODE_IPC_HOOK_CLI` as they are. In another terminal on a Remote-SSH host,
+such as nspawn under herdr, it uses the newest
+`~/.cursor-server/bin/.../remote-cli/cursor`. It tries each
+`vscode-ipc-*.sock` in `$XDG_RUNTIME_DIR` (default `/run/user/<uid>`), newest
+first, and keeps the first one that works. Stale sockets fail with "Unable to
+connect to VS Code server". When no socket works, the command names each one it
+tried and exits with status 1.
+
+Run `bash terminal/bin/cursor-diff.test.sh` for the isolated tests.
+
 # Measure Zsh startup
 
 `testzsh` starts login, interactive Zsh shells with `ZSH_BENCHMARK=1`. It needs

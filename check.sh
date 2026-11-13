@@ -77,7 +77,8 @@ fi
 shfmt -d -i 2 -ci "$root/check.sh" \
   "$root/terminal/core/test.sh" "$root/terminal/bin/git-extras/test.sh" \
   "$root/terminal/bin/git-extras/git-effort" \
-  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh"
+  "$root/terminal/bin/testzsh" "$root/terminal/bin/testzsh.test.sh" \
+  "$root/terminal/bin/cursor-diff" "$root/terminal/bin/cursor-diff.test.sh"
 git -C "$root" diff --check
 git -C "$root" diff --cached --check
 
@@ -88,6 +89,8 @@ zsh "$root/terminal/core/test.sh"
 bash "$root/terminal/bin/git-extras/test.sh"
 /bin/bash "$root/terminal/bin/testzsh.test.sh"
 bash "$root/terminal/bin/testzsh.test.sh"
+/bin/bash "$root/terminal/bin/cursor-diff.test.sh"
+bash "$root/terminal/bin/cursor-diff.test.sh"
 bun test "$root/terminal/core/utils/docopts.test.ts"
 bun test "$root/terminal/bin/flipper.test.ts"
 bun test "$root/agents/mcp.test.ts"

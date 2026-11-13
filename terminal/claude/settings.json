@@ -382,6 +382,10 @@
       "make *",
       "osascript *",
       "open *",
+      "cursor-diff",
+      "cursor-diff *",
+      "*/cursor-diff",
+      "*/cursor-diff *",
       "*/skills/github/scripts/*"
     ]
   },

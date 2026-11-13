@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  printf 'Usage: cursor-diff [path...]\n'
+  printf '  Open each tracked file changed since HEAD in a Cursor diff tab.\n'
+  printf '  With paths, open only changes under those paths.\n'
+}
+
+die() {
+  printf 'cursor-diff: %s\n' "$*" >&2
+  exit 1
+}
+
+case ${1-} in
+  --help)
+    usage
+    exit 0
+    ;;
+  --) shift ;;
+  -*)
+    usage >&2
+    exit 2
+    ;;
+esac
+
+root=$(git rev-parse --show-toplevel 2>/dev/null) || die 'not inside a Git worktree'
+git rev-parse --verify -q HEAD >/dev/null || die 'the repository has no HEAD commit'
+
+files=()
+while IFS= read -r -d '' file; do
+  files+=("$file")
+done < <(git diff -z --name-only --no-renames HEAD -- "$@")
+
+if [[ ${#files[@]} -eq 0 ]]; then
+  printf 'No changes against HEAD.\n'
+  exit 0
+fi
+
+key=$(printf '%s' "$root" | cksum | cut -d ' ' -f 1)
+store="${TMPDIR:-/tmp}/cursor-diff/${root##*/}-$key"
+
+cli=
+sockets=()
+if [[ -n ${VSCODE_IPC_HOOK_CLI-} ]] && command -v cursor >/dev/null; then
+  cli=cursor
+  sockets=("$VSCODE_IPC_HOOK_CLI")
+else
+  for candidate in "$HOME"/.cursor-server/bin/*/*/bin/remote-cli/cursor \
+    "$HOME"/.cursor-server/bin/*/bin/remote-cli/cursor; do
+    [[ -x $candidate ]] || continue
+    if [[ -z $cli || ${candidate%/cursor} -nt ${cli%/cursor} ]]; then
+      cli=$candidate
+    fi
+  done
+  [[ -n $cli ]] || die "no Cursor CLI: VSCODE_IPC_HOOK_CLI or cursor is missing, and $HOME/.cursor-server/bin has no remote-cli/cursor"
+  runtime=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
+  while IFS= read -r socket; do
+    sockets+=("$socket")
+  done < <(ls -td -- "$runtime"/vscode-ipc-*.sock 2>/dev/null || true)
+  [[ ${#sockets[@]} -gt 0 ]] || die "no $runtime/vscode-ipc-*.sock to reach Cursor through $cli"
+fi
+
+socket=
+open_diff() {
+  local error
+  if [[ -n $socket ]]; then
+    VSCODE_IPC_HOOK_CLI=$socket "$cli" --diff "$1" "$2"
+    return
+  fi
+  for candidate in "${sockets[@]}"; do
+    if error=$(VSCODE_IPC_HOOK_CLI=$candidate "$cli" --diff "$1" "$2" 2>&1 >/dev/null); then
+      socket=$candidate
+      return
+    fi
+  done
+  printf 'cursor-diff: %s failed with every socket:\n' "$cli" >&2
+  printf '  %s\n' "${sockets[@]}" >&2
+  printf 'Last error: %s\n' "$error" >&2
+  exit 1
+}
+
+status=0
+for file in "${files[@]}"; do
+  left=$store/HEAD/$file
+  mkdir -p -- "$(dirname -- "$left")"
+  if [[ $(git -C "$root" cat-file -t "HEAD:$file" 2>/dev/null) == blob ]]; then
+    git -C "$root" cat-file blob "HEAD:$file" >"$left"
+  else
+    : >"$left"
+  fi
+  right=$root/$file
+  if [[ ! -e $right && ! -L $right ]]; then
+    right=$store/deleted/$file
+    mkdir -p -- "$(dirname -- "$right")"
+    : >"$right"
+  fi
+  open_diff "$left" "$right" || {
+    printf 'cursor-diff: could not open %s\n' "$file" >&2
+    status=1
+  }
+done
+exit "$status"

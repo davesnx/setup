@@ -18,7 +18,8 @@ It checks:
   Run only this part with `bash check.sh --shell-only`. This mode needs only
   Git, Bash, ShellCheck, Zsh, and base system utilities. Shell validation failures
   stop the full command before formatting and other checks.
-- Formatting of the check scripts, Git effort command, `testzsh`, and the Git module.
+- Formatting of the check scripts, Git effort command, `testzsh`, `cursor-diff`,
+  and the Git module.
 - Argument handling, collections, and logging in both system and PATH Bash,
   plus shared helpers in Zsh.
 - Git effort counts, filtering, unusual filenames, command failure, and temporary
@@ -34,6 +35,11 @@ It checks:
   backwards clock detection, repeated cleanup, and history/logout suppression
   after completed startup. A Zsh wrapper checks the generated bootstrap syntax
   and simulates a preceding DEBUG trap, redirected `ZDOTDIR`, and a lost report.
+- `cursor-diff` in system and PATH Bash, with a fake Cursor CLI and a temporary
+  repository: diff pairs and HEAD contents for modified, staged-new, deleted,
+  and renamed files, skipped untracked files, path filters, stale-socket
+  fallback, both remote-cli layouts, the integrated-terminal CLI, no-change and
+  error exits.
 - Default and custom-XDG profile lookup through the installer and login shell;
   OpenCode alias arguments; Brew prefix selection and repeated startup with stubs.
 - Direct and sourced script selection, help, version, errors, cancellation,
