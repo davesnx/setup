@@ -184,6 +184,10 @@ to subagents and orchestrate them:
   needed, or the call still fails with "Operation not permitted", rerun it
   alone with `dangerouslyDisableSandbox`. After a partial `git` failure, check
   `git status` and `git stash list`.
+- In the sandbox, `.git/config.lock` is `/dev/null`, so git fails with "could
+  not lock config file .git/config: File exists" when it writes the config:
+  `push -u`, a new tracking branch, `branch -d`, `worktree add -b`. This is not
+  a stale lock. Never delete it; rerun the bare `git` command as above.
 - Commands run outside the sandbox see the system `$TMPDIR`, not the sandbox
   one. Write a file that another command must read to the session scratchpad or
   the repository, not to `$TMPDIR`. Let a background command's exit code reach
