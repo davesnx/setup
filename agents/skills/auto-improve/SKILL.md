@@ -45,6 +45,36 @@ search unrelated conversations or projects for lessons.
    judgment or a reusable process; a hook for a lifecycle reminder or check;
    a script, lint rule, type, or runtime check for a rule that code can enforce.
    Read the host's actual hook interface before proposing hook behavior.
+4. Look for candidates in the [improvement areas](#improvement-areas).
+
+## Improvement Areas
+
+Each area names the evidence that justifies looking there.
+
+- **Navigation**: the agent took long to find a file or fact, or missed a
+  hidden dependency between files. Add a navigation pointer where the agent
+  first looked.
+- **Automated checks**: the agent made a mistake a lint rule, type, test, or
+  filesystem check could catch. Read the repository's own check command and CI
+  workflow first: an existing check that is unwired or silently broken is the
+  finding. A repository with no guardrail, no pre-commit hook and no CI job
+  running its checks, is itself a finding.
+- **Coding standards**: a reviewer missed a mistake. Classify the violation.
+  A mechanical one (a fixed pattern, banned API, import shape, or file
+  location) gets a deterministic check in the repository's linter, hooks, or
+  CI. Only a judgment call (cross-file consistency, matching surrounding
+  style) becomes a written rule, and it belongs to review guidance: the
+  reviewer reads a diff with little context pressure, while the implementing
+  agent carries exploration and debugging.
+- **Steering files**: `AGENTS.md`, `CLAUDE.md`, or a skill has grown large.
+  Move rules a check can enforce into that check and review-only rules into
+  review guidance, keep always-loaded files to navigation pointers, and
+  delete no-ops: instructions that do not change the agent's default
+  behavior.
+- **Tool economy**: a tool call, CLI, or MCP server spent many tokens for
+  little information. Propose a narrower command, flag, or script.
+- **Information access**: the agent lacked a crucial fact, such as dev server
+  logs or read-only access to a third-party service. Propose the access.
 
 ## Learn from Corrections
 
@@ -126,7 +156,7 @@ The review stays read-only. The research runs after approval, in
 
 ## Propose and Wait
 
-Present the concrete proposals the session's evidence supports, strongest
+Present the concrete proposals the session's evidence supports, most severe
 first, in a set the user can answer in one pass. For each, give:
 
 - The observed evidence and the problem or repeated work it reveals.
