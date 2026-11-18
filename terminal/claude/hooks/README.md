@@ -29,7 +29,7 @@ that same directory as `<uuid>.report.md`; a run that fails leaves
 with `cat`, then apply a proposal by running `claude --resume <uuid>` (leave
 plan mode first if the resumed session is still in it). Once decided, move
 the report to `archive/` in that directory with a final `outcome:` line (see
-the [auto-improve skill](../../../agents/skills/auto-improve/SKILL.md)); the
+the [auto-improve skill](../../../agents/skills/meta/auto-improve/SKILL.md)); the
 statusline counts only reports outside `archive/`. The reviewer's own hooks stay quiet, since it runs with
 `AUTO_IMPROVE_REVIEWER=1` in its environment.
 

@@ -23,7 +23,6 @@ if [ -f "$DOTFILES_PATH/terminal/claude/settings.local.json" ]; then
 fi
 
 link_path "$DOTFILES_PATH/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
-link_path "$DOTFILES_PATH/agents/skills" "$HOME/.claude/skills"
 
 mkdir -p "$HOME/.claude/hooks"
 

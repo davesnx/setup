@@ -4,7 +4,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
-const root = path.resolve(__dirname, '../../../..');
+const root = path.resolve(__dirname, '../../../../..');
 const YAML = process.env.EVAL_YAML_PARSER === 'ruby' ? {
   parse(input) {
     const result = spawnSync('ruby', ['-rpsych', '-rjson', '-e', 'puts JSON.generate(Psych.safe_load(STDIN.read))'], {

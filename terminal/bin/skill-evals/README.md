@@ -134,7 +134,8 @@ discovered catalog. `--profile focused` is available for behavioral tests and
 loads the target with its declared supporting skills. Add `--case` for a single
 case. The model, graders, and limits remain the same across off/on.
 
-Discovery covers direct skill directories under `agents/skills/` and
+Discovery covers skill directories under `agents/skills/<group>/`
+(`agents/skills/` itself in revisions before skill groups) and
 `terminal/opencode/skills/`, plus explicit vendored entries in `expanded.py`.
 It does not read the live host's skills or silently resolve untracked aliases.
 Invalid metadata and duplicate names stop the run. Historical Markdown link

@@ -41,5 +41,5 @@ from it. The copies under `agents/skills/` are the working copies.
   machine lacks SSH access to the upstream. Report it; do not switch remotes.
 
 Command details live in
-[`terminal/bin/README.md`](../../../terminal/bin/README.md#vendor-published-skills).
-After changing the command, run `bash agents/skills/skill-vendor/tests/skill-vendor.sh`.
+[`terminal/bin/README.md`](../../../../terminal/bin/README.md#vendor-published-skills).
+After changing the command, run `bash agents/skills/meta/skill-vendor/tests/skill-vendor.sh`.

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-setup=$(CDPATH='' cd "$(dirname "$0")/../../../.." && pwd)
+setup=$(CDPATH='' cd "$(dirname "$0")/../../../../.." && pwd)
 work=$(mktemp -d "${TMPDIR:-/tmp}/setup-check.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 trap 'exit 130' INT
@@ -34,8 +34,10 @@ git -C "$work/root-seed" add -A
 git -C "$work/root-seed" commit -q -m seed
 git -C "$work/root-seed" push -q origin HEAD:main
 
-mkdir -p "$work/skills"
-cp -R "$work/seed/skills/alpha" "$work/seed/skills/beta" "$work/root-seed/delta" "$work/skills/"
+# Local copies sit in skill groups, as in agents/skills/GROUP/NAME.
+mkdir -p "$work/skills/stack" "$work/skills/tools"
+cp -R "$work/seed/skills/alpha" "$work/seed/skills/beta" "$work/skills/stack/"
+cp -R "$work/root-seed/delta" "$work/skills/tools/"
 printf '# repository branch dir commit skills\n%s main skills %s alpha beta gamma\n%s main . - delta\n' \
   "$work/upstream.git" "$pin" "$work/root.git" >"$work/skills/VENDOR"
 export SKILL_VENDOR_MANIFEST="$work/skills/VENDOR" SKILL_VENDOR_CACHE="$work/cache"
@@ -90,7 +92,7 @@ expect_check fresh 0 'alpha +up to date' 'beta +up to date' 'gamma +pending' 'de
 upstream_edit alpha a2
 expect_check 'upstream ahead' 1 'alpha +upstream ahead' 'beta +up to date'
 "$vendor" pull >/dev/null 2>&1
-if grep -qx a2 "$work/skills/alpha/SKILL.md" && [ "$(pin_of upstream.git)" = "$(upstream_head)" ] &&
+if grep -qx a2 "$work/skills/stack/alpha/SKILL.md" && [ "$(pin_of upstream.git)" = "$(upstream_head)" ] &&
   [ "$(pin_of root.git)" = "$(git -C "$work/root-seed" rev-parse HEAD)" ]; then
   ok 'pull updates the copy and records both pins'
 else
@@ -98,9 +100,9 @@ else
 fi
 expect_check 'after pull' 0 'alpha +up to date' 'delta +up to date'
 
-printf 'b2\n' >"$work/skills/beta/SKILL.md"
-mkdir "$work/skills/gamma"
-printf 'g1\n' >"$work/skills/gamma/SKILL.md"
+printf 'b2\n' >"$work/skills/stack/beta/SKILL.md"
+mkdir "$work/skills/stack/gamma"
+printf 'g1\n' >"$work/skills/stack/gamma/SKILL.md"
 expect_check 'local ahead' 1 'beta +local ahead' 'gamma +new local'
 if "$vendor" pull >/dev/null 2>&1; then
   bad 'pull refuses local changes'
@@ -120,7 +122,7 @@ fi
 expect_check 'after push' 0 'beta +up to date' 'gamma +up to date'
 
 upstream_edit alpha a3
-printf 'a-local\n' >"$work/skills/alpha/SKILL.md"
+printf 'a-local\n' >"$work/skills/stack/alpha/SKILL.md"
 expect_check diverged 1 'alpha +diverged'
 if "$vendor" pull >/dev/null 2>&1; then
   bad 'pull refuses diverged'
@@ -133,13 +135,13 @@ else
   ok 'push refuses diverged'
 fi
 "$vendor" pull --force >/dev/null 2>&1
-if grep -qx a3 "$work/skills/alpha/SKILL.md"; then
+if grep -qx a3 "$work/skills/stack/alpha/SKILL.md"; then
   ok 'pull --force discards local changes'
 else
   bad 'pull --force discards local changes'
 fi
 
-printf 'b3\n' >"$work/skills/beta/SKILL.md"
+printf 'b3\n' >"$work/skills/stack/beta/SKILL.md"
 pin_before=$(pin_of upstream.git)
 "$vendor" push --branch feature -m 'beta' >/dev/null 2>&1
 git -C "$work/seed" fetch -q origin feature

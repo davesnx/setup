@@ -9,7 +9,7 @@ from pathlib import PurePosixPath
 
 import yaml
 
-from pilot import CATALOG, HERE, ROOT, base_tasks, load_json, validate_task
+from pilot import CATALOG, HERE, ROOT, base_tasks, load_json, shared_skill, validate_task
 
 VENDORED = ("terminal/opencode/vendor/i-have-adhd/skills/i-have-adhd/SKILL.md",)
 
@@ -19,7 +19,7 @@ def snapshot_working_cases(directory):
     catalog = {}
     for entry in load_json(HERE / "expanded_cases.json"):
         skill = entry["skill"]
-        source_root = (ROOT / "agents/skills" / skill / "evals").resolve()
+        source_root = (shared_skill(skill) / "evals").resolve()
         case_path = source_root / "cases" / f"{entry['case']}.yaml"
         if not source_root.is_relative_to(ROOT.resolve()) or not case_path.resolve().is_relative_to(
             source_root
@@ -55,7 +55,8 @@ def discover(revision):
     skills = {}
     for path in paths:
         parts = PurePosixPath(path).parts
-        direct = (len(parts) == 4 and parts[:2] == ("agents", "skills")) or (
+        # agents/skills/GROUP/NAME/SKILL.md; older revisions have no GROUP.
+        direct = (len(parts) in (4, 5) and parts[:2] == ("agents", "skills")) or (
             len(parts) == 5 and parts[:3] == ("terminal", "opencode", "skills")
         )
         if not path.endswith("/SKILL.md") or not (direct or path in VENDORED):

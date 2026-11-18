@@ -2,15 +2,40 @@
 
 Shared agent rules and skills, used by both Claude Code and OpenCode.
 
+## Skill groups
+
+Each skill lives in `skills/<group>/<name>/`. Groups say what a skill is for.
+Where it came from is in its `UPSTREAM.md` or in `skills/VENDOR`.
+`install.sh` links every skill by name into `~/.agents/skills/` and
+`~/.claude/skills/`, so harnesses see one flat list. Rerun it after adding,
+removing, or moving a skill.
+
+| Group | For |
+|---|---|
+| `plan` | Shaping work before code: design, domain models, specs, tickets, triage |
+| `build` | Writing and checking code: implementation, tests, debugging, research |
+| `ship` | Getting work out: commits, pull requests, issues, CI, plan and code review |
+| `stack` | Knowledge of one language, framework, or library |
+| `tools` | Wrappers around one command-line tool, device, or service |
+| `design` | Interfaces, design systems, diagrams |
+| `writing` | Prose: blog posts, social posts, documentation, editing |
+| `business` | Ideas, communities, and first customers |
+| `meta` | Skills and agent sessions: creating, vendoring, syncing, recall, handoff |
+| `learning` | Tutoring and drills |
+
+A skill installed with `npx skills` lands in `~/.agents/skills/` outside this
+repository. To keep it, move it to `skills/<group>/<name>/` here and rerun
+`install.sh`.
+
 ## Blog writing
 
 Choose the stage you need:
 
 | Skill | Work | Result |
 |---|---|---|
-| [`draft-blog-post`](skills/draft-blog-post/SKILL.md) | Interview and iterate on the story, argument, and conclusion | Headings with bullet-point notes |
-| [`write-blog-post`](skills/write-blog-post/SKILL.md) | Expand the structure, resolve missing facts and author decisions, choose art and code, and refine the prose | Complete article, or a partial draft with explicit gaps |
-| [`critique-blog-post`](skills/critique-blog-post/SKILL.md) | Find contradictions, repetition, unsupported claims, and reader gaps | Findings and proposed repairs; source unchanged |
+| [`draft-blog-post`](skills/writing/draft-blog-post/SKILL.md) | Interview and iterate on the story, argument, and conclusion | Headings with bullet-point notes |
+| [`write-blog-post`](skills/writing/write-blog-post/SKILL.md) | Expand the structure, resolve missing facts and author decisions, choose art and code, and refine the prose | Complete article, or a partial draft with explicit gaps |
+| [`critique-blog-post`](skills/writing/critique-blog-post/SKILL.md) | Find contradictions, repetition, unsupported claims, and reader gaps | Findings and proposed repairs; source unchanged |
 
 These replace `write-draft-blog-post`, `post-draft`, and an earlier `write-blog-post` skill.
 Writing reads `VOICE.md` when present and uses a site-independent gap-filling
@@ -25,15 +50,15 @@ Artifacts live in `.workplace/plans/`. Each stage reads the previous result.
 
 | Stage | Skill | Work | Result | User-invoked |
 |---|---|---|---|---|
-| Ideate | [`grilling`](skills/grilling/SKILL.md) | Ideate mode: widen the idea, then interview | `<slug>_BRIEF.md` | No |
-| Specify | [`to-spec`](skills/to-spec/SKILL.md) | Turn the brief into a spec | Published spec, or `<slug>_SPEC.md` | Yes |
-| Break down | [`to-tickets`](skills/to-tickets/SKILL.md) | Split the spec into tracer-bullet tickets | Tickets on the tracker, or `<slug>/<NN>-<ticket-slug>.md` | Yes |
-| Build | [`implement`](skills/implement/SKILL.md) | App work from a spec or ticket | Changes and a report | Yes |
-| Build | [`tdd`](skills/tdd/SKILL.md) | Implement mode: library, compiler, and tool work, test-first | Tested changes | No |
-| Build | [`orchestrate`](skills/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |
-| Verify | [`verify-this`](skills/verify-this/SKILL.md) | Check a claim with fresh evidence | VERIFIED, NOT VERIFIED, or INCONCLUSIVE | No |
-| Commit | [`github`](skills/github/SKILL.md) | Validated commit with review | Commit | No |
-| Publish | [`create-pr`](skills/create-pr/SKILL.md) | Check readiness and write the pull request | Draft pull request | No |
+| Ideate | [`grilling`](skills/plan/grilling/SKILL.md) | Ideate mode: widen the idea, then interview | `<slug>_BRIEF.md` | No |
+| Specify | [`to-spec`](skills/plan/to-spec/SKILL.md) | Turn the brief into a spec | Published spec, or `<slug>_SPEC.md` | Yes |
+| Break down | [`to-tickets`](skills/plan/to-tickets/SKILL.md) | Split the spec into tracer-bullet tickets | Tickets on the tracker, or `<slug>/<NN>-<ticket-slug>.md` | Yes |
+| Build | [`implement`](skills/build/implement/SKILL.md) | App work from a spec or ticket | Changes and a report | Yes |
+| Build | [`tdd`](skills/build/tdd/SKILL.md) | Implement mode: library, compiler, and tool work, test-first | Tested changes | No |
+| Build | [`orchestrate`](skills/build/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |
+| Verify | [`verify-this`](skills/build/verify-this/SKILL.md) | Check a claim with fresh evidence | VERIFIED, NOT VERIFIED, or INCONCLUSIVE | No |
+| Commit | [`github`](skills/ship/github/SKILL.md) | Validated commit with review | Commit | No |
+| Publish | [`create-pr`](skills/ship/create-pr/SKILL.md) | Check readiness and write the pull request | Draft pull request | No |
 
 ## MCP servers
 
@@ -152,7 +177,7 @@ that way.
 
 ## Automatic improvement reviews
 
-Claude Code uses the shared [`auto-improve` skill](skills/auto-improve/SKILL.md)
+Claude Code uses the shared [`auto-improve` skill](skills/meta/auto-improve/SKILL.md)
 for read-only reviews of a session's transcript and relevant setup files.
 Reviews run in a separate, headless Claude Code session and land as report
 files, proposing changes to skills, hooks, scripts, or rules. Applying a

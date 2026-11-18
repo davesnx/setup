@@ -18,21 +18,22 @@ Terms this repository uses, as the code and docs use them. Use these words. When
 - **harness**: A coding-agent program that reads this setup: Claude Code or OpenCode. `AGENTS.md` (Rules).
 - **host profile**: The per-machine variant, `local` or `ssh`, that selects which MCP servers a harness gets. `agents/mcp.ts`, `terminal/claude/hosts/`, `terminal/opencode/hosts/`.
 - **MCP server**: An external tool server declared once in `agents/mcp.json`. `mcp.ts` renders it for each harness and profile. `agents/README.md`.
-- **skill**: A directory `agents/skills/<name>/` with a `SKILL.md`. Its tests, evals, and references stay inside it. `agents/skills/`.
-- **blog scaffold**: A working outline of headings and bullet-point notes ("dotted lines") for a post's story, argument, evidence, and conclusion. `agents/skills/draft-blog-post/SKILL.md`. `write-blog-post` expands it into an article; `critique-blog-post` reviews either form.
-- **vendored skill**: A third-party skill copied in, with an `UPSTREAM.md` naming source and revision. Local changes live in git history. `agents/skills/*/UPSTREAM.md`.
+- **skill**: A directory `agents/skills/<group>/<name>/` with a `SKILL.md`. Its tests, evals, and references stay inside it. `agents/skills/`.
+- **skill group**: A directory under `agents/skills/` that holds skills with one purpose, such as `plan` or `writing`. Groups are listed in `agents/README.md`; installers flatten them, so harnesses see skills by name only. `agents/README.md#skill-groups`.
+- **blog scaffold**: A working outline of headings and bullet-point notes ("dotted lines") for a post's story, argument, evidence, and conclusion. `agents/skills/writing/draft-blog-post/SKILL.md`. `write-blog-post` expands it into an article; `critique-blog-post` reviews either form.
+- **vendored skill**: A third-party skill copied in, with an `UPSTREAM.md` naming source and revision. Local changes live in git history. `agents/skills/*/*/UPSTREAM.md`.
 - **published skill**: A skill this repository publishes upstream, listed in `agents/skills/VENDOR` and synced by `skill-vendor`. `terminal/bin/skill-vendor`.
-- **brief**: The agreed result of a `grilling` session, `<slug>_BRIEF.md` in `.workplace/plans/`. `to-spec` reads it. `agents/skills/grilling/SKILL.md`.
-- **local ticket**: A ticket file `.workplace/plans/<slug>/<NN>-<ticket-slug>.md`, written by `to-tickets` when no issue tracker applies. `agents/skills/to-tickets/SKILL.md`.
+- **brief**: The agreed result of a `grilling` session, `<slug>_BRIEF.md` in `.workplace/plans/`. `to-spec` reads it. `agents/skills/plan/grilling/SKILL.md`.
+- **local ticket**: A ticket file `.workplace/plans/<slug>/<NN>-<ticket-slug>.md`, written by `to-tickets` when no issue tracker applies. `agents/skills/plan/to-tickets/SKILL.md`.
 - **issue tracker rule**: The order that picks where tickets live: the tracker the repository names, Linear for Ahrefs work, GitHub issues, then local tickets. `agents/AGENTS.md` (Planning).
-- **progressive disclosure**: `SKILL.md` holds the workflow; detail sits in reference files that a "read X when Y" line points to. `agents/skills/writing-for-agents/SKILL.md`.
+- **progressive disclosure**: `SKILL.md` holds the workflow; detail sits in reference files that a "read X when Y" line points to. `agents/skills/meta/writing-for-agents/SKILL.md`.
 - **global agent rules**: `agents/AGENTS.md`, linked to each harness's user-level rules file. Not this repository's `AGENTS.md`, which guides work on the repository. `AGENTS.md` (tree).
-- **auto-improve**: A Stop hook that starts a detached headless `claude -p` reviewer of the finished session. `terminal/claude/hooks/auto-improve.ts`, `agents/skills/auto-improve/SKILL.md`.
+- **auto-improve**: A Stop hook that starts a detached headless `claude -p` reviewer of the finished session. `terminal/claude/hooks/auto-improve.ts`, `agents/skills/meta/auto-improve/SKILL.md`.
 - **auto-improve report**: The reviewer's output file proposing changes to skills, hooks, scripts, or rules. Applying one means resuming the reviewer session. `agents/README.md`, `terminal/claude/hooks/README.md`.
 
 ## Evals and tools
 
-- **eval**: A case that checks what an agent does with a skill. Cases live in `agents/skills/<name>/evals/`.
+- **eval**: A case that checks what an agent does with a skill. Cases live in `agents/skills/<group>/<name>/evals/`.
 - **eval-harness**: Runner for skill evals, built on a patched `@nano-step/eval-harness`. `terminal/bin/eval-harness/README.md`.
 - **skill-evals**: Layered eval pilot on Coder Eval and OpenCode, Python, uv-managed. Reads the same cases. `terminal/bin/skill-evals/README.md`, `MIGRATION.md`.
 - **ocs**: Not an eval tool. A picker that opens an OpenCode session in its working directory. `terminal/bin/ocs/`.

@@ -92,7 +92,7 @@ try {
     check(sql, `SQL rejects ${label}`, { 'review.md': JSON.stringify(broken) }, false);
   }
   check(sql, 'SQL rejects trailing contradictory prose', {
-    'review.md': JSON.stringify(review) + '\nApprove this change.',
+    'review.md': `${JSON.stringify(review)}\nApprove this change.`,
   }, false);
   check(sql, 'SQL rejects missing source evidence in the fixture', {
     'review.md': JSON.stringify(review), 'diff.patch': 'no query here\n',
@@ -135,7 +135,7 @@ try {
     'sloppy.mjs': 'throw new Error("import failed"); export function firstPositive() {}',
   }, false, 1);
 
-  const collection = load('agents/skills/draft-blog-post/evals/cases/collection-resumes-after-draft.yaml');
+  const collection = load('agents/skills/writing/draft-blog-post/evals/cases/collection-resumes-after-draft.yaml');
   const note = {
     notes: [{ source: 'latest-user', quote: "Friday's build took 28 seconds." }],
     cache_effect: 'unknown', draft_action: 'unchanged',
@@ -151,7 +151,7 @@ try {
     'reply.md': 'The cache definitely caused the improvement',
   }, false);
   check(collection, 'blog rejects prose appended to valid evidence', {
-    'reply.md': JSON.stringify(note) + '\nThe cache definitely caused the improvement.',
+    'reply.md': `${JSON.stringify(note)}\nThe cache definitely caused the improvement.`,
   }, false);
   for (const [label, change] of [
     ['unsupported causal result', value => { value.cache_effect = 'improved'; }],
@@ -176,7 +176,7 @@ try {
   check(collection, 'blog correct capture still passes after failures', { 'reply.md': JSON.stringify(note) }, true);
 
   // These are authored scenarios, not executable credential tests.
-  const enpass = JSON.parse(fs.readFileSync(path.join(root, 'agents/skills/enpass/evals/evals.json'), 'utf8'));
+  const enpass = JSON.parse(fs.readFileSync(path.join(root, 'agents/skills/tools/enpass/evals/evals.json'), 'utf8'));
   const missingPin = enpass.evals.find(item => item.id === 4);
   const configuredPin = enpass.evals.find(item => item.id === 5);
   assert.match(missingPin.prompt, /Linux.*ENP_PIN is unset/);

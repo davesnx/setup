@@ -17,7 +17,7 @@ from expanded import (
     snapshot_working_cases,
     write_coverage,
 )
-from pilot import HERE, ROOT, load_json
+from pilot import HERE, ROOT, load_json, shared_skill
 
 REVISION = "HEAD"
 CACHE_REASON = "I kept the cache because offline preview lets me read pages on the train."
@@ -25,7 +25,7 @@ CACHE_REASON = "I kept the cache because offline preview lets me read pages on t
 
 def working_catalog():
     files = [
-        *(ROOT / "agents/skills").glob("*/SKILL.md"),
+        *(ROOT / "agents/skills").glob("*/*/SKILL.md"),
         *(ROOT / "terminal/opencode/skills").glob("*/SKILL.md"),
         *(ROOT / path for path in VENDORED),
     ]
@@ -56,7 +56,7 @@ class ExpandedChecks(unittest.TestCase):
         catalog = self.catalog
         if case is not None:
             entry = {**entry, "case": case}
-            catalog = {**catalog, skill: ROOT / "agents/skills" / skill}
+            catalog = {**catalog, skill: shared_skill(skill)}
         task, files, _ = native_case(entry, catalog)
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

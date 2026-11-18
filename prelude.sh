@@ -46,6 +46,34 @@ link_path() {
   ln -s "$1" "$2"
 }
 
+# link_skills TARGET: TARGET becomes a directory with one link per skill,
+# TARGET/NAME -> agents/skills/GROUP/NAME, so harnesses see a flat list. A link
+# from TARGET to the whole skills directory, left by an older install, is
+# replaced. Links into agents/skills whose skill is gone are removed. Other
+# entries, such as skills installed by npx skills, stay.
+link_skills() {
+  skills_root=$DOTFILES_PATH/agents/skills
+  if [ -L "$1" ]; then
+    rm "$1"
+  fi
+  mkdir -p "$1"
+  for skill in "$skills_root"/*/*/SKILL.md; do
+    [ -f "$skill" ] || continue
+    skill=${skill%/SKILL.md}
+    link_path "$skill" "$1/${skill##*/}"
+  done
+  if [ -d "$skills_root/synced" ]; then
+    link_path "$skills_root/synced" "$1/synced"
+  fi
+  for entry in "$1"/*; do
+    if [ -L "$entry" ] && [ ! -e "$entry" ]; then
+      case $(readlink "$entry") in
+        "$skills_root"/*) rm "$entry" ;;
+      esac
+    fi
+  done
+}
+
 # select_profile [NAME]: the host profile for this machine, `local` or `ssh`.
 # An explicit NAME wins; otherwise an SSH session selects `ssh`.
 select_profile() {

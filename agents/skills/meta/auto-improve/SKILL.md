@@ -28,7 +28,7 @@ and what the user wanted instead.
   checkpoint, not permission to edit or to schedule another review.
 
 For installed trigger behavior, state, and disabling instructions, see
-[the setup reference](../../README.md#automatic-improvement-reviews).
+[the setup reference](../../../README.md#automatic-improvement-reviews).
 
 ## Review
 

@@ -146,9 +146,33 @@ for (const file of process.argv.slice(2)) {
 process.exit(bad);
 JS
 
+# Skill groups: every shared skill is agents/skills/GROUP/NAME/SKILL.md, the
+# group is one listed in agents/README.md, and no two groups hold the same name.
+groups=$(awk '/^## Skill groups/ { inside = 1; next } /^## / { inside = 0 } inside && /^[|] `[a-z-]+` [|]/ { gsub(/[`| ]/, "", $2); print $2 }' FS='|' "$root/agents/README.md")
+for skill in "$root"/agents/skills/*/SKILL.md; do
+  [[ -e "$skill" ]] || continue
+  printf 'Skill outside a group, move it to agents/skills/<group>/: %s\n' "$skill" >&2
+  exit 1
+done
+# Only directories that hold a skill count, so a folder left behind with
+# ignored files such as __pycache__ does not fail the check.
+for skill in "$root"/agents/skills/*/*/SKILL.md; do
+  [[ -e "$skill" ]] || continue
+  group=$(basename "$(dirname "$(dirname "$skill")")")
+  if ! grep -qx "$group" <<<"$groups"; then
+    printf 'Skill group not listed in agents/README.md: %s\n' "$group" >&2
+    exit 1
+  fi
+done
+duplicates=$(for skill in "$root"/agents/skills/*/*/SKILL.md; do basename "$(dirname "$skill")"; done | sort | uniq -d)
+if [[ -n "$duplicates" ]]; then
+  printf 'Skill name in more than one group: %s\n' "${duplicates//$'\n'/, }" >&2
+  exit 1
+fi
+
 # Skills: SKILL.md starts with frontmatter whose name matches the directory and
 # whose description is not empty.
-for skill in "$root"/agents/skills/*/SKILL.md "$root"/terminal/opencode/skills/*/SKILL.md; do
+for skill in "$root"/agents/skills/*/*/SKILL.md "$root"/terminal/opencode/skills/*/SKILL.md; do
   dir=$(basename "$(dirname "$skill")")
   if ! awk -v dir="$dir" '
     NR == 1 && $0 != "---" { exit 1 }
@@ -177,10 +201,10 @@ done
 npm ci --silent --prefix "$root/terminal/claude/hooks"
 node --test "$root/terminal/claude/hooks/auto-improve.test.ts"
 node --test "$root/terminal/opencode/tests/agent-permission-boundaries.test.mjs"
-bash "$root/agents/skills/skill-vendor/tests/skill-vendor.sh"
-bash "$root/agents/skills/ssh-transfer/tests/ssh-transfer.sh"
-bash "$root/agents/skills/librarian/tests/checkout.sh"
-(cd "$root/agents/skills/skill-creator" &&
+bash "$root/agents/skills/meta/skill-vendor/tests/skill-vendor.sh"
+bash "$root/agents/skills/tools/ssh-transfer/tests/ssh-transfer.sh"
+bash "$root/agents/skills/tools/librarian/tests/checkout.sh"
+(cd "$root/agents/skills/meta/skill-creator" &&
   python3 -m unittest tests.test_aggregate_benchmark tests.test_generate_review \
     tests.test_quick_validate tests.test_run_loop)
 

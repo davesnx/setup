@@ -102,4 +102,4 @@ timeout without claiming success. Do not retry a state-changing command
 until you know whether the first attempt took effect.
 
 For options and verification commands, read
-[`terminal/bin/README.md`](../../../terminal/bin/README.md#use-the-flipper-zero-cli).
+[`terminal/bin/README.md`](../../../../terminal/bin/README.md#use-the-flipper-zero-cli).

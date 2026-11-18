@@ -16,7 +16,7 @@ them. agents/skills/VENDOR lists one upstream per line:
 DIR is the directory that holds the skills in the upstream repository, or .
 for its root. COMMIT is the upstream commit the local copies were last synced
 with, or - before the first sync. Each SKILL is a directory with the same
-name in agents/skills/ and in DIR upstream.
+name in agents/skills/<group>/ and in DIR upstream.
 
 check  compares every skill with the pinned commit and the upstream branch
        head. Reports up to date, upstream ahead, local ahead, new local,
@@ -77,6 +77,19 @@ ensure_clone() {
   printf '%s' "$dir"
 }
 
+# Local directory of SKILL: agents/skills/GROUP/SKILL. A skill not yet in a
+# group lands in agents/skills/SKILL; check.sh then asks for a group.
+local_path() {
+  local found
+  for found in "$skills_dir"/*/"$1"; do
+    if [ -d "$found" ]; then
+      printf '%s' "$found"
+      return
+    fi
+  done
+  printf '%s/%s' "$skills_dir" "$1"
+}
+
 # Path of SKILL inside the upstream repository.
 upath() {
   if [ "$updir" = . ]; then printf '%s' "$1"; else printf '%s/%s' "$updir" "$1"; fi
@@ -97,8 +110,9 @@ same() {
 status_of() {
   local dir=$1 pinned=$2 head=$3 skill=$4 rel
   rel=$(upath "$skill")
-  local local_dir=$skills_dir/$skill at_pin=$work/pin/$rel at_head=$work/head/$rel
+  local local_dir at_pin=$work/pin/$rel at_head=$work/head/$rel
   local has_pin=false has_head=false has_local=false
+  local_dir=$(local_path "$skill")
   rm -rf "$at_pin" "$at_head"
   if [ "$pinned" != - ] && extract "$dir" "$pinned" "$rel" "$work/pin"; then has_pin=true; fi
   if extract "$dir" "$head" "$rel" "$work/head"; then has_head=true; fi
@@ -173,7 +187,7 @@ rewrite_manifest() {
 }
 
 pull_line() {
-  local skill status blocked=''
+  local skill status target blocked=''
   for skill in $skills; do
     status=$(status_of "$dir" "$commit" "$head" "$skill")
     case $status in 'local ahead' | 'new local' | diverged) blocked="$blocked $skill" ;; esac
@@ -184,8 +198,9 @@ pull_line() {
   rm -rf "$work/pull"
   for skill in $skills; do
     if extract "$dir" "$head" "$(upath "$skill")" "$work/pull"; then
-      rm -rf "${skills_dir:?}/${skill:?}"
-      cp -R "$work/pull/$(upath "$skill")" "$skills_dir/$skill"
+      target=$(local_path "$skill")
+      rm -rf "${target:?}"
+      cp -R "$work/pull/$(upath "$skill")" "$target"
       printf 'pulled %s at %s\n' "$skill" "${head:0:7}" >&2
     fi
   done
@@ -214,7 +229,7 @@ push_line() {
     rel=$(upath "$skill")
     rm -rf "${dir:?}/${rel:?}"
     mkdir -p "$(dirname "$dir/$rel")"
-    cp -R "$skills_dir/$skill" "$dir/$rel"
+    cp -R "$(local_path "$skill")" "$dir/$rel"
     git -C "$dir" add -A -- "$rel"
   done
   git -C "$dir" commit -q -m "${message:-Update$to_push}" || fail 'commit failed'

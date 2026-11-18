@@ -668,17 +668,24 @@ diff --git a/scripts/eval/lib/skills_root.sh b/scripts/eval/lib/skills_root.sh
 index f9c40d3..13d599a 100644
 --- a/scripts/eval/lib/skills_root.sh
 +++ b/scripts/eval/lib/skills_root.sh
-@@ -13,6 +13,17 @@
+@@ -13,6 +13,24 @@
  set -euo pipefail
 
  resolve_skills_root() {
 +  if [[ -n "${1:-}" ]]; then
-+    local root
++    local root group
 +    for root in "$(resolve_skills_root)" "${OPENCODE_SKILLS_EXTRA_ROOT:-}"; do
-+      if [[ -n "$root" && -d "$root/$1" ]]; then
++      [[ -n "$root" ]] || continue
++      if [[ -d "$root/$1" ]]; then
 +        printf '%s\n' "$root"
 +        return 0
 +      fi
++      for group in "$root"/*/; do
++        if [[ -f "$group$1/SKILL.md" ]]; then
++          printf '%s\n' "${group%/}"
++          return 0
++        fi
++      done
 +    done
 +    printf 'Skill not found: %s\n' "$1" >&2
 +    return 1

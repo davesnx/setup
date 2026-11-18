@@ -18,7 +18,8 @@ The script links:
   file exists in this repository. It is machine-local and Git-ignored, so
   each machine keeps its own copy.
 - `agents/AGENTS.md` to `~/.claude/CLAUDE.md`.
-- `agents/skills` to `~/.claude/skills`.
+- Each skill in `agents/skills/<group>/` to `~/.claude/skills/<name>`, by
+  `agents/install.sh`.
 - `hosts/<profile>.json` to `~/.mcp.json`. `mcp.ts` renders both profile
   files from the shared `agents/mcp.json` first, with Node, so edits belong in
   the shared file. See [`agents/README.md`](../../agents/README.md#mcp-servers).

@@ -22,11 +22,22 @@ from report import summarize
 HERE = Path(__file__).resolve().parent
 _TOPLEVEL = ["git", "-C", str(HERE), "rev-parse", "--show-toplevel"]
 ROOT = Path(subprocess.check_output(_TOPLEVEL, text=True).strip())
+SHARED_SKILLS = ROOT / "agents/skills"
+
+
+def shared_skill(name):
+    """Directory of a shared skill, agents/skills/GROUP/NAME."""
+    matches = sorted(SHARED_SKILLS.glob(f"*/{name}/SKILL.md"))
+    if len(matches) != 1:
+        raise ValueError(f"Expected one shared skill named {name}, found {len(matches)}")
+    return matches[0].parent
+
+
 CATALOG = {
     "code-review": ROOT / "terminal/opencode/skills/code-review",
     "simplify": ROOT / "terminal/opencode/skills/simplify",
-    "code-standards": ROOT / "agents/skills/code-standards",
-    "unslop": ROOT / "agents/skills/unslop",
+    "code-standards": shared_skill("code-standards"),
+    "unslop": shared_skill("unslop"),
 }
 TARGETS = {"code-review", "simplify"}
 EXCLUDED = {"evals", ".git", "node_modules", "__pycache__"}

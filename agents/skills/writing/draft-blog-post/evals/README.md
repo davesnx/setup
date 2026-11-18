@@ -7,14 +7,14 @@ Run the shared regression checks from the repository root after installing the
 existing eval-harness dependencies:
 
 ```sh
-node --test agents/skills/draft-blog-post/evals/regression.test.cjs
+node --test agents/skills/writing/draft-blog-post/evals/regression.test.cjs
 ```
 
 If those dependencies are absent and Ruby/Psych is installed, use the explicit
 offline parser option:
 
 ```sh
-EVAL_YAML_PARSER=ruby node --test agents/skills/draft-blog-post/evals/regression.test.cjs
+EVAL_YAML_PARSER=ruby node --test agents/skills/writing/draft-blog-post/evals/regression.test.cjs
 ```
 
 The tests execute the shell graders from the actual YAML against disposable

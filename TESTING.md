@@ -60,8 +60,10 @@ It checks:
 - Bun use: no tracked file outside `mac/`, `*.test.ts`, and Markdown has a Bun
   shebang or calls `Bun.`, because nspawn has Node only.
 - Config syntax: every tracked `.json` and `.jsonc` file parses, allowing
-  comments and trailing commas. Every `agents/skills/*/SKILL.md` has frontmatter
+  comments and trailing commas. Every `agents/skills/*/*/SKILL.md` has frontmatter
   with a `name` equal to its directory and a non-empty `description`.
+- Skill groups: every shared skill sits in a group listed in
+  `agents/README.md`, and no name appears in two groups.
 - Claude Code hook tests (`npm ci` installs pinned dependencies), the OpenCode
   permission plugin test, and the skill tests that need no model or network:
   skill-vendor, ssh-transfer, librarian, and skill-creator (all but
@@ -83,7 +85,7 @@ also run their documented checks:
 - [Claude Code hooks](terminal/claude/hooks/README.md#checks).
 - [Eval harness](terminal/bin/eval-harness/README.md#test).
 - [Skill eval runner](terminal/bin/skill-evals/README.md#development-checks).
-- [Writing eval contracts](agents/skills/draft-blog-post/evals/README.md).
+- [Writing eval contracts](agents/skills/writing/draft-blog-post/evals/README.md).
 
 These module checks are not part of the root command or its CI jobs.
 

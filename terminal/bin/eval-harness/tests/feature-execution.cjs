@@ -186,7 +186,7 @@ assert.equal(fs.readFileSync(path.join(process.env.EVAL_FIXTURE_DIR, 'current.tx
 process.stdout.write('current checker: transcript ready');
 `);
   const routingCase = require(path.join(root, 'node_modules/yaml')).parse(fs.readFileSync(
-    path.resolve(root, '../../../agents/skills/technical-docs/evals/cases/routes-developer-docs-only.yaml'), 'utf8',
+    path.resolve(root, '../../../agents/skills/writing/technical-docs/evals/cases/routes-developer-docs-only.yaml'), 'utf8',
   ));
   caseYaml('pass', [routingCase.checks[0], {
     kind: 'shell', unsafe_shell: true, cmd: 'node "$EVAL_FIXTURE_DIR/check-transcript.cjs"',

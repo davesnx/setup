@@ -66,12 +66,14 @@ To run that one case after checking provider access, replace `--dry-run` with
 `--model=openai/gpt-6-astra --repetitions=1 --max-seconds=180`. This sends live
 model requests. The timeout is not a token or dollar cap.
 
-The separate `agents/skills/skill-creator/scripts/run_eval.py` runner uses
+The separate `agents/skills/meta/skill-creator/scripts/run_eval.py` runner uses
 Claude Code only. Its `--model` does not accept OpenCode provider/model IDs.
 Its profile requirements are in
-`agents/skills/skill-creator/scripts/README.md#unsupported-catalogs`.
+`agents/skills/meta/skill-creator/scripts/README.md#unsupported-catalogs`.
 
-The wrapper searches both `agents/skills/` and `terminal/opencode/skills/`. An explicit
+The wrapper searches both `agents/skills/` and `terminal/opencode/skills/`.
+A skill is found directly under a root or one skill group below it, as in
+`agents/skills/<group>/<name>/`. An explicit
 `OPENCODE_SKILLS_ROOT` replaces this default search. Set
 `OPENCODE_SKILLS_EXTRA_ROOT` to add one more directory. Missing skills, cases,
 fixtures, model errors, and incomplete or malformed transcripts fail with exit

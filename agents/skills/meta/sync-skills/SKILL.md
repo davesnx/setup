@@ -107,6 +107,13 @@ ssh nspawn 'cd "$HOME/workplace/davesnx/setup" && test "$(git branch --show-curr
 If the pull fails for any reason, stop. Do not try to repair the remote
 checkout. If it succeeds, verify the remote branch status and HEAD commit.
 
+The installed skill directories hold one link per skill. When the pull added,
+removed, or moved a skill under `agents/skills/`, refresh the links on nspawn:
+
+```sh
+ssh nspawn 'cd "$HOME/workplace/davesnx/setup" && DOTFILES_PATH="$PWD" sh agents/install.sh'
+```
+
 ## Report
 
 Report:

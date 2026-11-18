@@ -24,9 +24,10 @@ CONTEXT.md                Glossary of this repository's terms. Use them; update 
 agents/                   Shared by Claude Code and OpenCode: rules, skills, MCP.
 agents/AGENTS.md          Global agent rules -> ~/.claude/CLAUDE.md, ~/.agents/AGENTS.md,
                           ~/.config/opencode/AGENTS.md
-agents/skills/            The only skills directory -> ~/.claude/skills, ~/.agents/skills.
-                          One directory per skill with SKILL.md. Its tests, evals, and
-                          references stay inside it. Third-party skills carry UPSTREAM.md:
+agents/skills/            The only skills directory. agents/skills/<group>/<name>/SKILL.md,
+                          groups listed in agents/README.md. agents/install.sh links each
+                          skill by name into ~/.claude/skills and ~/.agents/skills. Its
+                          tests, evals, and references stay inside it. Third-party skills carry UPSTREAM.md:
                           the source URL, plus the license when no license file ships.
 agents/skills/VENDOR      Skills published upstream from here, managed by skill-vendor.
 agents/skills/.skill-lock.json  Versions of skills installed with npx skills -> ~/.agents/
@@ -93,8 +94,9 @@ local/                    Machine-specific overrides. Git-ignored except README,
 - `agents/` is shared by both harnesses. `terminal/claude/` is Claude Code
   only. `terminal/opencode/` is OpenCode only. Do not move a file across these
   three because one harness wanted it. Put it where both can reach it.
-- A new skill is `agents/skills/<name>/SKILL.md`. Its tests, evals, and
-  references live in that directory. Vendor third-party skills and plugins in
+- A new skill is `agents/skills/<group>/<name>/SKILL.md`, in a group listed in
+  `agents/README.md`. Its tests, evals, and references live in that directory.
+  Rerun `agents/install.sh` to link it. Vendor third-party skills and plugins in
   this repository with an `UPSTREAM.md` that holds the source URL, pinned to the
   vendored revision when known, and the license when the directory has no
   license file. Local changes live in git history, not in `UPSTREAM.md`. Global

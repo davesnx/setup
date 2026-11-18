@@ -130,7 +130,7 @@ flipper send --timeout 10000 'nfc' 'emulate /ext/nfc/MyCard.nfc'
 
 Closing the host serial connection does not prove that device-side emulation
 has stopped. Check the device and stop it there when finished. See the
-[Flipper skill](../../agents/skills/flipper/SKILL.md) for the agent workflow.
+[Flipper skill](../../agents/skills/tools/flipper/SKILL.md) for the agent workflow.
 
 Run `bun test terminal/bin/flipper.test.ts` for the pure-logic tests.
 They do not open a serial port or terminate a process.
@@ -223,10 +223,10 @@ From the setup repository root, run:
 
 ```sh
 bash -n terminal/bin/ssh-transfer
-bash -n agents/skills/ssh-transfer/tests/ssh-transfer.sh
-shellcheck terminal/bin/ssh-transfer agents/skills/ssh-transfer/tests/ssh-transfer.sh
-shfmt -d -i 2 -ci terminal/bin/ssh-transfer agents/skills/ssh-transfer/tests/ssh-transfer.sh
-bash agents/skills/ssh-transfer/tests/ssh-transfer.sh
+bash -n agents/skills/tools/ssh-transfer/tests/ssh-transfer.sh
+shellcheck terminal/bin/ssh-transfer agents/skills/tools/ssh-transfer/tests/ssh-transfer.sh
+shfmt -d -i 2 -ci terminal/bin/ssh-transfer agents/skills/tools/ssh-transfer/tests/ssh-transfer.sh
+bash agents/skills/tools/ssh-transfer/tests/ssh-transfer.sh
 ```
 
 The tests require rsync 3 or newer. They use temporary files and a local test
@@ -239,7 +239,8 @@ repository. `ocaml-mlx/skills` carries the mlx skills. The copies in this
 repository are the working copies. `skill-vendor` moves changes in either
 direction, only when asked. `agents/skills/VENDOR` lists each upstream repository,
 its branch, the directory that holds the skills there (`.` for the root), the
-commit the copies were last synced with, and the skill names.
+commit the copies were last synced with, and the skill names. A name
+matches the skill directory in any group, `agents/skills/<group>/<name>`.
 
 See what changed on either side:
 
@@ -278,7 +279,7 @@ Rules:
 - Commit `agents/skills/VENDOR` together with the skill copies it describes.
 
 The `skill-vendor` skill under `agents/skills/` gives agents this procedure. Its
-test is `agents/skills/skill-vendor/tests/skill-vendor.sh`.
+test is `agents/skills/meta/skill-vendor/tests/skill-vendor.sh`.
 
 # Review changes in Cursor
 
