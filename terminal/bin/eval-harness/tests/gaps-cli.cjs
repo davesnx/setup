@@ -47,7 +47,6 @@ try {
   fs.writeFileSync(path.join(work, 'bin/opencode'), `#!/usr/bin/env bash
 if [[ "\${1:-}" == --version ]]; then printf 'test-opencode\\n'; exit 0; fi
 printf '%s\\n' '{"type":"text","part":{"text":"expected"}}' '{"type":"step_finish","part":{"reason":"stop"}}'
-if [[ -n "\${GAPS_ARTIFACT:-}" ]]; then cp "$GAPS_ARTIFACT" prototype.html; fi
 if [[ "\${GAPS_LATER_ERROR:-0}" == 1 && "$PWD" == */repetitions/sample-2/* ]]; then exit 7; fi
 if [[ "\${GAPS_DISTRACTION:-0}" == 1 ]]; then
   mkdir -p "$EVAL_STATE_DIR/runs/unrelated"
@@ -126,16 +125,6 @@ exit "\${GAPS_RUNNER_EXIT:-0}"
   assert.match(cli('status'), /mode: BLOCKING/)
   assert.match(cli('status', [], { EVAL_WARN_ONLY: '1' }), /mode: WARN-ONLY/)
   assert.match(cli('promote'), /already block by default/)
-  const prototype = path.resolve(root, '../../../agents/skills/logic-prototype')
-  fs.cpSync(prototype, path.join(work, 'skills/logic-prototype'), { recursive: true })
-  const artifact = path.join(prototype, 'evals/fixtures/cancellation-working.html')
-  const prototypeArgs = ['--skill=logic-prototype', '--case=logic-prototype-is-drivable']
-  const browserEnv = { GAPS_ARTIFACT: artifact, EVAL_CHECK_TIMEOUT_SECONDS: '25' }
-  cli('run', prototypeArgs, browserEnv)
-  const broken = path.join(work, 'broken.html')
-  fs.writeFileSync(broken, fs.readFileSync(artifact, 'utf8').replace('transition(button.textContent)', 'void 0'))
-  cli('run', prototypeArgs, { ...browserEnv, GAPS_ARTIFACT: broken }, 12)
-  cli('run', prototypeArgs, { ...browserEnv, EVAL_CHROMIUM_BIN: path.join(work, 'absent-browser') }, 13)
   console.log('PASS: gaps CLI failures, warnings, shell exits/timeouts, baseline/accept, two-tier, status/promote')
 } finally {
   fs.rmSync(work, { recursive: true, force: true })

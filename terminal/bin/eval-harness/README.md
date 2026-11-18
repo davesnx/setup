@@ -194,7 +194,7 @@ Skill copies still reject links.
 
 Docker shares the host kernel and allows public network access. The candidate
 and Docker daemon can access supplied credentials. **Only candidate execution is
-containerized:** shell and browser checks still run on the host. Use trusted
+containerized:** shell checks still run on the host. Use trusted
 cases and artifacts. Host mode is not a security sandbox. No runner can prevent
 an agent from writing secrets it can read into its output.
 
@@ -223,18 +223,6 @@ evidence checksums. Old runs and two-tier aggregate reports are not eligible.
 Use an individual contributing run for two-tier work. Active runs, errors,
 missing files, changed evidence, and unsafe paths are rejected. Checksums detect
 changed files, not an attacker who can also rewrite the checksum record.
-
-### Prototype browser check
-
-The cancellation prototype case drives visible controls in Chromium. It checks
-legal and illegal transitions, refunds, terminal states, reset, and external
-resource requests. Its fixture defines the control names and output IDs without
-prescribing a layout.
-
-The checker defaults to `/usr/bin/chromium`. Set `EVAL_CHROMIUM_BIN` to another
-Chromium executable, including on macOS. A missing browser fails the check as a
-scorer error. The checker uses headless Chromium with `--no-sandbox` and a
-temporary profile, so use it only with trusted artifacts.
 
 ## Cleanup
 
@@ -283,7 +271,7 @@ npm --prefix terminal/bin/eval-harness run test:upstream
 ```
 
 These tests use temporary files and model stubs. They do not make live model
-requests. The local suite requires Chromium. The upstream command runs every
+requests. The upstream command runs every
 upstream shell test with guards against unintended model/network commands.
 
 `npm test` also runs checker counterexamples, corpus integrity tests, and the
