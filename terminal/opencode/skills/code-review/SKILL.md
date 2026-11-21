@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review code changes, commits, or PRs on request, including deep, adversarial, and blast-radius reviews. Report verified risks; edit or publish only with authorization.
+description: Review code changes, commits, or PRs on request, including deep, adversarial, blast-radius, maintainer review of a contributor's PR, and OCaml API/semver reviews. Report verified risks; edit or publish only with authorization.
 ---
 
 # Code Review
@@ -48,6 +48,14 @@ Find the originating intent in this order:
 
 Read repository standards from `AGENTS.md`, `CONTRIBUTING.md`, coding standards, architecture docs, and instructions near the changed files. If tracker details are needed, pick the tracker by the issue tracker rule in the global agent rules.
 
+**Maintainer gate**: for someone else's PR, or a self-check of the user's branch before create-pr, also read the linked issues and `git log` of the touched areas, then answer:
+
+- Should this change exist? Is the problem real and stated?
+- Does it fit the project's direction and the area's design?
+- Is it one coherent change, at the right size and layer?
+
+When an answer is no, the verdict is **redirect**: state what the project needs instead (an issue first, a split, another layer, a smaller change), skip steps 3 to 5, and report.
+
 ## 3. Select Review Details
 
 Check correctness, security, maintainability, repository standards, intent, and
@@ -58,9 +66,10 @@ or an assigned primary lens:
 - [Maintainability](references/maintainability.md): structural or ownership decisions.
 - [Standards and spec](references/standards-spec.md): rule compliance or requirement questions.
 - [Blast radius and proof](references/blast-radius.md): downstream safety claims or unclear consumers.
+- [OCaml public API and semver](references/ocaml-api.md): a diff that touches an OCaml or Reason library (dune `public_name`, `.opam`, `dune-project` depends, ppx, or `melange.emit`).
 
 Reference selection changes detail, not coverage. A small, clear change can be
-reviewed from the code and repository rules without loading all four files.
+reviewed from the code and repository rules without loading every file.
 
 ## 4. Execute The Review
 
@@ -127,7 +136,13 @@ For Standard, Deep, and Blast Radius reviews, lead with findings ordered by seve
 - a concrete remedy
 - proof or the exact missing evidence
 
-Then give the scope, checks run, verdict, and material limits. Include standards
+Then give the scope, checks run, verdict, and material limits. The verdict is
+**approve**, **request changes**, or **redirect**, with one sentence why; in a
+self-check, approve means ready for create-pr. Add **questions for the author**
+that the diff and PR text leave open. For a PR review, add a **coverage** list
+of every changed file, marked reviewed or skipped with the reason (generated,
+vendored, lockfile, out of expertise), and a **declined to judge** list of
+areas you lack the context to rule on, with who or what could rule. Include standards
 or requirement citations where they support a finding. For important downstream
 safety claims, state the fact, proof level, and evidence or mark it unproven.
 Mention important cleared risks when they explain the verdict. Use headings only
