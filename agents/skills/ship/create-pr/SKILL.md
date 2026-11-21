@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Use when asked to open, create, submit, or prepare a pull request, or to write or edit a PR title or body. Checks readiness, runs comment-purge on the outgoing diff, writes in repository terms with behavioral evidence and a merge-risk line, and publishes a draft only with explicit authorization. Not for commit messages; use github for those.
+description: Use when asked to open, create, submit, or prepare a pull request, or to write or edit a PR title or body. Checks readiness, runs comment-purge and code-review on the outgoing diff, writes in repository terms with behavioral evidence and a merge-risk line, and publishes a draft only with explicit authorization. Not for commit messages; use github for those.
 ---
 
 # Create a PR
@@ -62,6 +62,13 @@ to the outgoing diff. A PR request authorizes that comment cleanup, its issues,
 and its plan entries, but no other source edits and no wider scope. Commit the
 cleanup separately through `github`, then repeat affected inspection and checks.
 For a title/body-only request, skip cleanup. Stop for unresolved cleanup findings or blockers.
+
+After cleanup, review the outgoing diff (`<base-ref>...HEAD`): on Claude Code
+run the built-in `/code-review`; on OpenCode load the `code-review` skill as a
+self-check, which includes its maintainer gate. A redirect verdict or a
+confirmed bug (Critical or High in code-review) blocks publication. Report each finding; fix
+one only when the user's request authorizes source edits, then repeat affected
+checks and the review. For a title/body-only request, skip the review.
 
 Failed, unavailable, or unknown required checks and unsupported behavioral
 claims block publication, including drafts. Omit behavioral evidence when there
