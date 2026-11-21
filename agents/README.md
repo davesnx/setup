@@ -52,7 +52,7 @@ Artifacts live in `.workplace/plans/`. Each stage reads the previous result.
 |---|---|---|---|---|
 | Ideate | [`grilling`](skills/plan/grilling/SKILL.md) | Ideate mode: widen the idea, then interview | `<slug>_BRIEF.md` | No |
 | Specify | [`to-spec`](skills/plan/to-spec/SKILL.md) | Turn the brief into a spec | Published spec, or `<slug>_SPEC.md` | Yes |
-| Break down | [`to-tickets`](skills/plan/to-tickets/SKILL.md) | Split the spec into tracer-bullet tickets | Tickets on the tracker, or `<slug>/<NN>-<ticket-slug>.md` | Yes |
+| Break down | [`to-tickets`](skills/plan/to-tickets/SKILL.md) | Split the spec into tracer-bullet tickets | Tickets on the tracker, or `.workplace/tasks/<NN>-<ticket-slug>.md` | Yes |
 | Build | [`implement`](skills/build/implement/SKILL.md) | App work from a spec or ticket | Changes and a report | Yes |
 | Build | [`tdd`](skills/build/tdd/SKILL.md) | Implement mode: library, compiler, and tool work, test-first | Tested changes | No |
 | Build | [`orchestrate`](skills/build/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |

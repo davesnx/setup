@@ -21,9 +21,9 @@ within the requested editing scope.
   below it, first read it. Use its shared or project task plan location.
 - Otherwise, write plans and their companions at the repository root under
   `.workplace/plans/`, one `<slug>` per feature: `<slug>_BRIEF.md`,
-  `<slug>_SPEC.md`, `<slug>_PLAN.md`, and local tickets as
-  `<slug>/<NN>-<ticket-slug>.md`. The global Git ignore file excludes
-  `.workplace/`.
+  `<slug>_SPEC.md`, and `<slug>_PLAN.md`. Write local tickets as
+  `.workplace/tasks/<NN>-<ticket-slug>.md`. The global Git ignore file
+  excludes `.workplace/`.
 - Issue tracker, in this order: the tracker the repository's instructions name;
   Linear for Ahrefs work repositories (remote host `ahrefs-github.com` or owner
   `ahrefs`); GitHub issues for any other GitHub remote; otherwise local

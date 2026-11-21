@@ -9,7 +9,7 @@ Implement the work described in the spec, tickets, or issue the user names.
 
 ## Input
 
-Read the named source first: a spec, a ticket, an issue, `.workplace/plans/<slug>_SPEC.md`, or the tickets in `.workplace/plans/<slug>/`. If none exists, stop and say so. Do not invent requirements.
+Read the named source first: a spec, a ticket, an issue, `.workplace/plans/<slug>_SPEC.md`, or the plan's tickets in `.workplace/tasks/`. If none exists, stop and say so. Do not invent requirements.
 
 Take only tickets whose blockers are done. A ticket is done when its criteria and its verify command pass. Then set its local Status to done, or close the issue.
 
