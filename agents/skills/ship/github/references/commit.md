@@ -106,8 +106,10 @@ hook protection, and isolation of unrelated work.
    trivial diffs):
 
    Read [comment-purge](../../comment-purge/SKILL.md) and apply it to the
-   selected diff. A commit request authorizes comment cleanup in that diff
-   only, not behavior changes or a wider scope.
+   selected diff: delete Tautology and Stale comments, file an issue for each
+   Excuse, and move each Decision Record to a plan. A commit request
+   authorizes that cleanup, its issues, and its plan entries in that diff only,
+   not behavior changes or a wider scope. Name the filed issues in the report.
 
    Then run the built-in `/code-review` skill at low or medium effort on the
    selected diff, or a reviewer subagent on a different model. Fix confirmed

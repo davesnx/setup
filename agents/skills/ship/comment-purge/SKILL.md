@@ -1,14 +1,15 @@
 ---
 name: comment-purge
-description: "Remove unnecessary code comments when explicitly requested. Preserve meaningful warnings, contracts, and directives. Not general code review or refactoring."
+description: "Categorise code comments as Tautology, Stale, Excuse, or Decision Record, then delete them, file issues, or move them to a plan. Use when explicitly requested; create-pr and the github commit workflow run it on their diff. Preserves warnings, contracts, and directives. Not general code review or refactoring."
 disable-model-invocation: true
 license: MIT
 ---
 
 # Comment Purge
 
-Delete unnecessary comments rather than rewrite them. Keep protected comments
-and unresolved warnings. Fix exposed code problems only within the authorized
+Categorise each comment in scope, then delete it, file an issue for it, or move
+it to a plan. Never rewrite a comment. Keep protected comments and unresolved
+warnings. Fix exposed code problems only within the authorized
 scope; comment cleanup alone does not authorize behavior changes.
 
 ## Scope
@@ -20,11 +21,36 @@ to whole files or widen the scope to other instances of a problem.
 Read repository rules and record the existing changes before editing. Preserve
 pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 
-## Deletion Rules
+## Categories
 
-- Delete narration, section banners, commented-out dead code, and explanations
-  shown to be redundant, false, or obsolete. Keep a workaround's explanation
-  until evidence shows the constraint is obsolete or an authorized fix removes it.
+Put each scoped comment that is not protected (see Protected Comments) in one
+category, and take its action:
+
+| Category | Meaning | Action |
+|---|---|---|
+| Tautology | Repeats what the code already shows: narration, section banners | Delete |
+| Stale | Refers to code, behavior, or plans that no longer apply; commented-out dead code | Delete |
+| Excuse | Lets a hacky implementation stand: "temporary", "good enough", "hack", "workaround", "fine for now" | Delete, and file an issue to fix the implementation |
+| Decision Record | Records an important, non-obvious decision about the code | Move it to a plan, then delete it |
+
+- **Excuse issue**: use the tracker the global Planning rules select, and
+  search it for a duplicate first. The issue names the file, symbol, the hack,
+  and the deleted comment text. Invoking this skill authorizes filing these
+  issues. If the tracker is unavailable, write a local ticket instead and report
+  it. Put the issue link in the report, not in the code.
+- **Decision Record plan**: append to the current task's plan, or else to
+  `comment-decisions_PLAN.md`, in the plan location the global Planning rules
+  select. Add it under a `## Decisions` heading, with the file, symbol, and
+  the comment text. The plan directory is Git-ignored: report each moved
+  record so the user can promote it to an ADR or doc.
+- When a comment fits two categories, prefer Excuse over Decision Record, and
+  Stale over Tautology. An Excuse that a trivial in-scope fix removes (Workflow
+  step 4) needs no issue.
+
+## Protected Comments
+
+These stay in the code and are not categorised:
+
 - Keep legal and license notices and doc comments that define public API contracts.
 - Keep verified non-obvious constraints from an external dependency, platform,
   vendor, or protocol that this project cannot change.
@@ -41,8 +67,8 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
   issue or dependency evidence. A claimed external constraint needs proof that
   it still applies on a live path. Do not depend on a named skill or command.
 - Preserve ambiguous warnings when the evidence does not establish that removal
-  is safe. Report the missing evidence or proposed code change. These deletion
-  rules never override protected directives or legal notices.
+  is safe. Report the missing evidence or proposed code change. The categories
+  never override protected directives or legal notices.
 - Use neutral action flags such as `Refactor`, `Fix suppression`, or
   `Unenforced constraint`. Name the exact in-scope symbol, evidence, and needed
   change. Do not invent defects or label intentional behavior as faulty.
@@ -50,14 +76,16 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 ## Workflow
 
 1. Use an available independent reviewer when supported. Pass the exact scope,
-   existing-change baseline, and all deletion and review rules in this skill.
+   existing-change baseline, and all category, protection, and review rules in this skill.
    Otherwise use separate comment-edit and review passes yourself. The initial
    reviewer edits comments only, never application code, and reports touched
-   files, deleted comment count, action flags with evidence, and skips.
+   files, each comment with its category, action flags with evidence, and skips.
+   It proposes issues and plan entries; the parent files and writes them.
 2. The parent reviews the report and diff. Reject application-code edits, scope
-   escapes, protected deletions, unsupported flags, and missed suppressions.
+   escapes, protected deletions, wrong categories, unsupported flags, and missed
+   suppressions.
    Check evidence for deleted warnings and restore any removed without sufficient
-   evidence. Keep explanations while their constraint or refactor is unresolved.
+   evidence. Delete an Excuse only after its issue exists.
    Delete refuted warnings only when the evidence establishes safe removal.
    Preserve valid action flags for internal surprises.
 3. For a rejected pass, undo only that pass's rejected edits, preserving the
@@ -87,7 +115,8 @@ pre-existing user work; stop and ask if edits conflict. No automatic Git writes.
 
 ## Report
 
-Report touched files, deleted comment count, restored comments with exceptions,
+Report touched files, the count per category, filed issue links, moved Decision
+Records with their plan path, restored comments with exceptions,
 corrected passes, refactor sketches, fixes, encoding offers and approvals,
 completed encodings, unenforced constraints, skips, and other open work.
 Include check commands and results. Distinguish completed cleanup from blockers.

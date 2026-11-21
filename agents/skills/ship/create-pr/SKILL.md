@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Use when asked to open, create, submit, or prepare a pull request, or to write or edit a PR title or body. Checks readiness, uses comment-purge when cleanup is authorized, writes in repository terms with behavioral evidence and a merge-risk line, and publishes a draft only with explicit authorization. Not for commit messages; use github for those.
+description: Use when asked to open, create, submit, or prepare a pull request, or to write or edit a PR title or body. Checks readiness, runs comment-purge on the outgoing diff, writes in repository terms with behavioral evidence and a merge-risk line, and publishes a draft only with explicit authorization. Not for commit messages; use github for those.
 ---
 
 # Create a PR
@@ -56,11 +56,11 @@ protection, and isolation. Validate the final committed candidate and every
 outgoing commit, not a working tree with extra edits. Confirm regression coverage
 for bug fixes. Missing coverage returns the task to implementation.
 
-When cleanup is authorized, read [comment-purge](../comment-purge/SKILL.md) and
-apply it to the outgoing diff. A PR-create request alone does not authorize
-cleanup. Obtain explicit source-edit authority before editing; commit authorized
-cleanup separately through `github`, then repeat
-affected inspection and checks. Stop for unresolved cleanup findings or blockers.
+Before publishing, read [comment-purge](../comment-purge/SKILL.md) and apply it
+to the outgoing diff. A PR request authorizes that comment cleanup, its issues,
+and its plan entries, but no other source edits and no wider scope. Commit the
+cleanup separately through `github`, then repeat affected inspection and checks.
+For a title/body-only request, skip cleanup. Stop for unresolved cleanup findings or blockers.
 
 Failed, unavailable, or unknown required checks and unsupported behavioral
 claims block publication, including drafts. Omit behavioral evidence when there
