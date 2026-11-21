@@ -52,6 +52,8 @@ category, and take its action:
 These stay in the code and are not categorised:
 
 - Keep legal and license notices and doc comments that define public API contracts.
+- Keep every comment in a Makefile or `*.mk` file, including banners and
+  target descriptions. Readers use them as the build's documentation.
 - Keep verified non-obvious constraints from an external dependency, platform,
   vendor, or protocol that this project cannot change.
 - Keep issue or RFC links that explain constraints code cannot express.
