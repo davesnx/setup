@@ -1,5 +1,5 @@
 ---
-name: pr-review
+name: review-pr
 description: Use when asked to review a pull request as a maintainer, or to self-review your own branch before create-pr. Gates fit and scope, runs built-in /code-review for the bug pass, checks the OCaml public API for semver breaks, applies an OCaml/Reason checklist, and writes a local report with a verdict. Not a generic bug hunt (use /code-review), simplification (/simplify), or security review (/security-review).
 ---
 
@@ -52,7 +52,7 @@ Run when the diff touches a library with a dune `public_name`, an `.opam`
 file, `dune-project` dependencies, a ppx, or a `melange.emit` target.
 
 1. Create a base worktree:
-   `git worktree add --detach "$(mktemp -d "${TMPDIR:-/tmp}/pr-review-base.XXXXXX")" <merge-base>`.
+   `git worktree add --detach "$(mktemp -d "${TMPDIR:-/tmp}/review-pr-base.XXXXXX")" <merge-base>`.
    In maintainer mode, create a head worktree the same way at the head SHA.
 2. Run `dune build` on head. A failing head build is a blocking finding.
 3. Diff every public `.mli` and `.rei` between base and head. A public module

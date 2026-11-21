@@ -58,7 +58,7 @@ Artifacts live in `.workplace/plans/`. Each stage reads the previous result.
 | Build | [`orchestrate`](skills/build/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |
 | Verify | [`verify-this`](skills/build/verify-this/SKILL.md) | Check a claim with fresh evidence | VERIFIED, NOT VERIFIED, or INCONCLUSIVE | No |
 | Commit | [`github`](skills/ship/github/SKILL.md) | Validated commit with review | Commit | No |
-| Review | [`pr-review`](skills/ship/pr-review/SKILL.md) | Maintainer review of a PR, or self-check before create-pr | Local report with a verdict | No |
+| Review | [`review-pr`](skills/ship/review-pr/SKILL.md) | Maintainer review of a PR, or self-check before create-pr | Local report with a verdict | No |
 | Publish | [`create-pr`](skills/ship/create-pr/SKILL.md) | Check readiness and write the pull request | Draft pull request | No |
 
 ## MCP servers
