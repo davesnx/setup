@@ -12,7 +12,7 @@ setup:
 
 prompt: |
   Use Domain Modeling for brief.md. Write the resolved domain model to
-  CONTEXT.md. Do not create an ADR because the brief does not meet the ADR bar.
+  the glossary. Do not create an ADR because the brief does not meet the ADR bar.
 
 budget:
   max_tokens: 4000
@@ -20,8 +20,12 @@ budget:
 
 checks:
   - kind: file_exists
-    path: CONTEXT.md
+    path: .workplace/glossary.md
   - kind: shell
-    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"CONTEXT.md\",\"utf8\"); const required=/cancell?ation/i.test(s)&&/shipped/i.test(s)&&(/cancell?ation[\\s\\S]{0,100}reason/i.test(s)||/reason[\\s\\S]{0,100}cancell?ation/i.test(s)); const bad=/architecture decision record|^# ADR/im.test(s); process.stdout.write(required&&!bad?\"modeled\":\"invalid\")'"
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\".workplace/glossary.md\",\"utf8\"); const required=/cancell?ation/i.test(s)&&/shipped/i.test(s)&&(/cancell?ation[\\s\\S]{0,100}reason/i.test(s)||/reason[\\s\\S]{0,100}cancell?ation/i.test(s)); const bad=/architecture decision record|^# ADR/im.test(s); process.stdout.write(required&&!bad?\"modeled\":\"invalid\")'"
     unsafe_shell: true
     expect_exact: "modeled"
+  - kind: shell
+    cmd: "node -e 'process.stdout.write(require(\"fs\").existsSync(\".workplace/decisions.md\")?\"adr\":\"none\")'"
+    unsafe_shell: true
+    expect_exact: "none"

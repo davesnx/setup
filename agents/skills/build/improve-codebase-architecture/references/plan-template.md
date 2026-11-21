@@ -64,7 +64,7 @@ The facts the executor needs, inlined — never "as discussed" or "see audit":
   "Error handling follows the Result pattern — see `src/lib/result.ts` and its
   use in `src/users/api.ts:40-60`. Match it."
 - Any documented vocabulary or design constraints the plan must honor, inlined
-  from the intent/design docs found in recon: the relevant `CONTEXT.md` terms
+  from the intent/design docs found in recon: the relevant glossary terms
   the executor should use in names and comments, the `DESIGN.md` tokens/components
   to reuse, or the ADR whose decision this work must stay consistent with. Quote
   the specific lines — the executor has not read those docs.

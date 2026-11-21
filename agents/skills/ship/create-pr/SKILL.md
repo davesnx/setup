@@ -31,8 +31,9 @@ force-push as part of preparation.
 
 Read repository instructions, contribution guidance, templates, and available
 recent PR titles for local style. Read linked issues, specs, and decisions.
-Use `CONTEXT.md` or the contexts in `CONTEXT-MAP.md` for domain terms; otherwise
-use code, docs, and issue language. Avoid glossary-disallowed terms and invented
+Use the glossary in `.workplace/glossary.md`, or the file the repository's
+instructions name instead, for domain terms; otherwise use code, docs, and
+issue language. Avoid glossary-disallowed terms and invented
 names; identify any introduced, renamed, or redefined term in the outcome.
 
 Inspect status, recent history, every outgoing commit (`<base-ref>..HEAD`), and

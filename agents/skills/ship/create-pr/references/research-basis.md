@@ -27,7 +27,7 @@ rarely all. Not adopted: focused HTML artifacts, which a PR body cannot carry.
 
 ### Domain language
 
-The vocabulary rule reads the `CONTEXT.md` glossary that the local
+The vocabulary rule reads the `.workplace/glossary.md` glossary that the local
 `domain-modeling` skill maintains, the same glossary the `grilling` skill keeps
 in its "grill with docs" mode. Reading the glossary does not load that skill.
 

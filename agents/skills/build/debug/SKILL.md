@@ -7,7 +7,7 @@ description: Diagnosis loop for bugs and performance regressions. Use when the u
 
 Read enough code, tests, and logs to identify the reported behavior and the smallest useful check.
 
-When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
+When exploring the codebase, read the glossary in `.workplace/glossary.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in `.workplace/decisions.md` for the area you're touching. Use the files the repository's instructions name instead, if any.
 
 ## Redact
 

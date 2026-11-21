@@ -1,4 +1,6 @@
-# CONTEXT.md Format
+# Glossary Format
+
+The glossary is `.workplace/glossary.md` at the repo root, unless the repository's instructions name another file.
 
 ## Structure
 
@@ -31,18 +33,16 @@ _Avoid_: Client, buyer, account
 
 ## Single vs multi-context repos
 
-**Single context (most repos):** One `CONTEXT.md` at the repo root.
+**Single context (most repos):** One top-level section, in the structure above.
 
-**Multiple contexts:** A `CONTEXT-MAP.md` at the repo root lists the contexts, where they live, and how they relate to each other:
+**Multiple contexts:** One top-level section per context, each in the structure above. Put a `Contexts` section first. It lists the contexts and how they relate to each other:
 
 ```md
-# Context Map
+# Contexts
 
-## Contexts
-
-- [Ordering](./src/ordering/CONTEXT.md) — receives and tracks customer orders
-- [Billing](./src/billing/CONTEXT.md) — generates invoices and processes payments
-- [Fulfillment](./src/fulfillment/CONTEXT.md) — manages warehouse picking and shipping
+- **Ordering** — receives and tracks customer orders
+- **Billing** — generates invoices and processes payments
+- **Fulfillment** — manages warehouse picking and shipping
 
 ## Relationships
 
@@ -53,8 +53,8 @@ _Avoid_: Client, buyer, account
 
 The skill infers which structure applies:
 
-- If `CONTEXT-MAP.md` exists, read it to find contexts
-- If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
+- If the glossary has a `Contexts` section, read it to find contexts
+- If it has one context section, single context
+- If it does not exist, create it lazily when the first term is resolved
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

@@ -34,7 +34,7 @@ Map the repository before judging it:
 - Read README, `AGENTS.md`, contributing docs, package and build files, CI configuration, and directory structure.
 - Identify languages, frameworks, package manager, deployment target, and exact format, lint, typecheck, build, and test commands.
 - Read intent and design documents when present: PRDs, specs, `PRODUCT.md`, `DESIGN.md`, ADRs, and domain context.
-- If `CONTEXT-MAP.md` exists, follow it to each relevant context-specific `CONTEXT.md` and ADR directory. Do not assume one root context.
+- Read the glossary in `.workplace/glossary.md` and ADRs in `.workplace/decisions.md`, or the files the repository's instructions name instead. If the glossary has a `Contexts` section, read each relevant context. Do not assume one context.
 - Inspect recent history and churn to distinguish active hotspots from stable code.
 - Record settled tradeoffs so the audit does not report documented decisions as defects.
 

@@ -2,7 +2,7 @@
 
 Use the `architect` skill's `references/codebase-design.md` vocabulary: **module**, **interface**, **implementation**, **depth**, **seam**, **adapter**, **leverage**, and **locality**. Read its `deepening.md` reference when dependencies control the design.
 
-Use domain terms from the relevant `CONTEXT.md`. If `CONTEXT-MAP.md` exists, select the mapped context before reading glossary terms or ADRs.
+Use domain terms from the glossary in `.workplace/glossary.md`, or the file the repository's instructions name instead. If the glossary has a `Contexts` section, select the relevant context before reading its terms or the ADRs in `.workplace/decisions.md`.
 
 ## Where To Look
 

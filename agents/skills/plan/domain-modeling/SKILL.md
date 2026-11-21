@@ -13,7 +13,9 @@ This skill owns language and invariants. Module, type, and signature design belo
 ## Modes
 
 - **Model and language**: Sharpen concepts, invariants, scenarios, and ubiquitous language. Read [references/domain-modeling.md](references/domain-modeling.md) before starting.
-- **Glossary and contexts**: Create or update `CONTEXT.md` and `CONTEXT-MAP.md` as domain language and context boundaries become clear. Use [references/context-format.md](references/context-format.md).
-- **Decision record**: Create or update an ADR when the user asks for ADR work or a decision meets the qualification bar. Use [references/adr-format.md](references/adr-format.md).
+- **Glossary and contexts**: Create or update `.workplace/glossary.md` as domain language and context boundaries become clear. Use [references/context-format.md](references/context-format.md).
+- **Decision record**: Append an entry to `.workplace/decisions.md` when the user asks for ADR work or a decision meets the qualification bar. Use [references/adr-format.md](references/adr-format.md).
+
+If the repository's instructions (`AGENTS.md` or `CLAUDE.md`) name a glossary or decision file, use that file instead.
 
 Use TDD only as separate support when the user also asks to drive implementation test-first. Domain scenarios can clarify examples without starting a red-green-refactor loop.

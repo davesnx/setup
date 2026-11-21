@@ -7,7 +7,7 @@ description: "Glossary and ADR work selects Domain Modeling, not TDD"
 tags: [routing, domain-modeling, glossary, adr, skill-overlap]
 
 prompt: |
-  Define the ubiquitous language for orders in CONTEXT.md and record our
+  Define the ubiquitous language for orders in the glossary and record our
   decision to separate Ordering from Billing in an ADR. Do not write tests or
   implement code.
 
