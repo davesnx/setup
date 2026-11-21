@@ -50,7 +50,7 @@ terminal/node/            Node via fnm and shared CLIs in package.json. npm i -g
                           Never add Node tools to the Brewfile.
 terminal/claude/          Claude Code only. settings.json -> ~/.claude/settings.json,
                           hooks/, statusline.ts. mcp.ts renders hosts/<profile>.json, the
-                          machine's profile -> ~/.mcp.json.
+                          machine's profile -> ~/.mcp.json. agents/ -> ~/.claude/agents.
 terminal/opencode/        OpenCode only -> ~/.config/opencode. opencode.jsonc, agents/,
                           hosts/, themes/, vendor/ for whole third-party plugins, and
                           skills/ only for skills whose names clash with Claude built-ins.

@@ -9,6 +9,7 @@ PROFILE=$(select_profile "${1:-}")
 
 link_path "$DOTFILES_PATH/terminal/claude/settings.json" "$HOME/.claude/settings.json"
 link_path "$DOTFILES_PATH/terminal/claude/statusline.ts" "$HOME/.claude/statusline.ts"
+link_path "$DOTFILES_PATH/terminal/claude/agents" "$HOME/.claude/agents"
 node "$DOTFILES_PATH/terminal/claude/mcp.ts"
 MCP_FILE="$DOTFILES_PATH/terminal/claude/hosts/$PROFILE.json"
 if [ ! -f "$MCP_FILE" ]; then
