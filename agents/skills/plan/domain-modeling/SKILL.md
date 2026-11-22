@@ -14,7 +14,7 @@ This skill owns language and invariants. Module, type, and signature design belo
 
 - **Model and language**: Sharpen concepts, invariants, scenarios, and ubiquitous language. Read [references/domain-modeling.md](references/domain-modeling.md) before starting.
 - **Glossary and contexts**: Create or update `.workplace/glossary.md` as domain language and context boundaries become clear. Use [references/context-format.md](references/context-format.md).
-- **Decision record**: Append an entry to `.workplace/decisions.md` when the user asks for ADR work or a decision meets the qualification bar. Use [references/adr-format.md](references/adr-format.md).
+- **Decision record**: Append an entry to `.workplace/decisions.md` when the user asks for ADR work or a future reader would question a decision. Use [references/adr-format.md](references/adr-format.md).
 
 If the repository's instructions (`AGENTS.md` or `CLAUDE.md`) name a glossary or decision file, use that file instead.
 
