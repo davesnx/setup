@@ -84,6 +84,33 @@
 		"enabled": true
 	},
 	{
+		"name": "febox1: yuka",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/yuka",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
+		"name": "febox1: parseff",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/parseff",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
+		"name": "febox1: ache",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/ache",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
 		"name": "febox1: melange-dune-library-examples",
 		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/melange-dune-library-examples",
 		"paths": [],
@@ -129,8 +156,17 @@
 		"enabled": true
 	},
 	{
-		"name": "febox1: parseff",
-		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/parseff",
+		"name": "febox1: dunesy",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/dunesy",
+		"paths": [],
+		"tags": [
+			"personal"
+		],
+		"enabled": true
+	},
+	{
+		"name": "febox1: silica",
+		"rootPath": "vscode-remote://ssh-remote+nspawn/home/me/workplace/davesnx/silica",
 		"paths": [],
 		"tags": [
 			"personal"
