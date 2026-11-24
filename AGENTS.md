@@ -63,6 +63,8 @@ terminal/htop/            htoprc -> ~/.config/htop/htoprc
 mac/                      macOS only. install.sh: Homebrew, defaults, apps, daemons.
 mac/brew/Brewfile         Homebrew packages, casks, taps.
 mac/mac-os.sh             macOS defaults.
+mac/brave-agent-app.sh    Copies Brave to ~/Applications/Brave Agent.app with its own icon. Run by hand.
+mac/brave-agent.icns      Icon of that copy.
 mac/raycast/              Raycast scripts and the extension checklist.
 mac/tampermonkey/         Browser userscripts and their TypeScript manager.
 mac/choosy/               Browser chooser settings and test.

@@ -20,3 +20,5 @@ Once the build finishes, **Kill All Processes** appears in Raycast. Stop the dev
 In Raycast Settings → Script Commands → Script Folders, add this repository's `mac/raycast` directory. On older Raycast versions, use Settings → Extensions → + → Add Script Directory.
 
 Search Raycast for **Open Brave Agent**. Aliases and hotkeys can be assigned in Raycast settings.
+
+The command opens **Brave Agent**, a copy of Brave Browser at `~/Applications/Brave Agent.app` with its own Dock icon. Build it with `bash mac/brave-agent-app.sh` after installing Brave, and rerun it after each Brave update, because the copy does not update itself. The first launch asks for Keychain access to "Brave Safe Storage"; choose **Always Allow**.

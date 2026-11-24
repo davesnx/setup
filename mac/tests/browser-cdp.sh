@@ -67,7 +67,7 @@ contains "$work/curl.log" 'http://127.0.0.1:9333/json/version'
 fixture '["npx","chrome-devtools-mcp","--browser-url=http://127.0.0.1:9444"]'
 run
 [[ "$status" -eq 0 ]] || fail "startup: $(<"$work/stderr")"
-expected=$(printf '%s\n' '-na' 'Brave Browser' '--args' '--remote-debugging-address=127.0.0.1' '--remote-debugging-port=9444' "--user-data-dir=$work/home/.chrome-agent-profile" 'about:blank')
+expected=$(printf '%s\n' '-na' "$work/home/Applications/Brave Agent.app" '--args' '--remote-debugging-address=127.0.0.1' '--remote-debugging-port=9444' "--user-data-dir=$work/home/.chrome-agent-profile" 'about:blank')
 [[ "$(<"$work/open.log")" == "$expected" ]] || fail 'wrong default open arguments'
 [[ -d "$work/home/.chrome-agent-profile" ]] || fail 'default profile missing'
 contains "$work/curl.log" '--max-time 1 http://127.0.0.1:9444/json/version'

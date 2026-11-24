@@ -7,6 +7,7 @@
 
 # Optional parameters:
 # @raycast.packageName Browser
+# @raycast.icon brave-agent.png
 # @raycast.description Open Brave with localhost CDP enabled for agent control.
 
 set -euo pipefail
@@ -72,7 +73,7 @@ ADDRESS=${BROWSER_URL#http://}
 PORT=${ADDRESS##*:}
 ADDRESS=${ADDRESS%:*}
 PROFILE_DIR="${CHROME_AGENT_PROFILE:-$HOME/.chrome-agent-profile}"
-CHROME_APP="${CHROME_AGENT_APP:-Brave Browser}"
+CHROME_APP="${CHROME_AGENT_APP:-$HOME/Applications/Brave Agent.app}"
 VERSION_URL="$BROWSER_URL/json/version"
 
 if curl --silent --fail --max-time 2 "$VERSION_URL" >/dev/null; then

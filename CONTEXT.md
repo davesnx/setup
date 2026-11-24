@@ -12,6 +12,7 @@ Terms this repository uses, as the code and docs use them. Use these words. When
 - **local override**: Machine-specific setting, git-ignored. `local/*.zsh` is sourced at shell start. `local/README.md`.
 - **nspawn**: The Linux host (systemd-nspawn container, `HOME=/home/me`, no Homebrew). Every change must also work there. `AGENTS.md` (Rules).
 - **Mac-only**: Anything under `mac/`. Only `mac/` may use `brew`, `open`, `pbcopy`, or `/Applications`. `mac/install.sh`.
+- **Brave Agent app**: A copy of Brave Browser at `~/Applications/Brave Agent.app`, with its own bundle id and icon, that **Open Brave Agent** launches. `mac/brave-agent-app.sh`, `mac/raycast/README.md`.
 
 ## Agents
 

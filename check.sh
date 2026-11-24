@@ -242,6 +242,7 @@ fi
 
 if [[ "$(uname -s)" == Darwin ]]; then
   /bin/bash "$root/mac/tests/browser-cdp.sh"
+  /bin/bash "$root/mac/tests/brave-agent-app.sh"
   sh "$root/mac/tests/install.sh"
   sh "$root/mac/choosy/test.sh"
 fi
