@@ -1,0 +1,49 @@
+schema_version: 2
+id: prose-rejects-cosmetic-fixes-with-evidence
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: >-
+  Remove unsupported importance and a fake contrast rather than swapping their
+  vocabulary; review the source with quoted evidence. Automatic checks cover
+  source markers and common false fixes. Manually inspect whether the revised
+  claim still implies unsupported importance, whether the review explains its
+  findings, and whether the supported facts retain their scope.
+tags: [prose, false-fixes, evidence, meaning-preservation]
+
+prompt: |
+  Unslop this release note. Write the revised note to revised.md, then write
+  a brief review of the original wording to review.md. Cite the exact source
+  wording for each finding and explain the problem. Do not add evidence.
+
+  ## Cedar importer
+
+  The groundbreaking Cedar importer patch is a pivotal step for our team.
+  It is not merely a queue adjustment; it is a new era of reliability.
+  On November 5, the importer retried 14 stalled jobs. Three jobs still
+  required manual review. Support logged 2 fewer tickets that week than
+  the previous week; the note does not establish why.
+
+budget:
+  max_tokens: 3500
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: file_exists
+    path: review.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const s = fs.readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const r = fs.readFileSync('review.md', 'utf8');
+      const facts = [/\bCedar\b/, /\bNovember 5\b/, /\b14\b/, /\bstalled jobs\b/, /\bThree\b|\b3\b/, /\bmanual review\b/, /\b2 fewer tickets\b/, /\bprevious week\b/, /\b(?:why|cause|reason|explanation)\b/i].every(p => p.test(s));
+      const puffery = /\b(?:groundbreaking|pivotal|new era|landmark|milestone|breakthrough|transformative|revolutionary|game.changing|major leap|significant step|important step|remarkable advance|meaningful advance)\b/i.test(s);
+      const contrast = /\b(?:not (?:merely|just|only)|more than|isn['’]t just)\b[^.;!?]{0,90}\b(?:but|rather|instead)\b/i.test(s);
+      const evidence = /groundbreaking/i.test(r) && /pivotal|new era/i.test(r) && /not merely|queue adjustment/i.test(r);
+      process.stdout.write(facts && !puffery && !contrast && evidence ? 'substance-and-evidence' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: substance-and-evidence

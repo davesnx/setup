@@ -1,0 +1,57 @@
+schema_version: 2
+id: prose-removes-repeated-scaffolding
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: >-
+  Edit repeated framing across a whole note without merging separate findings.
+  Automatic checks cover detail markers and repeated scaffolding. Manually check
+  which depot owns each observation, the conditional recommendation, and whether
+  any repeated paragraph shape or empty recap survives under new words.
+tags: [prose, whole-draft, repetition, meaning-preservation]
+
+prompt: |
+  Unslop this complete operations note, not one paragraph at a time. Write
+  only the revised note to revised.md. Keep the separate sections and every
+  distinct observation and condition.
+
+  ## East depot
+
+  Here is the key point: East depot found 8 torn cartons on Tuesday.
+  The important takeaway is that carton E-11 had a missing label.
+  This matters because it matters to our work.
+
+  ## West depot
+
+  Here is the key point: West depot found 6 wet cartons on Thursday.
+  The important takeaway is that carton W-04 had a damaged seal.
+  This matters because it matters to our work.
+
+  ## Next inspection
+
+  Here is the key point: the next inspection is scheduled for Friday.
+  The important takeaway is that staff should check the seal register first
+  if the replacement labels arrive by 09:00. This matters because it
+  matters to our work.
+
+  In summary, the key point is that these are important takeaways.
+
+budget:
+  max_tokens: 3500
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const s = require('fs').readFileSync('revised.md', 'utf8').replace(/\s+/g, ' ');
+      const details = [/\bEast depot\b/, /\b(?:8|eight) torn cartons\b/i, /\bTuesday\b/, /\bE-11\b/, /\bmissing label\b/, /\bWest depot\b/, /\b(?:6|six) wet cartons\b/i, /\bThursday\b/, /\bW-04\b/, /\bdamaged seal\b/, /\bFriday\b/, /\bseal register\b/, /\breplacement labels\b/, /\b09:00\b/].every(p => p.test(s));
+      const boilerplate = /\b(?:here is the key point|important takeaway|this matters because it matters|in summary, the key point)\b/i.test(s);
+      const sections = ['East depot', 'West depot', 'Next inspection'].every(h => new RegExp('##\\s+' + h, 'i').test(s));
+      const condition = /\b(?:if|provided|only when|assuming)\b[^.!?]{0,100}\breplacement labels\b[^.!?]{0,60}\b09:00\b/i.test(s);
+      process.stdout.write(details && sections && condition && !boilerplate ? 'details-without-scaffolding' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: details-without-scaffolding

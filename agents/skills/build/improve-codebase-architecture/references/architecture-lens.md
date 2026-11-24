@@ -2,6 +2,8 @@
 
 Use the `architect` skill's `references/codebase-design.md` vocabulary: **module**, **interface**, **implementation**, **depth**, **seam**, **adapter**, **leverage**, and **locality**. Read its `deepening.md` reference when dependencies control the design.
 
+For OCaml or Melange modules (`.ml`, `.mli`, `.mlx`), also read [OCaml structural review](ocaml-structural-review.md) before reporting architecture findings. Judge actual callers and signatures, not surface syntax.
+
 Use domain terms from the glossary in `.workplace/glossary.md`, or the file the repository's instructions name instead. If the glossary has a `Contexts` section, select the relevant context before reading its terms or the ADRs in `.workplace/decisions.md`.
 
 ## Where To Look

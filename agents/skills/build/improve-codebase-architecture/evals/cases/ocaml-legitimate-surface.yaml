@@ -1,0 +1,37 @@
+schema_version: 2
+id: improve-codebase-ocaml-legitimate-surface
+mode: deterministic
+skill_under_test: improve-codebase-architecture
+skills_loaded: [improve-codebase-architecture]
+description: "Avoid false positives on public immutable records, variants, a coherent interface, functor, include, alias, and recursion; manual review checks the judgment"
+tags: [audit, ocaml, architecture, false-positive, read-only]
+
+setup:
+  fixtures:
+    "ocaml-legitimate-case.ml": fixtures/ocaml-legitimate-case.ml
+    "ocaml-legitimate-case.expected.ml": fixtures/ocaml-legitimate-case.expected.ml
+
+prompt: |
+  Run a focused architecture audit of ocaml-legitimate-case.ml. This is an
+  evaluation sandbox and the selected temporary output directory. Do not run
+  commands or open a browser. Write a self-contained HTML review to review.html,
+  including considered and rejected architecture findings. No plan has been
+  selected. Keep the OCaml files unchanged. Judge the signature and caller
+  behavior, not the count of exports or the syntax of records, functors, aliases,
+  includes, variants, and recursive definitions.
+
+budget:
+  max_tokens: 5000
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: review.html
+  - kind: shell
+    cmd: "cmp -s ocaml-legitimate-case.ml ocaml-legitimate-case.expected.ml && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.html\",\"utf8\"); process.stdout.write(/<html/i.test(s)&&/considered|rejected/i.test(s)&&/ocaml-legitimate-case\\.ml/.test(s)?\"review\":\"missing\")'"
+    unsafe_shell: true
+    expect_exact: "review"

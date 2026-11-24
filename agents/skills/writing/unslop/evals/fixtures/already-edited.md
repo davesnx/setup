@@ -1,0 +1,1 @@
+I ran the importer twice. The second run found no pending jobs, but I still need to check the three records that failed validation. The `--retry` flag did not change those records. I saw two fewer validation errors this week than last week.

@@ -1,0 +1,41 @@
+schema_version: 2
+id: improve-codebase-ocaml-invariant-owner
+mode: deterministic
+skill_under_test: improve-codebase-architecture
+skills_loaded: [improve-codebase-architecture]
+description: "Compare exposed and abstract queue boundaries, reject accessor-only fixes, and preserve source; manual review judges semantic ownership"
+tags: [audit, ocaml, architecture, read-only]
+
+setup:
+  fixtures:
+    "ocaml-queue-case.ml": fixtures/ocaml-queue-case.ml
+    "ocaml-queue-case.expected.ml": fixtures/ocaml-queue-case.expected.ml
+
+prompt: |
+  Run a focused architecture audit of ocaml-queue-case.ml. This is an evaluation
+  sandbox and the selected temporary output directory. Do not run commands or
+  open a browser. Write a self-contained HTML review to review.html, with
+  actual signature and caller line evidence. No plan has been selected. Keep
+  the OCaml files unchanged. Compare Dispatch with Safe_dispatch: identify
+  which queue operations and capacity/error decisions move into Safe_queue
+  and which caller burdens disappear. Assess why a getter or moved wrapper
+  would not do the same. Distinguish the immutable summary record from the
+  queue representation. Manual review will judge this semantic comparison;
+  the automatic checks only check file presence, line evidence, and source
+  preservation.
+
+budget:
+  max_tokens: 6000
+  max_seconds: 120
+
+checks:
+  - kind: file_exists
+    path: review.html
+  - kind: shell
+    cmd: "cmp -s ocaml-queue-case.ml ocaml-queue-case.expected.ml && printf unchanged"
+    unsafe_shell: true
+    expect_exact: "unchanged"
+  - kind: shell
+    cmd: "node -e 'const s=require(\"fs\").readFileSync(\"review.html\",\"utf8\"); process.stdout.write(/<html/i.test(s)&&/ocaml-queue-case\\.ml:\\d+/.test(s)&&/enqueue/i.test(s)&&/dequeue/i.test(s)&&/Safe_queue/i.test(s)?\"evidence\":\"missing\")'"
+    unsafe_shell: true
+    expect_exact: "evidence"

@@ -1,0 +1,38 @@
+schema_version: 2
+id: prose-already-edited-stays-intact
+mode: prose
+skill_under_test: unslop
+skills_loaded: [unslop]
+description: >-
+  Leave already-edited prose intact. The automatic check compares
+  whitespace-normalized text, not subjective style. This single-turn case
+  does not establish independent second-pass stability: manually feed an
+  actual first-pass result to a fresh run and compare the outputs.
+tags: [prose, no-op, voice-preservation]
+
+setup:
+  fixtures:
+    "already-edited.md": fixtures/already-edited.md
+
+prompt: |
+  Unslop already-edited.md and write only the edited paragraph to revised.md.
+  If nothing needs changing, keep it as written.
+
+budget:
+  max_tokens: 2500
+  max_seconds: 90
+
+checks:
+  - kind: file_exists
+    path: revised.md
+  - kind: shell
+    cmd: |
+      node <<'JS'
+      const fs = require('fs');
+      const normalize = s => s.replace(/\s+/g, ' ').trim();
+      const source = normalize(fs.readFileSync('already-edited.md', 'utf8'));
+      const result = normalize(fs.readFileSync('revised.md', 'utf8'));
+      process.stdout.write(result === source ? 'unchanged' : 'invalid');
+      JS
+    unsafe_shell: true
+    expect_exact: unchanged
