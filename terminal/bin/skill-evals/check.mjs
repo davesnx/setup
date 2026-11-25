@@ -9,8 +9,12 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.SETUP_ROOT
   ?? execFileSync('git', ['-C', here, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+const skillDirs = {
+  codereview: 'agents/skills/ship/codereview',
+  simplify: 'terminal/opencode/skills/simplify',
+};
 const fixture = (skill, file) => readFileSync(resolve(root,
-  `terminal/opencode/skills/${skill}/evals/fixtures/${file}`), 'utf8');
+  `${skillDirs[skill]}/evals/fixtures/${file}`), 'utf8');
 const read = (file) => readFileSync(file, 'utf8');
 const nonempty = (file) => assert.ok(read(file).trim(), `${file} is empty`);
 const unchanged = (file, skill, original) => assert.equal(read(file), fixture(skill, original));
@@ -19,7 +23,7 @@ const unchanged = (file, skill, original) => assert.equal(read(file), fixture(sk
 // these checks are never copied into the candidate workspace or skill bundle.
 switch (process.argv[2]) {
   case 'review-sql': {
-    unchanged('diff.patch', 'code-review', 'sql-injection.diff');
+    unchanged('diff.patch', 'codereview', 'sql-injection.diff');
     const result = JSON.parse(read('review.json'));
     assert.equal(result.action, 'block');
     assert.equal(result.findings.length, 1);
@@ -36,7 +40,7 @@ switch (process.argv[2]) {
     break;
   }
   case 'review-clean': {
-    unchanged('diff.patch', 'code-review', 'trivial-rename.diff');
+    unchanged('diff.patch', 'codereview', 'trivial-rename.diff');
     const result = JSON.parse(read('review.json'));
     assert.equal(result.action, 'approve');
     assert.deepEqual(result.findings, []);

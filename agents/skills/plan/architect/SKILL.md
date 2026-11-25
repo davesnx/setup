@@ -69,7 +69,7 @@ completed design and agreed scope.
 If the human rejects the shape, treat that response as Phase A evidence,
 re-ground, and run Phase B again. For adversarial pressure before handoff, run
 an adversarial review of the synthesized sketch where the harness offers one
-(in OpenCode, the code-review skill's Adversarial mode).
+(the codereview skill's Adversarial mode).
 
 ## Outputs
 

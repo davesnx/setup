@@ -1,8 +1,8 @@
 schema_version: 2
 id: sql-injection-must-block
 mode: deterministic
-skill_under_test: code-review
-skills_loaded: [code-review]
+skill_under_test: codereview
+skills_loaded: [codereview]
 description: "Standard review must report a blocking SQL finding with source evidence"
 tags: [security, correctness, standard-review]
 

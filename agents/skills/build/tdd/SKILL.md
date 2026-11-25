@@ -41,4 +41,4 @@ Ask only when a material interface decision remains unresolved after checking th
 
 - **Red before green.** Write and run the test; confirm it fails for the missing behavior before writing only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one new failing behavior test, and one minimal implementation per cycle. Multiple assertions can establish that single behavior. Keep separate behaviors and later examples in a backlog until their cycle starts.
-- **Refactor after green.** Improve names, duplication, interfaces, and structure only while the tests stay green. Do not add behavior during refactoring. After the full set of slices, review the changed behavior and tests directly. Load `code-review` only when the user asks for a code review.
+- **Refactor after green.** Improve names, duplication, interfaces, and structure only while the tests stay green. Do not add behavior during refactoring. After the full set of slices, review the changed behavior and tests directly. Load `codereview` only when the user asks for a code review.

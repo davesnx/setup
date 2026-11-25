@@ -46,7 +46,7 @@ function check(testCase, label, artifacts, expected, checkIndex) {
 }
 
 try {
-  const sql = load('terminal/opencode/skills/code-review/evals/cases/sql-injection-must-block.yaml');
+  const sql = load('agents/skills/ship/codereview/evals/cases/sql-injection-must-block.yaml');
   const review = {
     action: 'block',
     findings: [{

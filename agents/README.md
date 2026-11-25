@@ -57,6 +57,7 @@ Artifacts live in `.workplace/plans/`. Each stage reads the previous result.
 | Build | [`tdd`](skills/build/tdd/SKILL.md) | Implement mode: library, compiler, and tool work, test-first | Tested changes | No |
 | Build | [`orchestrate`](skills/build/orchestrate/SKILL.md) | Parallel work across subagents | Merged changes | No |
 | Verify | [`verify-this`](skills/build/verify-this/SKILL.md) | Check a claim with fresh evidence | VERIFIED, NOT VERIFIED, or INCONCLUSIVE | No |
+| Review | [`codereview`](skills/ship/codereview/SKILL.md) | Review a diff, commit, or PR | Verified findings | No |
 | Commit | [`github`](skills/ship/github/SKILL.md) | Validated commit with review | Commit | No |
 | Publish | [`create-pr`](skills/ship/create-pr/SKILL.md) | Check readiness and write the pull request | Draft pull request | No |
 

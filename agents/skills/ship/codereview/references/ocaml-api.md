@@ -8,7 +8,7 @@ file, `dune-project` dependencies, a ppx, or a `melange.emit` target.
 Keep the user's checkout where it is. Every other tree is a separate worktree.
 
 1. Create a base worktree at the merge base:
-   `git worktree add --detach "$(mktemp -d "${TMPDIR:-/tmp}/code-review-base.XXXXXX")" <merge-base>`.
+   `git worktree add --detach "$(mktemp -d "${TMPDIR:-/tmp}/codereview-base.XXXXXX")" <merge-base>`.
    For a PR, create a head worktree the same way at the head SHA.
 2. Run `dune build` on head. A failing head build is a High finding.
 3. Diff every public `.mli` and `.rei` between base and head. A public module

@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: codereview
 description: Review code changes, commits, or PRs on request, including deep, adversarial, blast-radius, maintainer review of a contributor's PR, and OCaml API/semver reviews. Report verified risks; edit or publish only with authorization.
 ---
 

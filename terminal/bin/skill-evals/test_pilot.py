@@ -40,7 +40,7 @@ class Checkers(unittest.TestCase):
         shutil.copyfile(pilot.CATALOG[name] / "evals/fixtures" / file, self.work / destination)
 
     def test_sql_rejects_wrong_verdict_evidence_location_and_modified_input(self):
-        self.fixture("code-review", "sql-injection.diff", "diff.patch")
+        self.fixture("codereview", "sql-injection.diff", "diff.patch")
         good = {
             "action": "block",
             "findings": [
@@ -75,7 +75,7 @@ class Checkers(unittest.TestCase):
         self.check("review-sql", False)
 
     def test_clean_review_rejects_invented_findings_and_missing_output(self):
-        self.fixture("code-review", "trivial-rename.diff", "diff.patch")
+        self.fixture("codereview", "trivial-rename.diff", "diff.patch")
         self.check("review-clean", False)
         self.write("review.json", '{"action":"approve","findings":[]}')
         self.check("review-clean", True)
@@ -211,13 +211,13 @@ class Evidence(unittest.TestCase):
                         {
                             "tool_name": "Skill",
                             "result_status": "success",
-                            "parameters": {"skill": "code-review"},
+                            "parameters": {"skill": "codereview"},
                         },
                     ]
                 }
             ]
         }
-        self.assertEqual(activations(result), {"code-review"})
+        self.assertEqual(activations(result), {"codereview"})
 
     def test_routing_accounts_for_misses_false_positives_and_optional_support(self):
         labels = {
@@ -348,7 +348,7 @@ class Preparation(unittest.TestCase):
             root = Path(temp)
             pilot.bundle(root / "source", pilot.CATALOG)
             changed = {name: root / "source" / name for name in pilot.CATALOG}
-            for name in ["code-review", "code-standards"]:
+            for name in ["codereview", "code-standards"]:
                 skill = changed[name] / "SKILL.md"
                 skill.write_text(skill.read_text() + "\nA test-only changed instruction.\n")
             output = root / "run"
@@ -361,15 +361,15 @@ class Preparation(unittest.TestCase):
             )
             manifest = json.loads((output / "manifest.json").read_text())
             self.assertEqual(manifest["baseline_variant"], "off")
-            self.assertEqual(set(manifest["bundles"]), {"code-review/off", "code-review/on"})
-            for name in ["code-review", "code-standards"]:
+            self.assertEqual(set(manifest["bundles"]), {"codereview/off", "codereview/on"})
+            for name in ["codereview", "code-standards"]:
                 self.assertNotEqual(
-                    manifest["bundles"]["code-review/off"][name],
-                    manifest["bundles"]["code-review/on"][name],
+                    manifest["bundles"]["codereview/off"][name],
+                    manifest["bundles"]["codereview/on"][name],
                 )
             self.assertEqual(
-                manifest["bundles"]["code-review/off"]["unslop"],
-                manifest["bundles"]["code-review/on"]["unslop"],
+                manifest["bundles"]["codereview/off"]["unslop"],
+                manifest["bundles"]["codereview/on"]["unslop"],
             )
 
     def test_native_schema_and_catalog(self):
@@ -383,7 +383,7 @@ class Preparation(unittest.TestCase):
         args = argparse.Namespace(
             candidate=None,
             suite="behavior",
-            skill="code-review",
+            skill="codereview",
             case="review-clean",
             repeats=2,
             model="test/model",
@@ -396,10 +396,10 @@ class Preparation(unittest.TestCase):
         ):
             root = Path(temp)
             experiments, env = pilot.prepare(args, root)
-            current = root / "bundles/code-review/current/skills"
-            absent = root / "bundles/code-review/absent/skills"
-            self.assertTrue((current / "code-review/SKILL.md").is_file())
-            self.assertFalse((absent / "code-review").exists())
+            current = root / "bundles/codereview/current/skills"
+            absent = root / "bundles/codereview/absent/skills"
+            self.assertTrue((current / "codereview/SKILL.md").is_file())
+            self.assertFalse((absent / "codereview").exists())
             self.assertFalse(list(current.rglob("evals")))
             for name in ["simplify", "unslop", "code-standards"]:
                 self.assertEqual(

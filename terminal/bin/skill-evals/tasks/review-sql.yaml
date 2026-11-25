@@ -1,6 +1,6 @@
 task_id: review-sql
 description: Report the reachable SQL injection with source evidence.
-tags: [behavior, code-review]
+tags: [behavior, codereview]
 initial_prompt: |
   Review diff.patch in Standard mode. Do not edit the input. Write review.json
   with {"action":"approve" or "block", "findings":[{"file":string,
@@ -11,13 +11,13 @@ initial_prompt: |
   prefixes or indentation. Use category "sql-injection" and remediation
   "bound-parameters" when those apply. An empty findings list means no findings.
 pre_run:
-  - command: cp "$SETUP_ROOT/terminal/opencode/skills/code-review/evals/fixtures/sql-injection.diff" diff.patch
+  - command: cp "$SETUP_ROOT/agents/skills/ship/codereview/evals/fixtures/sql-injection.diff" diff.patch
 success_criteria:
   - type: run_command
     description: outcome:sql-evidence
     command: node "$SKILL_EVALS_ROOT/check.mjs" review-sql
   - type: skill_triggered
-    description: activation:code-review
-    skill_name: code-review
-    expected_skill: code-review
+    description: activation:codereview
+    skill_name: codereview
+    expected_skill: codereview
     weight: 0

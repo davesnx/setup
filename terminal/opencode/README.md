@@ -19,9 +19,10 @@ instead. The paths below show the default location.
 `agents/mcp.json`; edit that file, not the profiles. Shared
 skills and the shared `AGENTS.md` file live in `agents/`; see
 [`agents/README.md`](../../agents/README.md) for how each installer links
-them. The OpenCode-only skills are `simplify` and `code-review`, because
-Claude Code ships its own `/simplify` and `/code-review`. They load the
-shared `code-standards` skill from `agents/skills`. The OpenCode-only skills
+them. The OpenCode-only skill is `simplify`, because Claude Code ships its
+own `/simplify`. It loads the shared `code-standards` skill from
+`agents/skills`. The review skill is shared as `codereview`, a name that does
+not clash with Claude Code's `/code-review`. OpenCode-only skills
 live in `terminal/opencode/skills/`, linked to `~/.config/opencode/skills`,
 which only OpenCode reads. Existing files move to a timestamped directory
 under `~/.local/state/setup/backups`.

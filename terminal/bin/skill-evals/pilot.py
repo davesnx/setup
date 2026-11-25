@@ -34,15 +34,15 @@ def shared_skill(name):
 
 
 CATALOG = {
-    "code-review": ROOT / "terminal/opencode/skills/code-review",
+    "codereview": shared_skill("codereview"),
     "simplify": ROOT / "terminal/opencode/skills/simplify",
     "code-standards": shared_skill("code-standards"),
     "unslop": shared_skill("unslop"),
 }
-TARGETS = {"code-review", "simplify"}
+TARGETS = {"codereview", "simplify"}
 EXCLUDED = {"evals", ".git", "node_modules", "__pycache__"}
 FIXTURES = {
-    "code-review": ["sql-injection.diff", "trivial-rename.diff"],
+    "codereview": ["sql-injection.diff", "trivial-rename.diff"],
     "simplify": ["sloppy.mjs", "bloated.mjs"],
 }
 
@@ -242,7 +242,7 @@ def prepare(
     checker_root.mkdir(parents=True)
     shutil.copyfile(HERE / "check.mjs", checker_root / "check.mjs")
     for name, files in FIXTURES.items():
-        target = grader_root / f"terminal/opencode/skills/{name}/evals/fixtures"
+        target = grader_root / CATALOG[name].relative_to(ROOT) / "evals/fixtures"
         target.mkdir(parents=True)
         for file in files:
             shutil.copyfile(CATALOG[name] / "evals/fixtures" / file, target / file)

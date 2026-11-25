@@ -66,7 +66,7 @@ fetch(url):
 
 ### 3. Available CSS classes and JS utilities
 
-Read `canvas/styles.css` and `canvas/renderer.js` from the `code-review` skill directory. These give you a prebuilt dark-themed toolkit. Inject them into `canvas/template.html` verbatim.
+Read `canvas/styles.css` and `canvas/renderer.js` from the `codereview` skill directory. These give you a prebuilt dark-themed toolkit. Inject them into `canvas/template.html` verbatim.
 
 **CSS classes you can use:**
 
@@ -113,7 +113,7 @@ from pathlib import Path
 
 patches = json.loads(Path('/tmp/pr-patches-{number}.json').read_text())
 html = Path('/tmp/pr-review-{number}-body.html').read_text()
-skill = Path('<path-to-code-review>')
+skill = Path('<path-to-codereview>')
 css = (skill / 'canvas/styles.css').read_text()
 js = (skill / 'canvas/renderer.js').read_text()
 tmpl = (skill / 'canvas/template.html').read_text()
@@ -147,7 +147,7 @@ Since renderer.js loads in `<head>`, you can also call `renderDiff(target, lines
 
 1. Write your body HTML (everything that goes inside `<body>`) to `/tmp/pr-review-{number}-body.html`
 2. Save patches to `/tmp/pr-patches-{number}.json` using the `jq` command from step 3 above
-3. Run the Python assembly script from step 3 above. It reads the assets from `code-review/canvas`, injects the body and patches safely, and writes the final HTML.
+3. Run the Python assembly script from step 3 above. It reads the assets from `codereview/canvas`, injects the body and patches safely, and writes the final HTML.
 4. Start a local server on a fixed port:
    ```bash
    cd /tmp && python3 -m http.server 8432 --bind 127.0.0.1

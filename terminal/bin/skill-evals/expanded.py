@@ -212,7 +212,7 @@ def make_study(catalogs, suite, profile, case_catalog=None):
     for task in tasks:
         validate_task(task)
     supports = {entry["skill"]: [entry["skill"], *entry["support"]] for entry in entries}
-    supports.update({"code-review": list(CATALOG), "simplify": list(CATALOG)})
+    supports.update({"codereview": list(CATALOG), "simplify": list(CATALOG)})
     return {
         "tasks": tasks,
         "targets": targets,
