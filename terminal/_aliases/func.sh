@@ -27,6 +27,16 @@ function port {
   sudo lsof -i:"$1"
 }
 
+# A remote TUI (opencode) that dies with the connection never turns off mouse
+# tracking, so the local shell prints mouse reports like 35;43;23M. Turn the
+# mouse and bracketed-paste modes off locally once ssh returns.
+function ssh {
+  command ssh "$@"
+  local rc=$?
+  [ -t 1 ] && printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l\e[?1015l\e[?2004l'
+  return $rc
+}
+
 function restart-ssh {
   sudo launchctl stop com.openssh.sshd
   sudo launchctl start com.openssh.sshd
