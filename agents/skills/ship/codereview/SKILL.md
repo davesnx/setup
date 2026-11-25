@@ -1,6 +1,6 @@
 ---
 name: codereview
-description: Review code changes, commits, or PRs on request, including deep, adversarial, blast-radius, maintainer review of a contributor's PR, and OCaml API/semver reviews. Report verified risks; edit or publish only with authorization.
+description: Review code changes, commits, or PRs on request, including bug hunts, deep, adversarial, blast-radius, maintainer review of a contributor's PR, and OCaml API/semver reviews. Takes an effort level, posts findings as inline PR comments, or fixes them in the working tree when asked. Report verified risks; edit or publish only with authorization.
 ---
 
 # Code Review
@@ -15,10 +15,26 @@ Choose one review mode from the request:
 - **Deep**: Use for an explicit deep or thermonuclear review request. Use the shared parallel review pass, then synthesize and verify its strongest claims.
 - **Adversarial / Multi-model**: Use for "interrogate", "adversarial review", "multi-model review", "challenge this", "stress test this code", "find blind spots", or "tear this apart". Use the same parallel pass as Deep, prefer different available models, and add an agreement map and explicit lead judgment. This is not a second fan-out workflow.
 - **Blast radius**: Use for "blast radius", "what could this break", or a small change whose downstream effects are unclear. Focus the report on transitive risk and executable proof.
+- **Bug hunt**: Use for "find bugs", "any bugs?", "bug pass", or a quick check before a commit. Apply only the correctness and security lens, plus repository rules the diff visibly breaks. Skip the maintainer gate, maintainability, and spec review. Report only confirmed bugs.
 
-Ship and Canvas modify the selected review mode:
+### Effort
+
+An effort level (`low`, `medium`, `high`, `max`), given in words or as a flag, sets how wide the review looks and how sure a finding must be. Without one, use `medium`. A named mode keeps its lenses and takes the level's depth; with no named mode, the level picks one.
+
+| Effort | Mode without a named one | Context read | Reviewers | Findings reported |
+|---|---|---|---|---|
+| `low` | Bug hunt | Changed lines and their direct callers | Lead only | Confirmed Critical and High, at most 5 |
+| `medium` | Standard | Full Step 1 context | Lead only | Confirmed Medium and above, plus sparse Low |
+| `high` | Deep | Full context and transitive consumers | Shared parallel pass | Every confirmed finding |
+| `max` | Adversarial / Multi-model | Full context and transitive consumers | Shared parallel pass on different models | Every confirmed finding, plus **Consider** items |
+
+Use `high` or `max` only when the user or calling instructions ask for that level or for a Deep or Adversarial review: they start subagents and cost the most. "All findings" lifts the count limit at any level; the confirmation bar stays.
+
+Ship, Comment, Fix, and Canvas modify the selected review mode:
 
 - **Ship**: Use only when the user asks to review and ship, commit, push, or open or update a PR. Commit and push of your own verified work is already authorized. Review first, then fix and publish only what the request authorizes. Never treat reviewer suggestions as permission to edit.
+- **Comment**: Use when the user asks to post, leave, or comment the findings on the PR (`--comment`). After the report, post confirmed findings as inline review comments with [references/comment-and-fix.md](references/comment-and-fix.md). Requires a PR target.
+- **Fix**: Use when the user asks to fix, apply, or address the findings (`--fix`). After the report, apply confirmed findings to the working tree with [references/comment-and-fix.md](references/comment-and-fix.md). Fix leaves the changes uncommitted; Ship commits them.
 - **Canvas output**: Use when the user asks for a review canvas, visual PR review, interactive walkthrough, or HTML review. Complete the selected review mode first, then render the result with `references/canvas.md`.
 
 ## 1. Define The Scope
@@ -116,6 +132,10 @@ Act as the lead reviewer, not a vote counter. Put every candidate finding in **A
 
 Start from the key safety fact. Trace effects through boundaries that symbol search misses, then run the cheapest focused proof. Still check correctness, maintainability, standards, and intent, but keep the output centered on confirmed downstream risk, cleared cases, and proof level.
 
+### Bug Hunt
+
+Read [Correctness and security](references/correctness-security.md). For each changed hunk, ask what input, state, or ordering makes it fail, and trace that path through the callers the effort level allows. Keep a candidate only when you can name the failing input or sequence and the wrong result; for a non-obvious one, prove it with a focused test or script under `/tmp`. Report the bugs, the checks run, and the riskiest paths that came out clean.
+
 ## 5. Calibrate And Verify
 
 - **Critical**: Exploitable security issue, realistic data loss, or a severe regression on a reachable path.
@@ -160,7 +180,9 @@ When Canvas output is selected, read [references/canvas.md](references/canvas.md
 
 ## 7. Modification Policy
 
-Without the Ship modifier, Standard, Deep, Adversarial, and Blast Radius modes are report-only. Put ad hoc proof scripts under `/tmp`; do not modify the repository to produce evidence. Offer to fix confirmed Critical, High, or Medium findings after presenting the review.
+Without the Ship, Fix, or Comment modifier, every mode is report-only. Put ad hoc proof scripts under `/tmp`; do not modify the repository to produce evidence. Offer to fix confirmed Critical, High, or Medium findings after presenting the review.
+
+Comment publishes to the PR and Fix edits the working tree; each needs its own request. A review request alone authorizes neither, and Comment never approves or requests changes on the PR unless the user asks for that verdict.
 
 In Ship mode:
 
