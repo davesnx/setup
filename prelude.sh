@@ -62,9 +62,6 @@ link_skills() {
     skill=${skill%/SKILL.md}
     link_path "$skill" "$1/${skill##*/}"
   done
-  if [ -d "$skills_root/synced" ]; then
-    link_path "$skills_root/synced" "$1/synced"
-  fi
   for entry in "$1"/*; do
     if [ -L "$entry" ] && [ ! -e "$entry" ]; then
       case $(readlink "$entry") in
